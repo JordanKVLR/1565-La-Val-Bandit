@@ -1,12 +1,14 @@
-import type { BattleMap, Coord } from '@m1565/core';
-import { getTile } from '@m1565/core';
+import type { BattleMap, Coord, Facing } from '@m1565/core';
+import { DIRECTIONS, getTile } from '@m1565/core';
 import {
   AmbientLight,
   BoxGeometry,
   BufferGeometry,
   Color,
+  ConeGeometry,
   DirectionalLight,
   Float32BufferAttribute,
+  Group,
   LineBasicMaterial,
   LineSegments,
   Mesh,
@@ -23,24 +25,51 @@ import {
 import type { Sprite } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { FALLBACK_COLOR, TERRAIN_COLORS } from './palette';
-import { createPlaceholderUnit } from './unitSprite';
+import type { UnitLook } from './unitSprite';
+import { createUnitSprite, drawUnit } from './unitSprite';
 
 /** World units per height step. Tiles are 1×1 on the ground plane. */
 const STEP = 0.35;
 const TRIANGLES_PER_TILE = 12;
 const MIN_ZOOM = 0.6;
-const MAX_ZOOM = 2.5;
+const MAX_ZOOM = 2.8;
 const TAP_SLOP_PX = 8;
 
-export interface PlacedUnit {
-  readonly label: string;
-  readonly color: string;
+export interface UnitVisual extends UnitLook {
+  readonly id: string;
   readonly at: Coord;
+  readonly facing: Facing;
+  readonly arrowColor: string;
 }
+
+export type HighlightKind = 'move' | 'range' | 'target' | 'danger';
+
+const HIGHLIGHT_COLORS: Record<HighlightKind, { color: number; opacity: number }> = {
+  move: { color: 0x4aa3e0, opacity: 0.45 },
+  range: { color: 0xe07a3a, opacity: 0.3 },
+  target: { color: 0xe0303a, opacity: 0.6 },
+  danger: { color: 0x9a3ae0, opacity: 0.25 },
+};
+
+const FACING_ANGLE: Record<Facing, number> = {
+  north: Math.PI,
+  east: Math.PI / 2,
+  south: 0,
+  west: -Math.PI / 2,
+};
+
+interface UnitNode {
+  sprite: Sprite;
+  arrow: Mesh;
+  look: UnitLook;
+  at: Coord;
+}
+
+type Tween = (now: number) => boolean; // returns true when finished
 
 /**
  * Isometric battle renderer. Owns the Three.js scene, camera and pointer gestures, and reports
- * tile taps upward. It holds no game rules: the screen feeds it a map and units, and it draws.
+ * tile taps upward. It holds no game rules: the controller tells it what to show and animate.
  */
 export class BattleView {
   private readonly renderer: WebGLRenderer;
@@ -48,16 +77,19 @@ export class BattleView {
   private readonly camera = new OrthographicCamera();
   private readonly target = new Vector3();
   private readonly cursor: Mesh;
+  private readonly highlightGroup = new Group();
   private readonly raycaster = new Raycaster();
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly resizeObserver: ResizeObserver;
+  private readonly units = new Map<string, UnitNode>();
+  private readonly tweens = new Set<Tween>();
   private terrain: Mesh | undefined;
-  private units: Sprite[] = [];
   private rotation = 0;
   private zoom = 1;
   private dragStart: { x: number; y: number; moved: boolean } | undefined;
   private pinchDistance = 0;
   private frameRequested = false;
+  private disposed = false;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -76,14 +108,14 @@ export class BattleView {
     this.cursor = new Mesh(
       new PlaneGeometry(0.96, 0.96).rotateX(-Math.PI / 2),
       new MeshBasicMaterial({
-        color: 0xe0543a,
+        color: 0xf5d77a,
         transparent: true,
         opacity: 0.55,
         depthWrite: false,
       }),
     );
     this.cursor.visible = false;
-    this.scene.add(this.cursor);
+    this.scene.add(this.cursor, this.highlightGroup);
 
     this.buildTerrain();
     this.target.set(map.width / 2, 0, map.depth / 2);
@@ -100,6 +132,8 @@ export class BattleView {
   }
 
   dispose(): void {
+    this.disposed = true;
+    this.tweens.clear();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
@@ -118,14 +152,112 @@ export class BattleView {
     this.updateCamera();
   }
 
-  setUnits(units: readonly PlacedUnit[]): void {
-    for (const s of this.units) this.scene.remove(s);
-    this.units = units.map((u) => {
-      const sprite = createPlaceholderUnit(u.label, u.color);
-      sprite.position.copy(this.tileTop(u.at));
-      this.scene.add(sprite);
-      return sprite;
+  /** Creates, updates or removes unit billboards to match the given list. */
+  syncUnits(list: readonly UnitVisual[]): void {
+    const seen = new Set<string>();
+    for (const u of list) {
+      seen.add(u.id);
+      let node = this.units.get(u.id);
+      if (!node) {
+        const sprite = createUnitSprite(u);
+        const arrow = new Mesh(
+          new ConeGeometry(0.12, 0.3, 3).rotateX(Math.PI / 2),
+          new MeshBasicMaterial({ color: u.arrowColor }),
+        );
+        this.scene.add(sprite, arrow);
+        node = { sprite, arrow, look: u, at: u.at };
+        this.units.set(u.id, node);
+        this.placeNode(node, u.at);
+      } else {
+        if (node.at.x !== u.at.x || node.at.y !== u.at.y) this.placeNode(node, u.at);
+        if (!sameLook(node.look, u)) {
+          drawUnit(node.sprite, u);
+          node.look = u;
+        }
+      }
+      node.arrow.rotation.y = FACING_ANGLE[u.facing];
+    }
+    for (const [id, node] of this.units) {
+      if (!seen.has(id)) {
+        this.scene.remove(node.sprite, node.arrow);
+        node.sprite.material.map?.dispose();
+        node.sprite.material.dispose();
+        this.units.delete(id);
+      }
+    }
+    this.requestRender();
+  }
+
+  /** Walks a unit along a path (tile by tile, hopping on height changes). */
+  animateMove(id: string, path: readonly Coord[], msPerTile: number): Promise<void> {
+    const node = this.units.get(id);
+    if (!node || path.length === 0) return Promise.resolve();
+    const points = [node.at, ...path].map((c) => this.tileTop(c));
+    return new Promise((resolve) => {
+      const start = performance.now();
+      const total = msPerTile * path.length;
+      this.addTween((now) => {
+        // rAF timestamps can precede `start` slightly; clamp so progress never goes negative.
+        const t = Math.min(1, Math.max(0, (now - start) / total));
+        const seg = Math.min(path.length - 1, Math.floor(t * path.length));
+        const local = t * path.length - seg;
+        const a = points[seg]!;
+        const b = points[seg + 1]!;
+        const pos = a.clone().lerp(b, local);
+        pos.y = Math.max(a.y, b.y) * Math.sin(local * Math.PI) * 0.15 + a.y + (b.y - a.y) * local;
+        node.sprite.position.copy(pos);
+        node.arrow.position.copy(pos).add(new Vector3(0, 0.02, 0));
+        const dir = { x: Math.sign(b.x - a.x), y: Math.sign(b.z - a.z) };
+        const facing = (Object.keys(DIRECTIONS) as Facing[]).find(
+          (f) => DIRECTIONS[f].x === dir.x && DIRECTIONS[f].y === dir.y,
+        );
+        if (facing) node.arrow.rotation.y = FACING_ANGLE[facing];
+        if (t >= 1) {
+          node.at = path[path.length - 1]!;
+          resolve();
+          return true;
+        }
+        return false;
+      });
     });
+  }
+
+  /** Short shake on a unit: used when it takes a hit on the map. */
+  shake(id: string): void {
+    const node = this.units.get(id);
+    if (!node) return;
+    const base = this.tileTop(node.at);
+    const start = performance.now();
+    this.addTween((now) => {
+      const t = Math.max(0, (now - start) / 300);
+      node.sprite.position.set(
+        base.x + Math.sin(t * 40) * 0.06 * (1 - Math.min(t, 1)),
+        base.y,
+        base.z,
+      );
+      if (t >= 1) {
+        node.sprite.position.copy(base);
+        return true;
+      }
+      return false;
+    });
+  }
+
+  setHighlights(layers: ReadonlyArray<{ kind: HighlightKind; tiles: readonly Coord[] }>): void {
+    for (const child of [...this.highlightGroup.children]) {
+      this.highlightGroup.remove(child);
+      if (child instanceof Mesh) child.geometry.dispose();
+    }
+    const geo = new PlaneGeometry(0.92, 0.92).rotateX(-Math.PI / 2);
+    for (const layer of layers) {
+      const { color, opacity } = HIGHLIGHT_COLORS[layer.kind];
+      const mat = new MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false });
+      for (const c of layer.tiles) {
+        const m = new Mesh(geo, mat);
+        m.position.copy(this.tileTop(c)).add(new Vector3(0, 0.005, 0));
+        this.highlightGroup.add(m);
+      }
+    }
     this.requestRender();
   }
 
@@ -135,9 +267,73 @@ export class BattleView {
     this.requestRender();
   }
 
+  /** Smoothly pans the camera to centre on a tile. */
+  focus(c: Coord, ms = 350): Promise<void> {
+    const from = this.target.clone();
+    const to = new Vector3(c.x + 0.5, 0, c.y + 0.5);
+    const start = performance.now();
+    return new Promise((resolve) => {
+      this.addTween((now) => {
+        const t = Math.min(1, Math.max(0, (now - start) / ms));
+        const e = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+        this.target.copy(from).lerp(to, e);
+        this.updateCamera();
+        if (t >= 1) resolve();
+        return t >= 1;
+      });
+    });
+  }
+
+  /** Screen-space position (CSS pixels, relative to the canvas) of a tile's centre. */
+  tileScreenPosition(c: Coord): { x: number; y: number } {
+    const p = this.tileTop(c).project(this.camera);
+    return {
+      x: ((p.x + 1) / 2) * this.canvas.clientWidth,
+      y: ((1 - p.y) / 2) * this.canvas.clientHeight,
+    };
+  }
+
+  /**
+   * Which world facing points toward each screen corner (up-left, up-right, down-left,
+   * down-right) for the current camera rotation. Used by the facing picker.
+   */
+  screenFacings(): Record<'upLeft' | 'upRight' | 'downLeft' | 'downRight', Facing> {
+    const origin = new Vector3(0, 0, 0).project(this.camera);
+    const screen = (f: Facing) => {
+      const d = DIRECTIONS[f];
+      const p = new Vector3(d.x, 0, d.y).project(this.camera);
+      return { x: p.x - origin.x, y: p.y - origin.y };
+    };
+    const facings = Object.keys(DIRECTIONS) as Facing[];
+    const pick = (sx: number, sy: number) =>
+      facings.reduce((best, f) => {
+        const v = screen(f);
+        const b = screen(best);
+        return v.x * sx + v.y * sy > b.x * sx + b.y * sy ? f : best;
+      });
+    return {
+      upLeft: pick(-1, 1),
+      upRight: pick(1, 1),
+      downLeft: pick(-1, -1),
+      downRight: pick(1, -1),
+    };
+  }
+
+  private placeNode(node: UnitNode, c: Coord): void {
+    node.at = c;
+    const p = this.tileTop(c);
+    node.sprite.position.copy(p);
+    node.arrow.position.copy(p).add(new Vector3(0, 0.02, 0));
+  }
+
   private tileTop(c: Coord): Vector3 {
     const h = getTile(this.map, c)?.height ?? 0;
     return new Vector3(c.x + 0.5, (h + 1) * STEP, c.y + 0.5);
+  }
+
+  private addTween(t: Tween): void {
+    this.tweens.add(t);
+    this.requestRender();
   }
 
   private buildTerrain(): void {
@@ -152,6 +348,8 @@ export class BattleView {
         const h = (tile.height + 1) * STEP;
         const box = new BoxGeometry(1, h, 1).translate(x + 0.5, h / 2, y + 0.5);
         top.setHex(TERRAIN_COLORS[tile.terrain] ?? FALLBACK_COLOR);
+        // Subtle per-tile variation so large fields don't read as flat colour.
+        top.offsetHSL(0, 0, ((x * 7 + y * 13) % 5) * 0.008 - 0.016);
         side.copy(top).multiplyScalar(0.62);
         const colors: number[] = [];
         // BoxGeometry face order: +x, -x, +y (top), -y, +z, -z; 4 vertices each.
@@ -236,13 +434,16 @@ export class BattleView {
     this.updateCamera();
   }
 
-  /** Render on demand only: saves battery on phones when nothing moves. */
+  /** Render on demand; keeps rendering only while tweens run, to save battery on phones. */
   private requestRender(): void {
-    if (this.frameRequested) return;
+    if (this.frameRequested || this.disposed) return;
     this.frameRequested = true;
-    requestAnimationFrame(() => {
+    requestAnimationFrame((now) => {
       this.frameRequested = false;
+      if (this.disposed) return;
+      for (const t of [...this.tweens]) if (t(now)) this.tweens.delete(t);
       this.renderer.render(this.scene, this.camera);
+      if (this.tweens.size) this.requestRender();
     });
   }
 
@@ -261,7 +462,6 @@ export class BattleView {
   }
 
   private pan(dx: number, dy: number): void {
-    // Convert screen pixels to world units on the ground plane, respecting rotation.
     const worldPerPixel =
       (this.camera.top - this.camera.bottom) / this.zoom / this.canvas.clientHeight;
     const right = new Vector3().setFromMatrixColumn(this.camera.matrix, 0).setY(0).normalize();
@@ -325,4 +525,14 @@ export class BattleView {
     const [a, b] = [...this.pointers.values()];
     return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
   }
+}
+
+function sameLook(a: UnitLook, b: UnitLook): boolean {
+  return (
+    a.label === b.label &&
+    a.color === b.color &&
+    a.hp === b.hp &&
+    a.maxHp === b.maxHp &&
+    a.active === b.active
+  );
 }

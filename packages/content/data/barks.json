@@ -1,0 +1,76 @@
+{
+  "order": {
+    "attack": ["For the Religion!", "Hold the line!", "Strike true!"],
+    "defend": ["Shields up!", "I stand."],
+    "avoid": ["Too slow!", "Not today."],
+    "counter": ["Answer steel with steel!"],
+    "hurt": ["A scratch.", "Keep fighting!"],
+    "defeated": ["The Order... will hold..."]
+  },
+  "militia": {
+    "attack": ["For Malta!", "Get off our island!", "Here goes!"],
+    "defend": ["Brace!", "Hold still, you old engine!"],
+    "avoid": ["Missed me!", "Ha! Like a Marsaxlokk eel."],
+    "counter": ["My turn!"],
+    "hurt": ["Ugh... still standing.", "That rattled the gears."],
+    "defeated": ["Sorry... couldn't hold..."]
+  },
+  "ottoman": {
+    "attack": ["For the Sultan!", "Forward!", "Break them!"],
+    "defend": ["Stand firm!", "Hold your ground."],
+    "avoid": ["Too slow, islander.", "Hah!"],
+    "counter": ["You'll regret that!"],
+    "hurt": ["Is that all?", "Keep pressing!"],
+    "defeated": ["Forgive me, Pasha..."]
+  },
+  "corsair": {
+    "attack": ["Board them!", "Loot for the brave!", "Hooks out!"],
+    "defend": ["Brace, lads!"],
+    "avoid": ["Like dancing on a deck!", "Missed!"],
+    "counter": ["Taste the cutlass!"],
+    "hurt": ["Just a splinter.", "Salt in the wound..."],
+    "defeated": ["Back to the sea..."]
+  },
+  "scala": {
+    "attack": ["Commencing demonstration.", "Excellent. Proceed."],
+    "defend": ["Plating holds."],
+    "avoid": ["Predictable."],
+    "counter": ["Retaliation protocol."],
+    "hurt": ["Pressure dropping..."],
+    "defeated": ["Mechanism... failing..."]
+  },
+  "characters": {
+    "ninu": {
+      "attack": ["Here goes nothing!", "Watch this!", "Żejtun sends its regards!"],
+      "defend": ["Come on, hold together!"],
+      "avoid": ["Ha! Too slow!"],
+      "counter": ["You picked the wrong fisherman!"],
+      "hurt": ["That... actually hurt."],
+      "defeated": ["Pa... I'm sorry..."]
+    },
+    "kateri": {
+      "attack": ["Mind the springs... and fire!", "Precision, please."],
+      "defend": ["I tuned these plates myself."],
+      "avoid": ["Lighter frame, faster feet."],
+      "counter": ["Oh, you'll want to stop that."],
+      "hurt": ["My poor gears!"],
+      "defeated": ["Ninu... fix the mainspring..."]
+    },
+    "luis": {
+      "attack": ["By the Cross!", "Steady, and strike."],
+      "defend": ["Discipline, boy. Watch."],
+      "avoid": ["Age brings patience."],
+      "counter": ["You mistake me for an old man."],
+      "hurt": ["Still breathing."],
+      "defeated": ["Protect... the boy..."]
+    },
+    "deniz": {
+      "attack": ["For my captain!", "Wind at my back!"],
+      "defend": ["Steady as a keel."],
+      "avoid": ["Like a gull over the waves!"],
+      "counter": ["Wrong sailor to cross!"],
+      "hurt": ["Rough seas..."],
+      "defeated": ["Mother... I tried..."]
+    }
+  }
+}
