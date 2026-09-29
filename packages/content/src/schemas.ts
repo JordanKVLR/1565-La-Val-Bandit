@@ -66,7 +66,22 @@ export const FrameSchema = z.object({
   agility: z.number().int(),
 });
 
-export const CharacterSchema = z.object({ id, name: z.string().min(1), stats });
+const growth = z.object({
+  str: z.number().int().min(0).max(100),
+  skl: z.number().int().min(0).max(100),
+  agi: z.number().int().min(0).max(100),
+});
+const allegiance = z.enum(['malta', 'ottoman']);
+export const CharacterSchema = z.object({
+  id,
+  name: z.string().min(1),
+  stats,
+  growth,
+  frame: id,
+  weapon: id,
+  allegiance,
+});
+export type Character = z.infer<typeof CharacterSchema>;
 
 export const BalanceSchema = z.object({
   apMax: z.number().positive(),
@@ -156,3 +171,29 @@ export const BarksSchema = z.object({
 });
 export type BarkSet = z.infer<typeof BarkSetSchema>;
 export type Faction = z.infer<typeof FrameSchema>['faction'];
+
+export const CastSchema = z.object({
+  id,
+  name: z.string().min(1),
+  /** Uppercase name used at the start of story lines, e.g. "FRA LUIS: ...". */
+  speaker: z.string().regex(/^[A-ZÀ-ÖØ-ÞĠĦŻĊ][A-ZÀ-ÖØ-ÞĠĦŻĊ .'-]*$/),
+  color: z.string().regex(/^#[0-9a-f]{6}$/i),
+  title: z.string(),
+});
+export type CastMember = z.infer<typeof CastSchema>;
+
+export const ShopItemSchema = z.object({
+  item: id,
+  kind: z.enum(['weapon', 'frame']),
+  price: z.number().int().positive(),
+  allegiance,
+  /** Battle id that must be won before this goes on sale; null = from the start. */
+  after: id.nullable(),
+});
+export type ShopItem = z.infer<typeof ShopItemSchema>;
+
+/** Which frame factions each allegiance may pilot. */
+export const ALLEGIANCE_FACTIONS = {
+  malta: ['order', 'militia'],
+  ottoman: ['ottoman', 'corsair'],
+} as const;

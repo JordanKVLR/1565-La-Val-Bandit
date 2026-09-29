@@ -1,0 +1,22 @@
+{
+  "id": "p2-st-angelo",
+  "name": "Fort St Angelo",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": ["~~~~~~~~", "~~~~~~~~", "W######W", "W______W", "W______W", "W______W", "WWW__WWW"],
+  "height": ["00000000", "00000000", "54444445", "53333335", "53333335", "53333335", "55533555"]
+}

@@ -1,3 +1,4 @@
+import { inkPlugin } from '@m1565/content/vite-plugin-ink';
 import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -10,6 +11,7 @@ const singleFile = process.env.SINGLE_FILE === '1';
 export default defineConfig({
   base,
   plugins: [
+    inkPlugin(),
     preact(),
     VitePWA({
       disable: singleFile,

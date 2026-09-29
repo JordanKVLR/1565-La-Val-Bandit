@@ -1,0 +1,38 @@
+{
+  "id": "p0-zejtun",
+  "name": "Żejtun",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "gfffffffg",
+    "ffpppppff",
+    "fpWW_WWpf",
+    "rpW___Wpr",
+    "rrp___prr",
+    "frrrrrrrf",
+    "ffffffggg"
+  ],
+  "height": [
+    "222222222",
+    "222222222",
+    "223323322",
+    "222222222",
+    "211222211",
+    "111111111",
+    "111111000"
+  ]
+}

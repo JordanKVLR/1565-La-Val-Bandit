@@ -1,0 +1,156 @@
+{
+  "id": "b4-night-crossing",
+  "name": "Quay of St Elmo",
+  "map": "b4-night-crossing",
+  "seed": 4,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 4
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "barge"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [7, 3],
+      "facing": "west",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 5],
+      "facing": "west",
+      "character": "kateri"
+    },
+    {
+      "id": "luis",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [7, 5],
+      "facing": "west",
+      "character": "luis"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [6, 6],
+      "facing": "west",
+      "character": "ganni"
+    },
+    {
+      "id": "barge",
+      "side": "player",
+      "controller": "ai",
+      "level": 1,
+      "frame": "barge",
+      "weapon": "swivel-gun",
+      "at": [6, 4],
+      "facing": "west",
+      "ai": "hold",
+      "name": "Supply Barge",
+      "stats": {
+        "str": 3,
+        "skl": 5,
+        "agi": 0
+      }
+    },
+    {
+      "id": "levend-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [2, 2],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "levend-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [3, 3],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 6,
+        "agi": 6
+      }
+    },
+    {
+      "id": "levend-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [2, 6],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "reis-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [3, 7],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Corsair Reis",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 5
+      }
+    }
+  ]
+}

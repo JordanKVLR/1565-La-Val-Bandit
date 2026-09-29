@@ -1,0 +1,22 @@
+{
+  "id": "p3-camp",
+  "name": "Tigné Point",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": ["~~~~~~~~", "~~sssss~", "~sppppps", "~pWpppWp", "~ppp_ppp", "~pWpppWp", "~sppppps"],
+  "height": ["00000000", "00111110", "01111111", "01311131", "01111111", "01311131", "01111111"]
+}

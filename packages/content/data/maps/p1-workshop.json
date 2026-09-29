@@ -1,0 +1,22 @@
+{
+  "id": "p1-workshop",
+  "name": "Arsenal of Birgu",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": ["WWWWWWWW", "W__x___W", "W______W", "______xW", "W______W", "Wx_____W", "WWW__WWW"],
+  "height": ["33333333", "30010003", "30000003", "00000013", "30000003", "31000003", "33300333"]
+}

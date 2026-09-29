@@ -1,0 +1,117 @@
+[
+  {
+    "id": "ninu",
+    "name": "Ninu",
+    "speaker": "NINU",
+    "color": "#2f5fa8",
+    "title": "Militiaman of Żejtun"
+  },
+  {
+    "id": "pawlu",
+    "name": "Pawlu",
+    "speaker": "PAWLU",
+    "color": "#6b7a4a",
+    "title": "Farmer, former galley slave"
+  },
+  {
+    "id": "kateri",
+    "name": "Kateri",
+    "speaker": "KATERI",
+    "color": "#3f8a6a",
+    "title": "Armatura mechanic"
+  },
+  {
+    "id": "luis",
+    "name": "Fra Luis",
+    "speaker": "FRA LUIS",
+    "color": "#7a2f3a",
+    "title": "Knight of Aragon"
+  },
+  {
+    "id": "valette",
+    "name": "La Valette",
+    "speaker": "LA VALETTE",
+    "color": "#8c1c1c",
+    "title": "Grand Master of the Order"
+  },
+  {
+    "id": "balbi",
+    "name": "Balbi",
+    "speaker": "BALBI",
+    "color": "#8a7a56",
+    "title": "Arquebusier and chronicler"
+  },
+  { "id": "ganni", "name": "Ġanni", "speaker": "ĠANNI", "color": "#4d6fa0", "title": "Militiaman" },
+  {
+    "id": "rozi",
+    "name": "Rożi",
+    "speaker": "ROŻI",
+    "color": "#5a86b8",
+    "title": "Militia arquebusier"
+  },
+  {
+    "id": "deniz",
+    "name": "Deniz",
+    "speaker": "DENIZ",
+    "color": "#1f7a8c",
+    "title": "Navigator of the fleet"
+  },
+  {
+    "id": "leyla",
+    "name": "Leyla Hatun",
+    "speaker": "LEYLA",
+    "color": "#8c5a9c",
+    "title": "Lady of a pasha's household"
+  },
+  {
+    "id": "yusuf",
+    "name": "Yusuf Reis",
+    "speaker": "YUSUF",
+    "color": "#2c5a6e",
+    "title": "Corsair captain"
+  },
+  {
+    "id": "turgut",
+    "name": "Turgut Reis",
+    "speaker": "TURGUT",
+    "color": "#b07a2a",
+    "title": "Admiral and corsair"
+  },
+  {
+    "id": "mustafa",
+    "name": "Mustafa Pasha",
+    "speaker": "MUSTAFA",
+    "color": "#a8322f",
+    "title": "Commander of the army"
+  },
+  {
+    "id": "piali",
+    "name": "Piali Pasha",
+    "speaker": "PIALI",
+    "color": "#b0503a",
+    "title": "Admiral of the fleet"
+  },
+  {
+    "id": "scala",
+    "name": "Vittorio Scala",
+    "speaker": "SCALA",
+    "color": "#b8742a",
+    "title": "Genoese engineer"
+  },
+  {
+    "id": "anastagi",
+    "name": "Anastagi",
+    "speaker": "ANASTAGI",
+    "color": "#5c3a6e",
+    "title": "Captain of the Mdina cavalry"
+  },
+  { "id": "villager", "name": "Villager", "speaker": "VILLAGER", "color": "#7a6a4a", "title": "" },
+  { "id": "soldier", "name": "Soldier", "speaker": "SOLDIER", "color": "#5a5a6a", "title": "" },
+  {
+    "id": "janissary",
+    "name": "Janissary",
+    "speaker": "JANISSARY",
+    "color": "#a8322f",
+    "title": ""
+  }
+]

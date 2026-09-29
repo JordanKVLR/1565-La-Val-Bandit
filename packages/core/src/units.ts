@@ -79,6 +79,9 @@ export interface UnitState {
   defeated: boolean;
 }
 
+/** Pilots add toughness as they level: frame HP plus this much per level above 1. */
+export const HP_PER_LEVEL = 3;
+
 export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
   return {
     id: spec.id,
@@ -91,8 +94,8 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     weapon: spec.weapon,
     level: spec.level,
     xp: 0,
-    maxHp: spec.frame.hp,
-    hp: spec.frame.hp,
+    maxHp: spec.frame.hp + (spec.level - 1) * HP_PER_LEVEL,
+    hp: spec.frame.hp + (spec.level - 1) * HP_PER_LEVEL,
     ap: balance.apStart,
     fp: 0,
     str: spec.stats.str,

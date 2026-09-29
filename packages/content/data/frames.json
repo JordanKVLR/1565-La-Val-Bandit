@@ -115,5 +115,14 @@
     "armour": 14,
     "move": 4,
     "agility": 0
+  },
+  {
+    "id": "barge",
+    "name": "Supply Barge",
+    "faction": "militia",
+    "hp": 70,
+    "armour": 6,
+    "move": 1,
+    "agility": -4
   }
 ]

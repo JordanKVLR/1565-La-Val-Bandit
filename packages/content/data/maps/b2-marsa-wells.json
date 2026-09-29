@@ -1,0 +1,44 @@
+{
+  "id": "b2-marsa-wells",
+  "name": "Wells of the Marsa",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ggppppppppgg",
+    "gppfffpprrrr",
+    "ppfffppprppp",
+    "ppffxppprppp",
+    "pppppp_prppg",
+    "ppppx__xrppg",
+    "ppffp__prppp",
+    "pfffpppprrpp",
+    "ggffpppppprr",
+    "gggppppppppr"
+  ],
+  "height": [
+    "110000000011",
+    "100000000000",
+    "000000000000",
+    "000010000000",
+    "000000000001",
+    "000010010001",
+    "000000000000",
+    "000000000000",
+    "110000000000",
+    "111000000000"
+  ]
+}

@@ -11,16 +11,18 @@ import type {
 import { getTile, validateMap } from '@m1565/core';
 import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
-import b1Battle from '../data/battles/b1-marsaxlokk.json';
+import castData from '../data/cast.json';
 import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
-import b1Marsaxlokk from '../data/maps/b1-marsaxlokk.json';
+import shopData from '../data/shop.json';
 import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
 import {
   BalanceSchema,
   BarksSchema,
   BattleSourceSchema,
+  CastSchema,
+  ShopItemSchema,
   CharacterSchema,
   FrameSchema,
   MapSourceSchema,
@@ -34,6 +36,12 @@ export * from './schemas';
 export function loadTerrains(raw: unknown = terrainData): ReadonlyMap<string, TerrainType> {
   const list = TerrainSchema.array().parse(raw) as TerrainType[];
   return new Map(list.map((t) => [t.id, t]));
+}
+
+function globById(modules: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(modules).map(([path, data]) => [path.replace(/^.*\/(.+)\.json$/, '$1'), data]),
+  );
 }
 
 export function buildMap(source: MapSource): BattleMap {
@@ -63,11 +71,17 @@ export function loadMap(
   return map;
 }
 
-export const mapSources = { 'b1-marsaxlokk': b1Marsaxlokk } as const;
-export type MapId = keyof typeof mapSources;
+/** Every map in data/maps, keyed by file name (which must match its id). */
+export const mapSources: Readonly<Record<string, unknown>> = globById(
+  import.meta.glob('../data/maps/*.json', { eager: true, import: 'default' }),
+);
+export type MapId = string;
 
-export const battleSources = { 'b1-marsaxlokk': b1Battle } as const;
-export type BattleId = keyof typeof battleSources;
+/** Every battle in data/battles, keyed by file name (which must match its id). */
+export const battleSources: Readonly<Record<string, unknown>> = globById(
+  import.meta.glob('../data/battles/*.json', { eager: true, import: 'default' }),
+);
+export type BattleId = string;
 
 const byId = <T extends { id: string }>(
   list: readonly T[],
@@ -95,6 +109,8 @@ export function loadLibrary() {
         .map((f) => [f.id, f.faction]),
     ),
     barks: BarksSchema.parse(barkData),
+    cast: byId(CastSchema.array().parse(castData), 'cast member'),
+    shop: ShopItemSchema.array().parse(shopData),
   };
 }
 export type Library = ReturnType<typeof loadLibrary>;
@@ -105,14 +121,34 @@ function need<T>(map: ReadonlyMap<string, T>, key: string, what: string, where: 
   return v;
 }
 
-/** Resolves a battle's references (map, frames, weapons, characters) into a core BattleSetup. */
-export function buildBattle(source: BattleSource, lib: Library = loadLibrary()): BattleSetup {
+/** Persistent state of a named character between battles (the player's roster). */
+export interface RosterEntry {
+  readonly characterId: string;
+  readonly level: number;
+  readonly xp: number;
+  readonly stats: { readonly str: number; readonly skl: number; readonly agi: number };
+  readonly frame: string;
+  readonly weapon: string;
+}
+
+/**
+ * Resolves a battle's references (map, frames, weapons, characters) into a core BattleSetup.
+ * Named player characters found in `roster` fight with their saved level, stats and loadout.
+ */
+export function buildBattle(
+  source: BattleSource,
+  lib: Library = loadLibrary(),
+  roster: readonly RosterEntry[] = [],
+): BattleSetup {
+  const saved = new Map(roster.map((r) => [r.characterId, r]));
   const where = `battle ${source.id}`;
-  const mapSource = mapSources[source.map as MapId];
+  const mapSource = mapSources[source.map];
   if (!mapSource) throw new Error(`${where}: unknown map "${source.map}"`);
   const map = loadMap(mapSource, lib.terrains);
   const occupied = new Set<string>();
-  const units: UnitSpec[] = source.units.map((u) => {
+  const units: UnitSpec[] = source.units.map((u0) => {
+    const r = u0.side === 'player' && u0.character ? saved.get(u0.character) : undefined;
+    const u = r ? { ...u0, level: r.level, stats: r.stats, frame: r.frame, weapon: r.weapon } : u0;
     const character = u.character
       ? need(lib.characters, u.character, 'character', where)
       : undefined;
@@ -158,6 +194,14 @@ export function buildBattle(source: BattleSource, lib: Library = loadLibrary()):
   };
 }
 
-export function loadBattle(id: BattleId, lib: Library = loadLibrary()): BattleSetup {
-  return buildBattle(BattleSourceSchema.parse(battleSources[id]), lib);
+export function loadBattle(
+  id: BattleId,
+  lib: Library = loadLibrary(),
+  roster: readonly RosterEntry[] = [],
+): BattleSetup {
+  return buildBattle(BattleSourceSchema.parse(battleSources[id]), lib, roster);
+}
+
+export function isBattleId(id: string): id is BattleId {
+  return id in battleSources;
 }

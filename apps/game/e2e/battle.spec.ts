@@ -44,8 +44,7 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
 test('a player can move, end turns and answer enemy attacks through round 2', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await page.goto('./');
-  await page.getByRole('button', { name: 'Begin' }).click();
+  await page.goto('./?battle=b1-marsaxlokk');
   await expect(page.locator('canvas.battle-canvas')).toBeVisible();
 
   let moved = false;
