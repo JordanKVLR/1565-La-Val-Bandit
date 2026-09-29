@@ -9,6 +9,7 @@ export default tseslint.config(
       '**/coverage/**',
       '**/node_modules/**',
       '**/dev-dist/**',
+      '**/dist-single/**',
       'apps/game/test-results/**',
       'apps/game/playwright-report/**',
     ],
