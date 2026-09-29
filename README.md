@@ -1,1 +1,6 @@
-# 1565-La-Val-Bandit
+# 1565: La Valette's Bandits
+
+An original isometric tactical RPG set during the Great Siege of Malta (1565).
+Web-first (mobile browser / PWA), with planned Android, iOS and Steam releases.
+
+See [docs/PLAN.md](docs/PLAN.md) for the full design and build plan.
