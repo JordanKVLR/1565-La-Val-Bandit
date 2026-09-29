@@ -136,3 +136,23 @@ export const BattleSourceSchema = z.object({
 });
 
 export type BattleSource = z.infer<typeof BattleSourceSchema>;
+
+const barkLines = z.array(z.string().min(1)).min(1);
+export const BarkSetSchema = z.object({
+  attack: barkLines,
+  defend: barkLines,
+  avoid: barkLines,
+  counter: barkLines,
+  hurt: barkLines,
+  defeated: barkLines,
+});
+export const BarksSchema = z.object({
+  order: BarkSetSchema,
+  militia: BarkSetSchema,
+  ottoman: BarkSetSchema,
+  corsair: BarkSetSchema,
+  scala: BarkSetSchema,
+  characters: z.record(z.string(), BarkSetSchema),
+});
+export type BarkSet = z.infer<typeof BarkSetSchema>;
+export type Faction = z.infer<typeof FrameSchema>['faction'];

@@ -10,6 +10,7 @@ import type {
 } from '@m1565/core';
 import { getTile, validateMap } from '@m1565/core';
 import balanceData from '../data/balance.json';
+import barkData from '../data/barks.json';
 import b1Battle from '../data/battles/b1-marsaxlokk.json';
 import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
@@ -18,6 +19,7 @@ import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
 import {
   BalanceSchema,
+  BarksSchema,
   BattleSourceSchema,
   CharacterSchema,
   FrameSchema,
@@ -87,6 +89,12 @@ export function loadLibrary() {
     weapons: byId(WeaponSchema.array().parse(weaponData) as Weapon[], 'weapon'),
     frames: byId(FrameSchema.array().parse(frameData) as Frame[], 'frame'),
     characters: byId(CharacterSchema.array().parse(characterData), 'character'),
+    frameFactions: new Map(
+      FrameSchema.array()
+        .parse(frameData)
+        .map((f) => [f.id, f.faction]),
+    ),
+    barks: BarksSchema.parse(barkData),
   };
 }
 export type Library = ReturnType<typeof loadLibrary>;
@@ -118,6 +126,7 @@ export function buildBattle(source: BattleSource, lib: Library = loadLibrary()):
     occupied.add(key);
     return {
       id: u.id,
+      ...(u.character ? { characterId: u.character } : {}),
       name: u.name ?? character!.name,
       side: u.side,
       controller: u.controller,

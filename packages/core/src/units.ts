@@ -39,6 +39,8 @@ export interface PilotStats {
 /** Everything needed to put a unit on the field. Resolved from content by the loader. */
 export interface UnitSpec {
   readonly id: string;
+  /** Named story character this unit is (for portraits, barks, persistence), if any. */
+  readonly characterId?: string;
   readonly name: string;
   readonly side: Side;
   readonly controller: Controller;
@@ -54,6 +56,7 @@ export interface UnitSpec {
 /** Live, serializable unit state. Derived numbers are baked in at battle start. */
 export interface UnitState {
   id: string;
+  characterId: string | null;
   name: string;
   side: Side;
   controller: Controller;
@@ -79,6 +82,7 @@ export interface UnitState {
 export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
   return {
     id: spec.id,
+    characterId: spec.characterId ?? null,
     name: spec.name,
     side: spec.side,
     controller: spec.controller,
