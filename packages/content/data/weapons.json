@@ -108,5 +108,15 @@
     "fpCost": 10,
     "minRange": 1,
     "maxRange": 1
+  },
+  {
+    "id": "swivel-gun",
+    "name": "Swivel Gun",
+    "power": 16,
+    "accuracy": 60,
+    "apCost": 30,
+    "fpCost": 10,
+    "minRange": 1,
+    "maxRange": 3
   }
 ]

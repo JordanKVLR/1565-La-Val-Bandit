@@ -1,0 +1,152 @@
+{
+  "id": "b2-marsa-wells",
+  "name": "Wells of the Marsa",
+  "map": "b2-marsa-wells",
+  "seed": 2,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 4
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [5, 5],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [6, 6],
+      "facing": "east",
+      "character": "kateri"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [6, 5],
+      "facing": "east",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [5, 6],
+      "facing": "west",
+      "character": "rozi"
+    },
+    {
+      "id": "levend-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [3, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 5
+      }
+    },
+    {
+      "id": "levend-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [8, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [11, 4],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "sipahi-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [11, 7],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "yeniceri-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [10, 9],
+      "facing": "north",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 4
+      }
+    }
+  ]
+}

@@ -44,6 +44,9 @@ importers:
       '@m1565/core':
         specifier: workspace:*
         version: link:../../packages/core
+      inkjs:
+        specifier: 2.4.0
+        version: 2.4.0
       preact:
         specifier: ^10.29.8
         version: 10.29.8
@@ -75,9 +78,16 @@ importers:
       '@m1565/core':
         specifier: workspace:*
         version: link:../core
+      inkjs:
+        specifier: 2.4.0
+        version: 2.4.0
       zod:
         specifier: ^4.6.5
         version: 4.6.5
+    devDependencies:
+      vite:
+        specifier: ^8.3.1
+        version: 8.3.1(@types/node@22.20.4)(terser@5.51.2)
 
   packages/core: {}
 
@@ -1654,6 +1664,10 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
+
+  inkjs@2.4.0:
+    resolution: {integrity: sha512-EoPCYESIbMtfI8SqEDZCJwn+A5is0QozMLw250iic1ReJCgZpRKIezWj0VqgRUzAx0f3MmEbsUjY/ILe2815JQ==}
+    hasBin: true
 
   internal-slot@1.1.0:
     resolution: {integrity: sha512-4gd7VpWNQNB4UKKCFFVcp1AVv+FMOgs9NKzjHKusc8jTMhd5eL1NqQqOpE0KzMds804/yHlglp3uxgluOqAPLw==}
@@ -4315,6 +4329,8 @@ snapshots:
   ignore@7.0.10: {}
 
   imurmurhash@0.1.4: {}
+
+  inkjs@2.4.0: {}
 
   internal-slot@1.1.0:
     dependencies:

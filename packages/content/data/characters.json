@@ -1,6 +1,172 @@
 [
-  { "id": "ninu", "name": "Ninu", "stats": { "str": 7, "skl": 6, "agi": 7 } },
-  { "id": "kateri", "name": "Kateri", "stats": { "str": 5, "skl": 8, "agi": 6 } },
-  { "id": "luis", "name": "Fra Luis", "stats": { "str": 8, "skl": 8, "agi": 5 } },
-  { "id": "deniz", "name": "Deniz", "stats": { "str": 6, "skl": 7, "agi": 8 } }
+  {
+    "id": "ninu",
+    "name": "Ninu",
+    "stats": {
+      "str": 7,
+      "skl": 6,
+      "agi": 7
+    },
+    "growth": {
+      "str": 60,
+      "skl": 55,
+      "agi": 55
+    },
+    "frame": "haddiem",
+    "weapon": "arming-sword",
+    "allegiance": "malta"
+  },
+  {
+    "id": "kateri",
+    "name": "Kateri",
+    "stats": {
+      "str": 5,
+      "skl": 8,
+      "agi": 6
+    },
+    "growth": {
+      "str": 35,
+      "skl": 70,
+      "agi": 50
+    },
+    "frame": "moschetta",
+    "weapon": "arquebus",
+    "allegiance": "malta"
+  },
+  {
+    "id": "luis",
+    "name": "Fra Luis",
+    "stats": {
+      "str": 8,
+      "skl": 8,
+      "agi": 5
+    },
+    "growth": {
+      "str": 55,
+      "skl": 50,
+      "agi": 35
+    },
+    "frame": "cavaliere",
+    "weapon": "bastard-sword",
+    "allegiance": "malta"
+  },
+  {
+    "id": "ganni",
+    "name": "Ġanni",
+    "stats": {
+      "str": 6,
+      "skl": 5,
+      "agi": 5
+    },
+    "growth": {
+      "str": 55,
+      "skl": 40,
+      "agi": 45
+    },
+    "frame": "haddiem",
+    "weapon": "pike",
+    "allegiance": "malta"
+  },
+  {
+    "id": "rozi",
+    "name": "Rożi",
+    "stats": {
+      "str": 4,
+      "skl": 7,
+      "agi": 6
+    },
+    "growth": {
+      "str": 35,
+      "skl": 65,
+      "agi": 50
+    },
+    "frame": "moschetta",
+    "weapon": "arquebus",
+    "allegiance": "malta"
+  },
+  {
+    "id": "balbi",
+    "name": "Balbi",
+    "stats": {
+      "str": 5,
+      "skl": 9,
+      "agi": 5
+    },
+    "growth": {
+      "str": 40,
+      "skl": 65,
+      "agi": 40
+    },
+    "frame": "moschetta",
+    "weapon": "arquebus",
+    "allegiance": "malta"
+  },
+  {
+    "id": "anastagi",
+    "name": "Anastagi",
+    "stats": {
+      "str": 8,
+      "skl": 7,
+      "agi": 8
+    },
+    "growth": {
+      "str": 55,
+      "skl": 50,
+      "agi": 55
+    },
+    "frame": "kaptan",
+    "weapon": "pike",
+    "allegiance": "malta"
+  },
+  {
+    "id": "deniz",
+    "name": "Deniz",
+    "stats": {
+      "str": 6,
+      "skl": 7,
+      "agi": 8
+    },
+    "growth": {
+      "str": 45,
+      "skl": 55,
+      "agi": 65
+    },
+    "frame": "levend",
+    "weapon": "kilij",
+    "allegiance": "ottoman"
+  },
+  {
+    "id": "yusuf",
+    "name": "Yusuf Reis",
+    "stats": {
+      "str": 8,
+      "skl": 7,
+      "agi": 6
+    },
+    "growth": {
+      "str": 55,
+      "skl": 50,
+      "agi": 45
+    },
+    "frame": "reis",
+    "weapon": "cutlass",
+    "allegiance": "ottoman"
+  },
+  {
+    "id": "leyla",
+    "name": "Leyla",
+    "stats": {
+      "str": 5,
+      "skl": 9,
+      "agi": 7
+    },
+    "growth": {
+      "str": 35,
+      "skl": 65,
+      "agi": 55
+    },
+    "frame": "humbaraci",
+    "weapon": "grenado",
+    "allegiance": "ottoman"
+  }
 ]

@@ -1,0 +1,160 @@
+{
+  "id": "b3-sciberras",
+  "name": "Sciberras Ridge",
+  "map": "b3-sciberras",
+  "seed": 3,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "topcu"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [4, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "luis",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [6, 8],
+      "facing": "north",
+      "character": "luis"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [3, 8],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 9],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "topcu",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [6, 3],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Topçu Aga",
+      "stats": {
+        "str": 6,
+        "skl": 7,
+        "agi": 4
+      }
+    },
+    {
+      "id": "yeniceri-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [4, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 4
+      }
+    },
+    {
+      "id": "yeniceri-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [8, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 4
+      }
+    },
+    {
+      "id": "levend-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [2, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "levend-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [10, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 6
+      }
+    }
+  ]
+}

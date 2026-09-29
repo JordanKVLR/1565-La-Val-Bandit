@@ -1,0 +1,44 @@
+{
+  "id": "b3-sciberras",
+  "name": "Sciberras Ridge",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ggggpppppggg",
+    "gggpprrppggg",
+    "ggpprr#rppgg",
+    "gpppr###rppg",
+    "gppprrxrrppg",
+    "ppppprrrppgg",
+    "pfffpprpppgg",
+    "ffffpprppppp",
+    "ffffprrpffff",
+    "fffprrppffff"
+  ],
+  "height": [
+    "333444444333",
+    "333444444333",
+    "233444444332",
+    "223344443322",
+    "222333333222",
+    "122223322211",
+    "111122221111",
+    "011111111110",
+    "000011110000",
+    "000001100000"
+  ]
+}

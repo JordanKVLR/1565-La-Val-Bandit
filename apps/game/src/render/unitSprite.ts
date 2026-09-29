@@ -6,6 +6,8 @@ export interface UnitLook {
   readonly hp: number;
   readonly maxHp: number;
   readonly active: boolean;
+  /** Story scenes show characters without combat HP bars. */
+  readonly hideHp?: boolean;
 }
 
 const W = 64;
@@ -38,12 +40,20 @@ export function drawUnit(sprite: Sprite, look: UnitLook): void {
   ctx.clearRect(0, 0, W, H);
 
   // HP bar
+  if (!look.hideHp) drawHp(ctx, look);
+  drawBody(ctx, look);
+  texture.needsUpdate = true;
+}
+
+function drawHp(ctx: CanvasRenderingContext2D, look: UnitLook): void {
   const ratio = look.maxHp > 0 ? look.hp / look.maxHp : 0;
   ctx.fillStyle = 'rgba(0,0,0,0.75)';
   ctx.fillRect(8, 2, 48, 9);
   ctx.fillStyle = ratio > 0.5 ? '#5fc46a' : ratio > 0.25 ? '#e0b43a' : '#e0503a';
   ctx.fillRect(10, 4, Math.round(44 * ratio), 5);
+}
 
+function drawBody(ctx: CanvasRenderingContext2D, look: UnitLook): void {
   // Ground shadow
   ctx.fillStyle = 'rgba(0,0,0,0.35)';
   ctx.beginPath();
@@ -68,5 +78,4 @@ export function drawUnit(sprite: Sprite, look: UnitLook): void {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(look.label, 32, 54);
-  texture.needsUpdate = true;
 }

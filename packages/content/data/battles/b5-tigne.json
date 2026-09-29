@@ -1,0 +1,145 @@
+{
+  "id": "b5-tigne",
+  "name": "Guns of Tigné",
+  "map": "b5-tigne",
+  "seed": 5,
+  "victory": [
+    {
+      "type": "rout"
+    },
+    {
+      "type": "survive",
+      "rounds": 4
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [4, 5],
+      "facing": "south",
+      "character": "deniz"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 2,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [3, 4],
+      "facing": "south",
+      "character": "yusuf"
+    },
+    {
+      "id": "corsair-1",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [5, 3],
+      "facing": "east",
+      "name": "Corsair Hamid",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "corsair-2",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [2, 6],
+      "facing": "south",
+      "name": "Gunner Ilyas",
+      "stats": {
+        "str": 5,
+        "skl": 7,
+        "agi": 4
+      }
+    },
+    {
+      "id": "raider-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [10, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 5
+      }
+    },
+    {
+      "id": "raider-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [11, 8],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 5
+      }
+    },
+    {
+      "id": "raider-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [9, 7],
+      "facing": "west",
+      "ai": "defensive",
+      "name": "Militia Gunner",
+      "stats": {
+        "str": 4,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "knight-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [10, 8],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Knight of Provence",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 4
+      }
+    }
+  ]
+}

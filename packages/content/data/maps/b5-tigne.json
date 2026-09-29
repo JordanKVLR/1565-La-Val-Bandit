@@ -1,0 +1,44 @@
+{
+  "id": "b5-tigne",
+  "name": "Guns of Tigné",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~~~~~~~~~",
+    "~~~ssssss~~~",
+    "~~sppxpppss~",
+    "~spppppgppp~",
+    "~sp##pppgpps",
+    "~sp##ppggpps",
+    "~sppppppgpps",
+    "~~sppppgpppp",
+    "~~~sspppgppp",
+    "~~~~~sppgppp"
+  ],
+  "height": [
+    "000000000000",
+    "000111111000",
+    "001122211100",
+    "012223211110",
+    "012332221111",
+    "012332221111",
+    "012222221111",
+    "001222211111",
+    "000112221111",
+    "000001221111"
+  ]
+}

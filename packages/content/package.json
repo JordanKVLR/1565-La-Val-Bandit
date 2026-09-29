@@ -5,13 +5,19 @@
   "type": "module",
   "description": "Game data (terrain, maps, units, story) validated with zod schemas.",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./vite-plugin-ink": "./tools/vite-plugin-ink.ts",
+    "./story/*": "./story/*"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@m1565/core": "workspace:*",
+    "inkjs": "2.4.0",
     "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1"
   }
 }
