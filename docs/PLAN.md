@@ -3,7 +3,7 @@
 > Status: **Draft v2, decisions confirmed by owner** · Owner: Jordan · Last updated: 2026-09-29
 >
 > An original tactical RPG set during the Great Siege of Malta (May–September 1565),
-> inspired by the *gameplay* of the 1998 PS1 tactics genre (isometric height-map
+> inspired by the _gameplay_ of the 1998 PS1 tactics genre (isometric height-map
 > battles, action/fatigue economy, defender reactions, cinematic close-ups,
 > branching story). All story, characters, art, text, music and names are original.
 
@@ -11,20 +11,20 @@
 
 ## 0. Decisions locked in
 
-| # | Topic | Decision |
-|---|-------|----------|
-| 1 | Unit fantasy | **Armature everywhere.** Every combatant on the battlefield pilots an *Armatura*: a clockwork/spring-and-steam war-harness roughly 3–4 m tall. This is an alternate-history 1565 in which the machines have reshaped war. Ordinary troops appear only in story scenes and backdrops. |
-| 2 | Point of view | Protagonist is a **Maltese peasant with a hidden double royal lineage**: the secret son of Jean de Valette and an Ottoman concubine of royal blood (see §3.3). An **Ottoman side-story** is playable as a route. |
-| 3 | First build | **Vertical slice**: prologue plus **5 battles** (the last one is the first Ottoman side-story battle), every core system working, playable in a mobile browser. |
-| 4 | Stack | **TypeScript + Vite + Three.js**. Rules live in a separate headless package. **Capacitor** wraps the game for iOS/Android, **Electron + steamworks.js** for Steam. |
-| 5 | Visuals | **Same presentation style as the reference game:** 3D height-map terrain, 2D billboard character sprites, an isometric camera that rotates in 90° steps, a portrait dialogue box, a side-by-side combat forecast panel, and cinematic close-ups. All assets are original (§1). |
-| 6 | Art/audio | Placeholders for now, loaded through a manifest so final assets can drop in without code changes. |
-| 7 | Orientation | **Landscape only.** |
-| 8 | Languages | **English only.** Strings still go through a single i18n table (near-zero cost), so translation stays possible later. |
-| 9 | Business | **Free on all platforms. Ads come later** (§6.1), only at natural breaks, never during battles. No loot boxes. For now the code has an `AdsAdapter` stub only, with no ad SDKs and no data collection. |
-| 10 | Store accounts | None yet. They're needed at M8 (Apple Developer $99/yr, Google Play $25 one-off, Steamworks $100 per app). |
-| 11 | Title | **TBD.** The shortlist is in §11. Code uses a neutral package scope (`@m1565/*`) so a rename is cheap. |
-| 12 | Plan location | This file. It changes through normal commits. |
+| #   | Topic          | Decision                                                                                                                                                                                                                                                                             |
+| --- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Unit fantasy   | **Armature everywhere.** Every combatant on the battlefield pilots an _Armatura_: a clockwork/spring-and-steam war-harness roughly 3–4 m tall. This is an alternate-history 1565 in which the machines have reshaped war. Ordinary troops appear only in story scenes and backdrops. |
+| 2   | Point of view  | Protagonist is a **Maltese peasant with a hidden double royal lineage**: the secret son of Jean de Valette and an Ottoman concubine of royal blood (see §3.3). An **Ottoman side-story** is playable as a route.                                                                     |
+| 3   | First build    | **Vertical slice**: prologue plus **5 battles** (the last one is the first Ottoman side-story battle), every core system working, playable in a mobile browser.                                                                                                                      |
+| 4   | Stack          | **TypeScript + Vite + Three.js**. Rules live in a separate headless package. **Capacitor** wraps the game for iOS/Android, **Electron + steamworks.js** for Steam.                                                                                                                   |
+| 5   | Visuals        | **Same presentation style as the reference game:** 3D height-map terrain, 2D billboard character sprites, an isometric camera that rotates in 90° steps, a portrait dialogue box, a side-by-side combat forecast panel, and cinematic close-ups. All assets are original (§1).       |
+| 6   | Art/audio      | Placeholders for now, loaded through a manifest so final assets can drop in without code changes.                                                                                                                                                                                    |
+| 7   | Orientation    | **Landscape only.**                                                                                                                                                                                                                                                                  |
+| 8   | Languages      | **English only.** Strings still go through a single i18n table (near-zero cost), so translation stays possible later.                                                                                                                                                                |
+| 9   | Business       | **Free on all platforms. Ads come later** (§6.1), only at natural breaks, never during battles. No loot boxes. For now the code has an `AdsAdapter` stub only, with no ad SDKs and no data collection.                                                                               |
+| 10  | Store accounts | None yet. They're needed at M8 (Apple Developer $99/yr, Google Play $25 one-off, Steamworks $100 per app).                                                                                                                                                                           |
+| 11  | Title          | **TBD.** The shortlist is in §11. Code uses a neutral package scope (`@m1565/*`) so a rename is cheap.                                                                                                                                                                               |
+| 12  | Plan location  | This file. It changes through normal commits.                                                                                                                                                                                                                                        |
 
 ---
 
@@ -32,7 +32,7 @@
 
 The game borrows **mechanics and genre conventions**, which are not protected: grid tactics, action points, reaction choice, height bonuses. It must **not** borrow expression:
 no character names, portraits, sprites, maps, dialogue, music, UI art, logos or mech designs
-from any existing game. Reference screenshots are for *mood and layout study only* and are
+from any existing game. Reference screenshots are for _mood and layout study only_ and are
 never committed to the repo. Every third-party asset needs a licence entry in
 `assets/CREDITS.md`, or CI fails. This also protects store approval (Apple 4.1 "Copycats",
 Steam content review).
@@ -60,6 +60,7 @@ ARM (armour), MOV (tiles), plus weapon and gear.
 queue on the HUD.
 
 **Action Points (AP):**
+
 - A unit gains **+40 AP** at the start of its turn (cap 100). Unspent AP carries over, so
   waiting is a real choice.
 - Moving costs AP per tile by terrain: Road 3 · Plain 4 · Field/Scrub 5 · Rubble 8 ·
@@ -68,22 +69,24 @@ queue on the HUD.
 - Reactions cost AP too (see below), so an exhausted unit is vulnerable.
 
 **Fatigue Points (FP):**
+
 - Every attack adds fatigue (weapon-dependent, +10 to +25), and so do reactions (Avoid +10,
   Counter = weapon fatigue).
-- FP ≥ 50 (*Tired*): −10% hit and −10% evade. FP 100 (*Spent*): the unit must rest
+- FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100 (_Spent_): the unit must rest
   next turn.
 - FP recovers 15 per turn, or 35 if the unit ends its turn with **Rest** (no action).
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction | AP cost | Effect |
-|----------|---------|--------|
-| **Defend** | 0 | Always hit, damage ×0.5 |
-| **Avoid** | 10 | Roll to evade; if hit, full damage |
+| Reaction    | AP cost   | Effect                                                              |
+| ----------- | --------- | ------------------------------------------------------------------- |
+| **Defend**  | 0         | Always hit, damage ×0.5                                             |
+| **Avoid**   | 10        | Roll to evade; if hit, full damage                                  |
 | **Counter** | weapon AP | Take the hit at full damage, then strike back if alive and in range |
 
 **Hit chance** = clamp(5, 95):
 `weapon.acc + SKL×2 − target.AGI×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties`
+
 - Facing bonus: front 0, side +10, rear +25. Rear hits also deal ×1.25 damage.
 - **Assist:** +5% for each ally adjacent to the target and able to act, up to +15%.
 
@@ -103,18 +106,19 @@ deterministic given the RNG seed.
 ### 2.3 Units — all Armature
 
 Every combatant is a **pilot + Armatura** pair, as in the reference game.
+
 - **Pilot:** has a level, growth stats (STR/SKL/AGI), skills, affinity and a portrait.
 - **Frame:** sets base HP/ARM/MOV, weight class, weapon types and 2 gear slots.
 - Pilots can switch frames between battles (the Prep screen), within their faction's
   unlocked frames.
 
-| Side | Frames (weight · role) |
-|------|------------------------|
-| Order of St John | *Cavaliere* (medium · sword/shield, all-rounder), *Bastiun* (heavy · tower shield, high ARM), *Lanza* (medium · reach 2), *Kaptan* (medium · command aura boosts assist) |
-| Maltese militia | *Ħaddiem* (light · cheap, fast repair), *Moschetta* (light · arquebus, range 3–5), *Artiġjan* (light · repairs allies) |
-| Ottoman army | *Yeniçeri* (medium · balanced, tüfek), *Sipahi* (light · high MOV, lance), *Humbaracı* (medium · grenade arc over walls) |
-| Corsair fleet | *Levend* (light · skirmisher, boarding hooks), *Reis* (medium · command, cutlass) |
-| Scala (villain) | *Prototipo* series: experimental, unstable (they may overheat), powerful |
+| Side             | Frames (weight · role)                                                                                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Order of St John | _Cavaliere_ (medium · sword/shield, all-rounder), _Bastiun_ (heavy · tower shield, high ARM), _Lanza_ (medium · reach 2), _Kaptan_ (medium · command aura boosts assist) |
+| Maltese militia  | _Ħaddiem_ (light · cheap, fast repair), _Moschetta_ (light · arquebus, range 3–5), _Artiġjan_ (light · repairs allies)                                                   |
+| Ottoman army     | _Yeniçeri_ (medium · balanced, tüfek), _Sipahi_ (light · high MOV, lance), _Humbaracı_ (medium · grenade arc over walls)                                                 |
+| Corsair fleet    | _Levend_ (light · skirmisher, boarding hooks), _Reis_ (medium · command, cutlass)                                                                                        |
+| Scala (villain)  | _Prototipo_ series: experimental, unstable (they may overheat), powerful                                                                                                 |
 
 Siege cannon, walls, gates, powder stores and boats appear on maps as **objects** (they can
 be destroyed or captured, and they block or give cover), not as units.
@@ -134,22 +138,22 @@ skippable on tap.
 ### 2.5 Progression
 
 - XP from actions; level ups raise stats along a growth curve per frame.
-- Skills unlock at levels (e.g. *Shield Wall*, *Grenado*, *Harquebus Volley*, *Rally*).
-- Equipment shop between chapters, using *scudi* (currency).
+- Skills unlock at levels (e.g. _Shield Wall_, _Grenado_, _Harquebus Volley_, _Rally_).
+- Equipment shop between chapters, using _scudi_ (currency).
 - **Affinity:** hidden relationship values with 5 key characters, changed by dialogue
   choices and battle events (assists, rescues). They gate scenes, recruitable allies and
   route branches.
 
 ### 2.6 Controls
 
-| Input | Action |
-|-------|--------|
-| Tap | select / confirm |
-| Drag | pan |
-| Pinch | zoom |
-| Two-finger twist or ⟲ button | rotate 90° |
-| Long-press | unit/terrain info |
-| Undo button | undo movement before acting |
+| Input                        | Action                      |
+| ---------------------------- | --------------------------- |
+| Tap                          | select / confirm            |
+| Drag                         | pan                         |
+| Pinch                        | zoom                        |
+| Two-finger twist or ⟲ button | rotate 90°                  |
+| Long-press                   | unit/terrain info           |
+| Undo button                  | undo movement before acting |
 
 Mouse/keyboard and gamepad (Steam Deck) map to the same abstract input actions.
 
@@ -174,22 +178,22 @@ and close-up toggles, full remappable controls on PC, no time pressure.
 
 ### 3.2 Setting & timeline anchors (to verify)
 
-| Date (1565) | Event | Game use |
-|-------------|-------|----------|
-| 18 May | Ottoman fleet sighted; landing at Marsaxlokk | Prologue |
-| late May | Wells at Marsa poisoned by defenders; Ottoman camp at Marsa | Ch. 1 |
-| 24 May–23 Jun | Siege and fall of Fort St Elmo; Turgut Reis mortally wounded | Act I climax |
-| early Jul | *Piccolo Soccorso* reinforcements slip into Birgu | Act II opener |
-| 15 Jul | Assault on Senglea (incl. boat attack on the palisade) | Act II |
-| 7 Aug | Great assault; Mdina cavalry raid on the Marsa camp forces a withdrawal | Route branch climax |
-| Aug | Mines and siege tower at Birgu/Castile bastion | Act III |
-| 7–8 Sep | *Gran Soccorso* lands at Mellieħa; siege lifted (8 Sep, *Il-Vittorja*) | Finale |
+| Date (1565)   | Event                                                                   | Game use            |
+| ------------- | ----------------------------------------------------------------------- | ------------------- |
+| 18 May        | Ottoman fleet sighted; landing at Marsaxlokk                            | Prologue            |
+| late May      | Wells at Marsa poisoned by defenders; Ottoman camp at Marsa             | Ch. 1               |
+| 24 May–23 Jun | Siege and fall of Fort St Elmo; Turgut Reis mortally wounded            | Act I climax        |
+| early Jul     | _Piccolo Soccorso_ reinforcements slip into Birgu                       | Act II opener       |
+| 15 Jul        | Assault on Senglea (incl. boat attack on the palisade)                  | Act II              |
+| 7 Aug         | Great assault; Mdina cavalry raid on the Marsa camp forces a withdrawal | Route branch climax |
+| Aug           | Mines and siege tower at Birgu/Castile bastion                          | Act III             |
+| 7–8 Sep       | _Gran Soccorso_ lands at Mellieħa; siege lifted (8 Sep, _Il-Vittorja_)  | Finale              |
 
 ### 3.3 Cast & backstory (story bible draft)
 
 **The secret** (revealed across Act I):
 In 1541 the young knight Jean de Valette was captured at sea and served about a year as an
-Ottoman galley slave *(historical, verify details)*. **Fictional addition:** while in
+Ottoman galley slave _(historical, verify details)_. **Fictional addition:** while in
 captivity he met **Leyla Hatun**, a concubine in a corsair captain's household. She
 secretly claims descent from **Şehzade Cem**, the Ottoman prince who was himself once a
 captive of the Knights of St John. Their son was born in 1542, after Valette was ransomed.
@@ -199,6 +203,7 @@ half of a broken medallion bearing the Order's cross on one face and Cem's tughr
 seal on the other.
 
 **Main cast**
+
 - **Ninu Falzon** (23) — the protagonist, raised as a peasant farmer and fisherman in
   Żejtun. Proud, quick-tempered and desperate to prove himself. He doesn't know his parentage. He carries the half-medallion
   without understanding it, and he bonds unusually well with a salvaged Armatura.
@@ -246,17 +251,17 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
 
 ### 3.5 Vertical slice content (5 battles)
 
-| # | Scene / battle | Teaches |
-|---|----------------|---------|
-| P0 | Story: Żejtun hilltop at dawn. Ninu argues with Pawlu about joining the militia; sails appear off Marsaxlokk (18 May) | dialogue, choices |
-| B1 | **Shore of Marsaxlokk** — Ninu's militia Ħaddiem screen fleeing villagers | move, attack, terrain label |
-| P1 | Story: Pawlu is taken; Kateri's workshop; the salvaged Armatura wakes for Ninu | party, frames, loadout |
-| B2 | **Wells of Marsa** — hold the wells while engineers work | reactions (Defend/Avoid/Counter), AP/FP, hold-N-turns |
-| B3 | **Sciberras Ridge** — Fra Luis leads a scouting sortie against the gun lines | height, facing, assist |
-| B4 | **Night Crossing to St Elmo** — escort boats across the harbour under fire | escort objective, close-ups |
-| P2 | Story: Valette sees the half-medallion and says nothing. Switch perspective → | — |
-| B5 | **Guns of Tigné** *(Ottoman side-story)* — as Deniz, protect Turgut Reis's new battery from a Maltese raid | playing the other side, protect-object objective |
-| P3 | Story: across the harbour, Leyla holds the other half of the medallion. "To be continued" | branching flags / save |
+| #   | Scene / battle                                                                                                        | Teaches                                               |
+| --- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| P0  | Story: Żejtun hilltop at dawn. Ninu argues with Pawlu about joining the militia; sails appear off Marsaxlokk (18 May) | dialogue, choices                                     |
+| B1  | **Shore of Marsaxlokk** — Ninu's militia Ħaddiem screen fleeing villagers                                             | move, attack, terrain label                           |
+| P1  | Story: Pawlu is taken; Kateri's workshop; the salvaged Armatura wakes for Ninu                                        | party, frames, loadout                                |
+| B2  | **Wells of Marsa** — hold the wells while engineers work                                                              | reactions (Defend/Avoid/Counter), AP/FP, hold-N-turns |
+| B3  | **Sciberras Ridge** — Fra Luis leads a scouting sortie against the gun lines                                          | height, facing, assist                                |
+| B4  | **Night Crossing to St Elmo** — escort boats across the harbour under fire                                            | escort objective, close-ups                           |
+| P2  | Story: Valette sees the half-medallion and says nothing. Switch perspective →                                         | —                                                     |
+| B5  | **Guns of Tigné** _(Ottoman side-story)_ — as Deniz, protect Turgut Reis's new battery from a Maltese raid            | playing the other side, protect-object objective      |
+| P3  | Story: across the harbour, Leyla holds the other half of the medallion. "To be continued"                             | branching flags / save                                |
 
 ---
 
@@ -272,7 +277,7 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
   printed-page / illuminated look (blackletter headings, parchment panels).
   Portrait dialogue box at the bottom.
 - **Audio:** Howler.js; music layers (calm/tense/battle); SFX bus; volume sliders. Styled
-  on Mediterranean renaissance and Ottoman *mehter* instrumentation (commission later).
+  on Mediterranean renaissance and Ottoman _mehter_ instrumentation (commission later).
 - **Placeholders:** coloured prisms plus generated label sprites, silhouette portraits,
   CC0 SFX. All referenced by ID through `assets/manifest.json`.
 
@@ -282,28 +287,28 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
 
 ### 5.1 Stack
 
-| Concern | Choice | Why |
-|---------|--------|-----|
-| Language | TypeScript (strict) | One language everywhere, and type safety for rules/data |
-| Package mgr / monorepo | pnpm workspaces | Fast, strict, simple |
-| Bundler / dev server | Vite | Fast HMR, first-class PWA plugin |
-| 3D rendering | Three.js | Mature, small, excellent mobile WebGL2 support |
-| UI overlay | Preact + @preact/signals | Tiny (~4 KB); components for menus/HUD/dialogue |
-| Rules | `@m1565/core`: pure TS, no DOM | Headless tests, AI sims, reusable anywhere |
-| Data validation | Zod schemas | Content errors caught at build time |
-| Branching dialogue | **Ink** (inkjs) | Industry standard; writers use the free Inky editor |
-| Maps | **Tiled** (.tmj) → importer → JSON | Standard editor; layers for height/terrain/spawns/triggers |
-| Audio | Howler.js | Handles mobile audio unlock quirks |
-| i18n | i18next (+ Ink string tables) | Standard, plural/format support |
-| Storage | Platform adapter (IndexedDB / Capacitor Filesystem / Electron fs + Steam Cloud) | One API, per-platform backends |
-| PWA | vite-plugin-pwa (Workbox) | Offline play, installable |
-| Mobile stores | Capacitor 7 | Wraps the same web build; native plugins for purchases/haptics |
-| Steam | Electron + steamworks.js | Achievements, cloud saves, overlay; Steam Deck |
-| Unit tests | Vitest | Fast; shares Vite config |
-| E2E / visual | Playwright (mobile viewports, screenshots) | Real browser checks in CI |
-| Lint/format | ESLint (typescript-eslint) + Prettier | Standard |
-| CI/CD | GitHub Actions | Test, build, deploy web preview per PR |
-| Web hosting | GitHub Pages (upgrade path to Cloudflare Pages / itch.io) | Free, automatic |
+| Concern                | Choice                                                                          | Why                                                            |
+| ---------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Language               | TypeScript (strict)                                                             | One language everywhere, and type safety for rules/data        |
+| Package mgr / monorepo | pnpm workspaces                                                                 | Fast, strict, simple                                           |
+| Bundler / dev server   | Vite                                                                            | Fast HMR, first-class PWA plugin                               |
+| 3D rendering           | Three.js                                                                        | Mature, small, excellent mobile WebGL2 support                 |
+| UI overlay             | Preact + @preact/signals                                                        | Tiny (~4 KB); components for menus/HUD/dialogue                |
+| Rules                  | `@m1565/core`: pure TS, no DOM                                                  | Headless tests, AI sims, reusable anywhere                     |
+| Data validation        | Zod schemas                                                                     | Content errors caught at build time                            |
+| Branching dialogue     | **Ink** (inkjs)                                                                 | Industry standard; writers use the free Inky editor            |
+| Maps                   | **Tiled** (.tmj) → importer → JSON                                              | Standard editor; layers for height/terrain/spawns/triggers     |
+| Audio                  | Howler.js                                                                       | Handles mobile audio unlock quirks                             |
+| i18n                   | i18next (+ Ink string tables)                                                   | Standard, plural/format support                                |
+| Storage                | Platform adapter (IndexedDB / Capacitor Filesystem / Electron fs + Steam Cloud) | One API, per-platform backends                                 |
+| PWA                    | vite-plugin-pwa (Workbox)                                                       | Offline play, installable                                      |
+| Mobile stores          | Capacitor 7                                                                     | Wraps the same web build; native plugins for purchases/haptics |
+| Steam                  | Electron + steamworks.js                                                        | Achievements, cloud saves, overlay; Steam Deck                 |
+| Unit tests             | Vitest                                                                          | Fast; shares Vite config                                       |
+| E2E / visual           | Playwright (mobile viewports, screenshots)                                      | Real browser checks in CI                                      |
+| Lint/format            | ESLint (typescript-eslint) + Prettier                                           | Standard                                                       |
+| CI/CD                  | GitHub Actions                                                                  | Test, build, deploy web preview per PR                         |
+| Web hosting            | GitHub Pages (upgrade path to Cloudflare Pages / itch.io)                       | Free, automatic                                                |
 
 ### 5.2 Repository layout
 
@@ -338,7 +343,7 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
   directly.
 - **Commands → events:** the UI/AI send commands (`Move`, `Attack`, `React`, `Rest`,
   `EndTurn`). The reducer validates them and emits events (`UnitMoved`, `AttackResolved{hit,
-  dmg, reaction}` …). The renderer only **plays events**, so the logic never waits on
+dmg, reaction}` …). The renderer only **plays events**, so the logic never waits on
   animation.
 - **Deterministic seeded RNG** stored in the state. That enables replays, reproducible bug
   reports, and undo-before-commit.
@@ -374,11 +379,11 @@ runs nightly.
 
 ## 6. Platform & release
 
-| Platform | Packaging | Notes |
-|----------|-----------|-------|
-| Web / PWA | Vite build → GitHub Pages | Manifest `orientation: landscape`; offline cache; "rotate your phone" overlay in portrait |
-| Android | Capacitor → AAB | Play Console, target current API level; AdMob later |
-| iOS | Capacitor → Xcode archive | Needs macOS: GitHub macOS runner or Codemagic; AdMob plus App Tracking Transparency prompt later |
+| Platform                | Packaging                   | Notes                                                                                                                                           |
+| ----------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Web / PWA               | Vite build → GitHub Pages   | Manifest `orientation: landscape`; offline cache; "rotate your phone" overlay in portrait                                                       |
+| Android                 | Capacitor → AAB             | Play Console, target current API level; AdMob later                                                                                             |
+| iOS                     | Capacitor → Xcode archive   | Needs macOS: GitHub macOS runner or Codemagic; AdMob plus App Tracking Transparency prompt later                                                |
 | Steam (Win/macOS/Linux) | Electron + electron-builder | steamworks.js: achievements, cloud saves; Steam Deck Verified checklist (gamepad, 1280×800, on-screen keyboard). **Likely ad-free** (see below) |
 
 ### 6.1 Free + ads plan (implemented later, designed now)
@@ -387,7 +392,7 @@ runs nightly.
   `ads.maybeShowInterstitial('chapter_end')` at defined break points. There are no SDKs
   and no tracking.
 - **Placements:** an interstitial between chapters (at most one every ~15 minutes), and
-  optional **rewarded** ads (e.g. bonus *scudi* or a free retry). Never during a battle or
+  optional **rewarded** ads (e.g. bonus _scudi_ or a free retry). Never during a battle or
   a story scene, and never forced before gameplay.
 - **Mobile:** Google AdMob via a Capacitor plugin, with Google UMP consent (GDPR/UK),
   Apple ATT on iOS, and a matching privacy policy and store data-safety forms.
@@ -408,18 +413,18 @@ support contact, and licence audit of `CREDITS.md`.
 
 Each milestone ends with a playable build on the web preview, and CI green.
 
-| M | Name | Deliverables | Exit criteria |
-|---|------|--------------|---------------|
-| **M0** | Foundations | Monorepo, TS/ESLint/Prettier, Vitest, Playwright, CI, PWA shell deployed, CLAUDE.md contributor guide | "Hello Malta" PWA installs on a phone |
-| **M1** | Rules core | Grid, terrain, pathfinding, AP/FP/HP, reactions, hit/damage, turn order, victory checks, AI v1, save/load | Headless AI-vs-AI battle completes; ≥90% coverage |
-| **M2** | Battle renderer | Terrain mesh, billboards, camera (pan/zoom/rotate), tile highlights, touch input | Move a unit by touch on a phone at 60 fps |
-| **M3** | Battle UX | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results | Full battle playable vs AI with placeholders |
-| **M4** | Story engine | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus | Prologue scene plays into B1 and saves/resumes |
-| **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | External playtest link; feedback round |
-| M6 | Progression | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning | Act I fully playable |
-| M7 | Campaign | Routes A/B/C, endings, NG+ | Content complete |
-| M8 | Platform shells | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves | Internal test tracks: Play internal, TestFlight, Steam beta branch |
-| M9 | Polish & launch | Final art/audio integration, localization, accessibility pass, performance pass, store assets | Store submissions |
+| M      | Name               | Deliverables                                                                                                                       | Exit criteria                                                      |
+| ------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **M0** | Foundations        | Monorepo, TS/ESLint/Prettier, Vitest, Playwright, CI, PWA shell deployed, CLAUDE.md contributor guide                              | "Hello Malta" PWA installs on a phone                              |
+| **M1** | Rules core         | Grid, terrain, pathfinding, AP/FP/HP, reactions, hit/damage, turn order, victory checks, AI v1, save/load                          | Headless AI-vs-AI battle completes; ≥90% coverage                  |
+| **M2** | Battle renderer    | Terrain mesh, billboards, camera (pan/zoom/rotate), tile highlights, touch input                                                   | Move a unit by touch on a phone at 60 fps                          |
+| **M3** | Battle UX          | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results                                | Full battle playable vs AI with placeholders                       |
+| **M4** | Story engine       | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus                     | Prologue scene plays into B1 and saves/resumes                     |
+| **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | External playtest link; feedback round                             |
+| M6     | Progression        | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning                                                | Act I fully playable                                               |
+| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | Content complete                                                   |
+| M8     | Platform shells    | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves                                                    | Internal test tracks: Play internal, TestFlight, Steam beta branch |
+| M9     | Polish & launch    | Final art/audio integration, localization, accessibility pass, performance pass, store assets                                      | Store submissions                                                  |
 
 M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest data.
 
@@ -439,16 +444,16 @@ M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest 
 
 ## 9. Risks & mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Final art cost/time (portraits, sprites, backdrops) | High | Placeholder-first pipeline; fixed sprite spec (size, frames, facings) so an artist or AI-assisted workflow can drop assets in; budget decision at M5 |
-| iOS builds need macOS | Med | Hosted macOS CI (GitHub/Codemagic) |
-| Mobile WebGL performance variance | Med | Budgets above, render-on-demand, quality presets, early device testing at M2 |
-| Historical/cultural accuracy | Med | Source list in `docs/history.md`; review by a Maltese history enthusiast before content lock |
-| Scope creep (36 battles) | High | Slice-first; each route is a separately shippable content pack |
-| Ad SDKs add privacy/consent obligations and can hurt the experience | Med | Adapter stub until M8; consent flow; strict placement rules (§6.1) |
-| Store rejection for similarity to an existing game | Med | §1 originality policy; original names/art/UI |
-| Save compatibility across updates | Med | Versioned saves + migration tests |
+| Risk                                                                | Impact | Mitigation                                                                                                                                           |
+| ------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Final art cost/time (portraits, sprites, backdrops)                 | High   | Placeholder-first pipeline; fixed sprite spec (size, frames, facings) so an artist or AI-assisted workflow can drop assets in; budget decision at M5 |
+| iOS builds need macOS                                               | Med    | Hosted macOS CI (GitHub/Codemagic)                                                                                                                   |
+| Mobile WebGL performance variance                                   | Med    | Budgets above, render-on-demand, quality presets, early device testing at M2                                                                         |
+| Historical/cultural accuracy                                        | Med    | Source list in `docs/history.md`; review by a Maltese history enthusiast before content lock                                                         |
+| Scope creep (36 battles)                                            | High   | Slice-first; each route is a separately shippable content pack                                                                                       |
+| Ad SDKs add privacy/consent obligations and can hurt the experience | Med    | Adapter stub until M8; consent flow; strict placement rules (§6.1)                                                                                   |
+| Store rejection for similarity to an existing game                  | Med    | §1 originality policy; original names/art/UI                                                                                                         |
+| Save compatibility across updates                                   | Med    | Versioned saves + migration tests                                                                                                                    |
 
 ---
 
@@ -461,15 +466,15 @@ M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest 
 
 ## 11. Title shortlist
 
-| Title | Angle |
-|-------|-------|
-| **Blood of Two Banners: Malta 1565** | Ninu's double lineage; cross and crescent |
-| **The Grand Master's Son** | The central secret. Strong hook, spoiler-light |
-| **Half-Moon & Cross** | The broken medallion |
-| **Heir of the Siege** | Simple, searchable |
-| **Il-Bastard: 1565** | Maltese flavour; blunt (might trouble store rating filters) |
-| **Armatura: The Great Siege** | Leads with the mechs and the genre |
-| **Sons of St Elmo** | Brotherhood, the Ninu/Deniz half-brothers |
-| **1565: The Broken Medallion** | Mystery-led |
+| Title                                | Angle                                                       |
+| ------------------------------------ | ----------------------------------------------------------- |
+| **Blood of Two Banners: Malta 1565** | Ninu's double lineage; cross and crescent                   |
+| **The Grand Master's Son**           | The central secret. Strong hook, spoiler-light              |
+| **Half-Moon & Cross**                | The broken medallion                                        |
+| **Heir of the Siege**                | Simple, searchable                                          |
+| **Il-Bastard: 1565**                 | Maltese flavour; blunt (might trouble store rating filters) |
+| **Armatura: The Great Siege**        | Leads with the mechs and the genre                          |
+| **Sons of St Elmo**                  | Brotherhood, the Ninu/Deniz half-brothers                   |
+| **1565: The Broken Medallion**       | Mystery-led                                                 |
 
 Recommendation: **Blood of Two Banners: Malta 1565**.

@@ -1,0 +1,17 @@
+{
+  "name": "@m1565/content",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Game data (terrain, maps, units, story) validated with zod schemas.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@m1565/core": "workspace:*",
+    "zod": "^4.6.5"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@m1565/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless, deterministic rules engine. No DOM, no rendering.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

@@ -1,0 +1,139 @@
+:root {
+  --ink: #1b1410;
+  --parchment: #efe3c6;
+  --parchment-dark: #d6c39a;
+  --gold: #c9a45c;
+  --blood: #8e2a22;
+  --panel: rgba(27, 20, 16, 0.82);
+  --font-display: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: var(--font-display);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: none;
+}
+
+.btn {
+  font: inherit;
+  font-size: 1.1rem;
+  color: var(--parchment);
+  background: linear-gradient(#5a2019, var(--blood));
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  padding: 0.5em 1.6em;
+  min-height: 44px;
+  cursor: pointer;
+}
+.btn:active {
+  transform: translateY(1px);
+  filter: brightness(1.15);
+}
+.btn.icon {
+  padding: 0;
+  width: 44px;
+  font-size: 1.3rem;
+  background: var(--panel);
+}
+
+.title-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: radial-gradient(circle at 50% 40%, #4a3322 0%, var(--ink) 70%);
+}
+.title-screen h1 {
+  font-size: clamp(3rem, 14vh, 7rem);
+  margin: 0;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-shadow: 0 3px 0 #000;
+}
+.subtitle {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  font-variant: small-caps;
+  letter-spacing: 0.08em;
+}
+.build-note {
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+.battle-screen {
+  position: relative;
+  height: 100%;
+}
+.battle-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.map-name {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  padding: 0.3em 0.9em;
+  background: var(--panel);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  font-variant: small-caps;
+}
+.hud-controls {
+  position: absolute;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  display: flex;
+  gap: 8px;
+}
+/* Bottom-left terrain readout, e.g. "1H 5% Plain". */
+.terrain-label {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  padding: 0.25em 1.1em;
+  background: #000;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+}
+
+.rotate-overlay {
+  display: none;
+}
+@media (orientation: portrait) and (max-width: 900px) {
+  .rotate-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    text-align: center;
+    padding: 2rem;
+  }
+  .rotate-icon {
+    font-size: 4rem;
+    color: var(--gold);
+  }
+}

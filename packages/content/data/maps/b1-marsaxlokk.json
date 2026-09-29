@@ -1,0 +1,39 @@
+{
+  "id": "b1-marsaxlokk",
+  "name": "Shore of Marsaxlokk",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart"
+  },
+  "terrain": [
+    "~~~~~~~~~~~~",
+    "~~~~~www~~~~",
+    "~~wwwsssww~~",
+    "wwsssspppsww",
+    "sssspppprpss",
+    "spppfffprppg",
+    "ppffffppr#pg",
+    "pfffxppprrgg",
+    "ggfppppgggrg",
+    "ggggpgggggrg"
+  ],
+  "height": [
+    "000000000000",
+    "000000000000",
+    "000000000000",
+    "000000000000",
+    "000001111000",
+    "011111111110",
+    "111122111311",
+    "112222211222",
+    "222222223322",
+    "233332333323"
+  ]
+}
