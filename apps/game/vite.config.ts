@@ -4,12 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 // BASE_PATH lets the same build serve from a sub-path (GitHub Pages: /<repo>/) or from root.
 const base = process.env.BASE_PATH ?? '/';
+// Single-file preview build (no service worker) for sharing as a claude.ai page.
+const singleFile = process.env.SINGLE_FILE === '1';
 
 export default defineConfig({
   base,
   plugins: [
     preact(),
     VitePWA({
+      disable: singleFile,
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
       manifest: {
@@ -30,5 +33,9 @@ export default defineConfig({
       },
     }),
   ],
-  build: { target: 'es2022', chunkSizeWarningLimit: 800 },
+  build: {
+    target: 'es2022',
+    chunkSizeWarningLimit: 800,
+    ...(singleFile && { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER }),
+  },
 });
