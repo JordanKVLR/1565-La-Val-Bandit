@@ -5,3 +5,7 @@ dev-dist
 test-results
 playwright-report
 dist-single
+dist-native
+apps/game/android
+apps/game/ios
+apps/desktop/release

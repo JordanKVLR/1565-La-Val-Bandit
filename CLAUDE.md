@@ -8,9 +8,22 @@ Tactical RPG set during the Great Siege of Malta, 1565. The design and roadmap l
 - `packages/core`: the rules engine. Pure TypeScript and deterministic (seeded RNG in state).
   **No DOM, Three.js or Preact imports**; ESLint enforces this.
 - `packages/content`: game data (JSON) plus zod schemas and loaders. Content is data, not code.
+- `packages/content/story`: the Ink master script. `>>> command` lines drive the game (see the
+  header of `main.ink`). Lines written `NAME: text` are dialogue; NAME must be in `data/cast.json`.
 - `apps/game`: the Vite web client. `render/` is Three.js (it draws events and never decides
-  rules), `ui/` is Preact screens and HUD, `platform/` holds adapters (ads, storage, later
-  purchases/Steam).
+  rules), `scenes/` holds the battle controller, `campaign/` the story/battle session and saves,
+  `ui/` the Preact screens and HUD, `platform/` the adapters (storage, audio, ads, achievements).
+  `android/` and `ios/` are Capacitor projects.
+- `apps/desktop`: Electron shell for Steam.
+
+## Adding content
+
+- New battle: add `data/maps/<id>.json` (optional, maps can be shared) and
+  `data/battles/<id>.json`, then reference it from the story with `>>> battle <id>`. Files are
+  picked up automatically. Named characters use `character`; give them the level they should have
+  reached at that point in the story.
+- The content tests check every story line for unknown battles, maps, cast and commands, play each
+  route to its ending, and simulate every battle AI-vs-AI (it must be winnable).
 
 ## Commands
 
@@ -21,6 +34,9 @@ pnpm check        # format, lint, typecheck, unit tests, build: run before every
 pnpm e2e          # Playwright smoke tests (phone landscape + Steam Deck viewports)
 pnpm coverage     # core must stay ≥90% lines
 pnpm --filter @m1565/game icons   # regenerate PNG icons from icons/icon.svg
+pnpm --filter @m1565/game cap:sync         # native build + copy into android/ and ios/
+pnpm --filter @m1565/game build:single     # one-file HTML build for quick sharing
+open http://localhost:5173/?battle=<id>    # jump straight into any battle
 ```
 
 ## Rules

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Armatura 1565</string>
+    <string name="title_activity_main">Armatura 1565</string>
+    <string name="package_name">com.armatura1565.game</string>
+    <string name="custom_url_scheme">com.armatura1565.game</string>
+</resources>

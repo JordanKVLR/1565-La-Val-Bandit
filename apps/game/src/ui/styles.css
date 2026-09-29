@@ -1053,3 +1053,23 @@ input[type='range'] {
 .objective .lose {
   opacity: 0.7;
 }
+
+.help dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+.help dt {
+  color: var(--gold);
+  font-variant: small-caps;
+}
+.help dd {
+  margin: 0;
+}
+@media (max-width: 560px) {
+  .help dl {
+    grid-template-columns: 1fr;
+  }
+}

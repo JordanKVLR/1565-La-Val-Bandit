@@ -4,9 +4,11 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // BASE_PATH lets the same build serve from a sub-path (GitHub Pages: /<repo>/) or from root.
-const base = process.env.BASE_PATH ?? '/';
 // Single-file preview build (no service worker) for sharing as a claude.ai page.
 const singleFile = process.env.SINGLE_FILE === '1';
+// Native build for Capacitor (Android/iOS) and Electron (Steam): relative paths, no service worker.
+const native = process.env.TARGET === 'native';
+const base = native ? './' : (process.env.BASE_PATH ?? '/');
 
 export default defineConfig({
   base,
@@ -14,7 +16,7 @@ export default defineConfig({
     inkPlugin(),
     preact(),
     VitePWA({
-      disable: singleFile,
+      disable: singleFile || native,
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
       manifest: {
@@ -39,5 +41,6 @@ export default defineConfig({
     target: 'es2022',
     chunkSizeWarningLimit: 800,
     ...(singleFile && { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER }),
+    ...(native && { outDir: 'dist-native' }),
   },
 });

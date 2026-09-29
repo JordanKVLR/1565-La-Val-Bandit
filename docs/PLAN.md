@@ -417,20 +417,20 @@ support contact, and licence audit of `CREDITS.md`.
 
 Each milestone ends with a playable build on the web preview, and CI green.
 
-| M      | Name               | Deliverables                                                                                                                       | Exit criteria                                                      |
-| ------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **M0** | Foundations        | Monorepo, TS/ESLint/Prettier, Vitest, Playwright, CI, PWA shell deployed, CLAUDE.md contributor guide                              | ✅ Done 2026-09-29                                                 |
-| **M1** | Rules core         | Grid, terrain, pathfinding, AP/FP/HP, reactions, hit/damage, turn order, victory checks, AI v1, save/load                          | ✅ Done 2026-09-29 (97% line coverage; 30-seed AI-vs-AI sim)       |
-| **M2** | Battle renderer    | Terrain mesh, billboards, camera (pan/zoom/rotate), tile highlights, touch input                                                   | Move a unit by touch on a phone at 60 fps                          |
-| **M3** | Battle UX          | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results                                | Full battle playable vs AI with placeholders                       |
-| **M4** | Story engine       | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus                     | Prologue scene plays into B1 and saves/resumes                     |
-| **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | External playtest link; feedback round                             |
-| M6     | Progression        | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning                                                | Act I fully playable                                               |
-| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | Content complete                                                   |
-| M8     | Platform shells    | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves                                                    | Internal test tracks: Play internal, TestFlight, Steam beta branch |
-| M9     | Polish & launch    | Final art/audio integration, localization, accessibility pass, performance pass, store assets                                      | Store submissions                                                  |
+| M      | Name               | Deliverables                                                                                                                       | Exit criteria                                                                                          |
+| ------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **M0** | Foundations        | Monorepo, TS/ESLint/Prettier, Vitest, Playwright, CI, PWA shell deployed, CLAUDE.md contributor guide                              | ✅ Done 2026-09-29                                                                                     |
+| **M1** | Rules core         | Grid, terrain, pathfinding, AP/FP/HP, reactions, hit/damage, turn order, victory checks, AI v1, save/load                          | ✅ Done 2026-09-29 (97% line coverage; 30-seed AI-vs-AI sim)                                           |
+| **M2** | Battle renderer    | Terrain mesh, billboards, camera (pan/zoom/rotate), tile highlights, touch input                                                   | ✅ Done                                                                                                |
+| **M3** | Battle UX          | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results                                | ✅ Done                                                                                                |
+| **M4** | Story engine       | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus                     | ✅ Done                                                                                                |
+| **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | ✅ Done                                                                                                |
+| M6     | Progression        | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning                                                | ✅ Done (levels, loadouts, shop; skills still to do)                                                   |
+| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | ✅ Done (24 battles, 3 routes, 3 endings)                                                              |
+| M8     | Platform shells    | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves                                                    | 🟡 Shells built (Capacitor Android/iOS, Electron + Steam achievements); store accounts and ads pending |
+| M9     | Polish & launch    | Final art/audio integration, localization, accessibility pass, performance pass, store assets                                      | 🟡 Placeholder audio, help, settings done; final art/audio, gamepad and store assets pending           |
 
-M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest data.
+Status (2026-09-30): M0–M7 complete. The whole campaign is playable on web and mobile browsers; native shells are in place. See `docs/RELEASE.md` for store steps.
 
 ---
 
