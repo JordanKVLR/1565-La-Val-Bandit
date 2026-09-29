@@ -59,11 +59,19 @@ body,
   background: radial-gradient(circle at 50% 40%, #4a3322 0%, var(--ink) 70%);
 }
 .title-screen h1 {
-  font-size: clamp(3rem, 14vh, 7rem);
+  font-size: clamp(2.5rem, 12vh, 6rem);
+  text-align: center;
+  line-height: 1;
   margin: 0;
   color: var(--gold);
   letter-spacing: 0.1em;
   text-shadow: 0 3px 0 #000;
+}
+.title-year {
+  display: block;
+  font-size: 0.45em;
+  text-align: center;
+  color: var(--parchment);
 }
 .subtitle {
   margin: 0 0 1rem;
@@ -101,6 +109,28 @@ body,
   right: max(12px, env(safe-area-inset-right));
   display: flex;
   gap: 8px;
+}
+.turn-banner {
+  position: absolute;
+  top: calc(max(10px, env(safe-area-inset-top)) + 48px);
+  left: max(12px, env(safe-area-inset-left));
+  padding: 0.2em 0.9em;
+  background: var(--panel);
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+.unit-card {
+  position: absolute;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 170px;
+  padding: 0.5em 0.9em;
+  background: var(--panel);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
 }
 /* Bottom-left terrain readout, e.g. "1H 5% Plain". */
 .terrain-label {

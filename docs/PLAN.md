@@ -1,4 +1,4 @@
-# 1565 (working title) — Master Plan
+# Armatura 1565 — Master Plan
 
 > Status: **Draft v2, decisions confirmed by owner** · Owner: Jordan · Last updated: 2026-09-29
 >
@@ -23,7 +23,7 @@
 | 8   | Languages      | **English only.** Strings still go through a single i18n table (near-zero cost), so translation stays possible later.                                                                                                                                                                |
 | 9   | Business       | **Free on all platforms. Ads come later** (§6.1), only at natural breaks, never during battles. No loot boxes. For now the code has an `AdsAdapter` stub only, with no ad SDKs and no data collection.                                                                               |
 | 10  | Store accounts | None yet. They're needed at M8 (Apple Developer $99/yr, Google Play $25 one-off, Steamworks $100 per app).                                                                                                                                                                           |
-| 11  | Title          | **TBD.** The shortlist is in §11. Code uses a neutral package scope (`@m1565/*`) so a rename is cheap.                                                                                                                                                                               |
+| 11  | Title          | **Armatura 1565** (chosen by owner). Code keeps the neutral `@m1565/*` package scope.                                                                                                                                                                                                |
 | 12  | Plan location  | This file. It changes through normal commits.                                                                                                                                                                                                                                        |
 
 ---
@@ -78,11 +78,15 @@ queue on the HUD.
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction    | AP cost   | Effect                                                              |
-| ----------- | --------- | ------------------------------------------------------------------- |
-| **Defend**  | 0         | Always hit, damage ×0.5                                             |
-| **Avoid**   | 10        | Roll to evade; if hit, full damage                                  |
-| **Counter** | weapon AP | Take the hit at full damage, then strike back if alive and in range |
+| Reaction    | Cost                  | Effect                                                                            |
+| ----------- | --------------------- | --------------------------------------------------------------------------------- |
+| **Defend**  | free                  | Always hit, damage ×0.5                                                           |
+| **Avoid**   | 10 AP, +10 FP         | The hit rolls at the normal chance; if it lands, full damage                      |
+| **Counter** | weapon AP + weapon FP | The hit rolls at +15% (you are not dodging); if you survive, you strike back once |
+
+Only reactions the defender can afford are offered. Units start a battle with 20 AP, so a unit
+that hasn't had its first turn can only Defend or Avoid. A Spent unit (FP 100) can only Defend.
+Attackers turn to face their target, and a defender that survives turns to face its attacker.
 
 **Hit chance** = clamp(5, 95):
 `weapon.acc + SKL×2 − target.AGI×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties`
@@ -415,8 +419,8 @@ Each milestone ends with a playable build on the web preview, and CI green.
 
 | M      | Name               | Deliverables                                                                                                                       | Exit criteria                                                      |
 | ------ | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| **M0** | Foundations        | Monorepo, TS/ESLint/Prettier, Vitest, Playwright, CI, PWA shell deployed, CLAUDE.md contributor guide                              | "Hello Malta" PWA installs on a phone                              |
-| **M1** | Rules core         | Grid, terrain, pathfinding, AP/FP/HP, reactions, hit/damage, turn order, victory checks, AI v1, save/load                          | Headless AI-vs-AI battle completes; ≥90% coverage                  |
+| **M0** | Foundations        | Monorepo, TS/ESLint/Prettier, Vitest, Playwright, CI, PWA shell deployed, CLAUDE.md contributor guide                              | ✅ Done 2026-09-29                                                 |
+| **M1** | Rules core         | Grid, terrain, pathfinding, AP/FP/HP, reactions, hit/damage, turn order, victory checks, AI v1, save/load                          | ✅ Done 2026-09-29 (97% line coverage; 30-seed AI-vs-AI sim)       |
 | **M2** | Battle renderer    | Terrain mesh, billboards, camera (pan/zoom/rotate), tile highlights, touch input                                                   | Move a unit by touch on a phone at 60 fps                          |
 | **M3** | Battle UX          | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results                                | Full battle playable vs AI with placeholders                       |
 | **M4** | Story engine       | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus                     | Prologue scene plays into B1 and saves/resumes                     |
@@ -477,4 +481,4 @@ M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest 
 | **Sons of St Elmo**                  | Brotherhood, the Ninu/Deniz half-brothers                   |
 | **1565: The Broken Medallion**       | Mystery-led                                                 |
 
-Recommendation: **Blood of Two Banners: Malta 1565**.
+**Chosen: Armatura 1565.**

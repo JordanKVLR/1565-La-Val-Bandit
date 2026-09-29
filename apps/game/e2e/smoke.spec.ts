@@ -5,12 +5,13 @@ test('title screen leads to a rendered battle map with a terrain readout', async
   page.on('pageerror', (e) => errors.push(e.message));
 
   await page.goto('./');
-  await expect(page.getByRole('heading', { name: '1565' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Armatura/ })).toBeVisible();
   await page.getByRole('button', { name: 'Begin' }).click();
 
   const canvas = page.locator('canvas.battle-canvas');
   await expect(canvas).toBeVisible();
   await expect(page.getByText('Shore of Marsaxlokk')).toBeVisible();
+  await expect(page.getByTestId('turn-banner')).toHaveText(/^Round 1 · /);
 
   // Tap near the centre of the map: a tile should be selected and its terrain label shown.
   const box = await canvas.boundingBox();

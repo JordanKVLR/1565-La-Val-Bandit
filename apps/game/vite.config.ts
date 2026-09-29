@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
       manifest: {
-        name: '1565',
-        short_name: '1565',
+        name: 'Armatura 1565',
+        short_name: 'Armatura',
         description: 'A tactical RPG set during the Great Siege of Malta.',
         theme_color: '#1b1410',
         background_color: '#1b1410',

@@ -1,4 +1,4 @@
-# 1565 (working title)
+# Armatura 1565
 
 An original isometric tactical RPG set during the Great Siege of Malta (1565).
 Web-first (mobile browser / installable PWA), with Android, iOS and Steam releases planned.
