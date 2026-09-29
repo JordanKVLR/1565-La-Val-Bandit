@@ -1,0 +1,11 @@
+[
+  { "id": "plain", "name": "Plain", "moveCost": 4, "avoid": 5 },
+  { "id": "road", "name": "Road", "moveCost": 3, "avoid": 0 },
+  { "id": "field", "name": "Field", "moveCost": 5, "avoid": 10 },
+  { "id": "scrub", "name": "Garigue", "moveCost": 5, "avoid": 15 },
+  { "id": "sand", "name": "Sand", "moveCost": 6, "avoid": 0 },
+  { "id": "rubble", "name": "Rubble", "moveCost": 8, "avoid": 20 },
+  { "id": "rampart", "name": "Rampart", "moveCost": 4, "avoid": 25 },
+  { "id": "shallows", "name": "Shallows", "moveCost": 10, "avoid": 0 },
+  { "id": "sea", "name": "Sea", "moveCost": 99, "avoid": 0, "impassable": true }
+]

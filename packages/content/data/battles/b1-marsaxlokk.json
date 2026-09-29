@@ -1,0 +1,84 @@
+{
+  "id": "b1-marsaxlokk",
+  "name": "Shore of Marsaxlokk",
+  "map": "b1-marsaxlokk",
+  "seed": 1565,
+  "victory": [{ "type": "rout" }],
+  "defeat": [{ "type": "protect", "unitId": "ninu" }],
+  "units": [
+    {
+      "id": "ninu",
+      "character": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [5, 7],
+      "facing": "north"
+    },
+    {
+      "id": "militia-1",
+      "name": "Militia Ġanni",
+      "stats": { "str": 5, "skl": 5, "agi": 5 },
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [4, 8],
+      "facing": "north"
+    },
+    {
+      "id": "militia-2",
+      "name": "Militia Rożi",
+      "stats": { "str": 4, "skl": 7, "agi": 5 },
+      "side": "player",
+      "controller": "human",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [6, 8],
+      "facing": "north"
+    },
+    {
+      "id": "levend-1",
+      "name": "Levend",
+      "stats": { "str": 5, "skl": 5, "agi": 5 },
+      "side": "enemy",
+      "controller": "ai",
+      "ai": "aggressive",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [5, 3],
+      "facing": "south"
+    },
+    {
+      "id": "levend-2",
+      "name": "Levend",
+      "stats": { "str": 5, "skl": 5, "agi": 5 },
+      "side": "enemy",
+      "controller": "ai",
+      "ai": "aggressive",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [8, 3],
+      "facing": "south"
+    },
+    {
+      "id": "yeniceri-1",
+      "name": "Yeniçeri Aga",
+      "stats": { "str": 6, "skl": 6, "agi": 4 },
+      "side": "enemy",
+      "controller": "ai",
+      "ai": "defensive",
+      "level": 2,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 2],
+      "facing": "south"
+    }
+  ]
+}

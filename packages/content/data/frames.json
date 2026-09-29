@@ -1,0 +1,119 @@
+[
+  {
+    "id": "cavaliere",
+    "name": "Cavaliere",
+    "faction": "order",
+    "hp": 86,
+    "armour": 10,
+    "move": 4,
+    "agility": 0
+  },
+  {
+    "id": "bastiun",
+    "name": "Bastiun",
+    "faction": "order",
+    "hp": 100,
+    "armour": 15,
+    "move": 3,
+    "agility": -3
+  },
+  {
+    "id": "lanza",
+    "name": "Lanza",
+    "faction": "order",
+    "hp": 80,
+    "armour": 9,
+    "move": 4,
+    "agility": 0
+  },
+  {
+    "id": "kaptan",
+    "name": "Kaptan",
+    "faction": "order",
+    "hp": 84,
+    "armour": 10,
+    "move": 4,
+    "agility": 1
+  },
+  {
+    "id": "haddiem",
+    "name": "Ħaddiem",
+    "faction": "militia",
+    "hp": 70,
+    "armour": 6,
+    "move": 5,
+    "agility": 2
+  },
+  {
+    "id": "moschetta",
+    "name": "Moschetta",
+    "faction": "militia",
+    "hp": 64,
+    "armour": 5,
+    "move": 4,
+    "agility": 2
+  },
+  {
+    "id": "artigjan",
+    "name": "Artiġjan",
+    "faction": "militia",
+    "hp": 66,
+    "armour": 6,
+    "move": 4,
+    "agility": 1
+  },
+  {
+    "id": "yeniceri",
+    "name": "Yeniçeri",
+    "faction": "ottoman",
+    "hp": 84,
+    "armour": 9,
+    "move": 4,
+    "agility": 1
+  },
+  {
+    "id": "sipahi",
+    "name": "Sipahi",
+    "faction": "ottoman",
+    "hp": 72,
+    "armour": 7,
+    "move": 6,
+    "agility": 3
+  },
+  {
+    "id": "humbaraci",
+    "name": "Humbaracı",
+    "faction": "ottoman",
+    "hp": 76,
+    "armour": 8,
+    "move": 3,
+    "agility": -1
+  },
+  {
+    "id": "levend",
+    "name": "Levend",
+    "faction": "corsair",
+    "hp": 68,
+    "armour": 5,
+    "move": 5,
+    "agility": 4
+  },
+  {
+    "id": "reis",
+    "name": "Reis",
+    "faction": "corsair",
+    "hp": 82,
+    "armour": 8,
+    "move": 4,
+    "agility": 2
+  },
+  {
+    "id": "prototipo",
+    "name": "Prototipo",
+    "faction": "scala",
+    "hp": 110,
+    "armour": 14,
+    "move": 4,
+    "agility": 0
+  }
+]
