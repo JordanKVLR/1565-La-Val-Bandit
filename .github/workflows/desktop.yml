@@ -1,0 +1,30 @@
+name: Desktop builds (Steam)
+
+# Manual: builds unpacked Windows, macOS and Linux versions of the Electron shell.
+# Steam uploads use these folders as depot content (see docs/RELEASE.md).
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: node node_modules/electron/install.js
+        working-directory: apps/desktop
+      - run: pnpm --filter @m1565/desktop dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: armatura-1565-${{ matrix.os }}
+          path: apps/desktop/release/*-unpacked
+          retention-days: 14

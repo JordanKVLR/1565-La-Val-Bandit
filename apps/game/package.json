@@ -10,9 +10,16 @@
     "typecheck": "tsc -p tsconfig.json",
     "e2e": "playwright test",
     "icons": "node scripts/make-icons.mjs",
-    "build:single": "node scripts/build-single.mjs"
+    "build:single": "node scripts/build-single.mjs",
+    "build:native": "TARGET=native vite build",
+    "cap:sync": "pnpm build:native && cap sync",
+    "cap:android": "pnpm cap:sync && cap open android",
+    "cap:ios": "pnpm cap:sync && cap open ios"
   },
   "dependencies": {
+    "@capacitor/android": "8.5.2",
+    "@capacitor/core": "8.5.2",
+    "@capacitor/ios": "8.5.2",
     "@m1565/content": "workspace:*",
     "@m1565/core": "workspace:*",
     "inkjs": "2.4.0",
@@ -20,6 +27,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.2",
     "@playwright/test": "1.56.1",
     "@preact/preset-vite": "^2.10.6",
     "@types/three": "^0.186.0",

@@ -2,6 +2,11 @@ import type { BattleSetup, BattleState, Facing } from '@m1565/core';
 import type { Library } from '@m1565/content';
 import { isBattleId, loadBattle } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
+import {
+  BATTLE_ACHIEVEMENTS,
+  ENDING_ACHIEVEMENTS,
+  unlockAchievement,
+} from '../platform/achievements';
 import type { SlotId } from '../platform/storage';
 import { readSave, writeSave } from '../platform/storage';
 import { Store } from '../state/store';
@@ -151,6 +156,7 @@ export class GameSession {
       : [...this.state.completedBattles, screen.battleId];
     this.patch({ roster, scudi: this.state.scudi + reward, completedBattles });
     this.runner.setVar('last_battle', screen.battleId);
+    unlockAchievement(BATTLE_ACHIEVEMENTS[screen.battleId]);
     this.show({
       kind: 'results',
       battleId: screen.battleId,
@@ -251,6 +257,7 @@ export class GameSession {
         this.autosave();
         return false;
       case 'end':
+        unlockAchievement(ENDING_ACHIEVEMENTS[String(this.runner.getVar('route'))]);
         this.show({ kind: 'end' });
         this.autosave();
         return true;

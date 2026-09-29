@@ -9,6 +9,7 @@ import { ActionMenu, SubModeBar } from './battle/ActionMenu';
 import { CloseUp } from './battle/CloseUp';
 import { EndOverlay } from './battle/EndOverlay';
 import { FacingPicker } from './battle/FacingPicker';
+import { HelpPanel } from './battle/HelpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
@@ -48,6 +49,7 @@ export function BattleScreen({
   );
   const { state, mode, inspected, log } = useStore(ctl.view);
   const [showLog, setShowLog] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -166,6 +168,7 @@ export function BattleScreen({
         </aside>
       )}
 
+      {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
       {mode.kind === 'command' && <ActionMenu ctl={ctl} />}
       {mode.kind === 'move' && (
         <SubModeBar label="Tap a blue tile to move" onCancel={() => ctl.cancel()} />

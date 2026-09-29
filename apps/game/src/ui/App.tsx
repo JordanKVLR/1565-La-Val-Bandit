@@ -2,6 +2,7 @@ import type { BattleState } from '@m1565/core';
 import { isBattleId, loadBattle, loadLibrary } from '@m1565/content';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { GameSession } from '../campaign/GameSession';
+import { music, sfx, unlockAudio } from '../platform/audio';
 import type { SlotId } from '../platform/storage';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
@@ -32,6 +33,13 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
 
   useEffect(() => {
     if (screen.kind === 'title') onTitle();
+    music(
+      screen.kind === 'battle'
+        ? 'battle'
+        : screen.kind === 'story' || screen.kind === 'prep'
+          ? 'story'
+          : 'none',
+    );
   }, [screen.kind, onTitle]);
 
   return (
@@ -77,6 +85,20 @@ export function App() {
   useEffect(() => {
     document.documentElement.dataset.textSize = textSize;
   }, [textSize]);
+
+  // Sound may only start after a user gesture; also give every button a soft click.
+  useEffect(() => {
+    const onPointer = (e: PointerEvent) => {
+      unlockAudio();
+      if ((e.target as HTMLElement | null)?.closest('button')) sfx('tap');
+    };
+    window.addEventListener('pointerdown', onPointer);
+    return () => window.removeEventListener('pointerdown', onPointer);
+  }, []);
+
+  useEffect(() => {
+    if (!session && !debugBattle) music('none');
+  }, [session, debugBattle]);
 
   const debugSetup = useMemo(
     () => (debugBattle ? loadBattle(debugBattle, lib) : null),

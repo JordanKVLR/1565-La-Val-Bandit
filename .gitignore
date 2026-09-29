@@ -8,3 +8,5 @@ playwright-report
 .DS_Store
 .env*
 dist-single
+dist-native
+release

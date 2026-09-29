@@ -1,0 +1,51 @@
+{
+  "name": "@m1565/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Electron shell for the Steam (Windows/macOS/Linux) release of Armatura 1565.",
+  "main": "dist/main.js",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json && pnpm --filter @m1565/game build:native",
+    "start": "pnpm build && electron .",
+    "dist": "pnpm build && electron-builder"
+  },
+  "build": {
+    "appId": "com.armatura1565.game",
+    "productName": "Armatura 1565",
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../game/dist-native",
+        "to": "game"
+      }
+    ],
+    "asarUnpack": [
+      "**/node_modules/steamworks.js/**"
+    ],
+    "win": {
+      "target": "dir"
+    },
+    "mac": {
+      "target": "dir",
+      "category": "public.app-category.games"
+    },
+    "linux": {
+      "target": "dir"
+    },
+    "directories": {
+      "output": "release"
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "electron": "44.5.0",
+    "electron-builder": "26.15.3"
+  },
+  "dependencies": {
+    "steamworks.js": "0.4.0"
+  }
+}

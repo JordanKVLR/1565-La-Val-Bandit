@@ -1,0 +1,39 @@
+name: Android debug APK
+
+# Builds an installable debug APK from main so the game can be tried on an Android phone.
+# Download it from the run's "Artifacts" section, copy it to the phone and open it
+# (allow "install unknown apps" for your browser or file manager when asked).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @m1565/game cap:sync
+      - run: ./gradlew assembleDebug --no-daemon
+        working-directory: apps/game/android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: armatura-1565-debug-apk
+          path: apps/game/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

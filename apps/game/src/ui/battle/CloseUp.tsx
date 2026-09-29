@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
+import { sfx } from '../../platform/audio';
 import { settings } from '../../state/settings';
 
 interface Props {
@@ -30,6 +31,15 @@ export function CloseUp({ data, onDone }: Props) {
     const ms = { bark: 700, impact: 650, reply: 800 }[phase.step] / speed;
     const t = setTimeout(() => {
       if (phase.step === 'bark') {
+        sfx(
+          !strike.result.hit
+            ? 'miss'
+            : phase.strike > 0
+              ? 'counter'
+              : data.reaction === 'defend'
+                ? 'defend'
+                : 'hit',
+        );
         setHp((h) => ({ ...h, [strike.result.targetId]: strike.result.targetHp }));
         setPhase({ strike: phase.strike, step: 'impact' });
       } else if (phase.step === 'impact') {

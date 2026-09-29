@@ -29,6 +29,7 @@ import {
 } from '@m1565/core';
 import type { BarkSet, Library } from '@m1565/content';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
+import { sfx } from '../platform/audio';
 import { settings } from '../state/settings';
 import { Store } from '../state/store';
 
@@ -179,6 +180,7 @@ export class BattleController {
   chooseMove(): void {
     const unit = this.active();
     if (!unit || this.mode.kind !== 'command' || !this.canMove()) return;
+    sfx('select');
     const reach = reachableTiles(this.state, unit);
     this.patch({ mode: { kind: 'move', reach } });
     this.highlight([
@@ -192,6 +194,7 @@ export class BattleController {
   chooseAttack(): void {
     const unit = this.active();
     if (!unit || this.mode.kind !== 'command' || !this.canAttack()) return;
+    sfx('select');
     const targets = this.targetsFor(unit);
     this.patch({ mode: { kind: 'target', targets } });
     this.highlight([
@@ -345,6 +348,7 @@ export class BattleController {
     if (this.disposed) return;
     const state = this.state;
     if (state.outcome !== 'ongoing') {
+      sfx(state.outcome === 'victory' ? 'victory' : 'loss');
       this.patch({ mode: { kind: 'ended', outcome: state.outcome } });
       this.onFinish?.(state.outcome, state);
       return;
@@ -444,15 +448,18 @@ export class BattleController {
     const r = this.renderer;
     switch (ev.type) {
       case 'unitMoved':
+        sfx('move');
         await r?.animateMove(ev.unitId, ev.path, 170 / this.speed());
         break;
       case 'attackResolved': {
         this.pushLog(describeAttack(before, ev));
         if (settings.get().closeUps) await this.playCloseUp(before, after, ev);
+        else sfx(ev.strike.hit ? (ev.reaction === 'defend' ? 'defend' : 'hit') : 'miss');
         r?.shake(ev.strike.targetId);
         break;
       }
       case 'unitDefeated':
+        sfx('defeat');
         this.pushLog(`${findUnit(before, ev.unitId)?.name ?? ev.unitId} is defeated.`);
         break;
       case 'roundStarted':
