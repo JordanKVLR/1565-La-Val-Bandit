@@ -1,0 +1,44 @@
+{
+  "id": "c3-pasha-tribunal",
+  "name": "The Pasha's Camp",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~~~~~~~~~",
+    "~wwwwwwwwww~",
+    "sssssssssss~",
+    "sppWppppWpps",
+    "pppp_WW_pppp",
+    "pWpp____ppWp",
+    "pppp_WW_pppp",
+    "ppWpppppWppp",
+    "gppppttppppg",
+    "gggppppppggg"
+  ],
+  "height": [
+    "000000000000",
+    "000000000000",
+    "111111111110",
+    "111311113111",
+    "111113311111",
+    "131111111131",
+    "111113311111",
+    "113111113111",
+    "111110011111",
+    "111111111111"
+  ]
+}

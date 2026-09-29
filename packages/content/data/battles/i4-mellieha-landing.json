@@ -1,0 +1,183 @@
+{
+  "id": "i4-mellieha-landing",
+  "name": "Mellieħa Bay",
+  "map": "i4-mellieha-landing",
+  "seed": 24,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 5
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "tercio"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [9, 4],
+      "facing": "west",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 5],
+      "facing": "west",
+      "character": "kateri"
+    },
+    {
+      "id": "anastagi",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [6, 3],
+      "facing": "west",
+      "character": "anastagi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [7, 6],
+      "facing": "west",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 3],
+      "facing": "west",
+      "character": "rozi"
+    },
+    {
+      "id": "tercio",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "bastiun",
+      "weapon": "mace-shield",
+      "at": [7, 4],
+      "facing": "west",
+      "name": "Tercio Sergeant",
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 4
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [1, 4],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [2, 2],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 8,
+        "agi": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [1, 6],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 6
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [0, 0],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 8
+      }
+    },
+    {
+      "id": "humb-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [2, 8],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Humbaracı",
+      "stats": {
+        "str": 6,
+        "skl": 8,
+        "agi": 5
+      }
+    }
+  ]
+}

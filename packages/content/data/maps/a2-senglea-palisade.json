@@ -1,0 +1,44 @@
+{
+  "id": "a2-senglea-palisade",
+  "name": "Palisade of Senglea",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~~~~~~~~~",
+    "~dd~~dd~~dd~",
+    "~dd~~dd~~dd~",
+    "wwxwwxwwxwwx",
+    "ssssssssssss",
+    "pppp#pp#pppp",
+    "p__pp__pp__p",
+    "W__WW__WW__W",
+    "W__________W",
+    "WWWWW__WWWWW"
+  ],
+  "height": [
+    "000000000000",
+    "011001100110",
+    "011001100110",
+    "001001001001",
+    "111111111111",
+    "222232232222",
+    "222222222222",
+    "522552255225",
+    "522222222225",
+    "555552255555"
+  ]
+}

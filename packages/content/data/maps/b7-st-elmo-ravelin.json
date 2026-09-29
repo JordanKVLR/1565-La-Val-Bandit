@@ -1,0 +1,44 @@
+{
+  "id": "b7-st-elmo-ravelin",
+  "name": "Ravelin of St Elmo",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ggppppppppgg",
+    "gpttttttttpg",
+    "ppppxpppxppp",
+    "pp########pp",
+    "pW#______#Wp",
+    "pW#______#Wp",
+    "WW##____##WW",
+    "W__________W",
+    "W__________W",
+    "WWWWW__WWWWW"
+  ],
+  "height": [
+    "111111111111",
+    "100000000001",
+    "111111111111",
+    "113333333311",
+    "154222222451",
+    "154222222451",
+    "554422224455",
+    "522222222225",
+    "522222222225",
+    "555552255555"
+  ]
+}

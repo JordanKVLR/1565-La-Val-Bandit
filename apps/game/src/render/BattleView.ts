@@ -42,13 +42,14 @@ export interface UnitVisual extends UnitLook {
   readonly arrowColor: string;
 }
 
-export type HighlightKind = 'move' | 'range' | 'target' | 'danger';
+export type HighlightKind = 'move' | 'range' | 'target' | 'danger' | 'goal';
 
 const HIGHLIGHT_COLORS: Record<HighlightKind, { color: number; opacity: number }> = {
   move: { color: 0x4aa3e0, opacity: 0.45 },
   range: { color: 0xe07a3a, opacity: 0.3 },
   target: { color: 0xe0303a, opacity: 0.6 },
   danger: { color: 0x9a3ae0, opacity: 0.25 },
+  goal: { color: 0xf5c542, opacity: 0.45 },
 };
 
 const FACING_ANGLE: Record<Facing, number> = {

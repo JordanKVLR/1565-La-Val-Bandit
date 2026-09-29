@@ -10,6 +10,7 @@ import { CloseUp } from './battle/CloseUp';
 import { EndOverlay } from './battle/EndOverlay';
 import { FacingPicker } from './battle/FacingPicker';
 import { ForecastPanel } from './battle/ForecastPanel';
+import { describeObjectives } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
 
 interface Props {
@@ -89,6 +90,12 @@ export function BattleScreen({
         {active && state.outcome === 'ongoing' && (
           <div class="turn-banner" data-testid="turn-banner">
             Round {state.round} · {active.name}
+          </div>
+        )}
+        {state.outcome === 'ongoing' && (
+          <div class="objective" data-testid="objective">
+            <span>Win: {describeObjectives(state).win}</span>
+            <span class="lose">Lose if {describeObjectives(state).lose}</span>
           </div>
         )}
       </header>

@@ -1,0 +1,44 @@
+{
+  "id": "b9-fall-of-st-elmo",
+  "name": "The Fall of St Elmo",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~wwsxbbbWW",
+    "~~wwssb___bW",
+    "~~wsspb____b",
+    "~wwsppx____b",
+    "~wsspxb____b",
+    "~wsspxb____b",
+    "~~wsspb____b",
+    "~~wwssb___bW",
+    "~~~wwsxbbbWW",
+    "~~~~wwssxxWW"
+  ],
+  "height": [
+    "000001233355",
+    "000011333335",
+    "000111333333",
+    "000111233333",
+    "001112333333",
+    "001112333333",
+    "000111333333",
+    "000011333335",
+    "000001233355",
+    "000000112255"
+  ]
+}

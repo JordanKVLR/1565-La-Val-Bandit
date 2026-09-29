@@ -1,0 +1,213 @@
+{
+  "id": "a3-castile-breach",
+  "name": "Breach of Castile",
+  "map": "a3-castile-breach",
+  "seed": 13,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 6
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 6],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 7],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 7],
+      "facing": "north",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [6, 5],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [2, 6],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "valette",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "kaptan",
+      "weapon": "bastard-sword",
+      "at": [7, 6],
+      "facing": "north",
+      "name": "La Valette",
+      "stats": {
+        "str": 9,
+        "skl": 10,
+        "agi": 6
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [2, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 6
+      }
+    },
+    {
+      "id": "jan-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [8, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 6
+      }
+    },
+    {
+      "id": "jan-4",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [3, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 8,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-5",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [9, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 8,
+        "agi": 5
+      }
+    },
+    {
+      "id": "humb-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [6, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Humbaracı",
+      "stats": {
+        "str": 5,
+        "skl": 8,
+        "agi": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [10, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 8
+      }
+    }
+  ]
+}

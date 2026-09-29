@@ -1,0 +1,44 @@
+{
+  "id": "a1-piccolo-soccorso",
+  "name": "The Kalkara Shore",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "gggpppppgggg",
+    "ggpppgggpppg",
+    "gpppxpppxppp",
+    "_ppppppppppp",
+    "_rrrrrrppppp",
+    "_pppppprrrrr",
+    "_ppffppppppp",
+    "gppfffppxppg",
+    "ggppppppgggg",
+    "ggggppppgggg"
+  ],
+  "height": [
+    "222111112222",
+    "221111111112",
+    "211121112111",
+    "111111111111",
+    "100000011111",
+    "111111100000",
+    "111111111111",
+    "211111112112",
+    "221111112222",
+    "222211112222"
+  ]
+}

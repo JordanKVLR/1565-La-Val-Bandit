@@ -1,0 +1,44 @@
+{
+  "id": "i4-mellieha-landing",
+  "name": "Mellieħa Bay",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "gggggppsss~~",
+    "ggggpppsss~~",
+    "gggpppssww~~",
+    "ggxpppssswww",
+    "gggpp_sssww~",
+    "ggppp_ssswww",
+    "gggpppsssww~",
+    "ggxppppsss~~",
+    "gggggppsss~~",
+    "ggggggpsss~~"
+  ],
+  "height": [
+    "444332111100",
+    "443321111100",
+    "443321110000",
+    "445321111000",
+    "443322111000",
+    "433322111000",
+    "443321111000",
+    "445332111100",
+    "444433111100",
+    "444443111100"
+  ]
+}

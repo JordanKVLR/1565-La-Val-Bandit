@@ -1,0 +1,44 @@
+{
+  "id": "i1-road-to-mdina",
+  "name": "Road to Mdina",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "_ppgggggggff",
+    "_rrrpggggfff",
+    "_ppprrpgggff",
+    "gggpprrppgff",
+    "ggxgpprrpggg",
+    "ggggpppprrpg",
+    "fffgggpprrpp",
+    "ffffgggpprrp",
+    "fffffggppprr",
+    "ffffffggpppr"
+  ],
+  "height": [
+    "444333333322",
+    "444433333222",
+    "443333333222",
+    "333333222222",
+    "333322222222",
+    "332222222111",
+    "222222221111",
+    "222222211111",
+    "222222111111",
+    "222222111111"
+  ]
+}

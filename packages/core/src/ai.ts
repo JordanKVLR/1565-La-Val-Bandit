@@ -71,7 +71,38 @@ export function planAiTurn(state: BattleState, unitId: string): Command[] {
     }
   }
 
-  if (best.targetId === null && profile === 'aggressive') {
+  // Cautious units refuse trades that leave them badly exposed, and wait for the enemy instead.
+  if (profile === 'defensive' && best.targetId !== null && best.score < 0) {
+    best = { to: null, targetId: null, score: 0 };
+  }
+
+  // A unit with its own escape objective heads for the goal first and fights only on the way.
+  const goals = state.victory.flatMap((v) =>
+    v.type === 'escape' && v.unitId === unit.id && unit.side === 'player' ? v.tiles : [],
+  );
+  if (goals.length && profile !== 'hold') {
+    const toGoal = (c: Coord) => Math.min(...goals.map((g) => manhattan(c, g)));
+    let bestDest: Coord | null = null;
+    let bestKey = [toGoal(unit.pos), 0];
+    for (const [, r] of reach) {
+      const dest = r.path[r.path.length - 1];
+      if (!dest) continue;
+      const key = [toGoal(dest), r.cost];
+      if (key[0]! < bestKey[0]! || (key[0] === bestKey[0] && key[1]! < bestKey[1]!)) {
+        bestKey = key;
+        bestDest = dest;
+      }
+    }
+    if (bestDest) {
+      const from = bestDest;
+      const apLeft = unit.ap - (reach.get(`${from.x},${from.y}`)?.cost ?? 0);
+      const target =
+        apLeft >= unit.weapon.apCost
+          ? enemies.find((e) => inRange(unit.weapon, from, e.pos))
+          : undefined;
+      best = { to: from, targetId: target?.id ?? null, score: 0 };
+    }
+  } else if (best.targetId === null && profile === 'aggressive') {
     // Close in, keeping enough AP back to avoid a blow if possible.
     const budget = Math.max(0, unit.ap - state.balance.avoidApCost);
     let bestDist = nearestDistance(unit.pos, enemies);
@@ -133,7 +164,7 @@ function scoreAttack(
   const threats = enemies.filter(
     (e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + e.weapon.maxRange,
   ).length;
-  score -= threats * (profile === 'defensive' ? 6 : 2);
+  score -= threats * (profile === 'defensive' ? 10 : 2);
   score -= moveCost * 0.05;
   return score;
 }

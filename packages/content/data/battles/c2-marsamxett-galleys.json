@@ -1,0 +1,146 @@
+{
+  "id": "c2-marsamxett-galleys",
+  "name": "Galleys of Marsamxett",
+  "map": "c2-marsamxett-galleys",
+  "seed": 32,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [4, 5],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [5, 5],
+      "facing": "north",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 5],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [6, 5],
+      "facing": "south",
+      "character": "yusuf"
+    },
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [7, 5],
+      "facing": "north",
+      "character": "leyla"
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [2, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [6, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Scala's Sailor",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 7
+      }
+    },
+    {
+      "id": "lev-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [7, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Scala's Sailor",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 7
+      }
+    },
+    {
+      "id": "gun-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Scala's Gunner",
+      "stats": {
+        "str": 5,
+        "skl": 7,
+        "agi": 5
+      }
+    }
+  ]
+}

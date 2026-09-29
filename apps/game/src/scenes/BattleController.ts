@@ -181,7 +181,7 @@ export class BattleController {
     if (!unit || this.mode.kind !== 'command' || !this.canMove()) return;
     const reach = reachableTiles(this.state, unit);
     this.patch({ mode: { kind: 'move', reach } });
-    this.renderer?.setHighlights([
+    this.highlight([
       {
         kind: 'move',
         tiles: [...reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
@@ -194,7 +194,7 @@ export class BattleController {
     if (!unit || this.mode.kind !== 'command' || !this.canAttack()) return;
     const targets = this.targetsFor(unit);
     this.patch({ mode: { kind: 'target', targets } });
-    this.renderer?.setHighlights([
+    this.highlight([
       { kind: 'range', tiles: this.rangeTiles(unit) },
       { kind: 'target', tiles: targets.map((id) => findUnit(this.state, id)!.pos) },
     ]);
@@ -215,7 +215,7 @@ export class BattleController {
   chooseEndTurn(): void {
     if (this.mode.kind !== 'command') return;
     this.patch({ mode: { kind: 'facing' } });
-    this.renderer?.setHighlights([]);
+    this.highlight([]);
   }
 
   chooseFacing(facing: Facing): void {
@@ -304,7 +304,15 @@ export class BattleController {
 
   private toCommand(): void {
     this.patch({ mode: { kind: 'command' } });
-    this.renderer?.setHighlights([]);
+    this.highlight([]);
+  }
+
+  /** Escape objectives stay highlighted under whatever else is shown. */
+  private highlight(layers: ReadonlyArray<{ kind: HighlightKind; tiles: readonly Coord[] }>): void {
+    const goals = this.state.victory.flatMap((v) => (v.type === 'escape' ? v.tiles : []));
+    this.renderer?.setHighlights(
+      goals.length ? [{ kind: 'goal', tiles: goals }, ...layers] : layers,
+    );
   }
 
   private patch(p: Partial<BattleView>): void {
@@ -344,7 +352,7 @@ export class BattleController {
     const unit = this.active();
     if (!unit) return;
     this.syncUnits();
-    this.renderer?.setHighlights([]);
+    this.highlight([]);
     await this.renderer?.focus(unit.pos, 300 / this.speed());
     if (unit.controller === 'human') {
       this.patch({ mode: { kind: 'command' } });
@@ -401,7 +409,7 @@ export class BattleController {
     if (this.running) return;
     this.running = true;
     this.patch({ mode: { kind: 'busy' } });
-    this.renderer?.setHighlights([]);
+    this.highlight([]);
     await this.execute(cmd);
     this.running = false;
     if (this.disposed) return;

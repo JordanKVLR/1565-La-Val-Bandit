@@ -1,0 +1,175 @@
+{
+  "id": "a1-piccolo-soccorso",
+  "name": "The Little Relief",
+  "map": "a1-piccolo-soccorso",
+  "seed": 11,
+  "victory": [
+    {
+      "type": "escape",
+      "unitId": "relief",
+      "tiles": [
+        [0, 3],
+        [0, 4],
+        [0, 5],
+        [0, 6]
+      ]
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "relief"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [3, 4],
+      "facing": "east",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [2, 5],
+      "facing": "east",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [2, 3],
+      "facing": "east",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [4, 6],
+      "facing": "east",
+      "character": "ganni"
+    },
+    {
+      "id": "relief",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [11, 5],
+      "facing": "west",
+      "name": "Relief Captain",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [6, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "sipahi-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [9, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "sipahi-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [7, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [5, 8],
+      "facing": "north",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 5,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "levend-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [10, 8],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 7
+      }
+    }
+  ]
+}

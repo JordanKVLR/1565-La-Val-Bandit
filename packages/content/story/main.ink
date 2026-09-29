@@ -12,5 +12,8 @@
 INCLUDE globals.ink
 INCLUDE prologue.ink
 INCLUDE act1.ink
+INCLUDE route_cross.ink
+INCLUDE route_island.ink
+INCLUDE route_crescent.ink
 
 -> prologue

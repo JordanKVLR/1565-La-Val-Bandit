@@ -33,6 +33,45 @@ describe('AI', () => {
     expect(first).toMatchObject({ type: 'move' });
   });
 
+  it('escaping units head for their goal instead of fighting', () => {
+    const { state } = createBattle(
+      setup({
+        map: makeMap(['pppppppppppp']),
+        victory: [{ type: 'escape', unitId: 'runner', tiles: [{ x: 11, y: 0 }] }],
+        units: [
+          unit({ id: 'runner', stats: { str: 6, skl: 6, agi: 30 }, at: { x: 4, y: 0 } }),
+          unit({ id: 'e', side: 'enemy', at: { x: 3, y: 0 } }),
+        ],
+      }),
+    );
+    const [first] = planAiTurn(state, 'runner');
+    expect(first).toMatchObject({ type: 'move' });
+    expect(first?.type === 'move' && first.to.x).toBeGreaterThan(4);
+  });
+
+  it('defensive units do not charge into a crowd', () => {
+    const { state } = createBattle(
+      setup({
+        map: makeMap(['pppppppp', 'pppppppp', 'pppppppp', 'pppppppp']),
+        units: [
+          unit({
+            id: 'ai',
+            ai: 'defensive',
+            stats: { str: 6, skl: 6, agi: 30 },
+            at: { x: 0, y: 3 },
+          }),
+          // An aggressive ally keeps 'ai' in its cautious role (a lone cautious unit goes on the attack).
+          unit({ id: 'ally', stats: { str: 6, skl: 6, agi: 1 }, at: { x: 0, y: 0 } }),
+          unit({ id: 'p1', side: 'enemy', at: { x: 3, y: 1 } }),
+          unit({ id: 'p2', side: 'enemy', at: { x: 4, y: 1 } }),
+          unit({ id: 'p3', side: 'enemy', at: { x: 3, y: 0 } }),
+          unit({ id: 'p4', side: 'enemy', at: { x: 4, y: 2 } }),
+        ],
+      }),
+    );
+    expect(planAiTurn(state, 'ai').map((c) => c.type)).toEqual(['endTurn']);
+  });
+
   it('hold units never move', () => {
     const { state } = createBattle(
       setup({

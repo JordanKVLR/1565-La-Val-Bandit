@@ -1,0 +1,126 @@
+{
+  "id": "i1-road-to-mdina",
+  "name": "Road to Mdina",
+  "map": "i1-road-to-mdina",
+  "seed": 21,
+  "victory": [
+    {
+      "type": "escape",
+      "unitId": "ninu",
+      "tiles": [
+        [0, 0],
+        [0, 1],
+        [0, 2]
+      ]
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [10, 8],
+      "facing": "west",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [11, 9],
+      "facing": "west",
+      "character": "kateri"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [9, 9],
+      "facing": "west",
+      "character": "ganni"
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [6, 4],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "sipahi-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [4, 2],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [2, 4],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [7, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 5,
+        "skl": 6,
+        "agi": 5
+      }
+    }
+  ]
+}

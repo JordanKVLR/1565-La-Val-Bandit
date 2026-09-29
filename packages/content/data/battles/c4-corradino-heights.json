@@ -1,0 +1,164 @@
+{
+  "id": "c4-corradino-heights",
+  "name": "Corradino Heights",
+  "map": "b8-turgut-battery",
+  "seed": 34,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "foreman"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [4, 9],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [3, 9],
+      "facing": "north",
+      "character": "leyla"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [6, 8],
+      "facing": "north",
+      "character": "yusuf"
+    },
+    {
+      "id": "foreman",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Scala's Foreman",
+      "stats": {
+        "str": 8,
+        "skl": 8,
+        "agi": 5
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [8, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Prototipo",
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "merc-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [2, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Genoese Mercenary",
+      "stats": {
+        "str": 6,
+        "skl": 8,
+        "agi": 6
+      }
+    },
+    {
+      "id": "merc-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [9, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Genoese Mercenary",
+      "stats": {
+        "str": 6,
+        "skl": 8,
+        "agi": 6
+      }
+    },
+    {
+      "id": "merc-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [4, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Genoese Mercenary",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 6
+      }
+    }
+  ]
+}

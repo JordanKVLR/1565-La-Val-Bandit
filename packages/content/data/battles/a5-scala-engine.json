@@ -1,0 +1,160 @@
+{
+  "id": "a5-scala-engine",
+  "name": "Scala's Engine",
+  "map": "b6-kalkara-chapel",
+  "seed": 15,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "scala"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [4, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [6, 9],
+      "facing": "north",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [3, 8],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 8],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "scala",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "colossus",
+      "weapon": "colossus-cannon",
+      "at": [7, 3],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Scala",
+      "stats": {
+        "str": 9,
+        "skl": 9,
+        "agi": 5
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [5, 5],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "proto-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [9, 5],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [3, 6],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Scala's Hireling",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 8
+      }
+    },
+    {
+      "id": "lev-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [10, 7],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Scala's Hireling",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 8
+      }
+    }
+  ]
+}

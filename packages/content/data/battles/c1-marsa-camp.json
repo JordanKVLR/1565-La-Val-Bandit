@@ -1,0 +1,108 @@
+{
+  "id": "c1-marsa-camp",
+  "name": "Scala's Tent",
+  "map": "i3-marsa-raid",
+  "seed": 31,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "captain"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [4, 4],
+      "facing": "east",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [5, 4],
+      "facing": "west",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [5, 5],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "captain",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [10, 8],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Scala's Guard Captain",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 6
+      }
+    },
+    {
+      "id": "guard-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [8, 2],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Hired Guard",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "guard-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 6],
+      "facing": "west",
+      "ai": "defensive",
+      "name": "Hired Gunner",
+      "stats": {
+        "str": 4,
+        "skl": 7,
+        "agi": 5
+      }
+    }
+  ]
+}
