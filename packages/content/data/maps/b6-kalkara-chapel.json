@@ -1,0 +1,44 @@
+{
+  "id": "b6-kalkara-chapel",
+  "name": "Chapel at Kalkara",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~wwssgggg",
+    "~~~wsspggggg",
+    "~~wspxWWWWxg",
+    "~wsppW____Wg",
+    "~wsppx____xg",
+    "~sppp__b__pg",
+    "~sppppp__ppg",
+    "~spffpppppgg",
+    "wspffprrrpgg",
+    "sspfprrppggg"
+  ],
+  "height": [
+    "000000112222",
+    "000011222222",
+    "000112444422",
+    "001222222242",
+    "001223222232",
+    "012222222222",
+    "012222222222",
+    "012222222222",
+    "011222222222",
+    "111222222222"
+  ]
+}

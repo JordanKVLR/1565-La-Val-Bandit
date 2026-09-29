@@ -1,0 +1,44 @@
+{
+  "id": "a3-castile-breach",
+  "name": "Breach of Castile",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ttpppppppptt",
+    "pppxpppxpppp",
+    "pppppppppppp",
+    "tttttbbttttt",
+    "WWWWbbbbWWWW",
+    "##__bbbb__##",
+    "#__________#",
+    "____________",
+    "__WW____WW__",
+    "____________"
+  ],
+  "height": [
+    "001111111100",
+    "111211121111",
+    "111111111111",
+    "000003300000",
+    "555533335555",
+    "443333333344",
+    "433333333334",
+    "333333333333",
+    "335533335533",
+    "333333333333"
+  ]
+}

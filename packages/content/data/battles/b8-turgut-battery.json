@@ -1,0 +1,145 @@
+{
+  "id": "b8-turgut-battery",
+  "name": "The Admiral's Battery",
+  "map": "b8-turgut-battery",
+  "seed": 8,
+  "victory": [
+    {
+      "type": "rout"
+    },
+    {
+      "type": "survive",
+      "rounds": 4
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [5, 2],
+      "facing": "south",
+      "character": "deniz"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [6, 2],
+      "facing": "south",
+      "character": "yusuf"
+    },
+    {
+      "id": "corsair-1",
+      "side": "player",
+      "controller": "human",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [4, 3],
+      "facing": "south",
+      "name": "Corsair Hamid",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 6
+      }
+    },
+    {
+      "id": "gunner-1",
+      "side": "player",
+      "controller": "human",
+      "level": 3,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [7, 1],
+      "facing": "south",
+      "name": "Gunner Ilyas",
+      "stats": {
+        "str": 5,
+        "skl": 7,
+        "agi": 4
+      }
+    },
+    {
+      "id": "knight-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [4, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Knight of Auvergne",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 4
+      }
+    },
+    {
+      "id": "knight-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [7, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Knight of Italy",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 4
+      }
+    },
+    {
+      "id": "militia-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [2, 8],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "str": 4,
+        "skl": 4,
+        "agi": 5
+      }
+    },
+    {
+      "id": "militia-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [9, 8],
+      "facing": "north",
+      "ai": "defensive",
+      "name": "Militia Gunner",
+      "stats": {
+        "str": 3,
+        "skl": 6,
+        "agi": 5
+      }
+    }
+  ]
+}

@@ -8,7 +8,13 @@ const SEEDS = 16;
 
 /** AI plays both sides. A human does better than the player-side AI, so this is a floor. */
 function playOut(id: string, seed: number): { outcome: BattleState['outcome']; rounds: number } {
-  let { state } = createBattle({ ...loadBattle(id, lib), seed });
+  const setup = loadBattle(id, lib);
+  // A careful player keeps must-survive units out of harm's way; model that with 'defensive'.
+  const protectedIds = new Set((setup.defeat ?? []).map((d) => d.unitId));
+  const units = setup.units.map((u) =>
+    u.side === 'player' && protectedIds.has(u.id) ? { ...u, ai: 'defensive' as const } : u,
+  );
+  let { state } = createBattle({ ...setup, units, seed });
   for (let n = 0; state.outcome === 'ongoing' && n < 3000;) {
     const actor = state.turn!.unitId;
     for (const planned of planAiTurn(state, actor)) {

@@ -1,0 +1,22 @@
+{
+  "id": "s-mdina",
+  "name": "Mdina",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": ["WWWWWWWW", "W______W", "W_W__W_W", "________", "W_W__W_W", "W______W", "WWW__WWW"],
+  "height": ["55555555", "53333335", "53533535", "33333333", "53533535", "53333335", "55533555"]
+}

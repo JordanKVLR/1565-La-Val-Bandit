@@ -1,0 +1,177 @@
+{
+  "id": "i3-marsa-raid",
+  "name": "Raid on the Marsa",
+  "map": "i3-marsa-raid",
+  "seed": 23,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "aga"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [4, 9],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "anastagi",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "anastagi"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 8],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [6, 9],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 8],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "aga",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [4, 2],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Camp Aga",
+      "stats": {
+        "str": 7,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "guard-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [2, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Camp Guard",
+      "stats": {
+        "str": 6,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "guard-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [6, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Camp Guard",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 7
+      }
+    },
+    {
+      "id": "guard-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [8, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Camp Guard",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "guard-4",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [5, 5],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Camp Guard",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 7
+      }
+    },
+    {
+      "id": "guard-5",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [9, 6],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Humbaracı",
+      "stats": {
+        "str": 5,
+        "skl": 7,
+        "agi": 5
+      }
+    }
+  ]
+}

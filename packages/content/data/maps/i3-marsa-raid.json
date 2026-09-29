@@ -1,0 +1,44 @@
+{
+  "id": "i3-marsa-raid",
+  "name": "Camp at the Marsa",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~sssppppgg",
+    "~ssppWpWpppg",
+    "sppp_p_ppWpg",
+    "pWpWpppppppg",
+    "pppp__Wp_Wpp",
+    "pWpppppppppp",
+    "pppWp_Wpppgg",
+    "tttttttpttgg",
+    "pppppppppggg",
+    "ffffpppppggg"
+  ],
+  "height": [
+    "000111111122",
+    "011112121112",
+    "111111111212",
+    "121211111112",
+    "111111211211",
+    "121111111111",
+    "111211211122",
+    "000000010022",
+    "111111111222",
+    "111111111222"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "id": "b6-kalkara-chapel",
+  "name": "Chapel at Kalkara",
+  "map": "b6-kalkara-chapel",
+  "seed": 6,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "deniz"
+    },
+    {
+      "type": "survive",
+      "rounds": 5
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 4,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 3,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [4, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "deniz",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [4, 3],
+      "facing": "south",
+      "ai": "aggressive",
+      "character": "deniz"
+    },
+    {
+      "id": "levend-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [7, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Scala's Hireling",
+      "stats": {
+        "str": 4,
+        "skl": 4,
+        "agi": 6
+      }
+    },
+    {
+      "id": "levend-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 1,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [8, 5],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Scala's Hireling",
+      "stats": {
+        "str": 4,
+        "skl": 4,
+        "agi": 6
+      }
+    },
+    {
+      "id": "scala",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [5, 2],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Scala",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 4
+      }
+    }
+  ]
+}

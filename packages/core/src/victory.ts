@@ -12,6 +12,10 @@ export function evaluateOutcome(state: BattleState): Outcome {
         return findUnit(state, v.unitId)?.defeated ?? false;
       case 'survive':
         return state.round > v.rounds;
+      case 'escape': {
+        const u = findUnit(state, v.unitId);
+        return !!u && !u.defeated && v.tiles.some((t) => t.x === u.pos.x && t.y === u.pos.y);
+      }
     }
   });
   if (won) return 'victory';

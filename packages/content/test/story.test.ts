@@ -7,78 +7,93 @@ const lib = loadLibrary();
 const speakers = new Set([...lib.cast.values()].map((c) => c.speaker));
 const castIds = new Set(lib.cast.keys());
 const SPEAKER = /^([A-ZÀ-ÖØ-ÞĠĦŻĊ][A-ZÀ-ÖØ-ÞĠĦŻĊ .'-]{0,23}):\s+/u;
+const COMMANDS = [
+  'chapter',
+  'stage',
+  'actor',
+  'exit',
+  'join',
+  'leave',
+  'battle',
+  'prep',
+  'scudi',
+  'save',
+  'end',
+];
 
-/**
- * Walks every branch of the story (depth-first over choices, bounded) and checks each line and
- * command it produces. Catches typos in battle ids, map ids, cast ids and speaker names.
- */
-function walk(onLine: (line: string) => void, maxPaths = 400): number {
-  let paths = 0;
-  const visit = (state: string | null) => {
-    if (paths >= maxPaths) return;
-    const s = new Story(story as ConstructorParameters<typeof Story>[0]);
-    if (state) s.state.LoadJson(state);
-    while (s.canContinue) onLine((s.Continue() ?? '').trim());
-    const choices = s.currentChoices.length;
-    if (!choices) {
-      paths++;
-      return;
+/** Every text line in the compiled story, reachable or not (ink stores them as "^text"). */
+function allLines(node: unknown, out: string[] = []): string[] {
+  if (typeof node === 'string') {
+    if (node.startsWith('^')) out.push(node.slice(1).trim());
+  } else if (Array.isArray(node)) {
+    for (const n of node) allLines(n, out);
+  } else if (node && typeof node === 'object') {
+    for (const v of Object.values(node)) allLines(v, out);
+  }
+  return out;
+}
+
+function check(line: string): string | null {
+  if (line.startsWith('>>>')) {
+    const [name, ...args] = line.replace(/^>>>\s*/, '').split(/\s+/);
+    if (!COMMANDS.includes(name!)) return `unknown command ${name}`;
+    if (name === 'battle' && !(args[0]! in battleSources)) return `unknown battle ${args[0]}`;
+    if (name === 'stage' && !(args[0]! in mapSources)) return `unknown stage map ${args[0]}`;
+    if (name === 'actor' && !castIds.has(args[0]!)) return `unknown cast ${args[0]}`;
+    if (name === 'exit' && args.some((a) => !castIds.has(a))) return `unknown cast in ${line}`;
+    if ((name === 'join' || name === 'leave') && !lib.characters.has(args[0]!))
+      return `unknown character ${args[0]}`;
+    return null;
+  }
+  const m = line.match(SPEAKER);
+  return m && !speakers.has(m[1]!) ? `unknown speaker ${m[1]}` : null;
+}
+
+/** Plays the whole story, picking choices whose text matches `prefer` (else the first). */
+function playthrough(prefer: RegExp): { battles: string[]; ended: boolean; route: unknown } {
+  const s = new Story(story as ConstructorParameters<typeof Story>[0]);
+  const battles: string[] = [];
+  let ended = false;
+  for (let guard = 0; guard < 5000; guard++) {
+    while (s.canContinue) {
+      const line = (s.Continue() ?? '').trim();
+      if (line.startsWith('>>> battle')) battles.push(line.split(/\s+/)[2]!);
+      if (line === '>>> end') ended = true;
     }
-    const saved = s.state.ToJson();
-    for (let i = 0; i < choices; i++) {
-      const branch = new Story(story as ConstructorParameters<typeof Story>[0]);
-      branch.state.LoadJson(saved);
-      branch.ChooseChoiceIndex(i);
-      visit(branch.state.ToJson());
-    }
-  };
-  visit(null);
-  return paths;
+    const choices = s.currentChoices;
+    if (!choices.length) break;
+    const pick = choices.findIndex((c) => prefer.test(c.text));
+    s.ChooseChoiceIndex(Math.max(0, pick));
+  }
+  return { battles, ended, route: s.variablesState.$('route') };
 }
 
 describe('story script', () => {
-  it('compiles, reaches an end, and only references real content', () => {
-    const problems: string[] = [];
-    const battles = new Set<string>();
-    const paths = walk((line) => {
-      if (!line) return;
-      if (line.startsWith('>>>')) {
-        const [name, ...args] = line.replace(/^>>>\s*/, '').split(/\s+/);
-        if (name === 'battle') {
-          battles.add(args[0]!);
-          if (!(args[0]! in battleSources)) problems.push(`unknown battle ${args[0]}`);
-        }
-        if (name === 'stage' && !(args[0]! in mapSources))
-          problems.push(`unknown stage map ${args[0]}`);
-        if (
-          (name === 'actor' || name === 'exit') &&
-          args.some((a, i) => (name === 'exit' || i === 0) && !castIds.has(a))
-        ) {
-          problems.push(`unknown cast in: ${line}`);
-        }
-        if (name === 'join' && !lib.characters.has(args[0]!))
-          problems.push(`unknown character ${args[0]}`);
-        const known = [
-          'chapter',
-          'stage',
-          'actor',
-          'exit',
-          'join',
-          'leave',
-          'battle',
-          'prep',
-          'scudi',
-          'save',
-          'end',
-        ];
-        if (!known.includes(name!)) problems.push(`unknown command ${name}`);
-        return;
-      }
-      const m = line.match(SPEAKER);
-      if (m && !speakers.has(m[1]!)) problems.push(`unknown speaker ${m[1]}`);
-    });
+  it('every line references real battles, maps, cast and commands', () => {
+    const problems = allLines(story)
+      .map(check)
+      .filter((p): p is string => !!p);
     expect(problems).toEqual([]);
-    expect(paths).toBeGreaterThan(1);
-    expect(battles.size).toBeGreaterThanOrEqual(5);
+  });
+
+  it.each([
+    ['cross', /Stand with the Order/, 'a5-scala-engine'],
+    ['island', /Fight as a Maltese/, 'i5-naxxar-ridge'],
+    ['crescent', /Let him go|Cross to the Ottoman/, 'c5-broken-medallion'],
+  ])('the %s route plays to its ending', (route, prefer, finale) => {
+    const r = playthrough(prefer);
+    expect(r.route).toBe(route);
+    expect(r.ended).toBe(true);
+    expect(r.battles).toContain('b9-fall-of-st-elmo');
+    expect(r.battles.at(-1)).toBe(finale);
+  });
+
+  it('uses every battle in the data folder', () => {
+    const used = new Set(
+      allLines(story)
+        .filter((l) => l.startsWith('>>> battle'))
+        .map((l) => l.split(/\s+/)[2]),
+    );
+    expect(Object.keys(battleSources).filter((id) => !used.has(id))).toEqual([]);
   });
 });

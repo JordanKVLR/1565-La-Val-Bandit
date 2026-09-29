@@ -52,6 +52,22 @@ describe('outcomes', () => {
     expect(s.round).toBe(2);
   });
 
+  it('escape wins when the unit stands on a goal tile', () => {
+    let s = base({ victory: [{ type: 'escape', unitId: 'p', tiles: [{ x: 1, y: 0 }] }] });
+    expect(evaluateOutcome(s)).toBe('ongoing');
+    s = applyCommand(
+      s,
+      s.turn!.unitId === 'p'
+        ? { type: 'move', unitId: 'p', to: { x: 1, y: 0 } }
+        : { type: 'endTurn', unitId: s.turn!.unitId },
+    ).state;
+    while (s.outcome === 'ongoing' && s.turn!.unitId !== 'p')
+      s = applyCommand(s, { type: 'endTurn', unitId: s.turn!.unitId }).state;
+    if (s.outcome === 'ongoing')
+      s = applyCommand(s, { type: 'move', unitId: 'p', to: { x: 1, y: 0 } }).state;
+    expect(s.outcome).toBe('victory');
+  });
+
   it('rejects duplicate unit ids', () => {
     expect(() =>
       base({

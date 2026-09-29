@@ -1,0 +1,163 @@
+{
+  "id": "i2-mdina-walls",
+  "name": "Walls of Mdina",
+  "map": "i2-mdina-walls",
+  "seed": 22,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 5
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [5, 0],
+      "facing": "south",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 2],
+      "facing": "south",
+      "character": "kateri"
+    },
+    {
+      "id": "anastagi",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [7, 3],
+      "facing": "south",
+      "character": "anastagi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [9, 2],
+      "facing": "south",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [2, 3],
+      "facing": "south",
+      "character": "rozi"
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [1, 8],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [4, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [7, 9],
+      "facing": "north",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "humb-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [5, 8],
+      "facing": "north",
+      "ai": "defensive",
+      "name": "Humbaracı",
+      "stats": {
+        "str": 5,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [0, 7],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 8
+      }
+    }
+  ]
+}

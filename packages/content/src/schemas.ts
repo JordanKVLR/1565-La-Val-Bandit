@@ -143,6 +143,7 @@ export const BattleSourceSchema = z.object({
         z.object({ type: z.literal('rout') }),
         z.object({ type: z.literal('defeatLeader'), unitId: id }),
         z.object({ type: z.literal('survive'), rounds: z.number().int().positive() }),
+        z.object({ type: z.literal('escape'), unitId: id, tiles: z.array(coord).min(1) }),
       ]),
     )
     .min(1),

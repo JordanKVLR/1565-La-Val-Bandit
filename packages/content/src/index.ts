@@ -29,8 +29,10 @@ import {
   TerrainSchema,
   WeaponSchema,
 } from './schemas';
+import { statsAtLevel } from './progression';
 import type { BattleSource, MapSource } from './schemas';
 
+export * from './progression';
 export * from './schemas';
 
 export function loadTerrains(raw: unknown = terrainData): ReadonlyMap<string, TerrainType> {
@@ -168,7 +170,8 @@ export function buildBattle(
       controller: u.controller,
       ...(u.ai ? { ai: u.ai } : {}),
       level: u.level,
-      stats: u.stats ?? character!.stats,
+      // Without a saved roster entry, a named character arrives at the level the battle expects.
+      stats: u.stats ?? statsAtLevel(character!, u.level),
       frame: need(lib.frames, u.frame, 'frame', where),
       weapon: need(lib.weapons, u.weapon, 'weapon', where),
       at,
@@ -177,6 +180,14 @@ export function buildBattle(
   });
   const ids = new Set(units.map((u) => u.id));
   for (const v of source.victory) {
+    if (v.type === 'escape') {
+      if (!ids.has(v.unitId)) throw new Error(`${where}: unknown escaping unit "${v.unitId}"`);
+      for (const [x, y] of v.tiles) {
+        const t = getTile(map, { x, y });
+        if (!t || lib.terrains.get(t.terrain)?.impassable)
+          throw new Error(`${where}: escape tile ${x},${y} is not walkable`);
+      }
+    }
     if (v.type === 'defeatLeader' && !ids.has(v.unitId))
       throw new Error(`${where}: unknown leader "${v.unitId}"`);
   }
@@ -188,7 +199,9 @@ export function buildBattle(
     terrains: lib.terrains,
     balance: lib.balance,
     units,
-    victory: source.victory,
+    victory: source.victory.map((v) =>
+      v.type === 'escape' ? { ...v, tiles: v.tiles.map(([x, y]) => ({ x, y })) } : v,
+    ),
     defeat: source.defeat,
     seed: source.seed,
   };

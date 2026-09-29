@@ -1,0 +1,44 @@
+{
+  "id": "i5-naxxar-ridge",
+  "name": "Naxxar Ridge",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "gggpppppppgg",
+    "ggpp#pp#ppgg",
+    "gppppbbppppg",
+    "ppxppppppxpp",
+    "pppppppppppp",
+    "ffpppggppppf",
+    "fffppggpppff",
+    "ffffprrppfff",
+    "fffprrrrpfff",
+    "ffprrffrrpff"
+  ],
+  "height": [
+    "444444444444",
+    "445454454444",
+    "444444444444",
+    "334333333433",
+    "333333333333",
+    "222223322222",
+    "222223322222",
+    "111111111111",
+    "111000011111",
+    "110001100111"
+  ]
+}

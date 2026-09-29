@@ -1,0 +1,44 @@
+{
+  "id": "i2-mdina-walls",
+  "name": "Walls of Mdina",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "____________",
+    "_W__W__W__W_",
+    "############",
+    "#x########x#",
+    "gggpppppgggg",
+    "ggppprrppggg",
+    "gpppprrpppgg",
+    "ppfffrrfffpp",
+    "pffffrrffffp",
+    "ffffrrrrffff"
+  ],
+  "height": [
+    "555555555555",
+    "565565565565",
+    "555555555555",
+    "535555555535",
+    "333333333333",
+    "332222222333",
+    "322222222233",
+    "222111111222",
+    "211111111112",
+    "111111111111"
+  ]
+}

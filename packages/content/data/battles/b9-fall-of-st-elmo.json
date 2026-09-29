@@ -1,0 +1,160 @@
+{
+  "id": "b9-fall-of-st-elmo",
+  "name": "The Fall of St Elmo",
+  "map": "b9-fall-of-st-elmo",
+  "seed": 9,
+  "victory": [
+    {
+      "type": "escape",
+      "unitId": "ninu",
+      "tiles": [
+        [1, 3],
+        [1, 4],
+        [1, 5]
+      ]
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [7, 3],
+      "facing": "west",
+      "character": "ninu"
+    },
+    {
+      "id": "luis",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [8, 4],
+      "facing": "west",
+      "character": "luis"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 5],
+      "facing": "west",
+      "character": "balbi"
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [11, 2],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [11, 4],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [11, 6],
+      "facing": "west",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 5,
+        "skl": 6,
+        "agi": 4
+      }
+    },
+    {
+      "id": "jan-4",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [10, 1],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [5, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "levend-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [5, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 7
+      }
+    }
+  ]
+}

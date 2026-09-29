@@ -118,5 +118,35 @@
     "fpCost": 10,
     "minRange": 1,
     "maxRange": 3
+  },
+  {
+    "id": "ram-arm",
+    "name": "Ram-Arm",
+    "power": 32,
+    "accuracy": 74,
+    "apCost": 30,
+    "fpCost": 15,
+    "minRange": 1,
+    "maxRange": 1
+  },
+  {
+    "id": "colossus-cannon",
+    "name": "Colossus Cannon",
+    "power": 34,
+    "accuracy": 70,
+    "apCost": 35,
+    "fpCost": 15,
+    "minRange": 1,
+    "maxRange": 3
+  },
+  {
+    "id": "tower-guns",
+    "name": "Tower Guns",
+    "power": 26,
+    "accuracy": 66,
+    "apCost": 30,
+    "fpCost": 10,
+    "minRange": 2,
+    "maxRange": 4
   }
 ]

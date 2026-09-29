@@ -9,7 +9,9 @@ export type VictoryCondition =
   | { readonly type: 'rout' }
   | { readonly type: 'defeatLeader'; readonly unitId: string }
   /** Win once this many full rounds have been survived. */
-  | { readonly type: 'survive'; readonly rounds: number };
+  | { readonly type: 'survive'; readonly rounds: number }
+  /** Win when the named unit, still standing, reaches any of these tiles. */
+  | { readonly type: 'escape'; readonly unitId: string; readonly tiles: readonly Coord[] };
 
 /** Losing every player unit always loses; these add extra ways to lose. */
 export type DefeatCondition = { readonly type: 'protect'; readonly unitId: string };

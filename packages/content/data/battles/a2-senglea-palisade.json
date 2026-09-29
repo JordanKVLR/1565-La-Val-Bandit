@@ -1,0 +1,180 @@
+{
+  "id": "a2-senglea-palisade",
+  "name": "Palisade of Senglea",
+  "map": "a2-senglea-palisade",
+  "seed": 12,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 5
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [4, 5],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 5],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [5, 6],
+      "facing": "north",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [2, 6],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [9, 6],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [1, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "lev-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [2, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 5
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 6,
+        "skl": 7,
+        "agi": 5
+      }
+    },
+    {
+      "id": "reis-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [9, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Algerian Reis",
+      "stats": {
+        "str": 7,
+        "skl": 6,
+        "agi": 6
+      }
+    },
+    {
+      "id": "lev-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [10, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "str": 6,
+        "skl": 5,
+        "agi": 7
+      }
+    }
+  ]
+}

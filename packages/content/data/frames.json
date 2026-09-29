@@ -111,8 +111,8 @@
     "id": "prototipo",
     "name": "Prototipo",
     "faction": "scala",
-    "hp": 110,
-    "armour": 14,
+    "hp": 100,
+    "armour": 11,
     "move": 4,
     "agility": 0
   },
@@ -124,5 +124,23 @@
     "armour": 6,
     "move": 1,
     "agility": -4
+  },
+  {
+    "id": "siege-tower",
+    "name": "Siege Tower",
+    "faction": "scala",
+    "hp": 140,
+    "armour": 14,
+    "move": 1,
+    "agility": -6
+  },
+  {
+    "id": "colossus",
+    "name": "Colossus",
+    "faction": "scala",
+    "hp": 150,
+    "armour": 13,
+    "move": 3,
+    "agility": -2
   }
 ]

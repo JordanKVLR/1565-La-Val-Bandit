@@ -1,0 +1,44 @@
+{
+  "id": "c2-marsamxett-galleys",
+  "name": "Galleys of Marsamxett",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~~~~~~~~~",
+    "~dddddddd~~~",
+    "~dddddddd~~~",
+    "~~~~dd~~~~~~",
+    "wwssssssssww",
+    "wppp__pppppw",
+    "~~~~~~~dd~~~",
+    "~~~dddddddd~",
+    "~~~dddddddd~",
+    "~~~~~~~~~~~~"
+  ],
+  "height": [
+    "000000000000",
+    "022222222000",
+    "022222222000",
+    "000022000000",
+    "001111111100",
+    "011111111110",
+    "000000022000",
+    "000222222220",
+    "000222222220",
+    "000000000000"
+  ]
+}

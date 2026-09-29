@@ -1,0 +1,44 @@
+{
+  "id": "a4-siege-tower",
+  "name": "The Siege Tower",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "pppppppppppp",
+    "pgpppttpppgp",
+    "pppxpttpxppp",
+    "ppppp__ppppp",
+    "pppppppppppp",
+    "tttttppttttt",
+    "WWWWW__WWWWW",
+    "#__________#",
+    "____________",
+    "__W______W__"
+  ],
+  "height": [
+    "111111111111",
+    "111110011111",
+    "111210012111",
+    "111112211111",
+    "111111111111",
+    "000001100000",
+    "555551155555",
+    "322222222223",
+    "222222222222",
+    "225222222522"
+  ]
+}
