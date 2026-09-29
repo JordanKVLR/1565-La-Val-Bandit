@@ -1,6 +1,6 @@
-# 1565: La Valette's Bandits — Master Plan
+# 1565 (working title) — Master Plan
 
-> Status: **Draft for approval** · Owner: Jordan · Last updated: 2026-09-29
+> Status: **Draft v2, decisions confirmed by owner** · Owner: Jordan · Last updated: 2026-09-29
 >
 > An original tactical RPG set during the Great Siege of Malta (May–September 1565),
 > inspired by the *gameplay* of the 1998 PS1 tactics genre (isometric height-map
@@ -13,17 +13,17 @@
 
 | # | Topic | Decision |
 |---|-------|----------|
-| 1 | Unit fantasy | **Hybrid.** Ordinary 16th-century troops (militia, knights, arquebusiers, janissaries, cannon) plus rare **Armature** — clockwork/spring-and-steam war-harnesses piloted by the main cast. They fill the "big machine" role without breaking the period feel. |
-| 2 | Point of view | Protagonist is a young **Maltese militiaman**. A later route follows an **Ottoman co-protagonist**, so both sides are human and three-dimensional. |
-| 3 | First build | **Vertical slice**: prologue plus 4 battles, every core system working, playable in a mobile browser. |
+| 1 | Unit fantasy | **Armature everywhere.** Every combatant on the battlefield pilots an *Armatura*: a clockwork/spring-and-steam war-harness roughly 3–4 m tall. This is an alternate-history 1565 in which the machines have reshaped war. Ordinary troops appear only in story scenes and backdrops. |
+| 2 | Point of view | Protagonist is a **Maltese peasant with a hidden double royal lineage**: the secret son of Jean de Valette and an Ottoman concubine of royal blood (see §3.3). An **Ottoman side-story** is playable as a route. |
+| 3 | First build | **Vertical slice**: prologue plus **5 battles** (the last one is the first Ottoman side-story battle), every core system working, playable in a mobile browser. |
 | 4 | Stack | **TypeScript + Vite + Three.js**. Rules live in a separate headless package. **Capacitor** wraps the game for iOS/Android, **Electron + steamworks.js** for Steam. |
-| 5 | Visuals | 3D height-map terrain with **2D billboard sprites** and a fixed isometric camera that rotates in 90° steps. |
+| 5 | Visuals | **Same presentation style as the reference game:** 3D height-map terrain, 2D billboard character sprites, an isometric camera that rotates in 90° steps, a portrait dialogue box, a side-by-side combat forecast panel, and cinematic close-ups. All assets are original (§1). |
 | 6 | Art/audio | Placeholders for now, loaded through a manifest so final assets can drop in without code changes. |
 | 7 | Orientation | **Landscape only.** |
-| 8 | Languages | English at launch. Every string goes through i18n from day one; Maltese, Italian and Turkish are planned next. |
-| 9 | Business | **Free web demo** (prologue + Act I opening). Full game: **paid on Steam** (with demo), **free-to-try + one-time unlock** on iOS/Android. No ads, no loot boxes. |
-| 10 | Store accounts | Not needed until milestone M8. |
-| 11 | Title | **1565: La Valette's Bandits** (working title). |
+| 8 | Languages | **English only.** Strings still go through a single i18n table (near-zero cost), so translation stays possible later. |
+| 9 | Business | **Free on all platforms. Ads come later** (§6.1), only at natural breaks, never during battles. No loot boxes. For now the code has an `AdsAdapter` stub only, with no ad SDKs and no data collection. |
+| 10 | Store accounts | None yet. They're needed at M8 (Apple Developer $99/yr, Google Play $25 one-off, Steamworks $100 per app). |
+| 11 | Title | **TBD.** The shortlist is in §11. Code uses a neutral package scope (`@m1565/*`) so a rename is cheap. |
 | 12 | Plan location | This file. It changes through normal commits. |
 
 ---
@@ -100,18 +100,28 @@ destroy object (siege gun, powder store).
 value), with a tuning profile per unit (aggressive / defensive / objective). It stays
 deterministic given the RNG seed.
 
-### 2.3 Units
+### 2.3 Units — all Armature
 
-**Armature** (hero-piloted, customizable frame + weapon + 2 gear slots):
+Every combatant is a **pilot + Armatura** pair, as in the reference game.
+- **Pilot:** has a level, growth stats (STR/SKL/AGI), skills, affinity and a portrait.
+- **Frame:** sets base HP/ARM/MOV, weight class, weapon types and 2 gear slots.
+- Pilots can switch frames between battles (the Prep screen), within their faction's
+  unlocked frames.
 
-| Side | Frames |
-|------|--------|
-| Order / Maltese | *Bastiun* (heavy shield), *Lanza* (reach), *Moschetta* (arquebus), *Kaptan* (command aura, boosts assist), *Artiġjan* (repair) |
-| Ottoman | *Yeniçeri* (balanced), *Sipahi* (high MOV), *Humbaracı* (grenade arc), *Levend* (corsair skirmisher) |
-| Mercenary (villain) | *Scala* prototypes: experimental, unstable, powerful |
+| Side | Frames (weight · role) |
+|------|------------------------|
+| Order of St John | *Cavaliere* (medium · sword/shield, all-rounder), *Bastiun* (heavy · tower shield, high ARM), *Lanza* (medium · reach 2), *Kaptan* (medium · command aura boosts assist) |
+| Maltese militia | *Ħaddiem* (light · cheap, fast repair), *Moschetta* (light · arquebus, range 3–5), *Artiġjan* (light · repairs allies) |
+| Ottoman army | *Yeniçeri* (medium · balanced, tüfek), *Sipahi* (light · high MOV, lance), *Humbaracı* (medium · grenade arc over walls) |
+| Corsair fleet | *Levend* (light · skirmisher, boarding hooks), *Reis* (medium · command, cutlass) |
+| Scala (villain) | *Prototipo* series: experimental, unstable (they may overheat), powerful |
 
-**Line units** (not customizable, simple sprites): Maltese militia, Knight on foot,
-Spanish tercio arquebusier, bombard crew, Janissary, Azab levy, Sipahi rider, Algerian corsair.
+Siege cannon, walls, gates, powder stores and boats appear on maps as **objects** (they can
+be destroyed or captured, and they block or give cover), not as units.
+
+**Lore:** the Armature were invented c. 1550 by Vittorio Scala and sold to both the Order
+and the Porte. Only a few hundred exist, so each one is precious and named. This explains
+why battles are small squad actions inside the larger siege.
 
 ### 2.4 Cinematic close-up
 
@@ -175,47 +185,78 @@ and close-up toggles, full remappable controls on PC, no time pressure.
 | Aug | Mines and siege tower at Birgu/Castile bastion | Act III |
 | 7–8 Sep | *Gran Soccorso* lands at Mellieħa; siege lifted (8 Sep, *Il-Vittorja*) | Finale |
 
-### 3.3 Cast (original)
+### 3.3 Cast & backstory (story bible draft)
 
-- **Ninu Falzon** (19) — Birgu fisherman's son and militia volunteer. Protagonist.
-  Hot-headed and wants to prove himself. He unexpectedly bonds with a salvaged Armatura.
-- **Kateri Borg** (22) — clockmaker's daughter from Mdina who keeps the Armature running.
-  Pragmatic and wry.
-- **Fra Luis de Arrieta** (40s) — Aragonese knight. Ninu's reluctant mentor; duty
-  versus mercy.
-- **Deniz** (20) — navigator in Turgut Reis's fleet, captured and freed during the story.
-  Co-protagonist of the Crescent route.
-- **Vittorio Scala** (50s) — Genoese engineer who invented the Armature and sells them to
-  both sides. Profits from the war and wants it to last. Main antagonist across all routes.
-- **Supporting historical figures:** Jean de Valette, Mustafa Pasha, Piali Pasha,
-  Turgut Reis, Hasan Pasha, García de Toledo, Vincenzo Anastagi (Mdina cavalry), and
-  Francesco Balbi di Correggio (arquebusier-chronicler; frames chapters as a narrator).
+**The secret** (revealed across Act I):
+In 1541 the young knight Jean de Valette was captured at sea and served about a year as an
+Ottoman galley slave *(historical, verify details)*. **Fictional addition:** while in
+captivity he met **Leyla Hatun**, a concubine in a corsair captain's household. She
+secretly claims descent from **Şehzade Cem**, the Ottoman prince who was himself once a
+captive of the Knights of St John. Their son was born in 1542, after Valette was ransomed.
+Leyla feared what either side would do to a child of both bloodlines. She gave the baby
+to **Pawlu Falzon**, a Maltese galley slave freed in the same exchange, with a half-token:
+half of a broken medallion bearing the Order's cross on one face and Cem's tughra-style
+seal on the other.
+
+**Main cast**
+- **Ninu Falzon** (23) — the protagonist, raised as a peasant farmer and fisherman in
+  Żejtun. Proud, quick-tempered and desperate to prove himself. He doesn't know his parentage. He carries the half-medallion
+  without understanding it, and he bonds unusually well with a salvaged Armatura.
+- **Pawlu Falzon** (60s) — adoptive father. A former galley slave who knows the truth
+  and is sworn to silence. He is killed or captured in the prologue, which sets Ninu off.
+- **Jean de Valette** (70) — Grand Master (historical). He knows who Ninu is, and has
+  watched from afar for twenty years, bound by his vows and his office. The story is built
+  around the question of whether he will ever acknowledge his son.
+- **Leyla Hatun** (40s) — Ninu's mother (fictional). She sails with the Ottoman fleet
+  in a pasha's household and holds the other half of the medallion.
+- **Deniz** (19) — Leyla's later son by the corsair captain, so Ninu's **half-brother**. A
+  navigator under Turgut Reis and protagonist of the **Ottoman side-story**. Loyal,
+  idealistic, and unaware of the brother he has.
+- **Kateri Borg** (22) — clockmaker's daughter from Mdina and Armatura mechanic.
+  Pragmatic, wry, and Ninu's closest friend or romance option.
+- **Fra Luis de Arrieta** (40s) — Aragonese knight and Ninu's reluctant mentor, secretly
+  tasked by Valette to protect him.
+- **Vittorio Scala** (50s) — Genoese inventor of the Armature, who sells them to both
+  sides. He learns Ninu's secret and wants him as a **pretender**: a puppet with a claim
+  that could split both the Order and the Ottoman court. He is the main antagonist on
+  every route.
+- **Supporting historical figures:** Mustafa Pasha, Piali Pasha, Turgut Reis, Hasan Pasha,
+  García de Toledo, Vincenzo Anastagi (Mdina cavalry), and Francesco Balbi di Correggio
+  (arquebusier-chronicler; frames chapters as a narrator).
+
+**Sensitivity note:** Valette's affair and Leyla's lineage are clearly labelled as fiction
+in the game's historical notes screen.
 
 ### 3.4 Structure
 
 ```
-Prologue (Arrival) ─ Act I: St Elmo ─┬─ Route A "Birgu"    (the Order's defence)   → Ending: Victory Day
-                                     ├─ Route B "Mdina"    (cavalry & raids)       → Ending: The Rider's Oath
-                                     └─ Route C "Crescent" (Ninu & Deniz vs Scala) → Ending: The Quiet Harbour
+Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embrace the knightly blood; defend Birgu        → Ending: Victory Day
+                                             ├─ Route B "Island"    reject both thrones; fight with Mdina & militia → Ending: Son of Malta
+                                             └─ Route C "Crescent"  Ottoman side-story: play as Deniz and Leyla's   → Ending: Two Halves
+                                                                    household; the brothers finally meet            (medallion rejoined)
 ```
 
-- The branch is decided at the fall of St Elmo by flags plus affinity (whom you saved,
-  which orders you obeyed).
+- The branch is chosen when St Elmo falls, by an explicit choice plus the affinity and
+  flags the player has built up.
+- The Ottoman side-story also appears as **interlude chapters** in Routes A and B (short
+  Deniz battles). Route C is the full version.
 - Size target: ~36 battles total. Shared prologue and Act I: 10. Routes: ~9 each.
   Plus optional skirmishes.
 - New Game+ carries levels over and unlocks the other routes' start points.
 
-### 3.5 Vertical slice content
+### 3.5 Vertical slice content (5 battles)
 
 | # | Scene / battle | Teaches |
 |---|----------------|---------|
-| P0 | Story: fishing boat at dawn, sails on the horizon (Marsaxlokk) | dialogue, choices |
-| B1 | **Shore of Marsaxlokk** — militia screen retreating villagers | move, attack, terrain |
-| P1 | Story: Kateri's workshop; the salvaged Armatura | party, loadout |
-| B2 | **Wells of Marsa** — hold the wells while engineers work | reactions, AP/FP, hold-N-turns |
-| B3 | **Sciberras Ridge** — scout Ottoman gun lines | height, facing, assist |
+| P0 | Story: Żejtun hilltop at dawn. Ninu argues with Pawlu about joining the militia; sails appear off Marsaxlokk (18 May) | dialogue, choices |
+| B1 | **Shore of Marsaxlokk** — Ninu's militia Ħaddiem screen fleeing villagers | move, attack, terrain label |
+| P1 | Story: Pawlu is taken; Kateri's workshop; the salvaged Armatura wakes for Ninu | party, frames, loadout |
+| B2 | **Wells of Marsa** — hold the wells while engineers work | reactions (Defend/Avoid/Counter), AP/FP, hold-N-turns |
+| B3 | **Sciberras Ridge** — Fra Luis leads a scouting sortie against the gun lines | height, facing, assist |
 | B4 | **Night Crossing to St Elmo** — escort boats across the harbour under fire | escort objective, close-ups |
-| P2 | Story: first choice that sets route-leaning flags; "To be continued" | branching / save |
+| P2 | Story: Valette sees the half-medallion and says nothing. Switch perspective → | — |
+| B5 | **Guns of Tigné** *(Ottoman side-story)* — as Deniz, protect Turgut Reis's new battery from a Maltese raid | playing the other side, protect-object objective |
+| P3 | Story: across the harbour, Leyla holds the other half of the medallion. "To be continued" | branching flags / save |
 
 ---
 
@@ -248,7 +289,7 @@ Prologue (Arrival) ─ Act I: St Elmo ─┬─ Route A "Birgu"    (the Order's 
 | Bundler / dev server | Vite | Fast HMR, first-class PWA plugin |
 | 3D rendering | Three.js | Mature, small, excellent mobile WebGL2 support |
 | UI overlay | Preact + @preact/signals | Tiny (~4 KB); components for menus/HUD/dialogue |
-| Rules | `@lvb/core`: pure TS, no DOM | Headless tests, AI sims, reusable anywhere |
+| Rules | `@m1565/core`: pure TS, no DOM | Headless tests, AI sims, reusable anywhere |
 | Data validation | Zod schemas | Content errors caught at build time |
 | Branching dialogue | **Ink** (inkjs) | Industry standard; writers use the free Inky editor |
 | Maps | **Tiled** (.tmj) → importer → JSON | Standard editor; layers for height/terrain/spawns/triggers |
@@ -291,7 +332,7 @@ Prologue (Arrival) ─ Act I: St Elmo ─┬─ Route A "Birgu"    (the Order's 
 └─ .github/workflows/
 ```
 
-### 5.3 Core engine design (`@lvb/core`)
+### 5.3 Core engine design (`@m1565/core`)
 
 - **State:** plain serializable objects (`BattleState`, `CampaignState`). Never mutated
   directly.
@@ -336,12 +377,29 @@ runs nightly.
 | Platform | Packaging | Notes |
 |----------|-----------|-------|
 | Web / PWA | Vite build → GitHub Pages | Manifest `orientation: landscape`; offline cache; "rotate your phone" overlay in portrait |
-| Android | Capacitor → AAB | Play Console, target current API level, one-time unlock IAP (Play Billing via plugin) |
-| iOS | Capacitor → Xcode archive | Needs macOS: GitHub macOS runner or Codemagic; App Store IAP non-consumable unlock; "Restore purchases" |
-| Steam (Win/macOS/Linux) | Electron + electron-builder | steamworks.js: achievements, cloud saves; Steam Deck Verified checklist (gamepad, 1280×800, on-screen keyboard) |
+| Android | Capacitor → AAB | Play Console, target current API level; AdMob later |
+| iOS | Capacitor → Xcode archive | Needs macOS: GitHub macOS runner or Codemagic; AdMob plus App Tracking Transparency prompt later |
+| Steam (Win/macOS/Linux) | Electron + electron-builder | steamworks.js: achievements, cloud saves; Steam Deck Verified checklist (gamepad, 1280×800, on-screen keyboard). **Likely ad-free** (see below) |
 
-**Store checklist items:** privacy policy (no data collection, no analytics by default),
-age ratings (IARC / PEGI 12), screenshots per device class, trailer, store copy, credits,
+### 6.1 Free + ads plan (implemented later, designed now)
+
+- **Now:** an `AdsAdapter` interface with a no-op implementation. The game calls
+  `ads.maybeShowInterstitial('chapter_end')` at defined break points. There are no SDKs
+  and no tracking.
+- **Placements:** an interstitial between chapters (at most one every ~15 minutes), and
+  optional **rewarded** ads (e.g. bonus *scudi* or a free retry). Never during a battle or
+  a story scene, and never forced before gameplay.
+- **Mobile:** Google AdMob via a Capacitor plugin, with Google UMP consent (GDPR/UK),
+  Apple ATT on iOS, and a matching privacy policy and store data-safety forms.
+- **Web:** a web game ad network or portals (e.g. CrazyGames/Poki SDKs, which also bring
+  traffic), or AdSense for games. Decided at M8.
+- **Steam:** Steam's rules are restrictive about in-game advertising, so the Steam build
+  will most likely be free and ad-free, or have an optional paid "Supporter Pack". This
+  gets checked against the current Steamworks policy at M8.
+- **Option:** a one-time "Remove ads" purchase on mobile.
+
+**Store checklist items:** privacy policy (covering ad SDK data once ads are added), age
+ratings (IARC / PEGI 12), screenshots per device class, trailer, store copy, credits,
 support contact, and licence audit of `CREDITS.md`.
 
 ---
@@ -357,10 +415,10 @@ Each milestone ends with a playable build on the web preview, and CI green.
 | **M2** | Battle renderer | Terrain mesh, billboards, camera (pan/zoom/rotate), tile highlights, touch input | Move a unit by touch on a phone at 60 fps |
 | **M3** | Battle UX | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results | Full battle playable vs AI with placeholders |
 | **M4** | Story engine | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus | Prologue scene plays into B1 and saves/resumes |
-| **M5** | **Vertical slice** | P0–P2 + B1–B4 content, tutorial prompts, audio placeholders, settings, i18n extraction | External playtest link; feedback round |
+| **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | External playtest link; feedback round |
 | M6 | Progression | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning | Act I fully playable |
 | M7 | Campaign | Routes A/B/C, endings, NG+ | Content complete |
-| M8 | Platform shells | Capacitor Android/iOS, Electron/Steam, purchases, achievements, cloud saves | Internal test tracks: Play internal, TestFlight, Steam beta branch |
+| M8 | Platform shells | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves | Internal test tracks: Play internal, TestFlight, Steam beta branch |
 | M9 | Polish & launch | Final art/audio integration, localization, accessibility pass, performance pass, store assets | Store submissions |
 
 M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest data.
@@ -388,6 +446,7 @@ M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest 
 | Mobile WebGL performance variance | Med | Budgets above, render-on-demand, quality presets, early device testing at M2 |
 | Historical/cultural accuracy | Med | Source list in `docs/history.md`; review by a Maltese history enthusiast before content lock |
 | Scope creep (36 battles) | High | Slice-first; each route is a separately shippable content pack |
+| Ad SDKs add privacy/consent obligations and can hurt the experience | Med | Adapter stub until M8; consent flow; strict placement rules (§6.1) |
 | Store rejection for similarity to an existing game | Med | §1 originality policy; original names/art/UI |
 | Save compatibility across updates | Med | Versioned saves + migration tests |
 
@@ -395,5 +454,22 @@ M0–M5 is the current scope. After M5, we review and re-plan M6+ with playtest 
 
 ## 10. Open items for later (no answer needed now)
 
-- Final title and logo · composer/artist selection · price points · whether to add
-  voice barks · localization vendor · community/Discord.
+- Composer/artist selection · ad network choice · whether to add voice barks ·
+  community/Discord.
+
+---
+
+## 11. Title shortlist
+
+| Title | Angle |
+|-------|-------|
+| **Blood of Two Banners: Malta 1565** | Ninu's double lineage; cross and crescent |
+| **The Grand Master's Son** | The central secret. Strong hook, spoiler-light |
+| **Half-Moon & Cross** | The broken medallion |
+| **Heir of the Siege** | Simple, searchable |
+| **Il-Bastard: 1565** | Maltese flavour; blunt (might trouble store rating filters) |
+| **Armatura: The Great Siege** | Leads with the mechs and the genre |
+| **Sons of St Elmo** | Brotherhood, the Ninu/Deniz half-brothers |
+| **1565: The Broken Medallion** | Mystery-led |
+
+Recommendation: **Blood of Two Banners: Malta 1565**.
