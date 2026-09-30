@@ -1,8 +1,9 @@
-import type { BattleState } from '@m1565/core';
+import type { BattleSetup, BattleState } from '@m1565/core';
 import { isBattleId, loadBattle, loadLibrary } from '@m1565/content';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { GameSession } from '../campaign/GameSession';
 import { music, sfx, unlockAudio } from '../platform/audio';
+import { enterFullscreenIfWanted, initFullscreen } from '../platform/fullscreen';
 import type { SlotId } from '../platform/storage';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
@@ -14,6 +15,11 @@ import { ResultsScreen } from './ResultsScreen';
 import { RotateOverlay } from './RotateOverlay';
 import { StoryScreen } from './StoryScreen';
 import { TitleScreen } from './TitleScreen';
+
+/** Battles against a named commander get the heavier theme. */
+function battleMood(setup: BattleSetup): 'battle' | 'boss' {
+  return setup.victory.some((v) => v.type === 'defeatLeader') ? 'boss' : 'battle';
+}
 
 /** `?battle=<id>` jumps straight into a battle with default pilots (for testing and design). */
 function debugBattleId(): string | null {
@@ -35,12 +41,12 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
     if (screen.kind === 'title') onTitle();
     music(
       screen.kind === 'battle'
-        ? 'battle'
+        ? battleMood(screen.setup)
         : screen.kind === 'story' || screen.kind === 'prep'
           ? 'story'
           : 'none',
     );
-  }, [screen.kind, onTitle]);
+  }, [screen, onTitle]);
 
   return (
     <>
@@ -88,8 +94,10 @@ export function App() {
 
   // Sound may only start after a user gesture; also give every button a soft click.
   useEffect(() => {
+    initFullscreen();
     const onPointer = (e: PointerEvent) => {
       unlockAudio();
+      enterFullscreenIfWanted();
       if ((e.target as HTMLElement | null)?.closest('button')) sfx('tap');
     };
     window.addEventListener('pointerdown', onPointer);
@@ -97,13 +105,17 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (!session && !debugBattle) music('none');
+    if (!session && !debugBattle) music('title');
   }, [session, debugBattle]);
 
   const debugSetup = useMemo(
     () => (debugBattle ? loadBattle(debugBattle, lib) : null),
     [debugBattle, lib],
   );
+
+  useEffect(() => {
+    if (debugSetup) music(battleMood(debugSetup));
+  }, [debugSetup]);
 
   return (
     <>

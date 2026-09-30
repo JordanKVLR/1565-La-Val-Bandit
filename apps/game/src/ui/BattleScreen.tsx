@@ -137,7 +137,7 @@ export function BattleScreen({
       </header>
       {!BUSY_MODES.includes(mode.kind) && <TurnQueue state={state} />}
 
-      <div class="hud-controls">
+      <div class="hud-controls" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
         <button
           type="button"
           class="btn icon"
@@ -237,6 +237,7 @@ export function BattleScreen({
       )}
       {mode.kind === 'forecast' && active && (
         <ForecastPanel
+          key={`${mode.targetId}:${mode.attackId}`}
           state={state}
           attacker={active}
           defender={findUnit(state, mode.targetId)!}
@@ -251,6 +252,7 @@ export function BattleScreen({
             {findUnit(state, mode.attackerId)!.name} attacks! How do you respond?
           </div>
           <ForecastPanel
+            key={`${mode.attackerId}>${mode.defenderId}`}
             state={state}
             attacker={findUnit(state, mode.attackerId)!}
             defender={findUnit(state, mode.defenderId)!}

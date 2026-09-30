@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  assistFor,
   attackBackWith,
   availableReactions,
   findAttack,
@@ -98,6 +99,10 @@ describe('forecast', () => {
     );
     const f = forecastAttack(state, requireUnit(state, 'a'), requireUnit(state, 't'));
     expect(f.assist).toBe(15);
+    // The grid lists every ally next to the target, even past the cap.
+    const grid = assistFor(state, requireUnit(state, 'a'), { x: 2, y: 1 });
+    expect(grid.bonus).toBe(15);
+    expect(grid.allies).toHaveLength(3);
   });
 
   it('offers attack back only in reach; reactions need FP, not AP', () => {
