@@ -16,11 +16,11 @@ const run = (s: BattleState, ...cmds: Command[]) =>
   cmds.reduce((st, c) => applyCommand(st, c).state, s);
 
 describe('turn flow', () => {
-  it('starts round 1 with the fastest unit and regenerates AP', () => {
+  it('starts round 1 with the fastest unit on full AP', () => {
     const s = start();
     expect(s.round).toBe(1);
     expect(s.turn?.unitId).toBe('a');
-    expect(requireUnit(s, 'a').ap).toBe(60);
+    expect(requireUnit(s, 'a').ap).toBe(100);
   });
 
   it('rejects commands from the wrong unit', () => {
@@ -32,13 +32,13 @@ describe('turn flow', () => {
     const s1 = run(s0, { type: 'move', unitId: 'a', to: { x: 2, y: 0 } });
     const a1 = requireUnit(s1, 'a');
     expect(a1.pos).toEqual({ x: 2, y: 0 });
-    expect(a1.ap).toBe(52);
+    expect(a1.ap).toBe(92);
     expect(a1.facing).toBe('east');
     expect(() => applyCommand(s1, { type: 'move', unitId: 'a', to: { x: 3, y: 0 } })).toThrow(
       /Already/,
     );
     const s2 = run(s1, { type: 'undoMove', unitId: 'a' });
-    expect(requireUnit(s2, 'a')).toMatchObject({ pos: { x: 0, y: 0 }, ap: 60, facing: 'south' });
+    expect(requireUnit(s2, 'a')).toMatchObject({ pos: { x: 0, y: 0 }, ap: 100, facing: 'south' });
     expect(s0).toEqual(start()); // the original state was never mutated
   });
 
@@ -50,17 +50,19 @@ describe('turn flow', () => {
     expect(() => applyCommand(s, { type: 'undoMove', unitId: 'a' })).toThrow(/Nothing/);
   });
 
-  it('recovers more fatigue when a unit rests', () => {
+  it('recovers fatigue from unspent AP: 3 AP rest off 2 FP', () => {
     let s = start();
-    s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, fp: 60 } : u)) };
+    s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, fp: 90 } : u)) };
+    // 100 AP unspent → 66 FP recovered
     const rested = run(s, { type: 'endTurn', unitId: 'a', facing: 'east' });
-    expect(requireUnit(rested, 'a')).toMatchObject({ fp: 25, facing: 'east' });
+    expect(requireUnit(rested, 'a')).toMatchObject({ fp: 24, facing: 'east' });
     const moved = run(
       s,
       { type: 'move', unitId: 'a', to: { x: 1, y: 0 } },
       { type: 'endTurn', unitId: 'a' },
     );
-    expect(requireUnit(moved, 'a').fp).toBe(45);
+    // moving one plain tile costs 4 AP; 96 left → 64 FP recovered
+    expect(requireUnit(moved, 'a').fp).toBe(26);
     expect(moved.turn?.unitId).toBe('e');
   });
 
@@ -85,7 +87,6 @@ describe('attacks', () => {
       unit({ id: 'a', stats: { str: 6, skl: 6, agi: 20 }, at: { x: 1, y: 1 }, facing: 'south' }),
       unit({ id: 'e', side: 'enemy', at: { x: 1, y: 2 }, facing: 'north' }),
     ]);
-  // Units start battle with little AP; give the defender a full turn's worth so it can react.
   const withAp = (s: BattleState, id: string, ap: number): BattleState => ({
     ...s,
     units: s.units.map((u) => (u.id === id ? { ...u, ap } : u)),
@@ -99,18 +100,19 @@ describe('attacks', () => {
       reaction: 'defend',
     });
     const e = requireUnit(state, 'e');
-    expect(e.hp).toBe(80 - 7);
-    expect(e).toMatchObject({ ap: 20, fp: 30 });
-    // 15 FP for the attack plus the 20 FP surcharge every attack carries.
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 35, fp: 35, xp: 10 });
+    // Slash: (24 + 6) × 0.8 = 24, halved to 12, minus armour 8
+    expect(e.hp).toBe(80 - 4);
+    expect(e).toMatchObject({ ap: 100, fp: 30 });
+    // Slash costs 30 AP and only 5 FP.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 70, fp: 5, xp: 10 });
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
-      strikes: [{ hit: true, damage: 7 }],
+      strikes: [{ hit: true, damage: 4 }],
     });
   });
 
-  it('attack back spends the defender FP only and strikes back', () => {
+  it('attack back turns the attack AP cost into FP, spends no AP and strikes back', () => {
     const { state, events } = applyCommand(withAp(adjacent(), 'e', 60), {
       type: 'attack',
       unitId: 'a',
@@ -119,7 +121,7 @@ describe('attacks', () => {
     });
     const e = requireUnit(state, 'e');
     expect(e.ap).toBe(60);
-    expect(e.fp).toBe(15 + 20);
+    expect(e.fp).toBe(30); // Slash costs 30 AP, paid as 30 FP when striking back
     const ev = events[0];
     expect(ev?.type === 'attackResolved' && ev.retaliation?.attackerId).toBe('e');
   });
@@ -146,7 +148,7 @@ describe('attacks', () => {
 
   it('defeating the last enemy wins the battle and blocks further commands', () => {
     let s = adjacent();
-    s = { ...s, units: s.units.map((u) => (u.id === 'e' ? { ...u, hp: 5 } : u)) };
+    s = { ...s, units: s.units.map((u) => (u.id === 'e' ? { ...u, hp: 3 } : u)) };
     const { state, events } = applyCommand(s, {
       type: 'attack',
       unitId: 'a',

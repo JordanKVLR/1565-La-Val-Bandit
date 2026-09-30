@@ -193,8 +193,8 @@ function resolveAttack(
   attacker.ap -= attack.apCost;
   attacker.fp = Math.min(b.fpMax, attacker.fp + attackFpCost(state, attacker, attack));
   // Reactions cost the defender FP only, never AP.
-  const backAttack = attackBackWith(target);
-  target.fp = Math.min(b.fpMax, target.fp + reactionFpCost(state, target, reaction));
+  const backAttack = attackBackWith(target, attacker.pos);
+  target.fp = Math.min(b.fpMax, target.fp + reactionFpCost(state, target, reaction, attacker.pos));
   attacker.facing = facingToward(attacker.pos, target.pos, attacker.facing);
 
   const pending: BattleEvent[] = [];

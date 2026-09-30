@@ -71,32 +71,46 @@ queue on the HUD.
 
 **Action Points (AP):**
 
-- A unit gains **+40 AP** at the start of its turn (cap 100). Unspent AP carries over, so
-  waiting is a real choice.
+This section follows the classic Vanguard Bandits framework (see §1: mechanics, not assets).
+
+- Every turn starts with a **full 100 AP**.
 - Moving costs AP per tile by terrain: Road 3 · Plain 4 · Field/Scrub 5 · Rubble 8 ·
   Shallows 10. Climbing costs +4 per height step. MOV caps tiles per turn.
-- An attack costs the weapon's AP (sword 25, lance 30, arquebus 35, bombard 50).
+- Attacks cost their own AP (starters 25–35, techniques 30–60).
 - Reactions never cost AP; they cost FP (see below).
 - The unit card previews every cost before you commit: tapping a tile shows the route and the
   AP it will take (tap again to move), and picking a technique shows its AP and FP.
 
+**Starter attacks** (every pilot, no requirements; faction techniques come on top):
+
+| Weapon    | Attack 1                   | Attack 2                                      |
+| --------- | -------------------------- | --------------------------------------------- |
+| Blade     | Slash ×0.8, +20%, 30 AP    | Thrust ×1.0, ±0, 30 AP                        |
+| Polearm   | Thrust ×1.0, ±0, 30 AP     | Long Thrust ×1.0, −20%, 35 AP, reach 1–2      |
+| Blunt     | Bash ×0.8, +20%, 30 AP     | Smash ×1.0, ±0, 30 AP                         |
+| Firearm   | Fire ×1.0, gun range (2–4) | Stock Strike ×0.5, +10%, 25 AP, adjacent only |
+| Explosive | Throw ×1.0, weapon range   | Shove ×0.5, +10%, 25 AP, adjacent only        |
+
+All starters cost 5 FP. Faction techniques cost 30–60 AP and 5–12 FP.
+
 **Fatigue Points (FP):**
 
-- Every attack adds its technique's FP **plus a flat 20** (Attack back included), so attacking
-  every turn wears a pilot out. Reactions add FP too (below). SPI reduces all FP costs.
-- FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100 (_Spent_): the unit can't attack or
-  react until it recovers.
-- FP recovers 15 per turn, or 35 if the unit ends its turn with **Rest** (no action).
+- Your own attacks add little FP (the attack's FP, 5–12). Reacting is what tires a pilot;
+  **Attack back** pays the strike's whole AP cost as FP. SPI reduces all FP costs.
+- **Recovery:** at the end of a turn, every 3 AP left unspent removes 2 FP (plus 1 per SPI). A
+  turn spent waiting clears 66 FP. There is no other recovery.
+- FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100: the pilot **faints**: it can't move,
+  attack or react, and must pass its turn (which recovers 66).
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction        | Cost          | Effect                                                                                                                                                                      |
-| --------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Defend**      | +30 FP        | Always hit, damage ×0.5                                                                                                                                                     |
-| **Avoid**       | +20 FP        | The hit rolls at the normal chance; if it lands, full damage                                                                                                                |
-| **Attack back** | the attack FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                            |
-| **Counter**     | +20 FP        | A gamble: chance = 10% + 2% × (your INT − attacker INT), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
-| **Do nothing**  | free          | Take the hit (+15% to be hit)                                                                                                                                               |
+| Reaction        | Cost              | Effect                                                                                                                                                                      |
+| --------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Defend**      | +30 FP            | Always hit, damage ×0.5                                                                                                                                                     |
+| **Avoid**       | +20 FP            | The hit rolls at the normal chance; if it lands, full damage                                                                                                                |
+| **Attack back** | strike's AP as FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                            |
+| **Counter**     | +20 FP            | A gamble: chance = 10% + 2% × (your INT − attacker INT), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
+| **Do nothing**  | free              | Take the hit (+15% to be hit)                                                                                                                                               |
 
 The reaction menu always appears, listing every reaction; ones that can't be used are greyed out
 with the reason. **Direction matters:** from the front, all are offered. From the side: Defend,

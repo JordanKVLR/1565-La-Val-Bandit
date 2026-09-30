@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  attackBackWith,
   availableReactions,
+  findAttack,
   createBattle,
   facingToward,
   facingZone,
   forecastAttack,
   requireUnit,
+  starterAttacks,
 } from '../src';
 import { GUN, makeMap, setup, unit } from './fixtures';
 
@@ -49,8 +52,8 @@ function duel(
 describe('forecast', () => {
   it('computes golden numbers for a frontal attack on flat ground', () => {
     const { state, a, t } = duel();
-    const f = forecastAttack(state, a, t);
-    // hit = 80 + 6*2 - 6*2 = 80; attack back / no reaction +15 → 95 (cap); defend and a failed counter always hit
+    const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
+    // Thrust: hit = 80 + 6*2 - 6*2 = 80; attack back / no reaction +15 → 95 (cap); defend and a failed counter always hit
     expect(f.zone).toBe('front');
     expect(f.hitChance).toEqual({ defend: 100, avoid: 80, attackBack: 95, counter: 100, none: 95 });
     // damage = (24 + 6) - 8 = 22; defend = round(30*0.5) - 8 = 7
@@ -60,7 +63,7 @@ describe('forecast', () => {
 
   it('rewards rear attacks with hit and damage bonuses', () => {
     const { state, a, t } = duel({ targetFacing: 'south' });
-    const f = forecastAttack(state, a, t);
+    const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
     expect(f.zone).toBe('rear');
     expect(f.hitChance.avoid).toBe(95);
     expect(f.damage.avoid).toBe(Math.round(30 * 1.25) - 8);
@@ -68,13 +71,13 @@ describe('forecast', () => {
 
   it('rewards height and penalises attacking uphill', () => {
     const up = duel({ heights: ['00200', '00000', '00000'] });
-    const fu = forecastAttack(up.state, up.a, up.t);
+    const fu = forecastAttack(up.state, up.a, up.t, up.a.pos, findAttack(up.a, 'thrust'));
     expect(fu.heightDiff).toBe(2);
     expect(fu.hitChance.avoid).toBe(90);
     expect(fu.damage.avoid).toBe(Math.round(30 * 1.2) - 8);
 
     const down = duel({ heights: ['00000', '00200', '00000'] });
-    const fd = forecastAttack(down.state, down.a, down.t);
+    const fd = forecastAttack(down.state, down.a, down.t, down.a.pos, findAttack(down.a, 'thrust'));
     expect(fd.hitChance.avoid).toBe(70);
     expect(fd.damage.avoid).toBe(22); // no damage penalty downhill
   });
@@ -101,9 +104,13 @@ describe('forecast', () => {
     const { state, a, t } = duel();
     const all = ['defend', 'avoid', 'attackBack', 'counter', 'none'];
     expect(availableReactions(state, t, a)).toEqual(all);
-    const gunner = { ...t, weapon: GUN };
-    // Out of range to strike back, but a Counter turns the attacker's own blow and needs no reach.
-    expect(availableReactions(state, gunner, a)).toEqual(['defend', 'avoid', 'counter', 'none']);
+    // A gunner can't fire at point-blank range but strikes back with the stock.
+    const gunner = { ...t, weapon: GUN, attacks: starterAttacks(GUN) };
+    expect(availableReactions(state, gunner, a)).toEqual(all);
+    expect(attackBackWith(gunner, a.pos).name).toBe('Stock Strike');
+    // With no melee option it can't strike back, but a Counter needs no reach.
+    const fireOnly = { ...gunner, attacks: gunner.attacks.slice(0, 1) };
+    expect(availableReactions(state, fireOnly, a)).toEqual(['defend', 'avoid', 'counter', 'none']);
     const broke = { ...t, ap: 0 };
     expect(availableReactions(state, broke, a)).toEqual(all);
     const spent = { ...t, fp: 100 };
@@ -112,9 +119,10 @@ describe('forecast', () => {
 
   it('forecasts the strike back and the counter gamble', () => {
     const { state, a, t } = duel();
-    const f = forecastAttack(state, a, t);
-    expect(f.retaliation).toEqual({ hitChance: 95, damage: 22 });
-    // equal INT: 10% base chance; reflects 22 × 1.25 = 27.5 → 28
+    const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
+    // The defender strikes back with Slash: 80 + 20 = 100 → 95 (cap); (24 + 6) × 0.8 − 8 = 16
+    expect(f.retaliation).toEqual({ hitChance: 95, damage: 16 });
+    // equal INT: 10% base chance; reflects the Thrust's 22 × 1.25 = 27.5 → 28
     expect(f.counter).toEqual({ chance: 10, reflect: 28 });
   });
 });

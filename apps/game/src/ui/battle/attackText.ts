@@ -14,7 +14,7 @@ export function attackTags(a: Attack): string[] {
   return tags;
 }
 
-/** `fpCost` is what the attack really costs this pilot (surcharge and SPI included). */
+/** `fpCost` is what the attack really costs this pilot (after SPI). */
 export function attackStats(a: Attack, weapon: Weapon, fpCost: number = a.fpCost): string {
   const r = attackRange(a, weapon);
   const range = r.min === r.max ? `${r.min}` : `${r.min}–${r.max}`;

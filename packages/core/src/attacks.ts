@@ -1,4 +1,4 @@
-import type { PilotStats, Weapon, WeaponType } from './units';
+import type { PilotStats, Weapon } from './units';
 
 /** How the duel close-up animates an attack. Purely presentational. */
 export type AttackStyle =
@@ -38,27 +38,144 @@ export interface Attack {
 
 export const BASIC_ATTACK_ID = 'basic';
 
-const BASIC: Record<WeaponType, { name: string; style: AttackStyle }> = {
-  blade: { name: 'Strike', style: 'slash' },
-  polearm: { name: 'Thrust', style: 'thrust' },
-  blunt: { name: 'Bash', style: 'bash' },
-  firearm: { name: 'Fire', style: 'shot' },
-  explosive: { name: 'Throw', style: 'throw' },
-};
+type Starter = Omit<Attack, 'requires'>;
 
-/** The plain attack every weapon has, with no requirements. */
+/**
+ * Every pilot starts with two attacks for their weapon, with no stat requirements. Costs follow
+ * the classic tactical-RPG pattern: a quick accurate cut and a solid strike for about 30 AP and
+ * only 5 FP each, so fatigue comes mostly from reacting, not from attacking.
+ * The first entry (id `basic`) is the weapon's main attack.
+ */
+function starters(weapon: Weapon): Starter[] {
+  const melee = { minRange: 1, maxRange: 1 };
+  switch (weapon.type) {
+    case 'blade':
+      return [
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Slash',
+          style: 'slash',
+          power: 0.8,
+          accuracy: 20,
+          apCost: 30,
+          fpCost: 5,
+          ...melee,
+        },
+        {
+          id: 'thrust',
+          name: 'Thrust',
+          style: 'thrust',
+          power: 1,
+          accuracy: 0,
+          apCost: 30,
+          fpCost: 5,
+          ...melee,
+        },
+      ];
+    case 'polearm':
+      // Polearms can't slash; Long Thrust uses their reach instead.
+      return [
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Thrust',
+          style: 'thrust',
+          power: 1,
+          accuracy: 0,
+          apCost: 30,
+          fpCost: 5,
+          ...melee,
+        },
+        {
+          id: 'long-thrust',
+          name: 'Long Thrust',
+          style: 'thrust',
+          power: 1,
+          accuracy: -20,
+          apCost: 35,
+          fpCost: 5,
+          minRange: 1,
+          maxRange: 2,
+        },
+      ];
+    case 'blunt':
+      return [
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Bash',
+          style: 'bash',
+          power: 0.8,
+          accuracy: 20,
+          apCost: 30,
+          fpCost: 5,
+          ...melee,
+        },
+        {
+          id: 'smash',
+          name: 'Smash',
+          style: 'overhead',
+          power: 1,
+          accuracy: 0,
+          apCost: 30,
+          fpCost: 5,
+          ...melee,
+        },
+      ];
+    case 'firearm':
+      // Range is the gunner's advantage; up close they can only club with the stock.
+      return [
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Fire',
+          style: 'shot',
+          power: 1,
+          accuracy: 0,
+          apCost: weapon.apCost,
+          fpCost: 5,
+        },
+        {
+          id: 'stock-strike',
+          name: 'Stock Strike',
+          style: 'bash',
+          power: 0.5,
+          accuracy: 10,
+          apCost: 25,
+          fpCost: 5,
+          ...melee,
+        },
+      ];
+    case 'explosive':
+      return [
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Throw',
+          style: 'throw',
+          power: 1,
+          accuracy: 0,
+          apCost: weapon.apCost,
+          fpCost: 5,
+        },
+        {
+          id: 'shove',
+          name: 'Shove',
+          style: 'bash',
+          power: 0.5,
+          accuracy: 10,
+          apCost: 25,
+          fpCost: 5,
+          ...melee,
+        },
+      ];
+  }
+}
+
+/** The two attacks every pilot has from the start with this weapon (no requirements). */
+export function starterAttacks(weapon: Weapon): Attack[] {
+  return starters(weapon).map((a) => ({ ...a, requires: {} }));
+}
+
+/** The weapon's main attack. */
 export function basicAttack(weapon: Weapon): Attack {
-  const b = BASIC[weapon.type];
-  return {
-    id: BASIC_ATTACK_ID,
-    name: b.name,
-    style: b.style,
-    power: 1,
-    accuracy: 0,
-    apCost: weapon.apCost,
-    fpCost: weapon.fpCost,
-    requires: {},
-  };
+  return starterAttacks(weapon)[0]!;
 }
 
 export function attackRange(attack: Attack, weapon: Weapon): { min: number; max: number } {
@@ -67,9 +184,7 @@ export function attackRange(attack: Attack, weapon: Weapon): { min: number; max:
 
 /** True when the pilot's current stats meet every requirement. */
 export function meetsRequirements(stats: PilotStats, attack: Attack): boolean {
-  return (
-    stats.str >= (attack.requires.str ?? 0) &&
-    stats.skl >= (attack.requires.skl ?? 0) &&
-    stats.agi >= (attack.requires.agi ?? 0)
+  return (Object.keys(attack.requires) as Array<keyof PilotStats>).every(
+    (k) => stats[k] >= (attack.requires[k] ?? 0),
   );
 }
