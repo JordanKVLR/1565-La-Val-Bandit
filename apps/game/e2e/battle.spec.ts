@@ -14,7 +14,7 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
     await levelUp.getByRole('button', { name: /Continue|Save points/ }).click();
     return true;
   }
-  const react = page.locator('.fc-choice:not([disabled])').first();
+  const react = page.getByTestId('react-go');
   if (await react.isVisible()) {
     await react.click();
     return true;
@@ -37,7 +37,7 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
         const box = (await page.locator('canvas.battle-canvas').boundingBox())!;
         // First tap previews the route: the AP bar shows the cost before anything moves.
         await page.mouse.click(box.x + pos.x, box.y + pos.y);
-        await expect(page.getByTestId('active-card').locator('.bar-ap .bar-value')).toHaveText(
+        await expect(page.getByTestId('active-card').locator('.vb-ap .changing')).toHaveText(
           /\d+→\d+/,
         );
         // Second tap on the same tile moves.
@@ -54,6 +54,8 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
 }
 
 test('a player can move, end turns and answer enemy attacks through round 2', async ({ page }) => {
+  // Plays two full rounds of animated turns; allow for slower CI machines.
+  test.setTimeout(60_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('./?battle=b1-marsaxlokk');

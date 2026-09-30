@@ -6,11 +6,19 @@
   --blood: #8e2a22;
   --panel: rgba(27, 20, 16, 0.82);
   --font-display: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  /* Menu lettering in the classic tactical-RPG style (Pirata One, SIL OFL). */
+  --font-vb: 'Pirata One', 'Palatino Linotype', Georgia, serif;
+  --vb-panel: rgba(10, 12, 26, 0.84);
+  --vb-line: #d8dbe4;
+  --vb-text: #f4f5f8;
   color-scheme: dark;
 }
 
 * {
   box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
 }
 
 html,
@@ -203,45 +211,6 @@ body,
   gap: 6px;
   max-width: min(300px, 40vw);
 }
-.unit-card {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 190px;
-  padding: 0.4em 0.7em;
-  background: var(--panel);
-  border: 1px solid var(--gold);
-  border-left-width: 4px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-}
-.unit-card.side-player {
-  border-left-color: #3d6fbd;
-}
-.unit-card.side-enemy {
-  border-left-color: #bd4a3d;
-}
-.uc-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.uc-head strong {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.unit-card .unit-bars {
-  min-width: 200px;
-}
-.btn.mini.details {
-  min-height: 44px;
-  padding: 0 0.7em;
-  font-size: 0.8rem;
-}
-
 /* Short-lived announcements, e.g. "New technique learned". */
 .notices {
   position: absolute;
@@ -294,29 +263,6 @@ body,
 }
 .log-lines .empty {
   opacity: 0.6;
-}
-.modal-box.details-box {
-  width: min(640px, 100%);
-}
-.ud-head {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-.ud-head p {
-  margin: 2px 0;
-  font-size: 0.85rem;
-}
-.ud-head .stat-icons {
-  margin-left: auto;
-}
-.ud-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.ud-body > .unit-bars {
-  max-width: 360px;
 }
 .ud-techniques span {
   color: var(--gold);
@@ -386,106 +332,27 @@ body,
   border-radius: 8px;
 }
 
-/* Forecast / reaction panel */
-.forecast,
+/* Reaction prompt: a title over the forecast. */
 .reaction-wrap {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: min(720px, calc(100vw - 24px));
+  inset: 0;
+  pointer-events: none;
 }
-.reaction-wrap .forecast {
-  position: static;
-  transform: none;
-  width: auto;
+.reaction-wrap > * {
+  pointer-events: auto;
 }
 .reaction-title {
-  margin-bottom: 6px;
-  text-align: center;
-  font-size: 1.1rem;
-  color: #ffd9c9;
-  text-shadow: 0 2px 0 #000;
-}
-.forecast {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px;
-  background: rgba(20, 16, 22, 0.92);
-  border: 2px solid #a9a4b8;
-  border-radius: 6px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-}
-.fc-sides {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.fc-side {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  padding: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.fc-head {
-  display: flex;
-  gap: 8px;
-}
-.fc-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 0.95rem;
-}
-.fc-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-.fc-extra {
-  font-size: 0.8rem;
-  opacity: 0.85;
-}
-.fc-choices {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-.fc-odds {
-  margin-right: auto;
-  font-size: 1rem;
-  font-variant-numeric: tabular-nums;
-}
-.fc-choice {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  padding: 0.3em 0.6em;
-  line-height: 1.1;
-}
-.fc-cost {
-  margin-right: 6px;
-  padding: 0 5px;
-  border-radius: 3px;
-  background: #5a4a1a;
-  color: #f5d77a;
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-}
-.fc-choice:disabled .fc-choice-odds {
-  color: #f0a898;
-  opacity: 1;
-}
-.fc-choice-odds {
-  font-size: 0.8rem;
-  opacity: 0.85;
-  font-variant-numeric: tabular-nums;
+  position: absolute;
+  top: max(8px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-vb);
+  font-size: 1.4rem;
+  color: #ffe2d6;
+  text-shadow:
+    0 2px 0 #000,
+    0 0 6px #000;
 }
 .portrait {
   flex: 0 0 auto;
@@ -1463,4 +1330,502 @@ input[type='range'] {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* ══ Classic battle look ═════════════════════════════════════════════════════
+   Framed dark panels with a light double border, white text, blackletter menu lettering,
+   AP/FP/HP labelled above their bars. Our own drawing; only the layout follows the genre. */
+.vb-panel {
+  background: var(--vb-panel);
+  border: 2px solid var(--vb-line);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 3px rgba(216, 219, 228, 0.35),
+    0 4px 14px rgba(0, 0, 0, 0.5);
+  color: var(--vb-text);
+}
+.vb-name {
+  font-family: var(--font-vb);
+  font-weight: normal;
+  letter-spacing: 0.02em;
+}
+.vb-bars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.vb-bar-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.vb-bar-text span:first-child {
+  font-weight: bold;
+}
+.vb-bar-text .changing {
+  color: #f5d77a;
+  font-weight: bold;
+}
+.vb-track {
+  position: relative;
+  height: 7px;
+  background: #0a0a10;
+  border: 1px solid #6b6f7c;
+  overflow: hidden;
+}
+.vb-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+.vb-ap .vb-fill {
+  background: linear-gradient(#6ea0ff, #2f5fcf);
+}
+.vb-fp .vb-fill {
+  background: linear-gradient(#ffe27a, #c9a21e);
+}
+.vb-hp .vb-fill {
+  background: linear-gradient(#7de08a, #2f9a3e);
+}
+
+/* Assist grid: 3×3 around the struck tile, × for each supporting ally. */
+.vb-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 11px);
+  grid-auto-rows: 11px;
+  gap: 2px;
+  flex: none;
+}
+.vb-cell {
+  display: grid;
+  place-items: center;
+  border: 1px solid #8a8e9a;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: bold;
+  color: #ff5a4a;
+}
+.vb-cell.mid {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Forecast: two panels side by side, command list at the bottom right. */
+.vb-forecast {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.vb-forecast > * {
+  pointer-events: auto;
+}
+.vb-sides {
+  position: absolute;
+  top: max(44px, calc(env(safe-area-inset-top) + 40px));
+  left: max(12px, env(safe-area-inset-left));
+  right: calc(max(12px, env(safe-area-inset-right)) + 190px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.vb-side {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px 8px;
+}
+.vb-side-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.vb-side-top .portrait {
+  width: 56px;
+  height: 56px;
+  font-size: 1.7rem;
+  border-color: var(--vb-line);
+}
+.vb-rows {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+.vb-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  min-height: 1.3em;
+}
+.vb-row small {
+  font-size: 0.7em;
+}
+.vb-row > span:last-child {
+  font-variant-numeric: tabular-nums;
+}
+.vb-action {
+  border-top: 1px solid rgba(216, 219, 228, 0.3);
+  padding-top: 2px;
+  font-size: 1.05rem;
+}
+.vb-detail {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  min-height: 1.1em;
+}
+.vb-commands {
+  position: absolute;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(6px, env(safe-area-inset-bottom));
+  max-height: calc(100% - 12px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 4px;
+  background: linear-gradient(rgba(70, 26, 18, 0.92), rgba(34, 12, 8, 0.92));
+  border: 2px solid var(--vb-line);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.6),
+    0 4px 14px rgba(0, 0, 0, 0.5);
+}
+.vb-cmd {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  font-family: var(--font-vb);
+  font-size: 1.45rem;
+  line-height: 1;
+  color: var(--vb-text);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  text-shadow:
+    0 2px 0 #000,
+    0 0 3px #000;
+  cursor: pointer;
+}
+.vb-cmd small {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  opacity: 0.85;
+  text-shadow: none;
+}
+.vb-cmd small.why {
+  color: #f0a898;
+  max-width: 9em;
+  text-align: right;
+}
+.vb-cmd:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.vb-cmd.on {
+  color: #ffd76a;
+  background: linear-gradient(90deg, rgba(255, 215, 106, 0.22), transparent);
+}
+.vb-cmd.on::before {
+  content: '▸';
+  margin-right: -6px;
+}
+.vb-cmd.go {
+  color: #fff3c4;
+}
+.vb-cmd:focus-visible {
+  outline: 2px solid #ffd76a;
+  outline-offset: -2px;
+}
+.vb-cmd.mini {
+  min-height: 36px;
+  padding: 0 8px;
+  font-size: 1.05rem;
+  border: 1px solid var(--vb-line);
+  background: rgba(70, 26, 18, 0.9);
+}
+
+/* Unit card (bottom left). */
+.unit-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: min(250px, 38vw);
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+.uc-top {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.uc-top .portrait {
+  width: 44px;
+  height: 44px;
+  font-size: 1.4rem;
+  border-color: var(--vb-line);
+}
+.uc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.uc-head strong {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1.15rem;
+}
+
+/* Action menu, technique list, sub-mode bar and facing picker in the same frames. */
+.action-menu,
+.attack-menu,
+.submode,
+.facing-picker,
+.battle-screen .modal-box {
+  background: var(--vb-panel);
+  border: 2px solid var(--vb-line);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 2px rgba(0, 0, 0, 0.7),
+    0 4px 14px rgba(0, 0, 0, 0.5);
+  color: var(--vb-text);
+}
+.action-menu {
+  background: linear-gradient(rgba(70, 26, 18, 0.92), rgba(34, 12, 8, 0.92));
+  gap: 0;
+  padding: 4px;
+}
+.action-title,
+.battle-screen .modal-box h2,
+.am-name {
+  font-family: var(--font-vb);
+  font-variant: normal;
+  font-weight: normal;
+  color: var(--vb-text);
+}
+.battle-screen .modal-box h2 {
+  font-size: 1.7rem;
+}
+.btn.action {
+  justify-content: flex-start;
+  font-family: var(--font-vb);
+  font-size: 1.45rem;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  text-shadow:
+    0 2px 0 #000,
+    0 0 3px #000;
+}
+.btn.action:not(:disabled):active,
+.btn.action:focus-visible {
+  color: #ffd76a;
+  background: linear-gradient(90deg, rgba(255, 215, 106, 0.22), transparent);
+}
+.btn.action.end {
+  background: transparent;
+}
+.am-name {
+  font-size: 1.3rem;
+}
+
+/* Unit details: figure and equipment left, portrait, attributes and level right. */
+.vbd-sheet {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.8fr) 1.6fr;
+  gap: 0;
+  width: min(820px, 100%);
+  max-height: calc(100vh - 24px);
+}
+.vbd-left {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 6px;
+}
+.vbd-figure {
+  flex: 1;
+  width: 100%;
+  min-height: 140px;
+}
+.vbd-equip {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-vb);
+  font-size: 1.2rem;
+}
+.vbd-equip li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eq-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1px solid var(--vb-line);
+}
+.eq-icon.frame {
+  background: #5b7bb8;
+  border-radius: 8px 8px 3px 3px;
+}
+.eq-icon.weapon {
+  background: linear-gradient(135deg, transparent 40%, #d8dbe4 40% 60%, transparent 60%);
+}
+.eq-icon.item {
+  border-radius: 50%;
+  background: #7a5a3a;
+}
+.vbd-right {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 8px 10px;
+  overflow-y: auto;
+}
+.vbd-top {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) 1.1fr;
+  gap: 10px;
+}
+.vbd-portrait {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.vbd-portrait .portrait {
+  width: 60px;
+  height: 60px;
+  border-color: var(--vb-line);
+}
+.vbd-attrs {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.vbd-attr {
+  display: grid;
+  grid-template-columns: 2.4em 1.8em 1fr;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+.vbd-attr .lbl {
+  font-weight: bold;
+}
+.vbd-attr b {
+  text-align: right;
+}
+.vb-ticks {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 1px;
+  height: 8px;
+}
+.vb-ticks i {
+  background: #3a2426;
+  transform: skewX(-20deg);
+}
+.vb-ticks i.on {
+  background: #5b9cff;
+}
+.vbd-name {
+  margin: 2px 0 0;
+  font-size: 1.7rem;
+  line-height: 1.1;
+}
+.vbd-list {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  margin: 0;
+  font-family: var(--font-vb);
+  font-size: 1.15rem;
+  line-height: 1.25;
+}
+.vbd-list dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+.vbd-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: auto;
+}
+.vbd-actions .vb-cmd {
+  border: 1px solid var(--vb-line);
+  background: rgba(70, 26, 18, 0.9);
+  font-size: 1.2rem;
+}
+@media (max-height: 460px) {
+  .vbd-name {
+    font-size: 1.35rem;
+  }
+  .vbd-list {
+    grid-template-columns: 1fr auto 1fr auto;
+    column-gap: 10px;
+    font-size: 1rem;
+  }
+  .vb-rows {
+    font-size: 0.85rem;
+  }
+  .vb-cmd {
+    font-size: 1.25rem;
+  }
+}
+
+.setting-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* Title screen on short landscape phones: title left, menu right, so nothing is cut off. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .title-screen {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto;
+    align-content: center;
+    justify-content: center;
+    column-gap: clamp(24px, 6vw, 64px);
+    row-gap: 4px;
+    padding: 12px max(24px, env(safe-area-inset-right)) 12px max(24px, env(safe-area-inset-left));
+  }
+  .title-screen h1 {
+    grid-column: 1;
+    font-size: clamp(2.2rem, 17vh, 4.6rem);
+  }
+  .title-screen .subtitle {
+    grid-column: 1;
+    margin: 0;
+    text-align: center;
+  }
+  .title-screen .build-note {
+    grid-column: 1;
+    margin: 0;
+    text-align: center;
+  }
+  .title-menu {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: center;
+  }
 }

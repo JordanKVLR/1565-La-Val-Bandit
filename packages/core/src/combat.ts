@@ -240,6 +240,24 @@ export interface StrikeNumbers {
   readonly pierce: number;
 }
 
+/**
+ * Allies of `striker` standing next to the tile it strikes (each adds hit chance, capped), and
+ * the resulting bonus. The UI draws these as the 3×3 assist grid.
+ */
+export function assistFor(
+  state: BattleState,
+  striker: UnitState,
+  targetPos: Coord,
+): { readonly bonus: number; readonly allies: readonly Coord[] } {
+  const b = state.balance;
+  const allies = livingUnits(state)
+    .filter(
+      (u) => u.id !== striker.id && !isHostile(u, striker) && manhattan(u.pos, targetPos) === 1,
+    )
+    .map((u) => u.pos);
+  return { bonus: Math.min(allies.length * b.assistPerAlly, b.assistMax), allies };
+}
+
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 
 /** Raw numbers for `attacker` (standing at `from`) hitting `target` with `attack`. */
@@ -253,10 +271,7 @@ export function strikeNumbers(
   const b = state.balance;
   const zone = facingZone(target.pos, target.facing, from);
   const heightDiff = heightAt(state, from) - heightAt(state, target.pos);
-  const allies = livingUnits(state).filter(
-    (u) => u.id !== attacker.id && !isHostile(u, attacker) && manhattan(u.pos, target.pos) === 1,
-  ).length;
-  const assist = Math.min(allies * b.assistPerAlly, b.assistMax);
+  const assist = assistFor(state, attacker, target.pos).bonus;
   const zoneHit = zone === 'rear' ? b.rearHitBonus : zone === 'side' ? b.sideHitBonus : 0;
   const tired =
     (attacker.fp >= b.fpTired ? -b.tiredPenalty : 0) +

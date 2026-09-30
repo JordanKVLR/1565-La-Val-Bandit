@@ -1,12 +1,18 @@
 import type { BattleState, UnitState } from '@m1565/core';
-import { attackFpCost, pilotStats, unlockedAttacks } from '@m1565/core';
+import { attackFpCost, attackRange, pilotStats, unlockedAttacks } from '@m1565/core';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { UnitViewer } from '../../render/UnitViewer';
 import { attackStats, attackTags } from './attackText';
 import type { CostPreview } from './StatBars';
-import { ArmMovIcons, AttributeBars, Portrait, UnitBars } from './StatBars';
+import { ATTRIBUTE_BAR_MAX, Portrait } from './StatBars';
+import { STAT_INFO } from './statInfo';
+import { frameName, VbBars } from './vb';
+
+const SIDE_COLOR = { player: '#3d6fbd', enemy: '#bd4a3d' } as const;
 
 /**
- * Compact card for a unit (bottom-left, clear of the action menu): HP/AP/FP bars, armour and
- * movement. `preview` shows what the action being set up will cost.
+ * Compact card for a unit (bottom-left, clear of the action menu): portrait, AP/FP/HP bars,
+ * name and level. `preview` shows what the action being set up will cost.
  */
 export function UnitCard({
   unit,
@@ -22,24 +28,26 @@ export function UnitCard({
   testId?: string;
 }) {
   return (
-    <aside class={`unit-card side-${unit.side}`} data-testid={testId}>
+    <aside class={`vb-panel unit-card side-${unit.side}`} data-testid={testId}>
+      <div class="uc-top">
+        <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
+        <VbBars unit={unit} balance={state.balance} ap={preview?.ap ?? 0} fp={preview?.fp ?? 0} />
+      </div>
       <div class="uc-head">
-        <strong>{unit.name}</strong>
-        <small>Lv {unit.level}</small>
-        <ArmMovIcons arm={unit.arm} mov={unit.mov} />
+        <strong class="vb-name">{unit.name}</strong>
+        <small>LV {unit.level}</small>
         <button
           type="button"
-          class="btn mini details"
+          class="vb-cmd mini details"
           onClick={onDetails}
           aria-label={`Details for ${unit.name}`}
         >
-          Details
+          Info
         </button>
       </div>
-      <UnitBars unit={unit} balance={state.balance} preview={preview} />
       {unit.side === 'player' && (
         <span class="xp-line" data-testid="unit-xp">
-          XP {unit.xp}/{state.balance.xpPerLevel}
+          EXP {unit.xp}/{state.balance.xpPerLevel}
           <span class="xp-track">
             <span style={{ width: `${(unit.xp / state.balance.xpPerLevel) * 100}%` }} />
           </span>
@@ -50,7 +58,42 @@ export function UnitCard({
   );
 }
 
-/** Full sheet for a unit: all seven attributes, equipment and learned techniques. */
+/** Short segmented bar for an attribute: 20 ticks, full at 40. */
+function Ticks({ value }: { value: number }) {
+  const lit = Math.round((Math.min(value, ATTRIBUTE_BAR_MAX) / ATTRIBUTE_BAR_MAX) * 20);
+  return (
+    <span class="vb-ticks" aria-hidden="true">
+      {Array.from({ length: 20 }, (_, i) => (
+        <i key={i} class={i < lit ? 'on' : ''} />
+      ))}
+    </span>
+  );
+}
+
+function Figure({ unit }: { unit: UnitState }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    let viewer: UnitViewer | null = null;
+    try {
+      viewer = new UnitViewer(
+        ref.current,
+        SIDE_COLOR[unit.side],
+        unit.weapon.type,
+        unit.frameClass,
+      );
+    } catch {
+      // No WebGL: the equipment list still shows.
+    }
+    return () => viewer?.dispose();
+  }, [unit.id, unit.side, unit.weapon.type, unit.frameClass]);
+  return <canvas ref={ref} class="vbd-figure" aria-hidden="true" />;
+}
+
+/**
+ * Full sheet in the classic layout: the unit's figure and equipment on the left; portrait,
+ * attribute bars, AP/FP/HP and level on the right; "More info" turns to the techniques.
+ */
 export function UnitDetails({
   unit,
   state,
@@ -62,56 +105,103 @@ export function UnitDetails({
   onClose: () => void;
   onSpend?: () => void;
 }) {
+  const [page, setPage] = useState<'stats' | 'techniques'>('stats');
   const stats = pilotStats(unit);
   // Enemies' techniques stay a mystery; your own are listed.
   const techniques = unit.side === 'player' ? unlockedAttacks(unit) : [];
+  const reach = attackRange(unit.attacks[0]!, unit.weapon);
   return (
-    <div class="modal" role="dialog" aria-label={`${unit.name} details`} onClick={onClose}>
-      <div class="modal-box details-box" onClick={(e) => e.stopPropagation()}>
-        <header class="ud-head">
-          <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
-          <div>
-            <h2>{unit.name}</h2>
-            <p>
-              Lv {unit.level}
-              {unit.side === 'player' ? ` · XP ${unit.xp}/${state.balance.xpPerLevel}` : ''} ·{' '}
+    <div class="modal vbd" role="dialog" aria-label={`${unit.name} details`} onClick={onClose}>
+      <div class="vbd-sheet" onClick={(e) => e.stopPropagation()}>
+        <section class="vb-panel vbd-left">
+          <Figure unit={unit} />
+          <ul class="vbd-equip">
+            <li>
+              <span class="eq-icon frame" aria-hidden="true" />
+              {frameName(unit)}
+            </li>
+            <li>
+              <span class="eq-icon weapon" aria-hidden="true" />
               {unit.weapon.name}
-            </p>
-          </div>
-          <ArmMovIcons arm={unit.arm} mov={unit.mov} />
-        </header>
-        <div class="ud-body">
-          <UnitBars unit={unit} balance={state.balance} />
-          <AttributeBars stats={stats} help />
-        </div>
-        {unit.side === 'player' && (
-          <div class="ud-techniques">
-            <span>Techniques</span>
-            <ul>
-              {techniques.map((a) => (
-                <li key={a.id}>
-                  <b>{a.name}</b>{' '}
-                  <small>
-                    {[
-                      attackStats(a, unit.weapon, attackFpCost(state, unit, a)),
-                      ...attackTags(a),
-                    ].join(' · ')}
-                  </small>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <div class="menu-row">
-          {onSpend && unit.statPoints > 0 && (
-            <button type="button" class="btn" onClick={onSpend}>
-              Spend {unit.statPoints} points
-            </button>
+            </li>
+            <li>
+              <span class="eq-icon item" aria-hidden="true" />
+              Nothing
+            </li>
+          </ul>
+        </section>
+        <section class="vb-panel vbd-right">
+          {page === 'stats' ? (
+            <>
+              <div class="vbd-top">
+                <div class="vbd-portrait">
+                  <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
+                  <VbBars unit={unit} balance={state.balance} />
+                </div>
+                <div class="vbd-attrs">
+                  {STAT_INFO.map((s) => (
+                    <div class="vbd-attr" key={s.key} title={s.help}>
+                      <span class="lbl">{s.label}</span>
+                      <b>{stats[s.key]}</b>
+                      <Ticks value={stats[s.key]} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <h2 class="vb-name vbd-name">{unit.name}</h2>
+              <dl class="vbd-list">
+                <dt>Current Level</dt>
+                <dd>{unit.level}</dd>
+                <dt>Exp. To Next</dt>
+                <dd>{unit.side === 'player' ? state.balance.xpPerLevel - unit.xp : '---'}</dd>
+                <dt>Armour</dt>
+                <dd>{unit.arm}</dd>
+                <dt>Move</dt>
+                <dd>{unit.mov}</dd>
+                <dt>Range</dt>
+                <dd>{reach.min === reach.max ? reach.max : `${reach.min}–${reach.max}`}</dd>
+              </dl>
+            </>
+          ) : (
+            <div class="ud-techniques">
+              <h2 class="vb-name vbd-name">{unit.name}: Techniques</h2>
+              {unit.side === 'player' ? (
+                <ul>
+                  {techniques.map((a) => (
+                    <li key={a.id}>
+                      <b>{a.name}</b>{' '}
+                      <small>
+                        {[
+                          attackStats(a, unit.weapon, attackFpCost(state, unit, a)),
+                          ...attackTags(a),
+                        ].join(' · ')}
+                      </small>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>An enemy's techniques are only revealed in battle.</p>
+              )}
+            </div>
           )}
-          <button type="button" class="btn ghost" onClick={onClose}>
-            Close
-          </button>
-        </div>
+          <div class="vbd-actions">
+            {onSpend && unit.statPoints > 0 && (
+              <button type="button" class="vb-cmd" onClick={onSpend}>
+                Spend {unit.statPoints} points
+              </button>
+            )}
+            <button
+              type="button"
+              class="vb-cmd more"
+              onClick={() => setPage(page === 'stats' ? 'techniques' : 'stats')}
+            >
+              {page === 'stats' ? 'More Info' : 'Back'}
+            </button>
+            <button type="button" class="vb-cmd" onClick={onClose}>
+              Close
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   );

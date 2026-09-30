@@ -7,6 +7,8 @@ export interface Settings {
   textSize: 'normal' | 'large';
   musicVolume: number;
   sfxVolume: number;
+  /** Hide the browser's bars. Leaving full screen on purpose is done by switching this off. */
+  fullscreen: boolean;
 }
 
 const KEY = 'armatura.settings.v1';
@@ -17,6 +19,7 @@ const DEFAULTS: Settings = {
   textSize: 'normal',
   musicVolume: 0.6,
   sfxVolume: 0.8,
+  fullscreen: true,
 };
 
 function load(): Settings {
