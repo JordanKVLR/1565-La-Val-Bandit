@@ -149,6 +149,7 @@ export const BalanceSchema = z.object({
   counterHitBonus: z.number(),
   xpHit: z.number().int().min(0),
   xpDefeat: z.number().int().min(0),
+  xpReact: z.number().int().min(0),
   xpPerLevel: z.number().int().positive(),
   xpLevelFactor: z.number().min(0),
   xpMinFactor: z.number().min(0),

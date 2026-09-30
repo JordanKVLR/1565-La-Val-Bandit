@@ -93,9 +93,9 @@ describe('XP', () => {
       targetId: 'e',
       reaction: 'defend',
     });
-    expect(requireUnit(state, 'a').xp).toBe(10);
+    expect(requireUnit(state, 'a').xp).toBe(20);
     const ev = events[0];
-    expect(ev?.type === 'attackResolved' && ev.strikes[0]?.xp).toBe(10);
+    expect(ev?.type === 'attackResolved' && ev.strikes[0]?.xp).toBe(20);
   });
 
   it('levels up every 100 XP, carrying the remainder, with HP and stat points', () => {
@@ -110,7 +110,7 @@ describe('XP', () => {
     });
     const a = requireUnit(state, 'a');
     expect(a.level).toBe(2);
-    expect(a.xp).toBe(90 + 40 - 100);
+    expect(a.xp).toBe(90 + 60 - 100);
     expect(a.maxHp).toBe(before.maxHp + state.balance.hpPerLevel);
     expect(a.statPoints).toBe(state.balance.statPointsPerLevel);
     expect(events.some((e) => e.type === 'levelUp' && e.unitId === 'a' && e.level === 2)).toBe(

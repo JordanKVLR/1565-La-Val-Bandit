@@ -6,8 +6,8 @@
   --blood: #8e2a22;
   --panel: rgba(27, 20, 16, 0.82);
   --font-display: 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-  /* Menu lettering in the classic tactical-RPG style (Pirata One, SIL OFL). */
-  --font-vb: 'Pirata One', 'Palatino Linotype', Georgia, serif;
+  /* Menu lettering: Roman inscriptional capitals, as carved in Valletta stone (Cinzel, SIL OFL). */
+  --font-vb: 'Cinzel', 'Palatino Linotype', Georgia, serif;
   --vb-panel: rgba(10, 12, 26, 0.84);
   --vb-line: #d8dbe4;
   --vb-text: #f4f5f8;

@@ -42,6 +42,8 @@ export interface BalanceConfig {
   /** Base XP for landing a hit, and for the blow that defeats a unit. */
   readonly xpHit: number;
   readonly xpDefeat: number;
+  /** XP for surviving an enemy attack with a reaction (Defend, Avoid, Attack back, Counter). */
+  readonly xpReact: number;
   /** XP needed for each level. Always the same amount; leftover XP carries over. */
   readonly xpPerLevel: number;
   /** XP changes by this fraction per level the target is above (+) or below (−) the attacker. */
@@ -103,8 +105,9 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   assistMax: 15,
   defendDamageMult: 0.5,
   counterHitBonus: 15,
-  xpHit: 10,
-  xpDefeat: 40,
+  xpHit: 20,
+  xpDefeat: 60,
+  xpReact: 3,
   xpPerLevel: 100,
   xpLevelFactor: 0.2,
   xpMinFactor: 0.1,

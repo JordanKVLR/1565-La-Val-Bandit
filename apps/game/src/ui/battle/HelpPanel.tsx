@@ -20,8 +20,9 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>XP and levels</dt>
           <dd>
-            Every hit earns XP, and a defeating blow earns much more. Beating stronger enemies earns
-            more than beating weaker ones. At 100 XP you level up, gain HP and 5 points to spend.
+            Every hit earns 20 XP and a defeating blow 60; surviving an enemy attack with a reaction
+            earns 3. Beating stronger enemies earns more than beating weaker ones. At 100 XP you
+            level up, gain HP and 5 points to spend.
           </dd>
           <dt>Attributes</dt>
           <dd>

@@ -75,7 +75,7 @@
       "id": "scala",
       "side": "enemy",
       "controller": "ai",
-      "level": 13,
+      "level": 14,
       "frame": "colossus",
       "weapon": "colossus-cannon",
       "at": [5, 1],
@@ -83,16 +83,18 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 5
+        "str": 15,
+        "skl": 13,
+        "agi": 5,
+        "def": 11,
+        "vit": 12
       }
     },
     {
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 10,
+      "level": 13,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [3, 2],
@@ -100,8 +102,8 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 11,
-        "skl": 9,
+        "str": 14,
+        "skl": 11,
         "agi": 5
       }
     },
@@ -109,7 +111,7 @@
       "id": "proto-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 10,
+      "level": 13,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [8, 2],
@@ -117,8 +119,8 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 11,
-        "skl": 9,
+        "str": 14,
+        "skl": 11,
         "agi": 5
       }
     },
@@ -126,7 +128,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 10,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 3],
@@ -134,8 +136,25 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 10,
-        "skl": 10,
+        "str": 13,
+        "skl": 12,
+        "agi": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 13,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [9, 3],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "str": 13,
+        "skl": 12,
         "agi": 6
       }
     }

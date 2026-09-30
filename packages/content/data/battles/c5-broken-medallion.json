@@ -79,7 +79,7 @@
       "id": "scala",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 14,
       "frame": "colossus",
       "weapon": "colossus-cannon",
       "at": [7, 3],
@@ -87,8 +87,8 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "str": 12,
-        "skl": 11,
+        "str": 15,
+        "skl": 13,
         "agi": 5
       }
     },
@@ -96,7 +96,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 12,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [5, 5],
@@ -104,8 +104,8 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 11,
-        "skl": 9,
+        "str": 14,
+        "skl": 11,
         "agi": 5
       }
     },
@@ -113,7 +113,7 @@
       "id": "proto-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 12,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [9, 5],
@@ -121,8 +121,8 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 11,
-        "skl": 9,
+        "str": 14,
+        "skl": 11,
         "agi": 5
       }
     },
@@ -130,7 +130,7 @@
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 12,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [3, 6],
@@ -138,8 +138,8 @@
       "ai": "aggressive",
       "name": "Scala's Hireling",
       "stats": {
-        "str": 10,
-        "skl": 9,
+        "str": 13,
+        "skl": 11,
         "agi": 8
       }
     }

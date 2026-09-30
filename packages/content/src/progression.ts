@@ -45,13 +45,16 @@ export function statsAtLevel(
 export function derivedStats(
   level: number,
   frameClass: 'light' | 'medium' | 'heavy',
+  side: 'player' | 'enemy' = 'enemy',
 ): Pick<Stats, 'def' | 'int' | 'spi' | 'vit'> {
   const heft = frameClass === 'heavy' ? 2 : frameClass === 'medium' ? 1 : 0;
-  // Tuned with the balance simulation so generic enemies keep pace with levelled pilots.
+  // Tuned with the balance simulation. Enemies are kept lighter than allied militia so fights
+  // are won by tactics rather than attrition; generic allies keep their sturdier build.
+  const mine = side === 'player';
   return {
-    def: 2 + Math.round(level * 0.6) + heft * 2,
+    def: mine ? 2 + Math.round(level * 0.6) + heft * 2 : 1 + Math.round(level * 0.3) + heft,
     int: 4 + Math.round(level * 0.5),
     spi: 4 + Math.round(level * 0.5),
-    vit: 3 + Math.round(level * 0.9) + heft * 2,
+    vit: mine ? 3 + Math.round(level * 0.9) + heft * 2 : 1 + Math.round(level * 0.45) + heft,
   };
 }

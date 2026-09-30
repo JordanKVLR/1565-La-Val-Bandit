@@ -107,6 +107,8 @@ describe('save migration v4 → v5', () => {
     const loaded = deserializeBattle(JSON.stringify(v4));
     expect(loaded.saveVersion).toBe(SAVE_VERSION);
     expect(loaded.balance).toMatchObject({ apStart: 100, apRegen: 100, apPerFpRecovered: 1.5 });
+    // …and on to v6: faster XP.
+    expect(loaded.balance).toMatchObject({ xpHit: 20, xpDefeat: 60, xpReact: 3 });
     for (const k of ['fpRecovery', 'fpRestRecovery', 'attackFpSurcharge']) {
       expect(k in loaded.balance).toBe(false);
     }

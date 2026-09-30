@@ -172,7 +172,7 @@ skippable on tap.
 ### 2.5 Progression
 
 - **XP during battle:** every hit earns XP, and the blow that defeats a unit earns much more (base
-  10 and 40). XP scales with the level gap: ×(1 + 0.2 × (target level − attacker level)), limited
+  20 and 60). Surviving an enemy attack with a reaction earns 3. XP scales with the level gap: ×(1 + 0.2 × (target level − attacker level)), limited
   to ×0.1–×3. So beating stronger enemies is rewarded and farming weak ones isn't. Only the
   player's side earns XP.
 - **Levels:** always 100 XP per level; leftover XP carries over. Each level-up happens the moment
@@ -523,3 +523,17 @@ Status (2026-09-30): M0–M7 complete. The whole campaign is playable on web and
 | **1565: The Broken Medallion**       | Mystery-led                                                 |
 
 **Chosen: Armatura 1565.**
+
+## 12. Visual theme
+
+The interface is framed in Maltese motifs (see `apps/game/src/ui/maltese.css`):
+
+- **Madum:** the patterned cement floor tile, behind full-screen pages.
+- **Bizzilla:** lace edging along panel tops and dividers.
+- **Gallarija:** command lists and menus are drawn as enclosed wooden balconies, with a cornice
+  on top and limestone corbels underneath.
+- **The Maltese cross** marks selections; **luzzu** paint bands divide titles.
+
+These traditions postdate 1565 (balconies mostly 1600s–1700s, madum 1800s). They are an artistic
+frame around the story, not period detail. The battle layout stays in the classic
+tactical-RPG arrangement (two forecast panels and a command list).
