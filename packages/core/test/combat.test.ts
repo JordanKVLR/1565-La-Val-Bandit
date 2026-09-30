@@ -97,16 +97,17 @@ describe('forecast', () => {
     expect(f.assist).toBe(15);
   });
 
-  it('offers attack back and counter only when the defender can reach and afford them', () => {
+  it('offers attack back only in reach; reactions need FP, not AP', () => {
     const { state, a, t } = duel();
-    expect(availableReactions(state, t, a)).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
+    const all = ['defend', 'avoid', 'attackBack', 'counter', 'none'];
+    expect(availableReactions(state, t, a)).toEqual(all);
     const gunner = { ...t, weapon: GUN };
     // Out of range to strike back, but a Counter turns the attacker's own blow and needs no reach.
-    expect(availableReactions(state, gunner, a)).toEqual(['defend', 'avoid', 'counter']);
-    const broke = { ...t, ap: 5 };
-    expect(availableReactions(state, broke, a)).toEqual(['defend']);
+    expect(availableReactions(state, gunner, a)).toEqual(['defend', 'avoid', 'counter', 'none']);
+    const broke = { ...t, ap: 0 };
+    expect(availableReactions(state, broke, a)).toEqual(all);
     const spent = { ...t, fp: 100 };
-    expect(availableReactions(state, spent, a)).toEqual(['defend']);
+    expect(availableReactions(state, spent, a)).toEqual(['none']);
   });
 
   it('forecasts the strike back and the counter gamble', () => {

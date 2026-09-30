@@ -87,8 +87,8 @@
       "ai": "hold",
       "name": "Scala's Foreman",
       "stats": {
-        "str": 8,
-        "skl": 8,
+        "str": 11,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -104,8 +104,8 @@
       "ai": "defensive",
       "name": "Prototipo",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 5
       }
     },
@@ -121,8 +121,8 @@
       "ai": "defensive",
       "name": "Genoese Mercenary",
       "stats": {
-        "str": 6,
-        "skl": 8,
+        "str": 9,
+        "skl": 10,
         "agi": 6
       }
     },
@@ -138,8 +138,8 @@
       "ai": "defensive",
       "name": "Genoese Mercenary",
       "stats": {
-        "str": 6,
-        "skl": 8,
+        "str": 9,
+        "skl": 10,
         "agi": 6
       }
     },
@@ -155,8 +155,8 @@
       "ai": "aggressive",
       "name": "Genoese Mercenary",
       "stats": {
-        "str": 7,
-        "skl": 7,
+        "str": 10,
+        "skl": 9,
         "agi": 6
       }
     }

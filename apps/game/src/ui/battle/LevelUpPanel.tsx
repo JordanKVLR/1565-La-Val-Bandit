@@ -1,6 +1,6 @@
 import type { PilotStats, StatName, UnitState } from '@m1565/core';
 import { pilotStats } from '@m1565/core';
-import { STAT_INFO } from './statInfo';
+import { AttributeBars } from './StatBars';
 
 interface Props {
   unit: PilotStats & Pick<UnitState, 'name' | 'level' | 'statPoints' | 'frameAgility' | 'maxHp'>;
@@ -20,24 +20,7 @@ export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props)
         <p class="points" data-testid="stat-points">
           {unit.statPoints} point{unit.statPoints === 1 ? '' : 's'} to spend · Max HP {unit.maxHp}
         </p>
-        <div class="stat-rows">
-          {STAT_INFO.map((s) => (
-            <div class="stat-row" key={s.key}>
-              <span class="stat-name">{s.label}</span>
-              <span class="stat-value">{stats[s.key]}</span>
-              <small>{s.help}</small>
-              <button
-                type="button"
-                class="btn icon"
-                aria-label={`Raise ${s.label}`}
-                disabled={unit.statPoints <= 0}
-                onClick={() => onRaise(s.key)}
-              >
-                +
-              </button>
-            </div>
-          ))}
-        </div>
+        <AttributeBars stats={stats} help onRaise={onRaise} canRaise={unit.statPoints > 0} />
         <p class="hint">New techniques unlock as your stats grow. Experiment to find them.</p>
         <button type="button" class="btn" onClick={onDone}>
           {doneLabel ?? (unit.statPoints > 0 ? 'Save points for later' : 'Continue')}

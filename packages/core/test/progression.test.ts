@@ -226,8 +226,10 @@ describe('attacks', () => {
       reaction: 'defend',
       attackId: 'heavy',
     });
-    expect(requireUnit(state, 'e')).toMatchObject({ fp: 20, ap: 45 });
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 60 - 35, fp: 20 });
+    // 30 FP to defend plus 20 fatigue from the technique; AP damage 15.
+    expect(requireUnit(state, 'e')).toMatchObject({ fp: 50, ap: 45 });
+    // 20 FP technique cost plus the 20 FP attack surcharge.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 60 - 35, fp: 40 });
   });
 });
 

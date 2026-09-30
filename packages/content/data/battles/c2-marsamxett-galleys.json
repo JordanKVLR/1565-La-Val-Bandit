@@ -86,8 +86,8 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 7,
-        "skl": 6,
+        "str": 10,
+        "skl": 8,
         "agi": 5
       }
     },
@@ -103,8 +103,8 @@
       "ai": "aggressive",
       "name": "Scala's Sailor",
       "stats": {
-        "str": 6,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 7
       }
     },
@@ -120,8 +120,8 @@
       "ai": "aggressive",
       "name": "Scala's Sailor",
       "stats": {
-        "str": 6,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 7
       }
     },
@@ -137,8 +137,8 @@
       "ai": "defensive",
       "name": "Scala's Gunner",
       "stats": {
-        "str": 5,
-        "skl": 7,
+        "str": 8,
+        "skl": 9,
         "agi": 5
       }
     }

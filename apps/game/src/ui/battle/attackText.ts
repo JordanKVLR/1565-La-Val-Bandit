@@ -14,11 +14,12 @@ export function attackTags(a: Attack): string[] {
   return tags;
 }
 
-export function attackStats(a: Attack, weapon: Weapon): string {
+/** `fpCost` is what the attack really costs this pilot (surcharge and SPI included). */
+export function attackStats(a: Attack, weapon: Weapon, fpCost: number = a.fpCost): string {
   const r = attackRange(a, weapon);
   const range = r.min === r.max ? `${r.min}` : `${r.min}–${r.max}`;
   const acc = a.accuracy ? ` · ACC ${a.accuracy > 0 ? '+' : ''}${a.accuracy}` : '';
-  return `POW ${Math.round(a.power * 100)}%${acc} · AP ${a.apCost} · FP ${a.fpCost} · range ${range}`;
+  return `POW ${Math.round(a.power * 100)}%${acc} · AP ${a.apCost} · FP ${fpCost} · range ${range}`;
 }
 
 /** "STR 12 · SKL 9" with the pilot's shortfalls, or '' when there are no requirements. */

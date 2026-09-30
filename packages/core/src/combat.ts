@@ -14,7 +14,9 @@ import { isHostile, pilotStats } from './units';
  * - attackBack: take the hit, then strike back if still standing and in range (front or side)
  * - counter: high risk, high reward, head-on only. A small chance to turn the blow back on the
  *   attacker at 1.25×; on failure the defender takes the blow at 1.25×.
- * - none: the defender can't react (hit from behind without AP to avoid)
+ * - none: do nothing and take the blow (always offered)
+ *
+ * Reactions never cost AP, only FP, and a Spent unit (FP at max) can't react at all.
  */
 export type Reaction = 'defend' | 'avoid' | 'attackBack' | 'counter' | 'none';
 export type FacingZone = 'front' | 'side' | 'rear';
@@ -84,7 +86,95 @@ export function usableAttacks(
   );
 }
 
-/** Reactions the defender can use against this attack, given facing, AP and fatigue. */
+/** One entry of the reaction menu: every reaction is listed, with why it can't be used. */
+export interface ReactionChoice {
+  readonly reaction: Reaction;
+  readonly available: boolean;
+  /** FP this reaction adds to the defender (after SPI). */
+  readonly fpCost: number;
+  /** Why the reaction is unavailable, for the menu. */
+  readonly reason?: string;
+}
+
+/** The attack a defender strikes back with. */
+export function attackBackWith(defender: UnitState): Attack {
+  return findAttack(defender, 'basic');
+}
+
+/** FP an attack costs this unit: the technique's FP plus the flat per-attack surcharge, after SPI. */
+export function attackFpCost(state: BattleState, unit: UnitState, attack: Attack): number {
+  return fpCostFor(state, unit, attack.fpCost + state.balance.attackFpSurcharge);
+}
+
+/** FP a reaction costs this defender. */
+export function reactionFpCost(
+  state: BattleState,
+  defender: UnitState,
+  reaction: Reaction,
+): number {
+  const b = state.balance;
+  switch (reaction) {
+    case 'defend':
+      return fpCostFor(state, defender, b.defendFpCost);
+    case 'avoid':
+      return fpCostFor(state, defender, b.avoidFpCost);
+    case 'counter':
+      return fpCostFor(state, defender, b.counterFpCost);
+    case 'attackBack':
+      return attackFpCost(state, defender, attackBackWith(defender));
+    case 'none':
+      return 0;
+  }
+}
+
+/** Every reaction, in menu order, marked usable or not against this attack. */
+export function reactionChoices(
+  state: BattleState,
+  defender: UnitState,
+  attacker: UnitState,
+  attackerPos: Coord = attacker.pos,
+  attack?: Attack,
+): ReactionChoice[] {
+  const zone = facingZone(defender.pos, defender.facing, attackerPos);
+  const fresh = canAct(state, defender);
+  const spent = 'Too fatigued (FP full)';
+  const choice = (reaction: Reaction, reason: string | undefined): ReactionChoice => ({
+    reaction,
+    available: reason === undefined,
+    fpCost: reactionFpCost(state, defender, reaction),
+    ...(reason === undefined ? {} : { reason }),
+  });
+  const back = attackBackWith(defender);
+  return [
+    choice('defend', !fresh ? spent : zone === 'rear' ? "Can't defend from behind" : undefined),
+    choice('avoid', !fresh ? spent : undefined),
+    choice(
+      'attackBack',
+      !fresh
+        ? spent
+        : zone === 'rear'
+          ? "Can't strike back from behind"
+          : attack?.noCounter
+            ? `${attack.name} can't be answered`
+            : !attackInRange(back, defender.weapon, defender.pos, attackerPos)
+              ? 'Attacker out of reach'
+              : undefined,
+    ),
+    choice(
+      'counter',
+      !fresh
+        ? spent
+        : zone !== 'front'
+          ? 'Only against attacks from the front'
+          : attack?.noCounter
+            ? `${attack.name} can't be answered`
+            : undefined,
+    ),
+    choice('none', undefined),
+  ];
+}
+
+/** Reactions the defender can use against this attack ('none' is always among them). */
 export function availableReactions(
   state: BattleState,
   defender: UnitState,
@@ -92,25 +182,9 @@ export function availableReactions(
   attackerPos: Coord = attacker.pos,
   attack?: Attack,
 ): Reaction[] {
-  const b = state.balance;
-  const zone = facingZone(defender.pos, defender.facing, attackerPos);
-  const fresh = canAct(state, defender);
-  const canAvoid = fresh && defender.ap >= b.avoidApCost;
-  // Struck from behind: the defender can only try to get out of the way.
-  if (zone === 'rear') return [canAvoid ? 'avoid' : 'none'];
-  const out: Reaction[] = ['defend'];
-  if (!fresh) return out;
-  if (canAvoid) out.push('avoid');
-  const back = defender.attacks[0] ?? basicAttack(defender.weapon);
-  if (
-    !attack?.noCounter &&
-    defender.ap >= back.apCost &&
-    attackInRange(back, defender.weapon, defender.pos, attackerPos)
-  ) {
-    out.push('attackBack');
-  }
-  if (zone === 'front' && !attack?.noCounter && canAvoid) out.push('counter');
-  return out;
+  return reactionChoices(state, defender, attacker, attackerPos, attack)
+    .filter((c) => c.available)
+    .map((c) => c.reaction);
 }
 
 /** Chance (percent) that a Counter turns the blow back on the attacker. */

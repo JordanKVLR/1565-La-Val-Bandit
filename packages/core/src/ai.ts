@@ -1,10 +1,12 @@
 import type { Attack } from './attacks';
 import type { Reaction } from './combat';
 import {
+  attackFpCost,
   availableReactions,
   canAct,
   facingToward,
   forecastAttack,
+  reactionFpCost,
   unlockedAttacks,
   usableAttacks,
 } from './combat';
@@ -29,8 +31,8 @@ export function chooseReaction(
   const attack =
     attacker.attacks.find((a) => a.id === (attackId ?? 'basic')) ?? attacker.attacks[0];
   const f = forecastAttack(state, attacker, defender, attacker.pos, attack);
-  let best: Reaction =
-    availableReactions(state, defender, attacker, attacker.pos, attack)[0] ?? 'none';
+  const fpLeft = state.balance.fpMax - defender.fp;
+  let best: Reaction = 'none';
   let bestScore = Infinity;
   for (const r of availableReactions(state, defender, attacker, attacker.pos, attack)) {
     let score: number;
@@ -47,6 +49,9 @@ export function chooseReaction(
         score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.8;
       }
     }
+    // Fatigue is the price of reacting: spending the last of it leaves the unit defenceless.
+    const fp = reactionFpCost(state, defender, r);
+    score += fp * 0.12 + (fp >= fpLeft ? 6 : 0);
     if (score < bestScore) {
       bestScore = score;
       best = r;
@@ -137,7 +142,7 @@ export function planAiTurn(state: BattleState, unitId: string): Command[] {
     }
   } else if (best.targetId === null && profile === 'aggressive') {
     // Close in, keeping enough AP back to avoid a blow if possible.
-    const budget = Math.max(0, unit.ap - state.balance.avoidApCost);
+    const budget = unit.ap;
     let bestDist = nearestDistance(unit.pos, enemies);
     for (const [, r] of reach) {
       const dest = r.path[r.path.length - 1];
@@ -203,6 +208,13 @@ function scoreAttack(
   // Side effects are worth a little; spending extra AP (less left to react with) costs a little.
   score += p * ((attack.fatigue ?? 0) * 0.15 + (attack.apDamage ?? 0) * 0.15);
   score -= Math.max(0, attack.apCost - (unit.attacks[0]?.apCost ?? attack.apCost)) * 0.1;
+  // Attacking tires the pilot; running out of FP leaves it unable to react.
+  const b = state.balance;
+  const fpAfter = unit.fp + attackFpCost(state, unit, attack);
+  const kills = dmg >= target.hp;
+  score -= (fpAfter - unit.fp) * 0.05;
+  if (!kills && fpAfter >= b.fpMax) score -= 25;
+  else if (!kills && fpAfter + b.defendFpCost >= b.fpMax) score -= 6;
   if (f.retaliation) score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.7;
   if (f.counter) score -= (f.counter.chance / 100) * f.counter.reflect * 0.7;
   const threats = enemies.filter(

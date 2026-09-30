@@ -1,14 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleState, Facing, PilotStats } from '../src';
+import type { BattleState, Facing, PilotStats, Reaction } from '../src';
 import {
   applyCommand,
+  attackFpCost,
   availableReactions,
   counterChance,
   createBattle,
+  deserializeBattle,
   forecastAttack,
   fpCostFor,
+  REACTIONS,
+  reactionChoices,
   requireUnit,
   resisted,
+  SAVE_VERSION,
 } from '../src';
 import { makeMap, setup, unit } from './fixtures';
 
@@ -47,19 +52,67 @@ const reactions = (s: BattleState) =>
   availableReactions(s, requireUnit(s, 't'), requireUnit(s, 'a'));
 
 describe('facing rules', () => {
-  it('head-on: defend, avoid, attack back and counter', () => {
-    expect(reactions(duel('north'))).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
+  it('head-on: defend, avoid, attack back, counter, or do nothing', () => {
+    expect(reactions(duel('north'))).toEqual(['defend', 'avoid', 'attackBack', 'counter', 'none']);
   });
 
   it('from the side: no counter', () => {
-    expect(reactions(duel('east'))).toEqual(['defend', 'avoid', 'attackBack']);
+    expect(reactions(duel('east'))).toEqual(['defend', 'avoid', 'attackBack', 'none']);
   });
 
-  it('from behind: avoid only, or nothing without the AP', () => {
-    expect(reactions(duel('south'))).toEqual(['avoid']);
-    const broke = duel('south');
-    const s = { ...broke, units: broke.units.map((u) => (u.id === 't' ? { ...u, ap: 0 } : u)) };
-    expect(reactions(s)).toEqual(['none']);
+  it('from behind: avoid or do nothing', () => {
+    expect(reactions(duel('south'))).toEqual(['avoid', 'none']);
+  });
+
+  it('lists every reaction with the reason it is unavailable', () => {
+    const s = duel('south');
+    const choices = reactionChoices(s, requireUnit(s, 't'), requireUnit(s, 'a'));
+    expect(choices.map((c) => c.reaction)).toEqual(REACTIONS);
+    expect(choices.find((c) => c.reaction === 'defend')).toMatchObject({
+      available: false,
+      reason: "Can't defend from behind",
+    });
+  });
+
+  it('reacting needs no AP, but a Spent unit (FP full) can only do nothing', () => {
+    const base = duel('north');
+    const broke = { ...base, units: base.units.map((u) => (u.id === 't' ? { ...u, ap: 0 } : u)) };
+    expect(reactions(broke)).toEqual(['defend', 'avoid', 'attackBack', 'counter', 'none']);
+    const spent = { ...base, units: base.units.map((u) => (u.id === 't' ? { ...u, fp: 100 } : u)) };
+    expect(reactions(spent)).toEqual(['none']);
+  });
+});
+
+describe('reaction and attack costs', () => {
+  const fpAfter = (reaction: Reaction) => {
+    const s = duel('north');
+    const { state } = applyCommand(s, { type: 'attack', unitId: 'a', targetId: 't', reaction });
+    const t = requireUnit(state, 't');
+    return { fp: t.fp, ap: t.ap, attacker: requireUnit(state, 'a') };
+  };
+
+  it('defend costs 30 FP, avoid and counter 20, doing nothing 0, and none cost AP', () => {
+    // Fixture pilots have SPI 0, so costs are exact.
+    expect(fpAfter('defend')).toMatchObject({ fp: 30, ap: 60 });
+    expect(fpAfter('avoid')).toMatchObject({ fp: 20, ap: 60 });
+    expect(fpAfter('counter')).toMatchObject({ fp: 20, ap: 60 });
+    expect(fpAfter('none')).toMatchObject({ fp: 0, ap: 60 });
+  });
+
+  it('attack back costs the attack FP plus the surcharge, and no AP', () => {
+    const s = duel('north');
+    const t = requireUnit(s, 't');
+    const r = fpAfter('attackBack');
+    expect(r.ap).toBe(60);
+    expect(r.fp).toBeGreaterThanOrEqual(attackFpCost(s, t, t.attacks[0]!));
+  });
+
+  it('every attack adds 20 FP on top of the technique cost', () => {
+    const s = duel('north');
+    const a = requireUnit(s, 'a');
+    const attack = a.attacks[0]!;
+    expect(attackFpCost(s, a, attack)).toBe(attack.fpCost + 20);
+    expect(fpAfter('none').attacker.fp).toBe(attack.fpCost + 20);
   });
 });
 
@@ -169,5 +222,27 @@ describe('new stats', () => {
     expect(resisted(s, t, 20)).toBe(14);
     const plain = requireUnit(duel('north'), 't');
     expect(fpCostFor(s, plain, 20)).toBe(20);
+  });
+});
+
+describe('save migration v3 → v4', () => {
+  it('replaces AP-based reaction costs with the FP costs', () => {
+    const now = duel('north');
+    const oldBalance: Record<string, unknown> = {
+      ...now.balance,
+      avoidApCost: 10,
+      avoidFpCost: 10,
+    };
+    for (const k of ['defendFpCost', 'counterFpCost', 'attackFpSurcharge']) delete oldBalance[k];
+    const v3 = { ...now, saveVersion: 3, balance: oldBalance };
+    const loaded = deserializeBattle(JSON.stringify(v3));
+    expect(loaded.saveVersion).toBe(SAVE_VERSION);
+    expect(loaded.balance).toMatchObject({
+      defendFpCost: 30,
+      avoidFpCost: 20,
+      counterFpCost: 20,
+      attackFpSurcharge: 20,
+    });
+    expect('avoidApCost' in loaded.balance).toBe(false);
   });
 });

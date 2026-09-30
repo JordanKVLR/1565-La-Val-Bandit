@@ -5,7 +5,7 @@ import type { TerrainType } from './terrain';
 import { startRound } from './turns';
 import { createUnit } from './units';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 /** Builds a fresh battle and starts round 1 (the first unit's turn is already active). */
 export function createBattle(setup: BattleSetup): { state: BattleState; events: BattleEvent[] } {

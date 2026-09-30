@@ -1,24 +1,32 @@
 import type { BattleState, UnitState } from '@m1565/core';
-import { pilotStats, unlockedAttacks } from '@m1565/core';
+import { attackFpCost, pilotStats, unlockedAttacks } from '@m1565/core';
 import { attackStats, attackTags } from './attackText';
-import { STAT_INFO } from './statInfo';
-import { Portrait } from './StatBars';
+import type { CostPreview } from './StatBars';
+import { ArmMovIcons, AttributeBars, Portrait, UnitBars } from './StatBars';
 
-/** Compact card for a tapped unit (bottom-left, clear of the action menu). */
+/**
+ * Compact card for a unit (bottom-left, clear of the action menu): HP/AP/FP bars, armour and
+ * movement. `preview` shows what the action being set up will cost.
+ */
 export function UnitCard({
   unit,
   state,
   onDetails,
+  preview,
+  testId = 'unit-card',
 }: {
   unit: UnitState;
   state: BattleState;
   onDetails: () => void;
+  preview?: CostPreview | undefined;
+  testId?: string;
 }) {
   return (
-    <aside class={`unit-card side-${unit.side}`} data-testid="unit-card">
+    <aside class={`unit-card side-${unit.side}`} data-testid={testId}>
       <div class="uc-head">
         <strong>{unit.name}</strong>
         <small>Lv {unit.level}</small>
+        <ArmMovIcons arm={unit.arm} mov={unit.mov} />
         <button
           type="button"
           class="btn mini details"
@@ -28,9 +36,7 @@ export function UnitCard({
           Details
         </button>
       </div>
-      <span class="uc-line">
-        HP {unit.hp}/{unit.maxHp} · AP {unit.ap} · FP {unit.fp}
-      </span>
+      <UnitBars unit={unit} balance={state.balance} preview={preview} />
       {unit.side === 'player' && (
         <span class="xp-line" data-testid="unit-xp">
           XP {unit.xp}/{state.balance.xpPerLevel}
@@ -71,20 +77,12 @@ export function UnitDetails({
               {unit.side === 'player' ? ` · XP ${unit.xp}/${state.balance.xpPerLevel}` : ''} ·{' '}
               {unit.weapon.name}
             </p>
-            <p>
-              HP {unit.hp}/{unit.maxHp} · AP {unit.ap}/{state.balance.apMax} · FP {unit.fp}/
-              {state.balance.fpMax} · ARM {unit.arm} · MOV {unit.mov}
-            </p>
           </div>
+          <ArmMovIcons arm={unit.arm} mov={unit.mov} />
         </header>
-        <div class="ud-stats">
-          {STAT_INFO.map((s) => (
-            <div class="ud-stat" key={s.key} title={s.help}>
-              <span>{s.label}</span>
-              <b>{stats[s.key]}</b>
-              <small>{s.help}</small>
-            </div>
-          ))}
+        <div class="ud-body">
+          <UnitBars unit={unit} balance={state.balance} />
+          <AttributeBars stats={stats} help />
         </div>
         {unit.side === 'player' && (
           <div class="ud-techniques">
@@ -93,7 +91,12 @@ export function UnitDetails({
               {techniques.map((a) => (
                 <li key={a.id}>
                   <b>{a.name}</b>{' '}
-                  <small>{[attackStats(a, unit.weapon), ...attackTags(a)].join(' · ')}</small>
+                  <small>
+                    {[
+                      attackStats(a, unit.weapon, attackFpCost(state, unit, a)),
+                      ...attackTags(a),
+                    ].join(' · ')}
+                  </small>
                 </li>
               ))}
             </ul>

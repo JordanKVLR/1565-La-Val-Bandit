@@ -14,7 +14,7 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
     await levelUp.getByRole('button', { name: /Continue|Save points/ }).click();
     return true;
   }
-  const react = page.locator('.fc-choice').first();
+  const react = page.locator('.fc-choice:not([disabled])').first();
   if (await react.isVisible()) {
     await react.click();
     return true;
@@ -35,6 +35,12 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
       });
       if (pos) {
         const box = (await page.locator('canvas.battle-canvas').boundingBox())!;
+        // First tap previews the route: the AP bar shows the cost before anything moves.
+        await page.mouse.click(box.x + pos.x, box.y + pos.y);
+        await expect(page.getByTestId('active-card').locator('.bar-ap .bar-value')).toHaveText(
+          /\d+→\d+/,
+        );
+        // Second tap on the same tile moves.
         await page.mouse.click(box.x + pos.x, box.y + pos.y);
         await expect(menu.getByRole('button', { name: 'Undo' })).toBeVisible();
       }

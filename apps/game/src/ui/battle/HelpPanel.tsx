@@ -7,7 +7,8 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
         <dl>
           <dt>Your turn</dt>
           <dd>
-            Move, then Attack, then End Turn and pick a facing. Undo takes back a move you haven't
+            Move, then Attack, then End Turn and pick a facing. Tap a blue tile to see the route and
+            its AP cost on your card, then tap it again to move. Undo takes back a move you haven't
             followed with an attack.
           </dd>
           <dt>Techniques</dt>
@@ -29,21 +30,23 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>AP (blue)</dt>
           <dd>
-            Action points. Each turn adds 40, up to 100. Moving and attacking spend AP, and so does
-            reacting when attacked. Saving AP keeps you safe.
+            Action points. Each turn adds 40, up to 100. Moving and attacking spend AP; reacting
+            never does. Your card shows the cost of a move or technique before you commit.
           </dd>
           <dt>FP (yellow)</dt>
           <dd>
-            Fatigue. Attacks and reactions add it. At 50 you fight worse; at 100 you can only
-            Defend. Ending a turn without moving or attacking rests you faster.
+            Fatigue. Every attack adds its technique's FP plus 20, and reactions add FP too. At 50
+            you fight worse. At 100 you are Spent: you can't attack or react until it drops. Ending
+            a turn without moving or attacking rests you faster.
           </dd>
           <dt>Reactions</dt>
           <dd>
-            When attacked head-on or from the side: <b>Defend</b> halves the hit. <b>Avoid</b> costs
-            AP and may dodge it. <b>Attack back</b> takes the hit, then strikes back if you survive
-            and are in range. From the front only, <b>Counter</b> is a gamble (costs AP like Avoid):
-            if it works, the blow is repelled onto the attacker at 1.25× damage; if it fails, you
-            take 1.25×. INT improves the odds. From the rear you can only try to Avoid.
+            When attacked you always choose. <b>Defend</b> (FP +30) halves the hit. <b>Avoid</b> (FP
+            +20) may dodge it. <b>Attack back</b> (the attack's FP) takes the hit, then strikes back
+            if you survive and are in range. From the front only, <b>Counter</b> (FP +20) is a
+            gamble: if it works the blow is repelled onto the attacker at 1.25×; if it fails you
+            take 1.25×. INT improves the odds. From behind you can only Avoid. <b>Do nothing</b>{' '}
+            costs nothing.
           </dd>
           <dt>Position</dt>
           <dd>

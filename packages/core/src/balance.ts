@@ -17,8 +17,12 @@ export interface BalanceConfig {
   readonly fpTired: number;
   /** Hit-chance penalty when a Tired unit attacks (and bonus when it is attacked). */
   readonly tiredPenalty: number;
-  readonly avoidApCost: number;
+  /** FP each reaction adds to the defender. Reactions never cost AP. */
+  readonly defendFpCost: number;
   readonly avoidFpCost: number;
+  readonly counterFpCost: number;
+  /** Flat FP added to every attack (and Attack back) on top of the technique's own cost. */
+  readonly attackFpSurcharge: number;
   readonly hitMin: number;
   readonly hitMax: number;
   readonly sklHitFactor: number;
@@ -82,8 +86,10 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   fpRestRecovery: 35,
   fpTired: 50,
   tiredPenalty: 10,
-  avoidApCost: 10,
-  avoidFpCost: 10,
+  defendFpCost: 30,
+  avoidFpCost: 20,
+  counterFpCost: 20,
+  attackFpSurcharge: 20,
   hitMin: 5,
   hitMax: 95,
   sklHitFactor: 2,

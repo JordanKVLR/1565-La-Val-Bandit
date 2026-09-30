@@ -91,7 +91,7 @@ describe('attacks', () => {
     units: s.units.map((u) => (u.id === id ? { ...u, ap } : u)),
   });
 
-  it('defend always hits for reduced damage and costs the defender nothing', () => {
+  it('defend always hits for reduced damage and costs the defender 30 FP, no AP', () => {
     const { state, events } = applyCommand(adjacent(), {
       type: 'attack',
       unitId: 'a',
@@ -100,8 +100,9 @@ describe('attacks', () => {
     });
     const e = requireUnit(state, 'e');
     expect(e.hp).toBe(80 - 7);
-    expect(e.ap).toBe(20);
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 35, fp: 15, xp: 10 });
+    expect(e).toMatchObject({ ap: 20, fp: 30 });
+    // 15 FP for the attack plus the 20 FP surcharge every attack carries.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 35, fp: 35, xp: 10 });
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
@@ -109,7 +110,7 @@ describe('attacks', () => {
     });
   });
 
-  it('counter spends the defender AP/FP and strikes back', () => {
+  it('attack back spends the defender FP only and strikes back', () => {
     const { state, events } = applyCommand(withAp(adjacent(), 'e', 60), {
       type: 'attack',
       unitId: 'a',
@@ -117,15 +118,15 @@ describe('attacks', () => {
       reaction: 'attackBack',
     });
     const e = requireUnit(state, 'e');
-    expect(e.ap).toBe(60 - 25);
-    expect(e.fp).toBe(15);
+    expect(e.ap).toBe(60);
+    expect(e.fp).toBe(15 + 20);
     const ev = events[0];
     expect(ev?.type === 'attackResolved' && ev.retaliation?.attackerId).toBe('e');
   });
 
-  it('rejects unaffordable reactions, out-of-range targets and friendly fire', () => {
+  it('rejects reactions a Spent unit cannot make, out-of-range targets and friendly fire', () => {
     const s = adjacent();
-    const poor = { ...s, units: s.units.map((u) => (u.id === 'e' ? { ...u, ap: 0 } : u)) };
+    const poor = { ...s, units: s.units.map((u) => (u.id === 'e' ? { ...u, fp: 100 } : u)) };
     expect(() =>
       applyCommand(poor, { type: 'attack', unitId: 'a', targetId: 'e', reaction: 'avoid' }),
     ).toThrow(/not available/);

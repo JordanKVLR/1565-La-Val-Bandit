@@ -13,7 +13,7 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
     const kind = await page.evaluate(() => window.__battle?.ctl.mode.kind);
     if (kind === 'command') break;
     if (kind === 'closeUp') await page.getByTestId('closeup').click();
-    else if (kind === 'reaction') await page.locator('.fc-choice').first().click();
+    else if (kind === 'reaction') await page.locator('.fc-choice:not([disabled])').first().click();
     else if (kind === 'levelUp')
       await page.getByRole('button', { name: /Continue|Save points/ }).click();
     else await page.waitForTimeout(200);

@@ -11,6 +11,7 @@ import type {
   FrameClass,
   Reach,
   Reaction,
+  ReactionChoice,
   StatName,
   StrikeResult,
   UnitState,
@@ -20,7 +21,7 @@ import {
   activeUnit,
   applyCommand,
   attackInRange,
-  availableReactions,
+  reactionChoices,
   chooseReaction,
   CommandError,
   coordKey,
@@ -96,7 +97,12 @@ export interface AttackOption {
 export type Mode =
   | { readonly kind: 'busy' }
   | { readonly kind: 'command' }
-  | { readonly kind: 'move'; readonly reach: ReadonlyMap<string, Reach> }
+  | {
+      readonly kind: 'move';
+      readonly reach: ReadonlyMap<string, Reach>;
+      /** Tile picked with the first tap; a second tap (or Move here) commits. */
+      readonly pending?: { readonly to: Coord; readonly cost: number };
+    }
   | { readonly kind: 'attackMenu' }
   | { readonly kind: 'target'; readonly attackId: string; readonly targets: readonly string[] }
   | {
@@ -111,7 +117,8 @@ export type Mode =
       readonly attackerId: string;
       readonly defenderId: string;
       readonly forecast: AttackForecast;
-      readonly options: readonly Reaction[];
+      /** Every reaction, usable or not, so the player always sees the full menu. */
+      readonly choices: readonly ReactionChoice[];
     }
   | { readonly kind: 'closeUp'; readonly data: CloseUpData }
   | { readonly kind: 'levelUp'; readonly unitId: string }
@@ -195,7 +202,9 @@ export class BattleController {
     if (mode.kind === 'move') {
       const reach = mode.reach.get(coordKey(c));
       if (reach && reach.path.length > 0) {
-        void this.run({ type: 'move', unitId: this.activeId(), to: c });
+        // First tap previews the path and its AP cost; tapping the same tile again moves.
+        if (mode.pending && coordKey(mode.pending.to) === coordKey(c)) this.confirmMove();
+        else this.previewMove(c, reach);
         return;
       }
       this.toCommand();
@@ -226,6 +235,28 @@ export class BattleController {
         tiles: [...reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
       },
     ]);
+  }
+
+  private previewMove(to: Coord, reach: Reach): void {
+    if (this.mode.kind !== 'move') return;
+    const unit = this.active()!;
+    sfx('select');
+    this.patch({ mode: { ...this.mode, pending: { to, cost: reach.cost } }, inspected: to });
+    this.renderer?.select(to);
+    this.highlight([
+      {
+        kind: 'move',
+        tiles: [...this.mode.reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
+      },
+      { kind: 'path', tiles: reach.path },
+    ]);
+  }
+
+  /** Moves to the tile picked in move mode. */
+  confirmMove(): void {
+    const mode = this.mode;
+    if (mode.kind !== 'move' || !mode.pending) return;
+    void this.run({ type: 'move', unitId: this.activeId(), to: mode.pending.to });
   }
 
   /** Opens the list of techniques. */
@@ -296,7 +327,9 @@ export class BattleController {
 
   chooseReaction(r: Reaction): void {
     const resolve = this.pendingReaction;
-    if (!resolve) return;
+    const mode = this.mode;
+    if (!resolve || mode.kind !== 'reaction') return;
+    if (!mode.choices.some((c) => c.reaction === r && c.available)) return;
     this.pendingReaction = undefined;
     resolve(r);
   }
@@ -510,11 +543,11 @@ export class BattleController {
     const attacker = findUnit(this.state, attackerId)!;
     const defender = findUnit(this.state, defenderId)!;
     const attack = this.attackOf(attacker, attackId);
-    const options = availableReactions(this.state, defender, attacker, attacker.pos, attack);
-    if (options.length === 1) return Promise.resolve(options[0]!);
+    // Always ask, even when "Do nothing" is the only option, so the player sees why.
+    const choices = reactionChoices(this.state, defender, attacker, attacker.pos, attack);
     const forecast = forecastAttack(this.state, attacker, defender, attacker.pos, attack);
     this.renderer?.select(defender.pos);
-    this.patch({ mode: { kind: 'reaction', attackerId, defenderId, forecast, options } });
+    this.patch({ mode: { kind: 'reaction', attackerId, defenderId, forecast, choices } });
     return new Promise((resolve) => {
       this.pendingReaction = (r) => {
         this.patch({ mode: { kind: 'busy' } });

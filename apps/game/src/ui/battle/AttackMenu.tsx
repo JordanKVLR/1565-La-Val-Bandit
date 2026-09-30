@@ -1,3 +1,4 @@
+import { attackFpCost } from '@m1565/core';
 import type { BattleController } from '../../scenes/BattleController';
 import { attackStats, attackTags } from './attackText';
 
@@ -31,7 +32,9 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
                 onClick={() => ctl.chooseTechnique(attack.id)}
               >
                 <span class="am-name">{attack.name}</span>
-                <span class="am-stats">{attackStats(attack, unit.weapon)}</span>
+                <span class="am-stats">
+                  {attackStats(attack, unit.weapon, attackFpCost(ctl.state, unit, attack))}
+                </span>
                 {attackTags(attack).length > 0 && (
                   <span class="am-tags">{attackTags(attack).join(' · ')}</span>
                 )}

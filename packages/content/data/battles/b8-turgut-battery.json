@@ -85,8 +85,8 @@
       "ai": "aggressive",
       "name": "Knight of Auvergne",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 4
       }
     },
@@ -102,8 +102,8 @@
       "ai": "aggressive",
       "name": "Knight of Italy",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 4
       }
     },
@@ -119,8 +119,8 @@
       "ai": "aggressive",
       "name": "Militia Raider",
       "stats": {
-        "str": 6,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 5
       }
     },
@@ -136,8 +136,8 @@
       "ai": "defensive",
       "name": "Militia Gunner",
       "stats": {
-        "str": 5,
-        "skl": 8,
+        "str": 8,
+        "skl": 10,
         "agi": 5
       }
     }
