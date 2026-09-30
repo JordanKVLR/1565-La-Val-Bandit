@@ -77,7 +77,7 @@
       "id": "knight-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 2,
+      "level": 4,
       "frame": "cavaliere",
       "weapon": "arming-sword",
       "at": [4, 9],
@@ -85,8 +85,8 @@
       "ai": "aggressive",
       "name": "Knight of Auvergne",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 4
       }
     },
@@ -94,7 +94,7 @@
       "id": "knight-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 2,
+      "level": 4,
       "frame": "lanza",
       "weapon": "pike",
       "at": [7, 9],
@@ -102,8 +102,8 @@
       "ai": "aggressive",
       "name": "Knight of Italy",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 4
       }
     },
@@ -111,7 +111,7 @@
       "id": "militia-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 3,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [2, 8],
@@ -119,8 +119,8 @@
       "ai": "aggressive",
       "name": "Militia Raider",
       "stats": {
-        "str": 4,
-        "skl": 4,
+        "str": 6,
+        "skl": 6,
         "agi": 5
       }
     },
@@ -128,7 +128,7 @@
       "id": "militia-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 3,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [9, 8],
@@ -136,8 +136,8 @@
       "ai": "defensive",
       "name": "Militia Gunner",
       "stats": {
-        "str": 3,
-        "skl": 6,
+        "str": 5,
+        "skl": 8,
         "agi": 5
       }
     }

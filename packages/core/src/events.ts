@@ -16,7 +16,8 @@ export interface StrikeResult {
   readonly xp: number;
 }
 
-export type StatName = 'str' | 'skl' | 'agi';
+import type { StatName } from './units';
+export type { StatName };
 
 /**
  * What happened, in order. The renderer and UI play these back (animations, close-ups, log);
@@ -46,8 +47,11 @@ export type BattleEvent =
       readonly style: AttackStyle;
       /** One entry per strike (twin attacks strike twice); stops early if the target falls. */
       readonly strikes: readonly StrikeResult[];
-      readonly counter?: StrikeResult;
-      readonly counterStyle?: AttackStyle;
+      /** The defender's blow back: from Attack back, or a successful Counter's reflection. */
+      readonly retaliation?: StrikeResult;
+      readonly retaliationStyle?: AttackStyle;
+      /** Set when the defender chose Counter: whether it worked, and the odds it had. */
+      readonly counter?: { readonly success: boolean; readonly chance: number };
     }
   | {
       readonly type: 'levelUp';

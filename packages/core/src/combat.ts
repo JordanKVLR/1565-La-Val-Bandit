@@ -7,10 +7,19 @@ import { heightAt, livingUnits, terrainAt } from './state';
 import type { UnitState, Weapon } from './units';
 import { isHostile, pilotStats } from './units';
 
-export type Reaction = 'defend' | 'avoid' | 'counter';
+/**
+ * How a defender answers an attack:
+ * - defend: always hit, half damage (front or side)
+ * - avoid: roll to dodge completely (any direction; the only choice from the rear)
+ * - attackBack: take the hit, then strike back if still standing and in range (front or side)
+ * - counter: high risk, high reward, head-on only. A small chance to turn the blow back on the
+ *   attacker at 1.25×; on failure the defender takes the blow at 1.25×.
+ * - none: the defender can't react (hit from behind without AP to avoid)
+ */
+export type Reaction = 'defend' | 'avoid' | 'attackBack' | 'counter' | 'none';
 export type FacingZone = 'front' | 'side' | 'rear';
 
-export const REACTIONS: readonly Reaction[] = ['defend', 'avoid', 'counter'];
+export const REACTIONS: readonly Reaction[] = ['defend', 'avoid', 'attackBack', 'counter', 'none'];
 
 /** Where the attacker stands relative to the way the target is facing. */
 export function facingZone(targetPos: Coord, targetFacing: Facing, attackerPos: Coord): FacingZone {
@@ -75,7 +84,7 @@ export function usableAttacks(
   );
 }
 
-/** Reactions the defender can afford against this attack. Defend is always possible. */
+/** Reactions the defender can use against this attack, given facing, AP and fatigue. */
 export function availableReactions(
   state: BattleState,
   defender: UnitState,
@@ -83,18 +92,51 @@ export function availableReactions(
   attackerPos: Coord = attacker.pos,
   attack?: Attack,
 ): Reaction[] {
+  const b = state.balance;
+  const zone = facingZone(defender.pos, defender.facing, attackerPos);
+  const fresh = canAct(state, defender);
+  const canAvoid = fresh && defender.ap >= b.avoidApCost;
+  // Struck from behind: the defender can only try to get out of the way.
+  if (zone === 'rear') return [canAvoid ? 'avoid' : 'none'];
   const out: Reaction[] = ['defend'];
-  if (!canAct(state, defender)) return out;
-  if (defender.ap >= state.balance.avoidApCost) out.push('avoid');
-  const counter = defender.attacks[0] ?? basicAttack(defender.weapon);
+  if (!fresh) return out;
+  if (canAvoid) out.push('avoid');
+  const back = defender.attacks[0] ?? basicAttack(defender.weapon);
   if (
     !attack?.noCounter &&
-    defender.ap >= counter.apCost &&
-    attackInRange(counter, defender.weapon, defender.pos, attackerPos)
+    defender.ap >= back.apCost &&
+    attackInRange(back, defender.weapon, defender.pos, attackerPos)
   ) {
-    out.push('counter');
+    out.push('attackBack');
   }
+  if (zone === 'front' && !attack?.noCounter && canAvoid) out.push('counter');
   return out;
+}
+
+/** Chance (percent) that a Counter turns the blow back on the attacker. */
+export function counterChance(
+  state: BattleState,
+  defender: UnitState,
+  attacker: UnitState,
+): number {
+  const b = state.balance;
+  return clamp(
+    b.counterBaseChance + b.counterIntFactor * (defender.int - attacker.int),
+    b.counterMinChance,
+    b.counterMaxChance,
+  );
+}
+
+/** FP an action actually costs this unit after SPI. */
+export function fpCostFor(state: BattleState, unit: UnitState, base: number): number {
+  const b = state.balance;
+  return Math.round(base * (1 - Math.min(b.spiFpCostMax, unit.spi * b.spiFpCostPercent) / 100));
+}
+
+/** Size of an enemy fatigue/AP-drain effect after this unit's SPI resistance. */
+export function resisted(state: BattleState, unit: UnitState, amount: number): number {
+  const b = state.balance;
+  return Math.round(amount * (1 - Math.min(b.spiResistMax, unit.spi * b.spiResistPercent) / 100));
 }
 
 export interface StrikeNumbers {
@@ -128,9 +170,11 @@ export function strikeNumbers(
   const tired =
     (attacker.fp >= b.fpTired ? -b.tiredPenalty : 0) +
     (target.fp >= b.fpTired ? b.tiredPenalty : 0);
+  const technique = attack.id === 'basic' ? 0 : attacker.int * b.intTechniqueAccuracy;
   const baseHit =
     attacker.weapon.accuracy +
     attack.accuracy +
+    technique +
     attacker.skl * b.sklHitFactor -
     target.agi * b.agiEvadeFactor +
     heightDiff * b.heightHitPerStep +
@@ -144,13 +188,10 @@ export function strikeNumbers(
   return { baseHit, baseDamage: raw, zone, heightDiff, assist, pierce: attack.pierce ?? 0 };
 }
 
-export function hitChanceFor(
-  state: BattleState,
-  n: StrikeNumbers,
-  reaction: Reaction | 'none',
-): number {
+export function hitChanceFor(state: BattleState, n: StrikeNumbers, reaction: Reaction): number {
   const b = state.balance;
-  if (reaction === 'defend') return 100;
+  // Defending blocks rather than dodges; a failed Counter leaves the defender wide open.
+  if (reaction === 'defend' || reaction === 'counter') return 100;
   const bonus = reaction === 'avoid' ? 0 : b.counterHitBonus;
   return clamp(Math.round(n.baseHit + bonus), b.hitMin, b.hitMax);
 }
@@ -159,11 +200,13 @@ export function damageFor(
   state: BattleState,
   n: StrikeNumbers,
   target: UnitState,
-  reaction: Reaction | 'none',
+  reaction: Reaction,
 ): number {
-  const mult = reaction === 'defend' ? state.balance.defendDamageMult : 1;
-  const armour = Math.round(target.arm * (1 - n.pierce));
-  return Math.max(1, Math.round(n.baseDamage * mult) - armour);
+  const b = state.balance;
+  const mult =
+    reaction === 'defend' ? b.defendDamageMult : reaction === 'counter' ? b.counterFailMult : 1;
+  const blocked = (target.arm + target.def * b.defDamagePerPoint) * (1 - n.pierce);
+  return Math.max(1, Math.round(n.baseDamage * mult - blocked));
 }
 
 /** XP an attacker earns for a hit (or defeating blow) on a target, scaled by level difference. */
@@ -189,11 +232,13 @@ export interface AttackForecast {
   readonly heightDiff: number;
   readonly assist: number;
   readonly reactions: readonly Reaction[];
-  /** Per-strike chance and damage for each reaction. */
+  /** Per-strike chance and damage for each reaction (for 'counter': if it fails). */
   readonly hitChance: Readonly<Record<Reaction, number>>;
   readonly damage: Readonly<Record<Reaction, number>>;
-  /** Present when the target could counter from where it stands. */
-  readonly counter?: { readonly hitChance: number; readonly damage: number };
+  /** Present when the target could attack back from where it stands. */
+  readonly retaliation?: { readonly hitChance: number; readonly damage: number };
+  /** Present when the target could Counter: success chance and the damage it would reflect. */
+  readonly counter?: { readonly chance: number; readonly reflect: number };
 }
 
 /** Everything the combat panel shows before an attack is confirmed. */
@@ -212,9 +257,10 @@ export function forecastAttack(
     hitChance[r] = hitChanceFor(state, n, r);
     damage[r] = damageFor(state, n, target, r);
   }
-  const base = {
+  const hits = attack.hits ?? 1;
+  let out: AttackForecast = {
     attack,
-    hits: attack.hits ?? 1,
+    hits,
     zone: n.zone,
     heightDiff: n.heightDiff,
     assist: n.assist,
@@ -222,19 +268,35 @@ export function forecastAttack(
     hitChance,
     damage,
   };
-  if (!reactions.includes('counter')) return base;
-  // Attackers turn to face their target before striking, so the counter lands on their front.
+  // Attackers turn to face their target before striking, so a strike back lands on their front.
   const movedAttacker = {
     ...attacker,
     pos: from,
     facing: facingToward(from, target.pos, attacker.facing),
   };
-  const back = strikeNumbers(state, target, movedAttacker, target.pos);
-  return {
-    ...base,
-    counter: {
-      hitChance: hitChanceFor(state, back, 'none'),
-      damage: damageFor(state, back, movedAttacker, 'none'),
-    },
-  };
+  if (reactions.includes('attackBack')) {
+    const back = strikeNumbers(state, target, movedAttacker, target.pos);
+    out = {
+      ...out,
+      retaliation: {
+        hitChance: hitChanceFor(state, back, 'none'),
+        damage: damageFor(state, back, movedAttacker, 'none'),
+      },
+    };
+  }
+  if (reactions.includes('counter')) {
+    out = {
+      ...out,
+      counter: {
+        chance: counterChance(state, target, movedAttacker),
+        reflect: reflectDamage(state, damage.none * hits),
+      },
+    };
+  }
+  return out;
+}
+
+/** Damage a successful Counter turns back on the attacker. */
+export function reflectDamage(state: BattleState, incoming: number): number {
+  return Math.max(1, Math.round(incoming * state.balance.counterReflectMult));
 }

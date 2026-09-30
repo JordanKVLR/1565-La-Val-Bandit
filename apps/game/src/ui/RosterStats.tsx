@@ -2,11 +2,9 @@ import type { StatName } from '@m1565/core';
 import { meetsRequirements } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 import { attackPool } from '@m1565/content';
-import { requirementText } from './battle/attackText';
+import { STAT_INFO } from './battle/statInfo';
 
-const STATS: readonly StatName[] = ['str', 'skl', 'agi'];
-
-/** A pilot's stats with + buttons for unspent points, and (optionally) their techniques. */
+/** A pilot's seven stats with + buttons for unspent points, and (optionally) learned techniques. */
 export function RosterStats({
   lib,
   entry,
@@ -21,19 +19,23 @@ export function RosterStats({
   const points = entry.statPoints ?? 0;
   const frame = lib.frames.get(entry.frame);
   const weapon = lib.weapons.get(entry.weapon);
-  const pool = frame && weapon ? attackPool(lib, frame, weapon) : [];
+  // Locked techniques stay hidden: only what this pilot can already use with this loadout.
+  const learned =
+    frame && weapon
+      ? attackPool(lib, frame, weapon).filter((a) => meetsRequirements(entry.stats, a))
+      : [];
   return (
     <div class="roster-stats">
       <div class="rs-line">
-        {STATS.map((k) => (
-          <span class="rs-stat" key={k}>
-            {k.toUpperCase()} {entry.stats[k]}
+        {STAT_INFO.map(({ key, label, help }) => (
+          <span class="rs-stat" key={key} title={help}>
+            {label} {entry.stats[key]}
             {points > 0 && (
               <button
                 type="button"
                 class="btn mini"
-                aria-label={`Raise ${k.toUpperCase()} for ${entry.characterId}`}
-                onClick={() => onRaise(k)}
+                aria-label={`Raise ${label} for ${entry.characterId}`}
+                onClick={() => onRaise(key)}
               >
                 +
               </button>
@@ -42,17 +44,11 @@ export function RosterStats({
         ))}
         {points > 0 && <b class="rs-points">{points} pts</b>}
       </div>
-      {showAttacks && pool.length > 0 && (
+      {showAttacks && (
         <ul class="rs-attacks">
-          {pool.map((a) => {
-            const ok = meetsRequirements(entry.stats, a);
-            return (
-              <li key={a.id} class={ok ? 'ok' : 'locked'}>
-                {ok ? '✓' : '🔒'} {a.name}
-                {!ok && <small> · {requirementText(a, entry.stats)}</small>}
-              </li>
-            );
-          })}
+          <li class="ok">
+            Techniques: {learned.length ? learned.map((a) => a.name).join(', ') : 'none yet'}
+          </li>
         </ul>
       )}
     </div>

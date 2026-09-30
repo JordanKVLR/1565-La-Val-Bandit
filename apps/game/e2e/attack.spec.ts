@@ -13,7 +13,7 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
     const kind = await page.evaluate(() => window.__battle?.ctl.mode.kind);
     if (kind === 'command') break;
     if (kind === 'closeUp') await page.getByTestId('closeup').click();
-    else if (kind === 'reaction') await page.getByRole('button', { name: /^Defend/ }).click();
+    else if (kind === 'reaction') await page.locator('.fc-choice').first().click();
     else if (kind === 'levelUp')
       await page.getByRole('button', { name: /Continue|Save points/ }).click();
     else await page.waitForTimeout(200);
@@ -51,7 +51,10 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
   await expect(page.getByTestId('closeup')).toBeVisible();
   await page.waitForTimeout(800);
   await page.screenshot({ path: `test-results/duel-${test.info().project.name}.png` });
-  await page.getByTestId('closeup').click();
+  // Short duels can end on their own; only tap to skip if it's still playing.
+  const closeup = page.getByTestId('closeup');
+  if (await closeup.isVisible()) await closeup.click({ timeout: 2000 }).catch(() => undefined);
+  await expect(closeup).toBeHidden();
 
   const log = await page.evaluate(() => window.__battle!.ctl.view.get().log.join('\n'));
   expect(log).toMatch(/uses .+ on /);

@@ -75,7 +75,7 @@
       "id": "aga",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 9,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [4, 2],
@@ -83,8 +83,8 @@
       "ai": "hold",
       "name": "Camp Aga",
       "stats": {
-        "str": 7,
-        "skl": 7,
+        "str": 9,
+        "skl": 9,
         "agi": 5
       }
     },
@@ -92,7 +92,7 @@
       "id": "guard-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 2],
@@ -100,8 +100,8 @@
       "ai": "defensive",
       "name": "Camp Guard",
       "stats": {
-        "str": 6,
-        "skl": 7,
+        "str": 8,
+        "skl": 9,
         "agi": 5
       }
     },
@@ -109,7 +109,7 @@
       "id": "guard-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [6, 1],
@@ -117,8 +117,8 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "str": 6,
-        "skl": 6,
+        "str": 8,
+        "skl": 8,
         "agi": 7
       }
     },
@@ -126,7 +126,7 @@
       "id": "guard-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [8, 4],
@@ -134,8 +134,8 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "str": 7,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 5
       }
     },
@@ -143,7 +143,7 @@
       "id": "guard-4",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [5, 5],
@@ -151,8 +151,8 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "str": 6,
-        "skl": 6,
+        "str": 8,
+        "skl": 8,
         "agi": 7
       }
     },
@@ -160,7 +160,7 @@
       "id": "guard-5",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [9, 6],
@@ -168,8 +168,8 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 5,
-        "skl": 7,
+        "str": 7,
+        "skl": 9,
         "agi": 5
       }
     }

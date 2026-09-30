@@ -1,13 +1,12 @@
-import { pilotStats } from '@m1565/core';
 import type { BattleController } from '../../scenes/BattleController';
-import { attackStats, attackTags, requirementText } from './attackText';
+import { attackStats, attackTags } from './attackText';
 
-/** The active unit's techniques: usable ones first, locked ones with what they still need. */
+/** The active unit's learned techniques; locked ones stay hidden until unlocked. */
 export function AttackMenu({ ctl }: { ctl: BattleController }) {
   const unit = ctl.active();
   if (!unit) return null;
-  const stats = pilotStats(unit);
-  const options = [...ctl.attackOptions()].sort((a, b) => Number(b.unlocked) - Number(a.unlocked));
+  // Only techniques the pilot has learned are listed; discovering new ones is part of the game.
+  const options = ctl.attackOptions().filter((o) => o.unlocked);
   return (
     <div class="attack-menu" role="dialog" aria-label="Choose an attack">
       <header class="am-head">
@@ -20,27 +19,18 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
         </button>
       </header>
       <ul class="am-list">
-        {options.map(({ attack, unlocked, affordable, targets }) => {
-          const usable = unlocked && affordable && targets.length > 0;
-          const reason = !unlocked
-            ? `Needs ${requirementText(attack, stats)}`
-            : !affordable
-              ? 'Not enough AP'
-              : !targets.length
-                ? 'No enemy in range'
-                : '';
+        {options.map(({ attack, affordable, targets }) => {
+          const usable = affordable && targets.length > 0;
+          const reason = !affordable ? 'Not enough AP' : !targets.length ? 'No enemy in range' : '';
           return (
             <li key={attack.id}>
               <button
                 type="button"
-                class={`am-item ${unlocked ? '' : 'locked'}`}
+                class="am-item"
                 disabled={!usable}
                 onClick={() => ctl.chooseTechnique(attack.id)}
               >
-                <span class="am-name">
-                  {unlocked ? '' : '🔒 '}
-                  {attack.name}
-                </span>
+                <span class="am-name">{attack.name}</span>
                 <span class="am-stats">{attackStats(attack, unit.weapon)}</span>
                 {attackTags(attack).length > 0 && (
                   <span class="am-tags">{attackTags(attack).join(' · ')}</span>

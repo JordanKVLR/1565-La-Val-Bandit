@@ -40,6 +40,19 @@ const migrations: Record<number, Migration> = {
     });
     return { ...raw, balance, units };
   },
+  // v3: DEF, INT, SPI and VIT; max HP now derives from base HP and VIT.
+  2: (raw) => {
+    const balance = { ...DEFAULT_BALANCE, ...(raw.balance as object) };
+    const units = (raw.units as Array<Record<string, unknown>>).map((u) => ({
+      def: 3,
+      int: 5,
+      spi: 5,
+      vit: 0,
+      ...u,
+      baseHp: u.baseHp ?? u.maxHp,
+    }));
+    return { ...raw, balance, units };
+  },
 };
 
 export function serializeBattle(state: BattleState): string {

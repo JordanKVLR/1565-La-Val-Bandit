@@ -29,8 +29,8 @@ export interface StrikePlay {
   readonly style: AttackStyle;
   readonly hit: boolean;
   readonly defeated: boolean;
-  /** The defender's reaction; 'none' for a counter-strike. */
-  readonly reaction: Reaction | 'none';
+  /** The defender's reaction; 'none' for a blow struck back or reflected. */
+  readonly reaction: Reaction;
   /** Called at the moment of contact (update HP bars, play the hit sound). */
   readonly onImpact?: () => void;
 }
@@ -188,6 +188,14 @@ function reactionKeys(play: StrikePlay): Key[] {
         p: { x: -0.7, y: 0.1, fall: 1.45, lean: 0.3, sR: 2.8, sL: 2.6, hR: 0.8, hL: 0.6, kR: -0.2 },
       },
       { t: 1.0, p: { x: -0.75, y: 0.12, fall: 1.52 } },
+    ];
+  }
+  if (!play.hit && play.reaction === 'counter') {
+    // A successful Counter: catch the blow and shove it back.
+    return [
+      { t: 0.02, p: { x: 0.1, sR: 1.9, eR: 1.4, wR: 0.2, sL: 1.7, eL: 1.2, lean: -0.2 } },
+      { t: 0.25, p: { x: 0.25, sR: 1.2, eR: 0.2, wR: 1.2, lean: -0.45 } },
+      { t: 0.6, p: {} },
     ];
   }
   if (play.hit && play.reaction === 'defend') {

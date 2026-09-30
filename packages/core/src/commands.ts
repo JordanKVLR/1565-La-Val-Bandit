@@ -5,10 +5,14 @@ import {
   attackInRange,
   availableReactions,
   canAct,
+  counterChance,
   damageFor,
   facingToward,
   findAttack,
+  fpCostFor,
   hitChanceFor,
+  reflectDamage,
+  resisted,
   strikeNumbers,
   xpFor,
 } from './combat';
@@ -20,7 +24,7 @@ import type { BattleState } from './state';
 import { requireUnit } from './state';
 import { endTurn, finish } from './turns';
 import type { UnitState } from './units';
-import { isHostile, pilotStats } from './units';
+import { isHostile, maxHpFor, pilotStats, STAT_NAMES } from './units';
 import { evaluateOutcome } from './victory';
 
 export type Command =
@@ -129,7 +133,15 @@ function raiseStat(
   if (unit.statPoints <= 0) throw new CommandError(`${unit.name} has no stat points to spend`);
   unit.statPoints -= 1;
   unit[stat] += 1;
+  if (stat === 'vit') refreshMaxHp(state, unit);
   return { state, events: [{ type: 'statRaised', unitId, stat, value: unit[stat] }] };
+}
+
+/** Recomputes max HP after a level or VIT change; current HP rises by the same amount. */
+function refreshMaxHp(state: BattleState, unit: UnitState): void {
+  const next = maxHpFor(unit.baseHp, unit.vit, state.balance);
+  if (!unit.defeated) unit.hp += next - unit.maxHp;
+  unit.maxHp = next;
 }
 
 /** Adds XP and levels the unit up every `xpPerLevel`. Only the player's side earns XP. */
@@ -145,16 +157,17 @@ function gainXp(
   while (unit.xp >= b.xpPerLevel) {
     unit.xp -= b.xpPerLevel;
     unit.level += 1;
-    unit.maxHp += b.hpPerLevel;
-    unit.hp += b.hpPerLevel;
+    unit.baseHp += b.hpPerLevel;
+    refreshMaxHp(state, unit);
     unit.statPoints += b.statPointsPerLevel;
     // Allies the player doesn't control spend their points at once, evening out their stats.
     if (unit.controller === 'ai') {
       while (unit.statPoints > 0) {
         const p = pilotStats(unit);
-        const stat = (['str', 'skl', 'agi'] as const).reduce((lo, s) => (p[s] < p[lo] ? s : lo));
+        const stat = STAT_NAMES.reduce((lo, s) => (p[s] < p[lo] ? s : lo));
         unit[stat] += 1;
         unit.statPoints -= 1;
+        if (stat === 'vit') refreshMaxHp(state, unit);
       }
     }
     events.push({
@@ -177,25 +190,59 @@ function resolveAttack(
 ): void {
   const b = state.balance;
   attacker.ap -= attack.apCost;
-  attacker.fp = Math.min(b.fpMax, attacker.fp + attack.fpCost);
-  const counterAttack = findAttack(target, 'basic');
-  if (reaction === 'avoid') {
+  attacker.fp = Math.min(b.fpMax, attacker.fp + fpCostFor(state, attacker, attack.fpCost));
+  const backAttack = findAttack(target, 'basic');
+  if (reaction === 'avoid' || reaction === 'counter') {
     target.ap -= b.avoidApCost;
-    target.fp = Math.min(b.fpMax, target.fp + b.avoidFpCost);
-  } else if (reaction === 'counter') {
-    target.ap -= counterAttack.apCost;
-    target.fp = Math.min(b.fpMax, target.fp + counterAttack.fpCost);
+    target.fp = Math.min(b.fpMax, target.fp + fpCostFor(state, target, b.avoidFpCost));
+  } else if (reaction === 'attackBack') {
+    target.ap -= backAttack.apCost;
+    target.fp = Math.min(b.fpMax, target.fp + fpCostFor(state, target, backAttack.fpCost));
   }
   attacker.facing = facingToward(attacker.pos, target.pos, attacker.facing);
 
   const pending: BattleEvent[] = [];
   const strikes: StrikeResult[] = [];
-  for (let i = 0; i < (attack.hits ?? 1) && !target.defeated; i++) {
-    strikes.push(strikeOnce(state, attacker, target, attack, reaction, pending));
+  let retaliation: StrikeResult | undefined;
+  let counter: { success: boolean; chance: number } | undefined;
+
+  if (reaction === 'counter') {
+    const chance = counterChance(state, target, attacker);
+    const [success, rng] = rollPercent(state.rng, chance);
+    state.rng = rng;
+    counter = { success, chance };
+    if (success) {
+      // The blow is turned aside and driven back into the attacker at 1.25×.
+      const n = strikeNumbers(state, attacker, target, attacker.pos, attack);
+      const incoming = damageFor(state, n, target, 'none') * (attack.hits ?? 1);
+      strikes.push({
+        attackerId: attacker.id,
+        targetId: target.id,
+        hitChance: 100 - chance,
+        hit: false,
+        damage: 0,
+        zone: n.zone,
+        targetHp: target.hp,
+        defeated: false,
+        xp: 0,
+      });
+      retaliation = applyDamage(
+        state,
+        target,
+        attacker,
+        reflectDamage(state, incoming),
+        n.zone,
+        pending,
+      );
+    }
   }
-  let counter: StrikeResult | undefined;
-  if (reaction === 'counter' && !target.defeated && !attacker.defeated) {
-    counter = strikeOnce(state, target, attacker, counterAttack, 'none', pending);
+  if (!counter?.success) {
+    for (let i = 0; i < (attack.hits ?? 1) && !target.defeated; i++) {
+      strikes.push(strikeOnce(state, attacker, target, attack, reaction, pending));
+    }
+    if (reaction === 'attackBack' && !target.defeated && !attacker.defeated) {
+      retaliation = strikeOnce(state, target, attacker, backAttack, 'none', pending);
+    }
   }
   if (!target.defeated) target.facing = facingToward(target.pos, attacker.pos, target.facing);
   events.push({
@@ -205,10 +252,42 @@ function resolveAttack(
     attackName: attack.name,
     style: attack.style,
     strikes,
-    ...(counter ? { counter, counterStyle: counterAttack.style } : {}),
+    ...(retaliation
+      ? { retaliation, retaliationStyle: counter?.success ? attack.style : backAttack.style }
+      : {}),
+    ...(counter ? { counter } : {}),
   });
   // Defeats and level-ups are reported after the exchange they came from.
   events.push(...pending);
+}
+
+/** Deals a fixed amount of damage (a reflected Counter), with defeat and XP handling. */
+function applyDamage(
+  state: BattleState,
+  from: UnitState,
+  to: UnitState,
+  damage: number,
+  zone: StrikeResult['zone'],
+  events: BattleEvent[],
+): StrikeResult {
+  to.hp = Math.max(0, to.hp - damage);
+  const defeated = to.hp === 0;
+  if (defeated) {
+    to.defeated = true;
+    events.push({ type: 'unitDefeated', unitId: to.id });
+  }
+  const xp = gainXp(state, from, xpFor(state, from, to, defeated), events);
+  return {
+    attackerId: from.id,
+    targetId: to.id,
+    hitChance: 100,
+    hit: true,
+    damage,
+    zone,
+    targetHp: to.hp,
+    defeated,
+    xp,
+  };
 }
 
 function strikeOnce(
@@ -216,7 +295,7 @@ function strikeOnce(
   attacker: UnitState,
   target: UnitState,
   attack: Attack,
-  reaction: Reaction | 'none',
+  reaction: Reaction,
   events: BattleEvent[],
 ): StrikeResult {
   const b = state.balance;
@@ -226,9 +305,11 @@ function strikeOnce(
   state.rng = rng;
   const damage = hit ? damageFor(state, n, target, reaction) : 0;
   target.hp = Math.max(0, target.hp - damage);
-  if (hit && !target.defeated) {
-    if (attack.fatigue) target.fp = Math.min(b.fpMax, target.fp + attack.fatigue);
-    if (attack.apDamage) target.ap = Math.max(0, target.ap - attack.apDamage);
+  if (hit && target.hp > 0) {
+    if (attack.fatigue)
+      target.fp = Math.min(b.fpMax, target.fp + resisted(state, target, attack.fatigue));
+    if (attack.apDamage)
+      target.ap = Math.max(0, target.ap - resisted(state, target, attack.apDamage));
   }
   const defeated = target.hp === 0;
   if (defeated) {

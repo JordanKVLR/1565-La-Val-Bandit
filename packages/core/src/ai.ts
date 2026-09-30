@@ -29,14 +29,23 @@ export function chooseReaction(
   const attack =
     attacker.attacks.find((a) => a.id === (attackId ?? 'basic')) ?? attacker.attacks[0];
   const f = forecastAttack(state, attacker, defender, attacker.pos, attack);
-  let best: Reaction = 'defend';
+  let best: Reaction =
+    availableReactions(state, defender, attacker, attacker.pos, attack)[0] ?? 'none';
   let bestScore = Infinity;
   for (const r of availableReactions(state, defender, attacker, attacker.pos, attack)) {
-    const p = f.hitChance[r] / 100;
-    const dmg = f.damage[r] * f.hits;
-    let score = p * dmg + (dmg >= defender.hp ? p * 100 : 0);
-    if (r === 'counter' && f.counter && dmg < defender.hp) {
-      score -= (f.counter.hitChance / 100) * f.counter.damage * 0.8;
+    let score: number;
+    if (r === 'counter' && f.counter) {
+      // Gamble: with probability `chance` the blow is reflected, otherwise it lands at 1.25×.
+      const win = f.counter.chance / 100;
+      const dmg = f.damage.counter * f.hits;
+      score = (1 - win) * (dmg + (dmg >= defender.hp ? 100 : 0)) - win * f.counter.reflect * 0.8;
+    } else {
+      const p = f.hitChance[r] / 100;
+      const dmg = f.damage[r] * f.hits;
+      score = p * dmg + (dmg >= defender.hp ? p * 100 : 0);
+      if (r === 'attackBack' && f.retaliation && dmg < defender.hp) {
+        score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.8;
+      }
     }
     if (score < bestScore) {
       bestScore = score;
@@ -186,7 +195,7 @@ function scoreAttack(
 ): number {
   const f = forecastAttack(state, unit, target, dest, attack);
   // Assume the defender avoids when it can: the least favourable common case for us.
-  const r: Reaction = f.reactions.includes('avoid') ? 'avoid' : 'defend';
+  const r: Reaction = f.reactions.includes('avoid') ? 'avoid' : (f.reactions[0] ?? 'none');
   const p = f.hitChance[r] / 100;
   const dmg = f.damage[r] * f.hits;
   let score = p * dmg;
@@ -194,7 +203,8 @@ function scoreAttack(
   // Side effects are worth a little; spending extra AP (less left to react with) costs a little.
   score += p * ((attack.fatigue ?? 0) * 0.15 + (attack.apDamage ?? 0) * 0.15);
   score -= Math.max(0, attack.apCost - (unit.attacks[0]?.apCost ?? attack.apCost)) * 0.1;
-  if (f.counter) score -= (f.counter.hitChance / 100) * f.counter.damage * 0.7;
+  if (f.retaliation) score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.7;
+  if (f.counter) score -= (f.counter.chance / 100) * f.counter.reflect * 0.7;
   const threats = enemies.filter(
     (e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + maxReach(e),
   ).length;

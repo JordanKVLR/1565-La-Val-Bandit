@@ -214,7 +214,8 @@ describe('attacks', () => {
     const heavy = a.attacks.find((x) => x.id === 'heavy')!;
     const basic = forecastAttack(s, a, e);
     const f = forecastAttack(s, a, e, a.pos, heavy);
-    expect(basic.reactions).toContain('counter');
+    expect(basic.reactions).toContain('attackBack');
+    expect(f.reactions).not.toContain('attackBack');
     expect(f.reactions).not.toContain('counter');
     // (24 + 8) × 1.5 = 48, armour 8 halved to 4 → 44
     expect(f.damage.avoid).toBe(44);

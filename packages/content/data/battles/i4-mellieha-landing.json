@@ -98,7 +98,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 10,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [1, 4],
@@ -106,8 +106,8 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 10,
+        "skl": 9,
         "agi": 5
       }
     },
@@ -115,7 +115,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 9,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 2],
@@ -123,8 +123,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 7,
-        "skl": 8,
+        "str": 9,
+        "skl": 10,
         "agi": 6
       }
     },
@@ -132,7 +132,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 9,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [1, 6],
@@ -140,8 +140,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 10,
+        "skl": 9,
         "agi": 6
       }
     },
@@ -149,7 +149,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 9,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [0, 0],
@@ -157,8 +157,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 7,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 8
       }
     },
@@ -166,7 +166,7 @@
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 9,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [2, 8],
@@ -174,8 +174,8 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 6,
-        "skl": 8,
+        "str": 8,
+        "skl": 10,
         "agi": 5
       }
     }

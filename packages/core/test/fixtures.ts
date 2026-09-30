@@ -1,4 +1,12 @@
-import type { BattleMap, BattleSetup, Frame, TerrainType, UnitSpec, Weapon } from '../src';
+import type {
+  BattleMap,
+  BattleSetup,
+  Frame,
+  PilotStats,
+  TerrainType,
+  UnitSpec,
+  Weapon,
+} from '../src';
 import { DEFAULT_BALANCE } from '../src';
 
 export const TERRAINS: Record<string, TerrainType> = {
@@ -49,17 +57,22 @@ export const FRAME: Frame = {
   agility: 0,
 };
 
-export function unit(over: Partial<UnitSpec> & Pick<UnitSpec, 'id' | 'at'>): UnitSpec {
+/** A unit spec with sensible defaults; stats not given default to 6 (STR/SKL/AGI) or 0. */
+export function unit(
+  over: Omit<Partial<UnitSpec>, 'stats'> &
+    Pick<UnitSpec, 'id' | 'at'> & { stats?: Partial<PilotStats> },
+): UnitSpec {
+  const { stats, ...rest } = over;
   return {
     name: over.id,
     side: 'player',
     controller: 'ai',
     level: 1,
-    stats: { str: 6, skl: 6, agi: 6 },
     frame: FRAME,
     weapon: SWORD,
     facing: 'north',
-    ...over,
+    ...rest,
+    stats: { str: 6, skl: 6, agi: 6, def: 0, int: 0, spi: 0, vit: 0, ...stats },
   };
 }
 

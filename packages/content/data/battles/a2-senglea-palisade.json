@@ -78,7 +78,7 @@
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 7,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [1, 1],
@@ -86,8 +86,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -95,7 +95,7 @@
       "id": "lev-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 7,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [2, 2],
@@ -103,8 +103,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -112,7 +112,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 7,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [5, 1],
@@ -120,8 +120,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 7,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 5
       }
     },
@@ -129,7 +129,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 7,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [6, 2],
@@ -137,8 +137,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 7,
+        "str": 8,
+        "skl": 9,
         "agi": 5
       }
     },
@@ -146,7 +146,7 @@
       "id": "reis-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [9, 1],
@@ -154,8 +154,8 @@
       "ai": "aggressive",
       "name": "Algerian Reis",
       "stats": {
-        "str": 7,
-        "skl": 6,
+        "str": 9,
+        "skl": 8,
         "agi": 6
       }
     },
@@ -163,7 +163,7 @@
       "id": "lev-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 7,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [10, 2],
@@ -171,8 +171,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     }

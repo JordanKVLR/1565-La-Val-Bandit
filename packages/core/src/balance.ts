@@ -32,7 +32,7 @@ export interface BalanceConfig {
   readonly assistPerAlly: number;
   readonly assistMax: number;
   readonly defendDamageMult: number;
-  /** A defender that counters or cannot react is easier to hit than one that avoids. */
+  /** A defender that attacks back or cannot react is easier to hit than one that avoids. */
   readonly counterHitBonus: number;
   /** Base XP for landing a hit, and for the blow that defeats a unit. */
   readonly xpHit: number;
@@ -45,8 +45,30 @@ export interface BalanceConfig {
   readonly xpMaxFactor: number;
   /** Stat points granted per level-up, spent by the player on STR/SKL/AGI. */
   readonly statPointsPerLevel: number;
-  /** Max HP gained per level. */
+  /** Max HP gained per level (before VIT). */
   readonly hpPerLevel: number;
+  /** Damage blocked per point of DEF. */
+  readonly defDamagePerPoint: number;
+  /** Max HP added per point of VIT, as a percentage of base HP. */
+  readonly vitHpPercent: number;
+  /** Accuracy bonus per INT point for techniques (not basic attacks). */
+  readonly intTechniqueAccuracy: number;
+  /** FP cost reduction per SPI point (percent), and its cap. */
+  readonly spiFpCostPercent: number;
+  readonly spiFpCostMax: number;
+  /** Extra FP recovered per turn per SPI point. */
+  readonly spiFpRecovery: number;
+  /** Resistance to enemy fatigue/AP-drain effects per SPI point (percent), and its cap. */
+  readonly spiResistPercent: number;
+  readonly spiResistMax: number;
+  /** Counter: success chance = base + factor × (defender INT − attacker INT), clamped. */
+  readonly counterBaseChance: number;
+  readonly counterIntFactor: number;
+  readonly counterMinChance: number;
+  readonly counterMaxChance: number;
+  /** On success the attacker takes this multiple of the blow; on failure the defender does. */
+  readonly counterReflectMult: number;
+  readonly counterFailMult: number;
 }
 
 export const DEFAULT_BALANCE: BalanceConfig = {
@@ -82,6 +104,20 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   xpLevelFactor: 0.2,
   xpMinFactor: 0.1,
   xpMaxFactor: 3,
-  statPointsPerLevel: 3,
+  statPointsPerLevel: 5,
   hpPerLevel: 3,
+  defDamagePerPoint: 1.5,
+  vitHpPercent: 5,
+  intTechniqueAccuracy: 1,
+  spiFpCostPercent: 2,
+  spiFpCostMax: 50,
+  spiFpRecovery: 1,
+  spiResistPercent: 3,
+  spiResistMax: 60,
+  counterBaseChance: 10,
+  counterIntFactor: 2,
+  counterMinChance: 5,
+  counterMaxChance: 35,
+  counterReflectMult: 1.25,
+  counterFailMult: 1.25,
 };

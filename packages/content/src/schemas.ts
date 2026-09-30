@@ -41,7 +41,18 @@ export type MapSource = z.infer<typeof MapSourceSchema>;
 const id = z.string().regex(/^[a-z0-9-]+$/);
 const coord = z.tuple([z.number().int().min(0), z.number().int().min(0)]);
 const facing = z.enum(['north', 'east', 'south', 'west']);
-const stats = z.object({ str: z.number().int(), skl: z.number().int(), agi: z.number().int() });
+const stat = z.number().int();
+const stats = z.object({
+  str: stat,
+  skl: stat,
+  agi: stat,
+  def: stat,
+  int: stat,
+  spi: stat,
+  vit: stat,
+});
+/** Generic battle units may give only STR/SKL/AGI; the rest are derived from level and frame. */
+const partialStats = stats.partial({ def: true, int: true, spi: true, vit: true });
 
 export const WEAPON_TYPES = ['blade', 'polearm', 'blunt', 'firearm', 'explosive'] as const;
 export const FRAME_CLASSES = ['light', 'medium', 'heavy'] as const;
@@ -73,10 +84,15 @@ export const FrameSchema = z.object({
   agility: z.number().int(),
 });
 
+const rate = z.number().int().min(0).max(100);
 const growth = z.object({
-  str: z.number().int().min(0).max(100),
-  skl: z.number().int().min(0).max(100),
-  agi: z.number().int().min(0).max(100),
+  str: rate,
+  skl: rate,
+  agi: rate,
+  def: rate,
+  int: rate,
+  spi: rate,
+  vit: rate,
 });
 const allegiance = z.enum(['malta', 'ottoman']);
 export const CharacterSchema = z.object({
@@ -116,6 +132,20 @@ export const BalanceSchema = z.object({
   assistPerAlly: z.number().min(0),
   assistMax: z.number().min(0),
   defendDamageMult: z.number().min(0).max(1),
+  defDamagePerPoint: z.number().min(0),
+  vitHpPercent: z.number().min(0),
+  intTechniqueAccuracy: z.number().min(0),
+  spiFpCostPercent: z.number().min(0),
+  spiFpCostMax: z.number().min(0).max(100),
+  spiFpRecovery: z.number().min(0),
+  spiResistPercent: z.number().min(0),
+  spiResistMax: z.number().min(0).max(100),
+  counterBaseChance: z.number().min(0).max(100),
+  counterIntFactor: z.number().min(0),
+  counterMinChance: z.number().min(0).max(100),
+  counterMaxChance: z.number().min(0).max(100),
+  counterReflectMult: z.number().positive(),
+  counterFailMult: z.number().positive(),
   counterHitBonus: z.number(),
   xpHit: z.number().int().min(0),
   xpDefeat: z.number().int().min(0),
@@ -127,11 +157,8 @@ export const BalanceSchema = z.object({
   hpPerLevel: z.number().int().min(0),
 });
 
-const statReq = z.object({
-  str: z.number().int().min(0).optional(),
-  skl: z.number().int().min(0).optional(),
-  agi: z.number().int().min(0).optional(),
-});
+const req = z.number().int().min(0).optional();
+const statReq = z.object({ str: req, skl: req, agi: req, def: req, int: req, spi: req, vit: req });
 
 /** A faction technique, unlocked by weapon type, frame class and the pilot's stats. */
 export const AttackSchema = z
@@ -176,7 +203,7 @@ export const BattleUnitSchema = z
     id,
     character: id.optional(),
     name: z.string().min(1).optional(),
-    stats: stats.optional(),
+    stats: partialStats.optional(),
     side: z.enum(['player', 'enemy']),
     controller: z.enum(['human', 'ai']),
     ai: z.enum(['aggressive', 'defensive', 'hold']).optional(),

@@ -5,8 +5,22 @@ import { Portrait, UnitBars } from './StatBars';
 const REACTION_LABEL: Record<Reaction, string> = {
   defend: 'Defend',
   avoid: 'Avoid',
+  attackBack: 'Attack back',
   counter: 'Counter',
+  none: 'Take the hit',
 };
+
+/** The odds line under each reaction button. */
+function reactionOdds(f: AttackForecast, r: Reaction): string {
+  const times = f.hits > 1 ? ` ×${f.hits}` : '';
+  if (r === 'counter' && f.counter) {
+    return `${f.counter.chance}% to reflect ${f.counter.reflect} · else take ${f.damage.counter}${times}`;
+  }
+  if (r === 'attackBack' && f.retaliation) {
+    return `take ${f.hitChance[r]}% · ${f.damage[r]}${times}, hit back ${f.retaliation.hitChance}% · ${f.retaliation.damage}`;
+  }
+  return `${f.hitChance[r]}% · ${f.damage[r]} dmg${times}`;
+}
 
 interface Props {
   state: BattleState;
@@ -60,9 +74,18 @@ export function ForecastPanel({
   const tags = attackTags(forecast.attack);
   const technique = `${forecast.attack.name}${tags.length ? ` (${tags.join(', ')})` : ''}`;
   const assist = forecast.assist ? ` · assist +${forecast.assist}%` : '';
-  const counter = forecast.counter
-    ? `Counter: ${forecast.counter.hitChance}% · ${forecast.counter.damage} dmg`
-    : 'Cannot counter';
+  const answers = [
+    forecast.retaliation
+      ? `Can strike back: ${forecast.retaliation.hitChance}% · ${forecast.retaliation.damage}`
+      : '',
+    forecast.counter
+      ? `Counter ${forecast.counter.chance}% · reflect ${forecast.counter.reflect}`
+      : '',
+  ].filter(Boolean);
+  const counter =
+    forecast.zone === 'rear'
+      ? 'Hit from behind: can only avoid'
+      : answers.join(' · ') || 'Cannot strike back';
   return (
     <div class="forecast" role="dialog" aria-label="Combat forecast">
       <div class="fc-sides">
@@ -74,15 +97,13 @@ export function ForecastPanel({
           reactions.map((r) => (
             <button type="button" class="btn fc-choice" key={r} onClick={() => onReact?.(r)}>
               <span class="fc-choice-name">{REACTION_LABEL[r]}</span>
-              <span class="fc-choice-odds">
-                {forecast.hitChance[r]}% · {forecast.damage[r]} dmg
-              </span>
+              <span class="fc-choice-odds">{reactionOdds(forecast, r)}</span>
             </button>
           ))
         ) : (
           <>
             <div class="fc-odds" data-testid="forecast-odds">
-              Hit {forecast.hitChance.avoid}–{forecast.hitChance.counter}% · Dmg{' '}
+              Hit {forecast.hitChance.avoid}–{forecast.hitChance.attackBack}% · Dmg{' '}
               {forecast.damage.avoid}
               {forecast.hits > 1 ? ` ×${forecast.hits}` : ''}
               <small> ({forecast.damage.defend} if defended)</small>

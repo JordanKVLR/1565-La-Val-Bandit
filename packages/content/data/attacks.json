@@ -27,7 +27,8 @@
     "apCost": 28,
     "fpCost": 15,
     "requires": {
-      "skl": 10
+      "skl": 10,
+      "int": 7
     },
     "description": "A patient thrust through a gap in the plates.",
     "pierce": 0.3
@@ -62,7 +63,8 @@
     "fpCost": 20,
     "requires": {
       "skl": 13,
-      "agi": 10
+      "agi": 10,
+      "spi": 8
     },
     "description": "Two lightning cuts, one high and one low.",
     "hits": 2
@@ -80,7 +82,8 @@
     "fpCost": 30,
     "requires": {
       "str": 16,
-      "skl": 11
+      "skl": 11,
+      "vit": 8
     },
     "description": "Everything behind one falling edge. Heavy frames only."
   },
@@ -150,7 +153,8 @@
     "apCost": 28,
     "fpCost": 15,
     "requires": {
-      "skl": 12
+      "skl": 12,
+      "def": 7
     },
     "description": "A braced point the enemy runs onto.",
     "noCounter": true
@@ -168,7 +172,8 @@
     "fpCost": 30,
     "requires": {
       "str": 15,
-      "agi": 11
+      "agi": 11,
+      "vit": 7
     },
     "description": "The full weight of a knight and his frame. Medium frames only.",
     "minRange": 1,
@@ -203,7 +208,8 @@
     "fpCost": 15,
     "requires": {
       "agi": 11,
-      "skl": 8
+      "skl": 8,
+      "int": 7
     },
     "description": "Feint left, cut twice right.",
     "hits": 2
@@ -292,7 +298,8 @@
     "fpCost": 18,
     "requires": {
       "agi": 12,
-      "str": 10
+      "str": 10,
+      "spi": 7
     },
     "description": "Sweeps the legs and scatters the springs.",
     "apDamage": 20,
@@ -344,7 +351,8 @@
     "apCost": 40,
     "fpCost": 22,
     "requires": {
-      "skl": 13
+      "skl": 13,
+      "spi": 7
     },
     "description": "Two quick shots from a double-loaded barrel.",
     "hits": 2
@@ -362,7 +370,8 @@
     "fpCost": 20,
     "requires": {
       "skl": 16,
-      "agi": 10
+      "agi": 10,
+      "int": 9
     },
     "description": "Aimed at the joint between two plates.",
     "pierce": 0.4
@@ -413,7 +422,8 @@
     "fpCost": 18,
     "requires": {
       "agi": 12,
-      "skl": 10
+      "skl": 10,
+      "spi": 8
     },
     "description": "Two crescent cuts in one breath.",
     "hits": 2
@@ -431,7 +441,8 @@
     "fpCost": 28,
     "requires": {
       "str": 15,
-      "skl": 13
+      "skl": 13,
+      "def": 7
     },
     "description": "A perfect cut that slides between plates. Medium frames only.",
     "pierce": 0.3
@@ -481,7 +492,8 @@
     "apCost": 42,
     "fpCost": 22,
     "requires": {
-      "skl": 15
+      "skl": 15,
+      "int": 9
     },
     "description": "The regiment's best shot, aimed at the pilot's hatch.",
     "pierce": 0.35
@@ -517,7 +529,8 @@
     "fpCost": 15,
     "requires": {
       "agi": 12,
-      "skl": 9
+      "skl": 9,
+      "int": 8
     },
     "description": "The lance dips, the enemy flinches, the lance strikes.",
     "noCounter": true,
@@ -573,7 +586,8 @@
     "apCost": 38,
     "fpCost": 18,
     "requires": {
-      "skl": 12
+      "skl": 12,
+      "int": 8
     },
     "description": "Blinding smoke that jams gears.",
     "apDamage": 25
@@ -591,7 +605,8 @@
     "fpCost": 28,
     "requires": {
       "skl": 15,
-      "str": 9
+      "str": 9,
+      "int": 10
     },
     "description": "A heavy charge of burning pitch.",
     "fatigue": 25
@@ -624,7 +639,8 @@
     "apCost": 30,
     "fpCost": 15,
     "requires": {
-      "agi": 12
+      "agi": 12,
+      "spi": 7
     },
     "description": "Two cuts while the enemy is still finding their footing.",
     "hits": 2
@@ -660,7 +676,8 @@
     "fpCost": 25,
     "requires": {
       "agi": 15,
-      "str": 12
+      "str": 12,
+      "vit": 7
     },
     "description": "The feared finishing cut of the Barbary coast.",
     "pierce": 0.25
@@ -745,7 +762,8 @@
     "apCost": 42,
     "fpCost": 35,
     "requires": {
-      "str": 12
+      "str": 12,
+      "vit": 6
     },
     "description": "Every valve open at once.",
     "pierce": 0.3
@@ -797,7 +815,8 @@
     "fpCost": 30,
     "requires": {
       "skl": 12,
-      "str": 10
+      "str": 10,
+      "int": 7
     },
     "description": "Every gun on the machine. Heavy frames only.",
     "hits": 2

@@ -90,7 +90,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [6, 0],
@@ -98,8 +98,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -107,7 +107,7 @@
       "id": "sipahi-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [9, 1],
@@ -115,8 +115,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -124,7 +124,7 @@
       "id": "sipahi-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [7, 9],
@@ -132,8 +132,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -141,7 +141,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [5, 8],
@@ -149,8 +149,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 5,
-        "skl": 6,
+        "str": 7,
+        "skl": 8,
         "agi": 5
       }
     },
@@ -158,7 +158,7 @@
       "id": "levend-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [10, 8],
@@ -166,8 +166,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
+        "str": 7,
+        "skl": 7,
         "agi": 7
       }
     }

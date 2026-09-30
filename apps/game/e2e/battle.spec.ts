@@ -14,7 +14,7 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
     await levelUp.getByRole('button', { name: /Continue|Save points/ }).click();
     return true;
   }
-  const react = page.getByRole('button', { name: /^Defend/ });
+  const react = page.locator('.fc-choice').first();
   if (await react.isVisible()) {
     await react.click();
     return true;
