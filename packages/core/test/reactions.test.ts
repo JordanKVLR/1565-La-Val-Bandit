@@ -246,3 +246,30 @@ describe('save migration v3 → v4', () => {
     expect('avoidApCost' in loaded.balance).toBe(false);
   });
 });
+
+describe('reaction XP', () => {
+  const enemyAttacks = (reaction: Reaction) => {
+    const s = createBattle(
+      setup({
+        map: makeMap(['ppppp', 'ppppp', 'ppppp', 'ppppp']),
+        units: [
+          unit({ id: 'e', side: 'enemy', stats: { agi: 40 }, at: { x: 2, y: 1 }, facing: 'south' }),
+          unit({ id: 'p', controller: 'human', at: { x: 2, y: 2 }, facing: 'north' }),
+        ],
+      }),
+    ).state;
+    return requireUnit(
+      applyCommand(s, { type: 'attack', unitId: 'e', targetId: 'p', reaction }).state,
+      'p',
+    );
+  };
+
+  it('a player unit that survives by reacting earns 3 XP', () => {
+    expect(enemyAttacks('defend').xp).toBe(3);
+    expect(enemyAttacks('avoid').xp).toBe(3);
+  });
+
+  it('doing nothing earns nothing', () => {
+    expect(enemyAttacks('none').xp).toBe(0);
+  });
+});

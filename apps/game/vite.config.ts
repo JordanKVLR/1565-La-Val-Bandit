@@ -19,6 +19,8 @@ export default defineConfig({
       disable: singleFile || native,
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
+      // Precache the art too, so portraits and textures work offline once installed.
+      workbox: { globPatterns: ['**/*.{js,css,html,svg,png,webp,json,woff2}'] },
       manifest: {
         name: 'Armatura 1565',
         short_name: 'Armatura',

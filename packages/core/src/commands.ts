@@ -241,6 +241,8 @@ function resolveAttack(
     }
   }
   if (!target.defeated) target.facing = facingToward(target.pos, attacker.pos, target.facing);
+  // Weathering a blow with a reaction teaches something too (player side only, via gainXp).
+  if (!target.defeated && reaction !== 'none') gainXp(state, target, b.xpReact, pending);
   events.push({
     type: 'attackResolved',
     reaction,

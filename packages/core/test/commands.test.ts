@@ -104,7 +104,7 @@ describe('attacks', () => {
     expect(e.hp).toBe(80 - 4);
     expect(e).toMatchObject({ ap: 100, fp: 30 });
     // Slash costs 30 AP and only 5 FP.
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 70, fp: 5, xp: 10 });
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 70, fp: 5, xp: 20 });
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
@@ -157,7 +157,7 @@ describe('attacks', () => {
     });
     expect(state.outcome).toBe('victory');
     expect(events.map((e) => e.type)).toEqual(['attackResolved', 'unitDefeated', 'battleEnded']);
-    expect(requireUnit(state, 'a').xp).toBe(40); // KO blow at equal level
+    expect(requireUnit(state, 'a').xp).toBe(60); // KO blow at equal level
     expect(() => applyCommand(state, { type: 'endTurn', unitId: 'a' })).toThrow(/over/);
   });
 

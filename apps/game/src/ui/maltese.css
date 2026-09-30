@@ -1,0 +1,395 @@
+/*
+ * Maltese theme. The motifs themselves (tile, lace, balcony parts, cross) are generated into
+ * maltese.generated.css; this file places them. Layout stays as in styles.css.
+ *
+ * - Madum: the patterned cement floor tile, as the ground of full-screen pages.
+ * - Bizzilla: bobbin-lace edging along panel tops and dividers.
+ * - Gallarija: the enclosed wooden balcony, framing every command list and menu, with a
+ *   moulded cornice on top and limestone corbels underneath.
+ * - Maltese cross: selection marker and emblems. Luzzu paint: coloured divider bands.
+ */
+
+/* ── Painted-wood buttons (balcony shutters) ────────────────────────────── */
+.btn {
+  color: var(--mt-cream);
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 7px),
+    linear-gradient(#c23b35, #8a211d);
+  border: 2px solid var(--mt-cream);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 2px #5e1512,
+    0 2px 0 rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+.btn.ghost,
+.btn.tab {
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 7px),
+    linear-gradient(#2c6b56, var(--mt-green));
+  box-shadow:
+    inset 0 0 0 2px var(--mt-green-dark),
+    0 2px 0 rgba(0, 0, 0, 0.55);
+}
+.btn.tab.on {
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 7px),
+    linear-gradient(#c23b35, #8a211d);
+  box-shadow:
+    inset 0 0 0 2px #5e1512,
+    0 0 0 2px var(--mt-yellow);
+}
+.btn.icon {
+  background: linear-gradient(#2c6b56, var(--mt-green));
+}
+.btn:focus-visible {
+  outline: 2px solid var(--mt-yellow);
+  outline-offset: 2px;
+}
+
+/* ── Gallarija: command lists and menus ─────────────────────────────────── */
+/* Already absolutely placed: .action-menu, .vb-commands. The rest become the anchor here. */
+.gallarija,
+.title-menu {
+  position: relative;
+}
+.gallarija,
+.title-menu,
+.action-menu,
+.vb-commands {
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 6px),
+    linear-gradient(rgba(44, 107, 86, 0.96), rgba(18, 51, 40, 0.96));
+  border: 3px solid var(--mt-cream);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 2px var(--mt-green-dark),
+    0 6px 16px rgba(0, 0, 0, 0.5);
+}
+/* The moulded cornice sits a little wider than the balcony... */
+.gallarija::before,
+.title-menu::before,
+.action-menu::before,
+.vb-commands::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: -15px;
+  height: 14px;
+  background: var(--mt-cornice) repeat-x;
+  background-size: 40px 14px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+/* ...and carved limestone corbels hold it up. */
+.gallarija::after,
+.title-menu::after,
+.action-menu::after,
+.vb-commands::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -25px;
+  height: 24px;
+  background: var(--mt-corbels) repeat-x center top;
+  background-size: 120px 24px;
+  pointer-events: none;
+}
+.title-menu {
+  padding: 12px;
+}
+.vb-commands {
+  bottom: max(26px, calc(env(safe-area-inset-bottom) + 24px));
+  /* No scrolling: it would clip the cornice and corbels. The list is laid out to fit. */
+  max-height: none;
+  overflow: visible;
+}
+.vb-cmd.on {
+  color: #ffe08a;
+  background: linear-gradient(90deg, rgba(227, 178, 60, 0.3), transparent);
+}
+.vb-cmd.on::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  margin-right: -2px;
+  flex: none;
+  align-self: center;
+  background: var(--mt-cross-gold) center / contain no-repeat;
+}
+.vb-cmd.mini,
+.vbd-actions .vb-cmd {
+  background: linear-gradient(#c23b35, #8a211d);
+  border: 2px solid var(--mt-cream);
+}
+
+/* ── Bizzilla lace edging on framed panels ──────────────────────────────── */
+/* .dialogue is absolutely placed already, which anchors its lace too. */
+.vb-panel,
+.modal-box {
+  position: relative;
+}
+.vb-panel::before,
+.modal-box::before,
+.dialogue::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 0;
+  height: 12px;
+  background: var(--mt-lace) repeat-x;
+  background-size: 54px 12px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.vb-panel {
+  background: linear-gradient(rgba(14, 22, 36, 0.97), rgba(10, 14, 24, 0.97));
+  border-color: var(--mt-cream);
+}
+.vb-side-top,
+.vbd-top,
+.uc-top {
+  padding-top: 9px;
+}
+.modal-box {
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  background: linear-gradient(rgba(30, 24, 20, 0.98), rgba(22, 18, 15, 0.98));
+  border: 3px solid var(--mt-cream);
+  box-shadow:
+    inset 0 0 0 3px var(--mt-green),
+    0 10px 30px rgba(0, 0, 0, 0.6);
+  padding-top: 18px;
+}
+.modal-box h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mt-cream);
+}
+.modal-box h2::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  flex: none;
+  background: var(--mt-badge) center / contain no-repeat;
+}
+.modal {
+  background: rgba(10, 8, 6, 0.84);
+}
+
+/* ── Madum floors behind full-screen pages ──────────────────────────────── */
+.title-screen,
+.results-screen,
+.prep-screen,
+.end-screen,
+.chapter-card,
+.stage-blank {
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(26, 21, 18, 0.62), rgba(26, 21, 18, 0.94) 80%),
+    var(--mt-madum);
+  background-size:
+    auto,
+    176px 176px;
+}
+
+/* Title: a Maltese-cross emblem over the name, a lace rule under the subtitle. */
+.title-screen h1 {
+  color: var(--mt-lime);
+  text-shadow:
+    0 3px 0 #000,
+    0 0 18px rgba(0, 0, 0, 0.8);
+}
+.title-screen h1::before {
+  content: '';
+  display: block;
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0 auto 0.12em;
+  font-size: 0.6em;
+  background: var(--mt-badge) center / contain no-repeat;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.7));
+}
+.title-screen .subtitle {
+  position: relative;
+  padding-bottom: 14px;
+  color: var(--mt-cream);
+}
+.title-screen .subtitle::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 0;
+  height: 12px;
+  background: var(--mt-lace) repeat-x;
+  background-size: 54px 12px;
+}
+
+/* Chapter cards: luzzu stripes above and below the title. */
+.chapter-card h2 {
+  color: var(--mt-lime);
+  padding: 8px 0;
+  border-image: var(--mt-luzzu) 1;
+  border-top: 4px solid;
+  border-bottom: 4px solid;
+}
+
+/* Dialogue: lace along the top and a rosette in the corner. */
+.dialogue {
+  background: linear-gradient(rgba(20, 28, 40, 0.94), rgba(14, 18, 28, 0.94));
+  border: 3px solid var(--mt-cream);
+  box-shadow: inset 0 0 0 2px var(--mt-blue);
+  padding-top: 14px;
+}
+.dialogue.narration {
+  background: linear-gradient(rgba(38, 30, 20, 0.94), rgba(26, 21, 18, 0.94));
+  box-shadow: inset 0 0 0 2px var(--mt-lime-dark);
+}
+.dialogue::after {
+  content: '';
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 30px;
+  height: 30px;
+  background: var(--mt-rosette) center / contain no-repeat;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.dlg-name {
+  color: var(--mt-lime);
+}
+.dlg-portrait {
+  border: 3px solid var(--mt-cream);
+  box-shadow: 0 0 0 2px var(--mt-green);
+}
+.btn.choice {
+  background: linear-gradient(rgba(20, 28, 40, 0.95), rgba(14, 18, 28, 0.95));
+  border: 2px solid var(--mt-cream);
+  box-shadow: inset 0 0 0 2px var(--mt-blue);
+}
+
+/* Map name and turn banner: limestone plaques with a luzzu stripe. */
+.map-name {
+  color: var(--mt-cream);
+  background: linear-gradient(rgba(26, 21, 18, 0.9), rgba(26, 21, 18, 0.9));
+  border: 2px solid var(--mt-lime);
+  border-left: 12px solid;
+  border-image: var(--mt-luzzu) 0 0 0 1;
+}
+.portrait {
+  border-color: var(--mt-cream);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogue::after {
+    opacity: 0.4;
+  }
+}
+
+/* Action menu entries are text on the balcony, not separate painted buttons. */
+.btn.action {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+/* Short phone screens: the reaction list becomes two columns under a full-width Go!, so all
+   six choices fit, and the two panels make room for it. */
+@media (max-height: 520px) {
+  .vb-forecast.react .vb-commands {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: min(330px, 42vw);
+  }
+  .vb-forecast.react .vb-cmd.go {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+  .vb-forecast.react .vb-cmd {
+    padding: 0 8px;
+    font-size: 1.2rem;
+  }
+  .vb-forecast.react .vb-cmd small.why {
+    display: none;
+  }
+  .vb-forecast.react .vb-sides {
+    right: calc(max(12px, env(safe-area-inset-right)) + min(330px, 42vw) + 10px);
+  }
+  .vb-forecast.react .vb-side-top .portrait {
+    width: 44px;
+    height: 44px;
+    font-size: 1.3rem;
+  }
+}
+
+/* Legibility over the tiles. */
+.build-note,
+.tap-hint {
+  color: var(--mt-cream);
+  opacity: 0.85;
+  text-shadow: 0 1px 2px #000;
+}
+/* Inscriptional capitals read best a touch smaller and spaced. */
+.vb-cmd,
+.btn.action,
+.vb-name,
+.vbd-equip,
+.vbd-list,
+.action-title,
+.battle-screen .modal-box h2,
+.am-name,
+.reaction-title {
+  letter-spacing: 0.03em;
+}
+.vb-cmd,
+.btn.action {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.vb-cmd.mini {
+  min-height: 44px;
+}
+/* On short phones the reaction list shows each reason small under its name. */
+@media (max-height: 520px) {
+  .vb-forecast.react .vb-cmd:not(.go) {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1px;
+    font-size: 1.02rem;
+  }
+  .vb-forecast.react .vb-cmd small.why {
+    display: block;
+    max-width: none;
+    text-align: left;
+    font-size: 0.62rem;
+  }
+  .vb-forecast.react .vb-cmd.on::before {
+    position: absolute;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+  }
+  .vb-forecast.react .vb-cmd {
+    position: relative;
+    padding-left: 16px;
+  }
+}
+@media (min-height: 600px) {
+  .objective {
+    font-size: 0.9rem;
+  }
+}
+
+/* Long dialogs scroll on short phones; keep their closing button in reach. */
+.modal-box > .btn:last-child {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+}

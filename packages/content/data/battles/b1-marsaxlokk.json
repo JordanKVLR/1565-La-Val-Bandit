@@ -62,8 +62,8 @@
       "id": "levend-1",
       "name": "Levend",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 5,
+        "skl": 5,
         "agi": 5
       },
       "side": "enemy",
@@ -79,8 +79,8 @@
       "id": "levend-2",
       "name": "Levend",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 5,
+        "skl": 5,
         "agi": 5
       },
       "side": "enemy",
@@ -96,8 +96,8 @@
       "id": "yeniceri-1",
       "name": "Yeniçeri Aga",
       "stats": {
-        "str": 9,
-        "skl": 8,
+        "str": 6,
+        "skl": 6,
         "agi": 4
       },
       "side": "enemy",

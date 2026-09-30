@@ -132,7 +132,7 @@ export function ForecastPanel({
   const defAssist = { ...assistFor(state, defender, attacker.pos), center: attacker.pos };
 
   return (
-    <div class="vb-forecast" role="dialog" aria-label="Combat forecast">
+    <div class={`vb-forecast${choices ? ' react' : ''}`} role="dialog" aria-label="Combat forecast">
       <div class="vb-sides">
         <Side
           unit={attacker}

@@ -20,7 +20,7 @@
     "@capacitor/android": "8.5.2",
     "@capacitor/core": "8.5.2",
     "@capacitor/ios": "8.5.2",
-    "@fontsource/pirata-one": "^5.3.0",
+    "@fontsource/cinzel": "^5.3.0",
     "@m1565/content": "workspace:*",
     "@m1565/core": "workspace:*",
     "inkjs": "2.4.0",

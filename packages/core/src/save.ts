@@ -85,6 +85,17 @@ const migrations: Record<number, Migration> = {
     });
     return { ...raw, balance, units };
   },
+  // v6: more XP per hit and defeat, and XP for surviving a reaction.
+  5: (raw) => {
+    const balance = {
+      ...DEFAULT_BALANCE,
+      ...(raw.balance as object),
+      xpHit: DEFAULT_BALANCE.xpHit,
+      xpDefeat: DEFAULT_BALANCE.xpDefeat,
+      xpReact: DEFAULT_BALANCE.xpReact,
+    };
+    return { ...raw, balance };
+  },
 };
 
 export function serializeBattle(state: BattleState): string {

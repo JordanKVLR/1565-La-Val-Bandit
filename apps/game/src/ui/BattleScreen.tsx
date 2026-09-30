@@ -121,7 +121,7 @@ export function BattleScreen({
     <main class="battle-screen">
       <canvas ref={canvasRef} class="battle-canvas" aria-label={`Battle map: ${title}`} />
 
-      <header class="hud-top">
+      <header class="hud-top" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
         <div class="map-name">{title}</div>
         {active && state.outcome === 'ongoing' && (
           <div class="turn-banner" data-testid="turn-banner">

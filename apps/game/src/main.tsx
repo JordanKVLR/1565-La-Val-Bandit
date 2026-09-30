@@ -2,8 +2,11 @@ import { render } from 'preact';
 import { registerSW } from 'virtual:pwa-register';
 import { loadArtManifest } from './render/art';
 import { App } from './ui/App';
-import '@fontsource/pirata-one/400.css';
+import '@fontsource/cinzel/400.css';
+import '@fontsource/cinzel/700.css';
 import './ui/styles.css';
+import './ui/maltese.generated.css';
+import './ui/maltese.css';
 
 registerSW({ immediate: true });
 

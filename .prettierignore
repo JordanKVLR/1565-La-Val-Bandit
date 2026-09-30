@@ -9,3 +9,4 @@ dist-native
 apps/game/android
 apps/game/ios
 apps/desktop/release
+apps/game/src/ui/maltese.generated.css

@@ -1,5 +1,11 @@
 {
-  "portraits": {},
+  "portraits": {
+    "ninu": "portraits/ninu.webp",
+    "pawlu": "portraits/pawlu.webp",
+    "kateri": "portraits/kateri.webp",
+    "luis": "portraits/luis.webp",
+    "valette": "portraits/valette.webp"
+  },
   "terrain": {},
   "terrainSides": {}
 }

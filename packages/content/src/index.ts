@@ -162,12 +162,13 @@ function resolveStats(
   character: Character | undefined,
   level: number,
   frameClass: Frame['class'],
+  side: 'player' | 'enemy',
   lib: Library,
 ): PilotStats {
   const expected = character
     ? statsAtLevel(character, level, lib.balance.statPointsPerLevel)
     : undefined;
-  const fallback = expected ?? { str: 6, skl: 6, agi: 6, ...derivedStats(level, frameClass) };
+  const fallback = expected ?? { str: 6, skl: 6, agi: 6, ...derivedStats(level, frameClass, side) };
   const out = { ...fallback };
   for (const [k, v] of Object.entries(given ?? {}))
     if (v !== undefined) out[k as keyof PilotStats] = v;
@@ -214,7 +215,7 @@ export function buildBattle(
       ...(u.ai ? { ai: u.ai } : {}),
       level: u.level,
       // Without a saved roster entry, a named character arrives at the level the battle expects.
-      stats: resolveStats(u.stats, character, u.level, frame.class, lib),
+      stats: resolveStats(u.stats, character, u.level, frame.class, u.side, lib),
       frame,
       weapon,
       attacks: attackPool(lib, frame, weapon),
