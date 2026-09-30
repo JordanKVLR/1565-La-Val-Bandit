@@ -1,10 +1,46 @@
+import { basicAttack } from './attacks';
+import { DEFAULT_BALANCE } from './balance';
 import { SAVE_VERSION } from './battle';
 import type { BattleState } from './state';
+import type { Weapon, WeaponType } from './units';
 
 type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 
+const WEAPON_TYPES: Record<string, WeaponType> = {
+  pike: 'polearm',
+  'boat-hook': 'polearm',
+  'sipahi-lance': 'polearm',
+  'mace-shield': 'blunt',
+  'ram-arm': 'blunt',
+  arquebus: 'firearm',
+  tufek: 'firearm',
+  'swivel-gun': 'firearm',
+  'tower-guns': 'firearm',
+  'colossus-cannon': 'firearm',
+  grenado: 'explosive',
+};
+
 /** migrations[n] upgrades a version-n save to version n+1. */
-const migrations: Record<number, Migration> = {};
+const migrations: Record<number, Migration> = {
+  // v2: attacks, XP levelling and stat points.
+  1: (raw) => {
+    const balance = { ...DEFAULT_BALANCE, ...(raw.balance as object) };
+    const units = (raw.units as Array<Record<string, unknown>>).map((u) => {
+      const w = u.weapon as Weapon & { type?: WeaponType };
+      const weapon: Weapon = { ...w, type: w.type ?? WEAPON_TYPES[w.id] ?? 'blade' };
+      return {
+        ...u,
+        weapon,
+        frameClass: 'medium',
+        frameAgility: 0,
+        attacks: [basicAttack(weapon)],
+        statPoints: 0,
+        xp: Math.min(Number(u.xp ?? 0), balance.xpPerLevel - 1),
+      };
+    });
+    return { ...raw, balance, units };
+  },
+};
 
 export function serializeBattle(state: BattleState): string {
   return JSON.stringify(state);

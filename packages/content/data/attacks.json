@@ -1,0 +1,805 @@
+[
+  {
+    "id": "order-cross-cut",
+    "name": "Cross Cut",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.15,
+    "accuracy": 0,
+    "apCost": 28,
+    "fpCost": 15,
+    "requires": {
+      "str": 9
+    },
+    "description": "A disciplined two-stroke cut in the shape of the Order's cross."
+  },
+  {
+    "id": "order-pilgrim-thrust",
+    "name": "Pilgrim's Thrust",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.0,
+    "accuracy": 12,
+    "apCost": 28,
+    "fpCost": 15,
+    "requires": {
+      "skl": 10
+    },
+    "description": "A patient thrust through a gap in the plates.",
+    "pierce": 0.3
+  },
+  {
+    "id": "order-shieldbreaker",
+    "name": "Shieldbreaker",
+    "faction": "order",
+    "weaponTypes": ["blade", "blunt"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.3,
+    "accuracy": -8,
+    "apCost": 32,
+    "fpCost": 20,
+    "requires": {
+      "str": 12
+    },
+    "description": "A crushing blow that jars the enemy's springs.",
+    "apDamage": 15
+  },
+  {
+    "id": "order-eight-point",
+    "name": "Eight-Point Flurry",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.7,
+    "accuracy": 4,
+    "apCost": 34,
+    "fpCost": 20,
+    "requires": {
+      "skl": 13,
+      "agi": 10
+    },
+    "description": "Two lightning cuts, one high and one low.",
+    "hits": 2
+  },
+  {
+    "id": "order-last-rampart",
+    "name": "Last Rampart",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": ["medium", "heavy"],
+    "style": "overhead",
+    "power": 1.6,
+    "accuracy": -10,
+    "apCost": 40,
+    "fpCost": 30,
+    "requires": {
+      "str": 16,
+      "skl": 11
+    },
+    "description": "Everything behind one falling edge. Heavy frames only."
+  },
+  {
+    "id": "order-shield-bash",
+    "name": "Shield Bash",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 0.9,
+    "accuracy": 8,
+    "apCost": 24,
+    "fpCost": 12,
+    "requires": {
+      "str": 9
+    },
+    "description": "Drive the shield rim forward. The foe cannot answer in time.",
+    "noCounter": true,
+    "apDamage": 10
+  },
+  {
+    "id": "order-bell-ringer",
+    "name": "Bell-Ringer",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.35,
+    "accuracy": 0,
+    "apCost": 34,
+    "fpCost": 20,
+    "requires": {
+      "str": 13
+    },
+    "description": "A mace blow that leaves the pilot's ears ringing.",
+    "fatigue": 20
+  },
+  {
+    "id": "order-aragon-lance",
+    "name": "Lance of Aragon",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "charge",
+    "power": 1.25,
+    "accuracy": 0,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "str": 10,
+      "agi": 8
+    },
+    "description": "A running lance strike from two tiles away.",
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "order-hedge-of-pikes",
+    "name": "Hedge of Pikes",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.0,
+    "accuracy": 10,
+    "apCost": 28,
+    "fpCost": 15,
+    "requires": {
+      "skl": 12
+    },
+    "description": "A braced point the enemy runs onto.",
+    "noCounter": true
+  },
+  {
+    "id": "order-knights-charge",
+    "name": "Knight's Charge",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["medium"],
+    "style": "charge",
+    "power": 1.5,
+    "accuracy": -6,
+    "apCost": 40,
+    "fpCost": 30,
+    "requires": {
+      "str": 15,
+      "agi": 11
+    },
+    "description": "The full weight of a knight and his frame. Medium frames only.",
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "militia-hook-cut",
+    "name": "Fisherman's Hook-Cut",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.1,
+    "accuracy": 5,
+    "apCost": 26,
+    "fpCost": 12,
+    "requires": {
+      "agi": 9
+    },
+    "description": "A hooking cut learned gutting fish, not in any fencing school."
+  },
+  {
+    "id": "militia-zejtun-feint",
+    "name": "Żejtun Feint",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.65,
+    "accuracy": 8,
+    "apCost": 30,
+    "fpCost": 15,
+    "requires": {
+      "agi": 11,
+      "skl": 8
+    },
+    "description": "Feint left, cut twice right.",
+    "hits": 2
+  },
+  {
+    "id": "militia-harvest-swing",
+    "name": "Harvest Swing",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "sweep",
+    "power": 1.3,
+    "accuracy": 0,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "str": 12
+    },
+    "description": "A wide swing like scything barley. Tiring to receive.",
+    "fatigue": 15
+  },
+  {
+    "id": "militia-carob-split",
+    "name": "Carob Split",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.55,
+    "accuracy": -8,
+    "apCost": 38,
+    "fpCost": 25,
+    "requires": {
+      "str": 15,
+      "agi": 10
+    },
+    "description": "The overhead chop that splits a carob log in one go."
+  },
+  {
+    "id": "militia-pitchfork-jab",
+    "name": "Pitchfork Jab",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.0,
+    "accuracy": 10,
+    "apCost": 26,
+    "fpCost": 12,
+    "requires": {
+      "skl": 8
+    },
+    "description": "Quick and hard to see coming.",
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "militia-brace-and-drive",
+    "name": "Brace and Drive",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.3,
+    "accuracy": 0,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "str": 11
+    },
+    "description": "Plant the butt and let the enemy do the work.",
+    "noCounter": true,
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "militia-watchtower-sweep",
+    "name": "Watchtower Sweep",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "sweep",
+    "power": 1.2,
+    "accuracy": 4,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "agi": 12,
+      "str": 10
+    },
+    "description": "Sweeps the legs and scatters the springs.",
+    "apDamage": 20,
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "militia-aimed-shot",
+    "name": "Aimed Shot",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.0,
+    "accuracy": 15,
+    "apCost": 35,
+    "fpCost": 15,
+    "requires": {
+      "skl": 9
+    },
+    "description": "Take a breath. Squeeze."
+  },
+  {
+    "id": "militia-double-charge",
+    "name": "Double Charge",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.35,
+    "accuracy": -8,
+    "apCost": 38,
+    "fpCost": 25,
+    "requires": {
+      "str": 9,
+      "skl": 11
+    },
+    "description": "Twice the powder. Hold on tight."
+  },
+  {
+    "id": "militia-crossfire",
+    "name": "Crossfire",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.65,
+    "accuracy": 5,
+    "apCost": 40,
+    "fpCost": 22,
+    "requires": {
+      "skl": 13
+    },
+    "description": "Two quick shots from a double-loaded barrel.",
+    "hits": 2
+  },
+  {
+    "id": "militia-sharpshooter",
+    "name": "Sharpshooter",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.2,
+    "accuracy": 20,
+    "apCost": 40,
+    "fpCost": 20,
+    "requires": {
+      "skl": 16,
+      "agi": 10
+    },
+    "description": "Aimed at the joint between two plates.",
+    "pierce": 0.4
+  },
+  {
+    "id": "ottoman-crescent-slash",
+    "name": "Crescent Slash",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.15,
+    "accuracy": 5,
+    "apCost": 26,
+    "fpCost": 14,
+    "requires": {
+      "skl": 9
+    },
+    "description": "A curved cut that follows the curve of the blade."
+  },
+  {
+    "id": "ottoman-janissary-oath",
+    "name": "Janissary's Oath",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.4,
+    "accuracy": 0,
+    "apCost": 34,
+    "fpCost": 20,
+    "requires": {
+      "str": 12,
+      "skl": 9
+    },
+    "description": "The blow every recruit swears to master."
+  },
+  {
+    "id": "ottoman-twin-moons",
+    "name": "Twin Moons",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.7,
+    "accuracy": 6,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "agi": 12,
+      "skl": 10
+    },
+    "description": "Two crescent cuts in one breath.",
+    "hits": 2
+  },
+  {
+    "id": "ottoman-sultans-edge",
+    "name": "Sultan's Edge",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": ["medium"],
+    "style": "slash",
+    "power": 1.6,
+    "accuracy": 0,
+    "apCost": 40,
+    "fpCost": 28,
+    "requires": {
+      "str": 15,
+      "skl": 13
+    },
+    "description": "A perfect cut that slides between plates. Medium frames only.",
+    "pierce": 0.3
+  },
+  {
+    "id": "ottoman-steady-volley",
+    "name": "Steady Volley",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.0,
+    "accuracy": 12,
+    "apCost": 35,
+    "fpCost": 15,
+    "requires": {
+      "skl": 9
+    },
+    "description": "Rest the long barrel, wait for the wind."
+  },
+  {
+    "id": "ottoman-rolling-fire",
+    "name": "Rolling Fire",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.6,
+    "accuracy": 6,
+    "apCost": 40,
+    "fpCost": 22,
+    "requires": {
+      "skl": 12
+    },
+    "description": "Fire, turn, fire again.",
+    "hits": 2
+  },
+  {
+    "id": "ottoman-orta-marksman",
+    "name": "Marksman of the Orta",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.3,
+    "accuracy": 15,
+    "apCost": 42,
+    "fpCost": 22,
+    "requires": {
+      "skl": 15
+    },
+    "description": "The regiment's best shot, aimed at the pilot's hatch.",
+    "pierce": 0.35
+  },
+  {
+    "id": "ottoman-sipahi-charge",
+    "name": "Sipahi Charge",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["light"],
+    "style": "charge",
+    "power": 1.3,
+    "accuracy": 0,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "agi": 10
+    },
+    "description": "A galloping strike from two tiles away. Light frames only.",
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "ottoman-lance-feint",
+    "name": "Lance Feint",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.0,
+    "accuracy": 12,
+    "apCost": 28,
+    "fpCost": 15,
+    "requires": {
+      "agi": 12,
+      "skl": 9
+    },
+    "description": "The lance dips, the enemy flinches, the lance strikes.",
+    "noCounter": true,
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "ottoman-thunder-of-hooves",
+    "name": "Thunder of Hooves",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["light"],
+    "style": "charge",
+    "power": 1.6,
+    "accuracy": -4,
+    "apCost": 40,
+    "fpCost": 28,
+    "requires": {
+      "agi": 15,
+      "str": 11
+    },
+    "description": "A full-speed charge that leaves the target reeling. Light frames only.",
+    "fatigue": 20,
+    "minRange": 1,
+    "maxRange": 2
+  },
+  {
+    "id": "ottoman-fire-pot",
+    "name": "Fire Pot",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 1.1,
+    "accuracy": 0,
+    "apCost": 38,
+    "fpCost": 18,
+    "requires": {
+      "skl": 9
+    },
+    "description": "A clay pot of burning pitch.",
+    "fatigue": 15
+  },
+  {
+    "id": "ottoman-smoke-and-iron",
+    "name": "Smoke and Iron",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 1.0,
+    "accuracy": 10,
+    "apCost": 38,
+    "fpCost": 18,
+    "requires": {
+      "skl": 12
+    },
+    "description": "Blinding smoke that jams gears.",
+    "apDamage": 25
+  },
+  {
+    "id": "ottoman-burning-pitch",
+    "name": "Burning Pitch",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 1.5,
+    "accuracy": -10,
+    "apCost": 45,
+    "fpCost": 28,
+    "requires": {
+      "skl": 15,
+      "str": 9
+    },
+    "description": "A heavy charge of burning pitch.",
+    "fatigue": 25
+  },
+  {
+    "id": "corsair-boarding-slash",
+    "name": "Boarding Slash",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.1,
+    "accuracy": 8,
+    "apCost": 24,
+    "fpCost": 12,
+    "requires": {
+      "agi": 9
+    },
+    "description": "Over the rail and straight in."
+  },
+  {
+    "id": "corsair-deck-dance",
+    "name": "Deck Dance",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.65,
+    "accuracy": 10,
+    "apCost": 30,
+    "fpCost": 15,
+    "requires": {
+      "agi": 12
+    },
+    "description": "Two cuts while the enemy is still finding their footing.",
+    "hits": 2
+  },
+  {
+    "id": "corsair-salt-and-steel",
+    "name": "Salt and Steel",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "sweep",
+    "power": 1.3,
+    "accuracy": 0,
+    "apCost": 32,
+    "fpCost": 18,
+    "requires": {
+      "str": 11,
+      "agi": 10
+    },
+    "description": "A wide cut that saps the will to fight.",
+    "fatigue": 15
+  },
+  {
+    "id": "corsair-barbary-reaper",
+    "name": "Barbary Reaper",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "sweep",
+    "power": 1.55,
+    "accuracy": 0,
+    "apCost": 38,
+    "fpCost": 25,
+    "requires": {
+      "agi": 15,
+      "str": 12
+    },
+    "description": "The feared finishing cut of the Barbary coast.",
+    "pierce": 0.25
+  },
+  {
+    "id": "corsair-grapple",
+    "name": "Grapple",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 0.9,
+    "accuracy": 8,
+    "apCost": 26,
+    "fpCost": 12,
+    "requires": {
+      "str": 9
+    },
+    "description": "Hook the frame and haul it off balance.",
+    "noCounter": true,
+    "apDamage": 20
+  },
+  {
+    "id": "corsair-keelhaul",
+    "name": "Keelhaul",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.3,
+    "accuracy": 0,
+    "apCost": 32,
+    "fpCost": 20,
+    "requires": {
+      "str": 12
+    },
+    "description": "Drag, twist and slam.",
+    "fatigue": 20
+  },
+  {
+    "id": "scala-piston-strike",
+    "name": "Piston Strike",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.25,
+    "accuracy": 0,
+    "apCost": 30,
+    "fpCost": 15,
+    "requires": {
+      "str": 8
+    },
+    "description": "A steam-driven punch."
+  },
+  {
+    "id": "scala-steam-hammer",
+    "name": "Steam Hammer",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.5,
+    "accuracy": -8,
+    "apCost": 36,
+    "fpCost": 20,
+    "requires": {
+      "str": 10
+    },
+    "description": "The whole arm drops like a forge hammer.",
+    "fatigue": 20
+  },
+  {
+    "id": "scala-overpressure",
+    "name": "Overpressure",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.8,
+    "accuracy": -12,
+    "apCost": 42,
+    "fpCost": 35,
+    "requires": {
+      "str": 12
+    },
+    "description": "Every valve open at once.",
+    "pierce": 0.3
+  },
+  {
+    "id": "scala-grapeshot",
+    "name": "Grapeshot",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.7,
+    "accuracy": 5,
+    "apCost": 38,
+    "fpCost": 18,
+    "requires": {
+      "skl": 8
+    },
+    "description": "A spray of iron balls.",
+    "hits": 2
+  },
+  {
+    "id": "scala-siege-bolt",
+    "name": "Siege Bolt",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.4,
+    "accuracy": 0,
+    "apCost": 40,
+    "fpCost": 20,
+    "requires": {
+      "skl": 10
+    },
+    "description": "A bolt built to crack walls.",
+    "pierce": 0.4
+  },
+  {
+    "id": "scala-broadside",
+    "name": "Full Broadside",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": ["heavy"],
+    "style": "volley",
+    "power": 0.9,
+    "accuracy": -10,
+    "apCost": 45,
+    "fpCost": 30,
+    "requires": {
+      "skl": 12,
+      "str": 10
+    },
+    "description": "Every gun on the machine. Heavy frames only.",
+    "hits": 2
+  }
+]

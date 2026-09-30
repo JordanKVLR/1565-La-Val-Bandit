@@ -43,10 +43,14 @@ const coord = z.tuple([z.number().int().min(0), z.number().int().min(0)]);
 const facing = z.enum(['north', 'east', 'south', 'west']);
 const stats = z.object({ str: z.number().int(), skl: z.number().int(), agi: z.number().int() });
 
+export const WEAPON_TYPES = ['blade', 'polearm', 'blunt', 'firearm', 'explosive'] as const;
+export const FRAME_CLASSES = ['light', 'medium', 'heavy'] as const;
+
 export const WeaponSchema = z
   .object({
     id,
     name: z.string().min(1),
+    type: z.enum(WEAPON_TYPES),
     power: z.number().int().positive(),
     accuracy: z.number().int().min(0).max(100),
     apCost: z.number().int().positive(),
@@ -56,10 +60,13 @@ export const WeaponSchema = z
   })
   .refine((w) => w.maxRange >= w.minRange, 'maxRange must be >= minRange');
 
+export const FACTIONS = ['order', 'militia', 'ottoman', 'corsair', 'scala'] as const;
+
 export const FrameSchema = z.object({
   id,
   name: z.string().min(1),
-  faction: z.enum(['order', 'militia', 'ottoman', 'corsair', 'scala']),
+  faction: z.enum(FACTIONS),
+  class: z.enum(FRAME_CLASSES),
   hp: z.number().int().positive(),
   armour: z.number().int().min(0),
   move: z.number().int().positive(),
@@ -112,7 +119,56 @@ export const BalanceSchema = z.object({
   counterHitBonus: z.number(),
   xpHit: z.number().int().min(0),
   xpDefeat: z.number().int().min(0),
+  xpPerLevel: z.number().int().positive(),
+  xpLevelFactor: z.number().min(0),
+  xpMinFactor: z.number().min(0),
+  xpMaxFactor: z.number().positive(),
+  statPointsPerLevel: z.number().int().min(0),
+  hpPerLevel: z.number().int().min(0),
 });
+
+const statReq = z.object({
+  str: z.number().int().min(0).optional(),
+  skl: z.number().int().min(0).optional(),
+  agi: z.number().int().min(0).optional(),
+});
+
+/** A faction technique, unlocked by weapon type, frame class and the pilot's stats. */
+export const AttackSchema = z
+  .object({
+    id,
+    name: z.string().min(1),
+    faction: z.enum(FACTIONS),
+    weaponTypes: z.array(z.enum(WEAPON_TYPES)).min(1),
+    /** Empty = any frame class. */
+    frameClasses: z.array(z.enum(FRAME_CLASSES)),
+    style: z.enum([
+      'slash',
+      'thrust',
+      'overhead',
+      'sweep',
+      'bash',
+      'charge',
+      'shot',
+      'volley',
+      'throw',
+    ]),
+    power: z.number().positive(),
+    accuracy: z.number().int(),
+    apCost: z.number().int().positive(),
+    fpCost: z.number().int().min(0),
+    minRange: z.number().int().min(1).optional(),
+    maxRange: z.number().int().min(1).optional(),
+    hits: z.number().int().min(1).max(3).optional(),
+    pierce: z.number().min(0).max(1).optional(),
+    fatigue: z.number().int().min(0).optional(),
+    apDamage: z.number().int().min(0).optional(),
+    noCounter: z.boolean().optional(),
+    requires: statReq,
+    description: z.string(),
+  })
+  .refine((a) => (a.minRange ?? 1) <= (a.maxRange ?? 99), 'minRange must be <= maxRange');
+export type AttackData = z.infer<typeof AttackSchema>;
 
 /** A unit is either a named character (stats from characters.json) or an inline generic. */
 export const BattleUnitSchema = z

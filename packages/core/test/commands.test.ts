@@ -105,7 +105,7 @@ describe('attacks', () => {
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
-      strike: { hit: true, damage: 7 },
+      strikes: [{ hit: true, damage: 7 }],
     });
   });
 
@@ -153,8 +153,8 @@ describe('attacks', () => {
       reaction: 'defend',
     });
     expect(state.outcome).toBe('victory');
-    expect(events.map((e) => e.type)).toEqual(['unitDefeated', 'attackResolved', 'battleEnded']);
-    expect(requireUnit(state, 'a').xp).toBe(40);
+    expect(events.map((e) => e.type)).toEqual(['attackResolved', 'unitDefeated', 'battleEnded']);
+    expect(requireUnit(state, 'a').xp).toBe(40); // KO blow at equal level
     expect(() => applyCommand(state, { type: 'endTurn', unitId: 'a' })).toThrow(/over/);
   });
 

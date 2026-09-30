@@ -1,4 +1,4 @@
-import type { BattleSetup, BattleState, Facing } from '@m1565/core';
+import type { BattleSetup, BattleState, Facing, StatName } from '@m1565/core';
 import type { Library } from '@m1565/content';
 import { isBattleId, loadBattle } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
@@ -12,7 +12,7 @@ import { readSave, writeSave } from '../platform/storage';
 import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
-import { applyBattleResults, newRosterEntry } from './progression';
+import { applyBattleResults, newRosterEntry, raiseRosterStat } from './progression';
 import type { CampaignSave, ChapterInfo, RosterEntry, StageState } from './types';
 import { CAMPAIGN_SAVE_VERSION } from './types';
 
@@ -162,6 +162,12 @@ export class GameSession {
       battleId: screen.battleId,
       lines: [`+${reward} scudi`, ...lines],
     });
+    this.autosave();
+  }
+
+  /** Spends a pilot's unspent stat point between battles. */
+  raiseStat(characterId: string, stat: StatName): void {
+    this.patch({ roster: raiseRosterStat(this.state.roster, characterId, stat) });
     this.autosave();
   }
 

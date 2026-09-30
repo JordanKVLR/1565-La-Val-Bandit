@@ -141,12 +141,22 @@ skippable on tap.
 
 ### 2.5 Progression
 
-- XP from actions; level ups raise stats along a growth curve per frame.
-- Skills unlock at levels (e.g. _Shield Wall_, _Grenado_, _Harquebus Volley_, _Rally_).
+- **XP during battle:** every hit earns XP, and the blow that defeats a unit earns much more (base
+  10 and 40). XP scales with the level gap: ×(1 + 0.2 × (target level − attacker level)), limited
+  to ×0.1–×3. So beating stronger enemies is rewarded and farming weak ones isn't. Only the
+  player's side earns XP.
+- **Levels:** always 100 XP per level; leftover XP carries over. Each level-up happens the moment
+  it's earned, mid-battle. It gives +3 max HP and **3 stat points the player assigns** to STR,
+  SKL or AGI (AI-controlled allies spend theirs automatically). Unspent points can be saved and
+  spent later on the results or preparation screen.
+- **Techniques:** each frame faction (Order, militia, Ottoman, corsair, Scala) has its own list of
+  attacks (`packages/content/data/attacks.json`, 46 in total). What a pilot can learn depends on
+  the weapon type and frame weight class; when they can use it depends on stat requirements.
+  Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
+  pierce, fatigue or AP damage to the target, and blocking counters.
 - Equipment shop between chapters, using _scudi_ (currency).
-- **Affinity:** hidden relationship values with 5 key characters, changed by dialogue
-  choices and battle events (assists, rescues). They gate scenes, recruitable allies and
-  route branches.
+- **Affinity:** hidden relationship values changed by dialogue choices; they gate scenes, routes
+  and ending variations.
 
 ### 2.6 Controls
 

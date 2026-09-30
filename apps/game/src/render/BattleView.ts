@@ -2,6 +2,7 @@ import type { BattleMap, Coord, Facing } from '@m1565/core';
 import { DIRECTIONS, getTile } from '@m1565/core';
 import {
   AmbientLight,
+  HemisphereLight,
   BoxGeometry,
   BufferGeometry,
   Color,
@@ -24,7 +25,9 @@ import {
 } from 'three';
 import type { Sprite } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { FALLBACK_COLOR, TERRAIN_COLORS } from './palette';
+import { applyTerrainArt } from './art';
+import type { TerrainAtlas } from './terrainTextures';
+import { createTerrainAtlas } from './terrainTextures';
 import type { UnitLook } from './unitSprite';
 import { createUnitSprite, drawUnit } from './unitSprite';
 
@@ -85,6 +88,7 @@ export class BattleView {
   private readonly units = new Map<string, UnitNode>();
   private readonly tweens = new Set<Tween>();
   private terrain: Mesh | undefined;
+  private readonly atlas: TerrainAtlas = createTerrainAtlas();
   private rotation = 0;
   private zoom = 1;
   private dragStart: { x: number; y: number; moved: boolean } | undefined;
@@ -101,7 +105,8 @@ export class BattleView {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.scene.background = new Color(0x2a1f2e);
 
-    this.scene.add(new AmbientLight(0xffffff, 1.4));
+    this.scene.add(new HemisphereLight(0xe8f0ff, 0x6b5a3a, 1.3));
+    this.scene.add(new AmbientLight(0xffffff, 0.55));
     const sun = new DirectionalLight(0xfff1d6, 2.2);
     sun.position.set(-4, 10, 6);
     this.scene.add(sun);
@@ -119,6 +124,7 @@ export class BattleView {
     this.scene.add(this.cursor, this.highlightGroup);
 
     this.buildTerrain();
+    void applyTerrainArt(this.atlas).then((changed) => changed && this.requestRender());
     this.target.set(map.width / 2, 0, map.depth / 2);
     this.updateCamera();
 
@@ -337,6 +343,26 @@ export class BattleView {
     this.requestRender();
   }
 
+  /** Points each box face at its terrain's atlas cell; cliff textures stretch with height. */
+  private mapUvs(box: BufferGeometry, terrain: string, height: number): void {
+    const uv = box.getAttribute('uv');
+    for (let face = 0; face < 6; face++) {
+      const [u0, v0, u1, v1] = face === 2 ? this.atlas.top(terrain) : this.atlas.side(terrain);
+      const vScale = face === 2 ? 1 : Math.min(1, height / 1.4);
+      for (let k = 0; k < 4; k++) {
+        const i = face * 4 + k;
+        const u = uv.getX(i);
+        const v = uv.getY(i);
+        uv.setXY(
+          i,
+          u0 + u * (u1 - u0),
+          face === 2 ? v0 + v * (v1 - v0) : v1 - (1 - v) * vScale * (v1 - v0),
+        );
+      }
+    }
+    uv.needsUpdate = true;
+  }
+
   private buildTerrain(): void {
     const parts: BufferGeometry[] = [];
     const outline: number[] = [];
@@ -348,16 +374,17 @@ export class BattleView {
         if (!tile) continue;
         const h = (tile.height + 1) * STEP;
         const box = new BoxGeometry(1, h, 1).translate(x + 0.5, h / 2, y + 0.5);
-        top.setHex(TERRAIN_COLORS[tile.terrain] ?? FALLBACK_COLOR);
-        // Subtle per-tile variation so large fields don't read as flat colour.
-        top.offsetHSL(0, 0, ((x * 7 + y * 13) % 5) * 0.008 - 0.016);
-        side.copy(top).multiplyScalar(0.62);
+        // Subtle per-tile light variation so large fields don't look stamped.
+        const shade = 0.92 + ((x * 7 + y * 13) % 5) * 0.025;
+        top.setRGB(shade, shade, shade);
+        side.setRGB(shade * 0.72, shade * 0.72, shade * 0.72);
         const colors: number[] = [];
         // BoxGeometry face order: +x, -x, +y (top), -y, +z, -z; 4 vertices each.
         for (let face = 0; face < 6; face++) {
           const c = face === 2 ? top : side;
           for (let v = 0; v < 4; v++) colors.push(c.r, c.g, c.b);
         }
+        this.mapUvs(box, tile.terrain, h);
         box.setAttribute('color', new Float32BufferAttribute(colors, 3));
         parts.push(box);
         const e = 0.002;
@@ -391,7 +418,10 @@ export class BattleView {
     }
     const merged = mergeGeometries(parts);
     for (const p of parts) p.dispose();
-    this.terrain = new Mesh(merged, new MeshLambertMaterial({ vertexColors: true }));
+    this.terrain = new Mesh(
+      merged,
+      new MeshLambertMaterial({ vertexColors: true, map: this.atlas.texture }),
+    );
     this.scene.add(this.terrain);
 
     const grid = new BufferGeometry();

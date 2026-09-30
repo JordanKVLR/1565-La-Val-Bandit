@@ -10,6 +10,18 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
             Move, then Attack, then End Turn and pick a facing. Undo takes back a move you haven't
             followed with an attack.
           </dd>
+          <dt>Techniques</dt>
+          <dd>
+            Attack opens your techniques. Each frame faction (Order, militia, Ottoman, corsair) has
+            its own, depending on the weapon type and frame weight. Locked ones show the STR, SKL or
+            AGI they need.
+          </dd>
+          <dt>XP and levels</dt>
+          <dd>
+            Every hit earns XP, and a defeating blow earns much more. Beating stronger enemies earns
+            more than beating weaker ones. At 100 XP you level up, gain HP and 3 stat points to
+            spend as you like.
+          </dd>
           <dt>AP (blue)</dt>
           <dd>
             Action points. Each turn adds 40, up to 100. Moving and attacking spend AP, and so does

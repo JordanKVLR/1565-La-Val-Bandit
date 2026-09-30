@@ -1,13 +1,6 @@
-import type { BattleState } from '@m1565/core';
+import type { BattleState, StatName } from '@m1565/core';
+import { pilotStats } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
-import { growthAt } from '@m1565/content';
-
-export const XP_PER_LEVEL = 100;
-/** Every surviving participant earns this on victory, on top of hits and defeats. */
-export const VICTORY_XP = 20;
-export const MAX_LEVEL = 30;
-
-type Stats = RosterEntry['stats'];
 
 export function newRosterEntry(
   lib: Library,
@@ -21,29 +14,17 @@ export function newRosterEntry(
     characterId,
     level: 1,
     xp: 0,
+    statPoints: 0,
     stats: { ...c.stats },
     frame: frame && lib.frames.has(frame) ? frame : c.frame,
     weapon: weapon && lib.weapons.has(weapon) ? weapon : c.weapon,
   };
 }
 
-export function levelUp(lib: Library, entry: RosterEntry): { entry: RosterEntry; gains: Stats } {
-  const c = lib.characters.get(entry.characterId);
-  const level = entry.level + 1;
-  const gains: Stats = {
-    str: c ? growthAt(level, c.growth.str) : 0,
-    skl: c ? growthAt(level, c.growth.skl) : 0,
-    agi: c ? growthAt(level, c.growth.agi) : 0,
-  };
-  const stats = {
-    str: entry.stats.str + gains.str,
-    skl: entry.stats.skl + gains.skl,
-    agi: entry.stats.agi + gains.agi,
-  };
-  return { entry: { ...entry, level, stats }, gains };
-}
-
-/** Adds battle XP to the roster, levelling up as needed. Returns the new roster and summary lines. */
+/**
+ * Carries each pilot's battle progress (level, XP, stats, unspent points) back into the roster.
+ * Levelling itself happens during battle, every 100 XP; this only records the result.
+ */
 export function applyBattleResults(
   lib: Library,
   roster: readonly RosterEntry[],
@@ -55,19 +36,37 @@ export function applyBattleResults(
       (u) => u.side === 'player' && u.characterId === entry.characterId,
     );
     if (!unit) return entry;
-    const earned = unit.xp + (unit.defeated ? 0 : VICTORY_XP);
-    let e: RosterEntry = { ...entry, xp: entry.xp + earned };
     const name = lib.characters.get(entry.characterId)?.name ?? entry.characterId;
-    lines.push(`${name} +${earned} XP`);
-    while (e.xp >= XP_PER_LEVEL && e.level < MAX_LEVEL) {
-      const { entry: up, gains } = levelUp(lib, { ...e, xp: e.xp - XP_PER_LEVEL });
-      e = up;
-      const parts = (['str', 'skl', 'agi'] as const)
-        .filter((k) => gains[k] > 0)
-        .map((k) => `${k.toUpperCase()}+${gains[k]}`);
-      lines.push(`${name} reached level ${e.level}! ${parts.join(' ') || ''}`.trim());
-    }
-    return e;
+    const levels = unit.level - entry.level;
+    lines.push(
+      levels > 0
+        ? `${name} rose ${levels} level${levels > 1 ? 's' : ''} to Lv ${unit.level} (${unit.xp}/${state.balance.xpPerLevel} XP)`
+        : `${name}: Lv ${unit.level}, ${unit.xp}/${state.balance.xpPerLevel} XP`,
+    );
+    return {
+      ...entry,
+      level: unit.level,
+      xp: unit.xp,
+      statPoints: unit.statPoints,
+      stats: pilotStats(unit),
+    };
   });
   return { roster: next, lines };
+}
+
+/** Spends one of a pilot's unspent points outside battle (results and preparation screens). */
+export function raiseRosterStat(
+  roster: readonly RosterEntry[],
+  characterId: string,
+  stat: StatName,
+): RosterEntry[] {
+  return roster.map((r) =>
+    r.characterId === characterId && (r.statPoints ?? 0) > 0
+      ? {
+          ...r,
+          statPoints: (r.statPoints ?? 0) - 1,
+          stats: { ...r.stats, [stat]: r.stats[stat] + 1 },
+        }
+      : r,
+  );
 }

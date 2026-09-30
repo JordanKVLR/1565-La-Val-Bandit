@@ -2,6 +2,7 @@ import type { Library } from '@m1565/content';
 import { loadMap, mapSources } from '@m1565/content';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { GameSession, Screen } from '../campaign/GameSession';
+import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
@@ -107,7 +108,11 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
         <section class={`dialogue ${speaker ? '' : 'narration'}`} aria-live="polite">
           {speaker && (
             <div class="dlg-portrait" style={{ background: speaker.color }} aria-hidden="true">
-              {speaker.name.replace(/^(Fra|La) /, '').charAt(0)}
+              {portraitUrl(speaker.id) ? (
+                <img src={portraitUrl(speaker.id)} alt="" />
+              ) : (
+                speaker.name.replace(/^(Fra|La) /, '').charAt(0)
+              )}
             </div>
           )}
           <div class="dlg-body">

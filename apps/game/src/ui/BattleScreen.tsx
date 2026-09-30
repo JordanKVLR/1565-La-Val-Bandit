@@ -6,10 +6,12 @@ import { BattleView } from '../render/BattleView';
 import { BattleController } from '../scenes/BattleController';
 import { useStore } from '../state/store';
 import { ActionMenu, SubModeBar } from './battle/ActionMenu';
+import { AttackMenu } from './battle/AttackMenu';
 import { CloseUp } from './battle/CloseUp';
 import { EndOverlay } from './battle/EndOverlay';
 import { FacingPicker } from './battle/FacingPicker';
 import { HelpPanel } from './battle/HelpPanel';
+import { LevelUpPanel } from './battle/LevelUpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
@@ -101,7 +103,9 @@ export function BattleScreen({
           </div>
         )}
       </header>
-      {!['forecast', 'reaction', 'closeUp'].includes(mode.kind) && <TurnQueue state={state} />}
+      {!['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp'].includes(mode.kind) && (
+        <TurnQueue state={state} />
+      )}
 
       <div class="hud-controls">
         <button
@@ -152,29 +156,52 @@ export function BattleScreen({
         </div>
       )}
 
-      {inspectedUnit && !['forecast', 'reaction', 'closeUp'].includes(mode.kind) && (
-        <aside class="unit-card" data-testid="unit-card">
-          <strong>
-            {inspectedUnit.name} <small>Lv {inspectedUnit.level}</small>
-          </strong>
-          <span>
-            HP {inspectedUnit.hp}/{inspectedUnit.maxHp} · AP {inspectedUnit.ap} · FP{' '}
-            {inspectedUnit.fp}
-          </span>
-          <span>
-            {inspectedUnit.weapon.name} · range {inspectedUnit.weapon.minRange}–
-            {inspectedUnit.weapon.maxRange}
-          </span>
-        </aside>
-      )}
+      {inspectedUnit &&
+        !['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp'].includes(mode.kind) && (
+          <aside class="unit-card" data-testid="unit-card">
+            <strong>
+              {inspectedUnit.name} <small>Lv {inspectedUnit.level}</small>
+            </strong>
+            <span>
+              HP {inspectedUnit.hp}/{inspectedUnit.maxHp} · AP {inspectedUnit.ap} · FP{' '}
+              {inspectedUnit.fp}
+            </span>
+            <span>
+              {inspectedUnit.weapon.name} · range {inspectedUnit.weapon.minRange}–
+              {inspectedUnit.weapon.maxRange}
+            </span>
+            {inspectedUnit.side === 'player' && (
+              <span class="xp-line" data-testid="unit-xp">
+                XP {inspectedUnit.xp}/{state.balance.xpPerLevel}
+                <span class="xp-track">
+                  <span
+                    style={{ width: `${(inspectedUnit.xp / state.balance.xpPerLevel) * 100}%` }}
+                  />
+                </span>
+                {inspectedUnit.statPoints > 0 && <b> +{inspectedUnit.statPoints} pts</b>}
+              </span>
+            )}
+          </aside>
+        )}
 
       {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
       {mode.kind === 'command' && <ActionMenu ctl={ctl} />}
       {mode.kind === 'move' && (
         <SubModeBar label="Tap a blue tile to move" onCancel={() => ctl.cancel()} />
       )}
+      {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
-        <SubModeBar label="Tap an enemy to attack" onCancel={() => ctl.cancel()} />
+        <SubModeBar
+          label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: tap a red enemy`}
+          onCancel={() => ctl.cancel()}
+        />
+      )}
+      {mode.kind === 'levelUp' && findUnit(state, mode.unitId) && (
+        <LevelUpPanel
+          unit={findUnit(state, mode.unitId)!}
+          onRaise={(stat) => ctl.raiseStat(mode.unitId, stat)}
+          onDone={() => ctl.finishLevelUp()}
+        />
       )}
       {mode.kind === 'facing' && active && (
         <FacingPicker

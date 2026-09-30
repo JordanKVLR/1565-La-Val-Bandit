@@ -1,5 +1,13 @@
+import type { Attack } from './attacks';
 import type { Reaction } from './combat';
-import { availableReactions, canAct, facingToward, forecastAttack, inRange } from './combat';
+import {
+  availableReactions,
+  canAct,
+  facingToward,
+  forecastAttack,
+  unlockedAttacks,
+  usableAttacks,
+} from './combat';
 import type { Command } from './commands';
 import type { Coord } from './grid';
 import { manhattan } from './grid';
@@ -14,15 +22,18 @@ export function chooseReaction(
   state: BattleState,
   defenderId: string,
   attackerId: string,
+  attackId?: string,
 ): Reaction {
   const defender = requireUnit(state, defenderId);
   const attacker = requireUnit(state, attackerId);
-  const f = forecastAttack(state, attacker, defender);
+  const attack =
+    attacker.attacks.find((a) => a.id === (attackId ?? 'basic')) ?? attacker.attacks[0];
+  const f = forecastAttack(state, attacker, defender, attacker.pos, attack);
   let best: Reaction = 'defend';
   let bestScore = Infinity;
-  for (const r of availableReactions(state, defender, attacker)) {
+  for (const r of availableReactions(state, defender, attacker, attacker.pos, attack)) {
     const p = f.hitChance[r] / 100;
-    const dmg = f.damage[r];
+    const dmg = f.damage[r] * f.hits;
     let score = p * dmg + (dmg >= defender.hp ? p * 100 : 0);
     if (r === 'counter' && f.counter && dmg < defender.hp) {
       score -= (f.counter.hitChance / 100) * f.counter.damage * 0.8;
@@ -38,6 +49,7 @@ export function chooseReaction(
 interface Plan {
   readonly to: Coord | null;
   readonly targetId: string | null;
+  readonly attackId?: string;
   readonly score: number;
 }
 
@@ -62,12 +74,18 @@ export function planAiTurn(state: BattleState, unitId: string): Command[] {
 
   for (const [, r] of reach) {
     const dest = r.path[r.path.length - 1] ?? unit.pos;
-    if (unit.ap - r.cost < unit.weapon.apCost) continue;
     for (const target of enemies) {
-      if (!inRange(unit.weapon, dest, target.pos)) continue;
-      const score = scoreAttack(state, unit, profile, target, dest, r.cost, enemies);
-      if (score > best.score)
-        best = { to: r.path.length ? dest : null, targetId: target.id, score };
+      for (const attack of usableAttacks(unit, dest, target.pos, unit.ap - r.cost)) {
+        const score = scoreAttack(state, unit, profile, target, dest, r.cost, enemies, attack);
+        if (score > best.score) {
+          best = {
+            to: r.path.length ? dest : null,
+            targetId: target.id,
+            attackId: attack.id,
+            score,
+          };
+        }
+      }
     }
   }
 
@@ -96,11 +114,17 @@ export function planAiTurn(state: BattleState, unitId: string): Command[] {
     if (bestDest) {
       const from = bestDest;
       const apLeft = unit.ap - (reach.get(`${from.x},${from.y}`)?.cost ?? 0);
-      const target =
-        apLeft >= unit.weapon.apCost
-          ? enemies.find((e) => inRange(unit.weapon, from, e.pos))
-          : undefined;
-      best = { to: from, targetId: target?.id ?? null, score: 0 };
+      let pick: { target: UnitState; attack: Attack } | undefined;
+      for (const e of enemies) {
+        const attack = usableAttacks(unit, from, e.pos, apLeft)[0];
+        if (attack) {
+          pick = { target: e, attack };
+          break;
+        }
+      }
+      best = pick
+        ? { to: from, targetId: pick.target.id, attackId: pick.attack.id, score: 0 }
+        : { to: from, targetId: null, score: 0 };
     }
   } else if (best.targetId === null && profile === 'aggressive') {
     // Close in, keeping enough AP back to avoid a blow if possible.
@@ -120,7 +144,13 @@ export function planAiTurn(state: BattleState, unitId: string): Command[] {
   if (best.to) commands.push({ type: 'move', unitId, to: best.to });
   if (best.targetId) {
     // The reaction is filled in by whoever controls the defender at resolve time.
-    commands.push({ type: 'attack', unitId, targetId: best.targetId, reaction: 'defend' });
+    commands.push({
+      type: 'attack',
+      unitId,
+      targetId: best.targetId,
+      reaction: 'defend',
+      ...(best.attackId ? { attackId: best.attackId } : {}),
+    });
   }
   const standAt = best.to ?? unit.pos;
   const nearest = [...enemies].sort(
@@ -152,21 +182,30 @@ function scoreAttack(
   dest: Coord,
   moveCost: number,
   enemies: readonly UnitState[],
+  attack: Attack,
 ): number {
-  const f = forecastAttack(state, unit, target, dest);
+  const f = forecastAttack(state, unit, target, dest, attack);
   // Assume the defender avoids when it can: the least favourable common case for us.
   const r: Reaction = f.reactions.includes('avoid') ? 'avoid' : 'defend';
   const p = f.hitChance[r] / 100;
-  const dmg = f.damage[r];
+  const dmg = f.damage[r] * f.hits;
   let score = p * dmg;
   if (dmg >= target.hp) score += p * 40;
+  // Side effects are worth a little; spending extra AP (less left to react with) costs a little.
+  score += p * ((attack.fatigue ?? 0) * 0.15 + (attack.apDamage ?? 0) * 0.15);
+  score -= Math.max(0, attack.apCost - (unit.attacks[0]?.apCost ?? attack.apCost)) * 0.1;
   if (f.counter) score -= (f.counter.hitChance / 100) * f.counter.damage * 0.7;
   const threats = enemies.filter(
-    (e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + e.weapon.maxRange,
+    (e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + maxReach(e),
   ).length;
   score -= threats * (profile === 'defensive' ? 10 : 2);
   score -= moveCost * 0.05;
   return score;
+}
+
+/** Furthest tile the unit could strike with any unlocked attack. */
+function maxReach(u: UnitState): number {
+  return Math.max(...unlockedAttacks(u).map((a) => a.maxRange ?? u.weapon.maxRange));
 }
 
 function nearestDistance(from: Coord, units: readonly UnitState[]): number {

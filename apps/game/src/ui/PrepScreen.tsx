@@ -2,7 +2,9 @@ import type { Library, RosterEntry, ShopItem } from '@m1565/content';
 import { ALLEGIANCE_FACTIONS } from '@m1565/content';
 import { useState } from 'preact/hooks';
 import type { GameSession } from '../campaign/GameSession';
+import { raiseRosterStat } from '../campaign/progression';
 import { useStore } from '../state/store';
+import { RosterStats } from './RosterStats';
 
 type Tab = 'loadout' | 'shop';
 
@@ -101,8 +103,14 @@ export function PrepScreen({ session, lib }: { session: GameSession; lib: Librar
               <div class="prep-pilot">
                 <strong>{lib.characters.get(r.characterId)?.name}</strong>
                 <small>
-                  Lv {r.level} · STR {r.stats.str} SKL {r.stats.skl} AGI {r.stats.agi}
+                  Lv {r.level} · {r.xp}/100 XP
                 </small>
+                <RosterStats
+                  lib={lib}
+                  entry={r}
+                  showAttacks
+                  onRaise={(stat) => setRoster((rs) => raiseRosterStat(rs, r.characterId, stat))}
+                />
               </div>
               <label>
                 <span>Frame</span>
