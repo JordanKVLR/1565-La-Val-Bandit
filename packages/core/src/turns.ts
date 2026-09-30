@@ -60,7 +60,9 @@ export function endTurn(state: BattleState, events: BattleEvent[]): void {
   const unit = requireUnit(state, turn.unitId);
   const rested = !turn.moved && !turn.acted;
   if (!unit.defeated) {
-    const recovery = rested ? state.balance.fpRestRecovery : state.balance.fpRecovery;
+    const recovery =
+      (rested ? state.balance.fpRestRecovery : state.balance.fpRecovery) +
+      unit.spi * state.balance.spiFpRecovery;
     unit.fp = Math.max(0, unit.fp - recovery);
   }
   events.push({ type: 'turnEnded', unitId: unit.id, rested });

@@ -13,14 +13,19 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           <dt>Techniques</dt>
           <dd>
             Attack opens your techniques. Each frame faction (Order, militia, Ottoman, corsair) has
-            its own, depending on the weapon type and frame weight. Locked ones show the STR, SKL or
-            AGI they need.
+            its own, depending on the weapon type and frame weight. New ones are learned as your
+            attributes grow; you'll be told when one unlocks.
           </dd>
           <dt>XP and levels</dt>
           <dd>
             Every hit earns XP, and a defeating blow earns much more. Beating stronger enemies earns
-            more than beating weaker ones. At 100 XP you level up, gain HP and 3 stat points to
-            spend as you like.
+            more than beating weaker ones. At 100 XP you level up, gain HP and 5 points to spend.
+          </dd>
+          <dt>Attributes</dt>
+          <dd>
+            <b>STR</b> damage · <b>SKL</b> accuracy · <b>AGI</b> dodging · <b>DEF</b> −1.5 damage
+            taken per point · <b>INT</b> Counter odds and technique accuracy · <b>SPI</b> cheaper
+            techniques, faster fatigue recovery, resists drains · <b>VIT</b> +5% max HP per point.
           </dd>
           <dt>AP (blue)</dt>
           <dd>
@@ -34,9 +39,11 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>Reactions</dt>
           <dd>
-            When attacked: <b>Defend</b> always takes the hit but halves it. <b>Avoid</b> costs 10
-            AP and may dodge it completely. <b>Counter</b> takes a full hit but strikes back if you
-            survive and are in range.
+            When attacked head-on or from the side: <b>Defend</b> halves the hit. <b>Avoid</b> costs
+            AP and may dodge it. <b>Attack back</b> takes the hit, then strikes back if you survive
+            and are in range. From the front only, <b>Counter</b> is a gamble (costs AP like Avoid):
+            if it works, the blow is repelled onto the attacker at 1.25× damage; if it fails, you
+            take 1.25×. INT improves the odds. From the rear you can only try to Avoid.
           </dd>
           <dt>Position</dt>
           <dd>

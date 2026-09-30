@@ -50,11 +50,12 @@ describe('forecast', () => {
   it('computes golden numbers for a frontal attack on flat ground', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t);
-    // hit = 80 + 6*2 - 6*2 = 80; counter/none +15 → 95 (cap)
+    // hit = 80 + 6*2 - 6*2 = 80; attack back / no reaction +15 → 95 (cap); defend and a failed counter always hit
     expect(f.zone).toBe('front');
-    expect(f.hitChance).toEqual({ defend: 100, avoid: 80, counter: 95 });
+    expect(f.hitChance).toEqual({ defend: 100, avoid: 80, attackBack: 95, counter: 100, none: 95 });
     // damage = (24 + 6) - 8 = 22; defend = round(30*0.5) - 8 = 7
-    expect(f.damage).toEqual({ defend: 7, avoid: 22, counter: 22 });
+    // failed counter: 30 × 1.25 − 8 = 29.5 → 30
+    expect(f.damage).toEqual({ defend: 7, avoid: 22, attackBack: 22, counter: 30, none: 22 });
   });
 
   it('rewards rear attacks with hit and damage bonuses', () => {
@@ -96,20 +97,23 @@ describe('forecast', () => {
     expect(f.assist).toBe(15);
   });
 
-  it('offers counter only when the defender can reach and afford it', () => {
+  it('offers attack back and counter only when the defender can reach and afford them', () => {
     const { state, a, t } = duel();
-    expect(availableReactions(state, t, a)).toEqual(['defend', 'avoid', 'counter']);
+    expect(availableReactions(state, t, a)).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
     const gunner = { ...t, weapon: GUN };
-    expect(availableReactions(state, gunner, a)).toEqual(['defend', 'avoid']);
+    // Out of range to strike back, but a Counter turns the attacker's own blow and needs no reach.
+    expect(availableReactions(state, gunner, a)).toEqual(['defend', 'avoid', 'counter']);
     const broke = { ...t, ap: 5 };
     expect(availableReactions(state, broke, a)).toEqual(['defend']);
     const spent = { ...t, fp: 100 };
     expect(availableReactions(state, spent, a)).toEqual(['defend']);
   });
 
-  it('forecasts the counter strike', () => {
+  it('forecasts the strike back and the counter gamble', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t);
-    expect(f.counter).toEqual({ hitChance: 95, damage: 22 });
+    expect(f.retaliation).toEqual({ hitChance: 95, damage: 22 });
+    // equal INT: 10% base chance; reflects 22 × 1.25 = 27.5 → 28
+    expect(f.counter).toEqual({ chance: 10, reflect: 28 });
   });
 });

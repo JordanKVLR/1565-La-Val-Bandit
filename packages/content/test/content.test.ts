@@ -98,13 +98,13 @@ describe('roster', () => {
         characterId: 'ninu',
         level: 4,
         xp: 10,
-        stats: { str: 10, skl: 9, agi: 9 },
+        stats: { str: 10, skl: 9, agi: 9, def: 5, int: 6, spi: 6, vit: 5 },
         frame: 'cavaliere',
         weapon: 'bastard-sword',
       },
     ]);
     const ninu = setup.units.find((u) => u.id === 'ninu')!;
-    expect(ninu).toMatchObject({ level: 4, stats: { str: 10, skl: 9, agi: 9 } });
+    expect(ninu).toMatchObject({ level: 4, stats: { str: 10, skl: 9, agi: 9, def: 5 } });
     expect(ninu.frame.id).toBe('cavaliere');
     expect(ninu.weapon.id).toBe('bastard-sword');
   });

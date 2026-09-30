@@ -114,13 +114,13 @@ describe('attacks', () => {
       type: 'attack',
       unitId: 'a',
       targetId: 'e',
-      reaction: 'counter',
+      reaction: 'attackBack',
     });
     const e = requireUnit(state, 'e');
     expect(e.ap).toBe(60 - 25);
     expect(e.fp).toBe(15);
     const ev = events[0];
-    expect(ev?.type === 'attackResolved' && ev.counter?.attackerId).toBe('e');
+    expect(ev?.type === 'attackResolved' && ev.retaliation?.attackerId).toBe('e');
   });
 
   it('rejects unaffordable reactions, out-of-range targets and friendly fire', () => {
@@ -175,7 +175,7 @@ describe('attacks', () => {
       type: 'attack',
       unitId: 'a',
       targetId: 'e',
-      reaction: 'counter',
+      reaction: 'attackBack',
     });
     expect(requireUnit(state, 'a').defeated).toBe(true);
     expect(state.outcome).toBe('ongoing');

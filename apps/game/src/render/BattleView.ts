@@ -6,8 +6,8 @@ import {
   BoxGeometry,
   BufferGeometry,
   Color,
-  ConeGeometry,
   DirectionalLight,
+  ExtrudeGeometry,
   Float32BufferAttribute,
   Group,
   LineBasicMaterial,
@@ -19,6 +19,7 @@ import {
   PlaneGeometry,
   Raycaster,
   Scene,
+  Shape,
   Vector2,
   Vector3,
   WebGLRenderer,
@@ -62,9 +63,49 @@ const FACING_ANGLE: Record<Facing, number> = {
   west: -Math.PI / 2,
 };
 
+/** Where the unit's badge floats and where its arrow sits, relative to the tile top. */
+const LABEL_OFFSET = new Vector3(0, 0.42, 0);
+const ARROW_OFFSET = new Vector3(0, 0.1, 0);
+
+/**
+ * Unit marker: a raised arrow lying on the tile, pointing the way the unit faces (+z = south
+ * before rotation). A dark rim under the coloured arrow keeps it readable on any terrain.
+ */
+function createArrowMarker(color: string): Group {
+  const shape = new Shape();
+  shape.moveTo(0, 0.44);
+  shape.lineTo(0.33, 0.06);
+  shape.lineTo(0.13, 0.06);
+  shape.lineTo(0.13, -0.38);
+  shape.lineTo(-0.13, -0.38);
+  shape.lineTo(-0.13, 0.06);
+  shape.lineTo(-0.33, 0.06);
+  shape.closePath();
+  const body = new ExtrudeGeometry(shape, { depth: 0.08, bevelEnabled: false }).rotateX(
+    Math.PI / 2,
+  );
+  const rim = body.clone().scale(1.18, 1, 1.18).translate(0, -0.012, 0);
+  const g = new Group();
+  const fill = new Mesh(body, new MeshLambertMaterial({ color }));
+  fill.name = 'fill';
+  const edge = new Mesh(rim, new MeshLambertMaterial({ color: '#15100c' }));
+  edge.name = 'rim';
+  g.add(edge, fill);
+  return g;
+}
+
+/** The active unit's arrow glows gold. */
+function setArrowActive(arrow: Group, active: boolean): void {
+  const fill = arrow.getObjectByName('fill') as Mesh | undefined;
+  const rim = arrow.getObjectByName('rim') as Mesh | undefined;
+  (fill?.material as MeshLambertMaterial | undefined)?.emissive.set(active ? '#5a4410' : '#000000');
+  (rim?.material as MeshLambertMaterial | undefined)?.color.set(active ? '#f5d77a' : '#15100c');
+  arrow.scale.setScalar(active ? 1.12 : 1);
+}
+
 interface UnitNode {
   sprite: Sprite;
-  arrow: Mesh;
+  arrow: Group;
   look: UnitLook;
   at: Coord;
 }
@@ -167,10 +208,7 @@ export class BattleView {
       let node = this.units.get(u.id);
       if (!node) {
         const sprite = createUnitSprite(u);
-        const arrow = new Mesh(
-          new ConeGeometry(0.12, 0.3, 3).rotateX(Math.PI / 2),
-          new MeshBasicMaterial({ color: u.arrowColor }),
-        );
+        const arrow = createArrowMarker(u.color);
         this.scene.add(sprite, arrow);
         node = { sprite, arrow, look: u, at: u.at };
         this.units.set(u.id, node);
@@ -182,11 +220,18 @@ export class BattleView {
           node.look = u;
         }
       }
+      setArrowActive(node.arrow, u.active);
       node.arrow.rotation.y = FACING_ANGLE[u.facing];
     }
     for (const [id, node] of this.units) {
       if (!seen.has(id)) {
         this.scene.remove(node.sprite, node.arrow);
+        node.arrow.traverse((o) => {
+          if (o instanceof Mesh) {
+            o.geometry.dispose();
+            (o.material as MeshLambertMaterial).dispose();
+          }
+        });
         node.sprite.material.map?.dispose();
         node.sprite.material.dispose();
         this.units.delete(id);
@@ -212,8 +257,8 @@ export class BattleView {
         const b = points[seg + 1]!;
         const pos = a.clone().lerp(b, local);
         pos.y = Math.max(a.y, b.y) * Math.sin(local * Math.PI) * 0.15 + a.y + (b.y - a.y) * local;
-        node.sprite.position.copy(pos);
-        node.arrow.position.copy(pos).add(new Vector3(0, 0.02, 0));
+        node.sprite.position.copy(pos).add(LABEL_OFFSET);
+        node.arrow.position.copy(pos).add(ARROW_OFFSET);
         const dir = { x: Math.sign(b.x - a.x), y: Math.sign(b.z - a.z) };
         const facing = (Object.keys(DIRECTIONS) as Facing[]).find(
           (f) => DIRECTIONS[f].x === dir.x && DIRECTIONS[f].y === dir.y,
@@ -233,7 +278,7 @@ export class BattleView {
   shake(id: string): void {
     const node = this.units.get(id);
     if (!node) return;
-    const base = this.tileTop(node.at);
+    const base = this.tileTop(node.at).add(LABEL_OFFSET);
     const start = performance.now();
     this.addTween((now) => {
       const t = Math.max(0, (now - start) / 300);
@@ -329,8 +374,8 @@ export class BattleView {
   private placeNode(node: UnitNode, c: Coord): void {
     node.at = c;
     const p = this.tileTop(c);
-    node.sprite.position.copy(p);
-    node.arrow.position.copy(p).add(new Vector3(0, 0.02, 0));
+    node.sprite.position.copy(p).add(LABEL_OFFSET);
+    node.arrow.position.copy(p).add(ARROW_OFFSET);
   }
 
   private tileTop(c: Coord): Vector3 {

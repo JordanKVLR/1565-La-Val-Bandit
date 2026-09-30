@@ -53,8 +53,18 @@ Story scene (isometric diorama + portrait dialogue, choices)
 
 ### 2.2 Battle rules (initial numbers; the balance sim tunes them)
 
-**Stats per unit:** HP, AP (0–100), FP (0–100), STR, SKL (accuracy), AGI (evasion/speed),
-ARM (armour), MOV (tiles), plus weapon and gear.
+**Stats per unit:** HP, AP (0–100), FP (0–100), ARM (armour), MOV (tiles), weapon and gear, plus
+seven pilot attributes:
+
+| Attribute | Effect                                                                                                          |
+| --------- | --------------------------------------------------------------------------------------------------------------- |
+| **STR**   | Adds to damage                                                                                                  |
+| **SKL**   | +2% hit chance per point                                                                                        |
+| **AGI**   | −2% enemy hit chance per point; turn order                                                                      |
+| **DEF**   | −1.5 damage taken per point (after ARM)                                                                         |
+| **INT**   | Counter odds; +1% accuracy per point for techniques (not the basic attack)                                      |
+| **SPI**   | −2% FP cost per point (max 50%), +1 FP recovery per turn, 3% resistance to fatigue/AP drain per point (max 60%) |
+| **VIT**   | +5% of base HP per point                                                                                        |
 
 **Turn order:** each round, units act in descending `AGI + d6` (seeded RNG), shown as a
 queue on the HUD.
@@ -70,22 +80,25 @@ queue on the HUD.
 
 **Fatigue Points (FP):**
 
-- Every attack adds fatigue (weapon-dependent, +10 to +25), and so do reactions (Avoid +10,
-  Counter = weapon fatigue).
+- Every attack adds fatigue (weapon-dependent, +10 to +25), and so do reactions (Avoid and
+  Counter +10, Attack back = weapon fatigue).
 - FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100 (_Spent_): the unit must rest
   next turn.
 - FP recovers 15 per turn, or 35 if the unit ends its turn with **Rest** (no action).
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction    | Cost                  | Effect                                                                            |
-| ----------- | --------------------- | --------------------------------------------------------------------------------- |
-| **Defend**  | free                  | Always hit, damage ×0.5                                                           |
-| **Avoid**   | 10 AP, +10 FP         | The hit rolls at the normal chance; if it lands, full damage                      |
-| **Counter** | weapon AP + weapon FP | The hit rolls at +15% (you are not dodging); if you survive, you strike back once |
+| Reaction        | Cost                  | Effect                                                                                                                                                                      |
+| --------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Defend**      | free                  | Always hit, damage ×0.5                                                                                                                                                     |
+| **Avoid**       | 10 AP, +10 FP         | The hit rolls at the normal chance; if it lands, full damage                                                                                                                |
+| **Attack back** | weapon AP + weapon FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                            |
+| **Counter**     | as Avoid              | A gamble: chance = 10% + 2% × (your INT − attacker INT), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
 
-Only reactions the defender can afford are offered. Units start a battle with 20 AP, so a unit
-that hasn't had its first turn can only Defend or Avoid. A Spent unit (FP 100) can only Defend.
+**Direction matters:** from the front, all four are offered. From the side: Defend, Avoid and
+Attack back. From the **rear** a unit can only try to Avoid (or takes the hit if it can't afford
+it). Only reactions the defender can afford are offered, and techniques that block counters also
+block Attack back and Counter. A Spent unit (FP 100) can only Defend.
 Attackers turn to face their target, and a defender that survives turns to face its attacker.
 
 **Hit chance** = clamp(5, 95):
@@ -94,7 +107,7 @@ Attackers turn to face their target, and a defender that survives turns to face 
 - Facing bonus: front 0, side +10, rear +25. Rear hits also deal ×1.25 damage.
 - **Assist:** +5% for each ally adjacent to the target and able to act, up to +15%.
 
-**Damage** = `max(1, (weapon.pow + STR) × heightMult × facingMult × reactionMult − ARM)`,
+**Damage** = `max(1, (weapon.pow + STR) × heightMult × facingMult × reactionMult − (ARM + DEF × 1.5) × (1 − pierce))`,
 where heightMult is 1 + 0.1 per step above the target (max +0.3).
 
 **Terrain label** in the HUD corner uses the format `<height>H <avoid>% <name>`
@@ -146,12 +159,13 @@ skippable on tap.
   to ×0.1–×3. So beating stronger enemies is rewarded and farming weak ones isn't. Only the
   player's side earns XP.
 - **Levels:** always 100 XP per level; leftover XP carries over. Each level-up happens the moment
-  it's earned, mid-battle. It gives +3 max HP and **3 stat points the player assigns** to STR,
-  SKL or AGI (AI-controlled allies spend theirs automatically). Unspent points can be saved and
+  it's earned, mid-battle. It gives +3 base HP and **5 stat points the player assigns** to any of the
+  seven attributes (AI-controlled allies spend theirs automatically). Unspent points can be saved and
   spent later on the results or preparation screen.
 - **Techniques:** each frame faction (Order, militia, Ottoman, corsair, Scala) has its own list of
   attacks (`packages/content/data/attacks.json`, 46 in total). What a pilot can learn depends on
-  the weapon type and frame weight class; when they can use it depends on stat requirements.
+  the weapon type and frame weight class; when they can use it depends on stat requirements. Locked techniques are hidden; the
+  game announces "New technique learned" when raising a stat unlocks one.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.
 - Equipment shop between chapters, using _scudi_ (currency).

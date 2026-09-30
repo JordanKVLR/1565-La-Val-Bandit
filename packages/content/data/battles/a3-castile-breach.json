@@ -94,7 +94,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [2, 0],
@@ -102,8 +102,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 7,
-        "skl": 7,
+        "str": 9,
+        "skl": 9,
         "agi": 6
       }
     },
@@ -111,7 +111,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [5, 1],
@@ -119,8 +119,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 7,
-        "skl": 7,
+        "str": 9,
+        "skl": 9,
         "agi": 6
       }
     },
@@ -128,7 +128,7 @@
       "id": "jan-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [8, 0],
@@ -136,8 +136,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 7,
-        "skl": 7,
+        "str": 9,
+        "skl": 9,
         "agi": 6
       }
     },
@@ -145,7 +145,7 @@
       "id": "jan-4",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [3, 2],
@@ -153,8 +153,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 8,
+        "str": 8,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -162,7 +162,7 @@
       "id": "jan-5",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [9, 2],
@@ -170,8 +170,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 8,
+        "str": 8,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -179,7 +179,7 @@
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 2],
@@ -187,8 +187,8 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 5,
-        "skl": 8,
+        "str": 7,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -196,7 +196,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [10, 1],
@@ -204,8 +204,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 6,
+        "str": 8,
+        "skl": 8,
         "agi": 8
       }
     }

@@ -10,7 +10,10 @@ import { AttackMenu } from './battle/AttackMenu';
 import { CloseUp } from './battle/CloseUp';
 import { EndOverlay } from './battle/EndOverlay';
 import { FacingPicker } from './battle/FacingPicker';
+import { BattleMenu, LogPanel } from './battle/BattleMenu';
 import { HelpPanel } from './battle/HelpPanel';
+import { UnitCard, UnitDetails } from './battle/UnitPanels';
+import { SettingsPanel } from './SettingsPanel';
 import { LevelUpPanel } from './battle/LevelUpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives } from './battle/objectives';
@@ -26,6 +29,11 @@ interface Props {
   onStateChange?: (state: BattleState) => void;
   continueLabel?: string;
 }
+
+type Panel = 'none' | 'menu' | 'log' | 'help' | 'settings' | 'unit';
+
+/** Modes where the player is mid-decision; the unit card would only get in the way. */
+const BUSY_MODES = ['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp', 'facing', 'ended'];
 
 declare global {
   interface Window {
@@ -49,9 +57,10 @@ export function BattleScreen({
     () => new BattleController(setup, lib, undefined, initial),
     [setup, lib, initial],
   );
-  const { state, mode, inspected, log } = useStore(ctl.view);
-  const [showLog, setShowLog] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
+  const { state, mode, inspected, log, notices } = useStore(ctl.view);
+  // Only one overlay at a time: opening one closes whatever else was open.
+  const [panel, setPanel] = useState<Panel>('none');
+  const close = () => setPanel('none');
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -103,9 +112,7 @@ export function BattleScreen({
           </div>
         )}
       </header>
-      {!['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp'].includes(mode.kind) && (
-        <TurnQueue state={state} />
-      )}
+      {!BUSY_MODES.includes(mode.kind) && <TurnQueue state={state} />}
 
       <div class="hud-controls">
         <button
@@ -124,68 +131,33 @@ export function BattleScreen({
         >
           ⟳
         </button>
-        <button
-          type="button"
-          class="btn icon"
-          aria-label="Battle log"
-          onClick={() => setShowLog((s) => !s)}
-        >
+        <button type="button" class="btn icon" aria-label="Menu" onClick={() => setPanel('menu')}>
           ☰
-        </button>
-        <button
-          type="button"
-          class="btn icon"
-          aria-label="Quit battle"
-          onClick={() => onExit('quit', state)}
-        >
-          ✕
         </button>
       </div>
 
-      {showLog && (
-        <aside class="battle-log" aria-label="Battle log">
-          {log.slice(-12).map((l, i) => (
-            <p key={i}>{l}</p>
+      {notices.length > 0 && (
+        <div class="notices" role="status">
+          {notices.map((n) => (
+            <div class="notice" key={n.id}>
+              {n.text}
+            </div>
           ))}
-        </aside>
-      )}
-
-      {tile && terrain && (
-        <div class="terrain-label" data-testid="terrain-label">
-          {formatTerrainLabel(tile.height, terrain)}
         </div>
       )}
 
-      {inspectedUnit &&
-        !['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp'].includes(mode.kind) && (
-          <aside class="unit-card" data-testid="unit-card">
-            <strong>
-              {inspectedUnit.name} <small>Lv {inspectedUnit.level}</small>
-            </strong>
-            <span>
-              HP {inspectedUnit.hp}/{inspectedUnit.maxHp} · AP {inspectedUnit.ap} · FP{' '}
-              {inspectedUnit.fp}
-            </span>
-            <span>
-              {inspectedUnit.weapon.name} · range {inspectedUnit.weapon.minRange}–
-              {inspectedUnit.weapon.maxRange}
-            </span>
-            {inspectedUnit.side === 'player' && (
-              <span class="xp-line" data-testid="unit-xp">
-                XP {inspectedUnit.xp}/{state.balance.xpPerLevel}
-                <span class="xp-track">
-                  <span
-                    style={{ width: `${(inspectedUnit.xp / state.balance.xpPerLevel) * 100}%` }}
-                  />
-                </span>
-                {inspectedUnit.statPoints > 0 && <b> +{inspectedUnit.statPoints} pts</b>}
-              </span>
-            )}
-          </aside>
+      <div class="hud-bottom-left">
+        {inspectedUnit && !BUSY_MODES.includes(mode.kind) && (
+          <UnitCard unit={inspectedUnit} state={state} onDetails={() => setPanel('unit')} />
         )}
+        {tile && terrain && (
+          <div class="terrain-label" data-testid="terrain-label">
+            {formatTerrainLabel(tile.height, terrain)}
+          </div>
+        )}
+      </div>
 
-      {showHelp && <HelpPanel onClose={() => setShowHelp(false)} />}
-      {mode.kind === 'command' && <ActionMenu ctl={ctl} />}
+      {mode.kind === 'command' && panel === 'none' && <ActionMenu ctl={ctl} />}
       {mode.kind === 'move' && (
         <SubModeBar label="Tap a blue tile to move" onCancel={() => ctl.cancel()} />
       )}
@@ -237,6 +209,21 @@ export function BattleScreen({
         </div>
       )}
       {mode.kind === 'closeUp' && <CloseUp data={mode.data} onDone={() => ctl.finishCloseUp()} />}
+      {panel === 'menu' && (
+        <BattleMenu
+          onResume={close}
+          onLog={() => setPanel('log')}
+          onHelp={() => setPanel('help')}
+          onSettings={() => setPanel('settings')}
+          onQuit={() => onExit('quit', state)}
+        />
+      )}
+      {panel === 'log' && <LogPanel log={log} onClose={() => setPanel('menu')} />}
+      {panel === 'help' && <HelpPanel onClose={() => setPanel('menu')} />}
+      {panel === 'settings' && <SettingsPanel onClose={() => setPanel('menu')} />}
+      {panel === 'unit' && inspectedUnit && (
+        <UnitDetails unit={inspectedUnit} state={state} onClose={close} />
+      )}
       {mode.kind === 'ended' && (
         <EndOverlay
           outcome={mode.outcome}

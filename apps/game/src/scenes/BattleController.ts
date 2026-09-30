@@ -70,6 +70,10 @@ export interface CloseUpStrike {
   readonly reply: string;
   /** Set when this strike levelled the striker up. */
   readonly levelUp?: number;
+  /** The attacker's blow that a successful Counter turned aside. */
+  readonly repelled?: boolean;
+  /** The blow a successful Counter drove back into the attacker. */
+  readonly reflected?: boolean;
 }
 
 export interface CloseUpData {
@@ -78,6 +82,7 @@ export interface CloseUpData {
   readonly attackName: string;
   readonly reaction: Reaction;
   readonly strikes: readonly CloseUpStrike[];
+  readonly counter?: { readonly success: boolean; readonly chance: number };
 }
 
 /** An attack as the attack menu shows it. */
@@ -118,6 +123,8 @@ export interface BattleView {
   /** Tile the player last tapped, for the terrain/unit readout. */
   readonly inspected: Coord | undefined;
   readonly log: readonly string[];
+  /** Short announcements (e.g. a newly learned technique), newest last. */
+  readonly notices: readonly { readonly id: number; readonly text: string }[];
 }
 
 const SIDE_COLORS = { player: '#2f5fa8', enemy: '#a8322f' } as const;
@@ -152,6 +159,7 @@ export class BattleController {
       mode: { kind: 'busy' },
       inspected: undefined,
       log: [],
+      notices: [],
     });
   }
 
@@ -302,9 +310,15 @@ export class BattleController {
   /** Spends one of a unit's stat points. Works whenever the unit has points to spend. */
   raiseStat(unitId: string, stat: StatName): void {
     try {
+      const before = findUnit(this.state, unitId);
+      const known = new Set(before ? unlockedAttacks(before).map((a) => a.id) : []);
       const { state } = applyCommand(this.state, { type: 'raiseStat', unitId, stat });
       sfx('tap');
       this.patch({ state });
+      const after = findUnit(state, unitId);
+      for (const a of after ? unlockedAttacks(after) : []) {
+        if (!known.has(a.id)) this.notify(`${after!.name} learned a new technique: ${a.name}!`);
+      }
     } catch (e) {
       if (!(e instanceof CommandError)) throw e;
     }
@@ -628,26 +642,28 @@ export class BattleController {
 
     // Player units sit on the left, as in a duel viewed from the defenders' side.
     const [left, right] = a.side === 'player' ? [a, d] : [d, a];
+    const repelled = ev.counter?.success === true;
     const strikes: CloseUpStrike[] = ev.strikes.map((result, i) => ({
       result,
       style: ev.style,
       bark: i === 0 ? pickLine(this.barks(a).attack) : '',
-      reply: pickLine(replyLines(this.barks(d), ev.reaction, result)),
-      ...markLevel(result, i === ev.strikes.length - 1 && !ev.counter),
+      reply: repelled
+        ? pickLine(this.barks(d).counter)
+        : pickLine(replyLines(this.barks(d), ev.reaction, result)),
+      ...(repelled ? { repelled: true } : {}),
+      ...markLevel(result, i === ev.strikes.length - 1 && !ev.retaliation),
     }));
-    if (ev.counter) {
+    if (ev.retaliation) {
+      const r = ev.retaliation;
       strikes.push({
-        result: ev.counter,
-        style: ev.counterStyle ?? 'slash',
-        bark: pickLine(this.barks(d).counter),
+        result: r,
+        style: ev.retaliationStyle ?? 'slash',
+        bark: repelled ? '' : pickLine(this.barks(d).counter),
         reply: pickLine(
-          ev.counter.defeated
-            ? this.barks(a).defeated
-            : ev.counter.hit
-              ? this.barks(a).hurt
-              : this.barks(a).avoid,
+          r.defeated ? this.barks(a).defeated : r.hit ? this.barks(a).hurt : this.barks(a).avoid,
         ),
-        ...markLevel(ev.counter, true),
+        ...(repelled ? { reflected: true } : {}),
+        ...markLevel(r, true),
       });
     }
     this.patch({
@@ -659,6 +675,7 @@ export class BattleController {
           attackName: ev.attackName,
           reaction: ev.reaction,
           strikes,
+          ...(ev.counter ? { counter: ev.counter } : {}),
         },
       },
     });
@@ -675,6 +692,20 @@ export class BattleController {
     if (u.characterId && b.characters[u.characterId]) return b.characters[u.characterId]!;
     const faction = this.lib.frameFactions.get(u.frameId) ?? 'militia';
     return b[faction];
+  }
+
+  private noticeId = 0;
+
+  /** Shows a short announcement for a few seconds. */
+  notify(text: string): void {
+    const id = ++this.noticeId;
+    sfx('victory');
+    this.patch({ notices: [...this.view.get().notices, { id, text }] });
+    this.pushLog(`★ ${text}`);
+    setTimeout(
+      () => this.patch({ notices: this.view.get().notices.filter((n) => n.id !== id) }),
+      3500,
+    );
   }
 
   private pushLog(line: string): void {
@@ -703,10 +734,23 @@ function describeAttack(
   const hits = ev.strikes.filter((s) => s.hit);
   const dmg = hits.reduce((n, s) => n + s.damage, 0);
   const xp = ev.strikes.reduce((n, s) => n + s.xp, 0);
+  if (ev.counter?.success && ev.retaliation) {
+    return `${name(first.targetId)} COUNTERS ${name(first.attackerId)}'s ${ev.attackName} (${ev.counter.chance}% chance): ${ev.retaliation.damage} damage reflected.`;
+  }
+  const how = REACTION_WORD[ev.reaction];
   const main = hits.length
-    ? `${name(first.attackerId)} uses ${ev.attackName} on ${name(first.targetId)}: ${dmg} damage (${ev.reaction})${xp ? `, +${xp} XP` : ''}.`
+    ? `${name(first.attackerId)} uses ${ev.attackName} on ${name(first.targetId)}: ${dmg} damage (${how})${xp ? `, +${xp} XP` : ''}.`
     : `${name(first.targetId)} avoids ${name(first.attackerId)}'s ${ev.attackName}.`;
-  if (!ev.counter) return main;
-  const c = ev.counter;
-  return `${main} Counter: ${c.hit ? `${c.damage} damage${c.xp ? `, +${c.xp} XP` : ''}` : 'miss'}.`;
+  if (ev.counter && !ev.counter.success) return `${main} The counter failed.`;
+  if (!ev.retaliation) return main;
+  const c = ev.retaliation;
+  return `${main} Strikes back: ${c.hit ? `${c.damage} damage${c.xp ? `, +${c.xp} XP` : ''}` : 'miss'}.`;
 }
+
+const REACTION_WORD: Record<Reaction, string> = {
+  defend: 'defended',
+  avoid: 'tried to avoid',
+  attackBack: 'took it to strike back',
+  counter: 'failed counter',
+  none: 'no reaction',
+};

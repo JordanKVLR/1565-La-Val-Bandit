@@ -86,11 +86,21 @@ export function CloseUp({ data, onDone }: Props) {
                     : 'hit',
             );
             setHp((h) => ({ ...h, [s.result.targetId]: s.result.targetHp }));
-            pop({
-              side: defSide,
-              text: s.result.hit ? `${s.result.damage}` : 'Miss',
-              kind: s.result.hit ? 'dmg' : 'miss',
-            });
+            if (s.repelled) pop({ side: defSide, text: 'COUNTER!', kind: 'level' });
+            else
+              pop({
+                side: defSide,
+                text: s.result.hit ? `${s.result.damage}` : 'Miss',
+                kind: s.result.hit ? 'dmg' : 'miss',
+              });
+            if (
+              s.result.hit &&
+              data.counter &&
+              !data.counter.success &&
+              s.result.attackerId === firstAttacker
+            ) {
+              pop({ side: defSide, text: 'Counter failed!', kind: 'xp' });
+            }
             if (s.result.xp > 0) pop({ side: atkSide, text: `+${s.result.xp} XP`, kind: 'xp' });
             if (s.levelUp) pop({ side: atkSide, text: `LEVEL UP! Lv ${s.levelUp}`, kind: 'level' });
           },

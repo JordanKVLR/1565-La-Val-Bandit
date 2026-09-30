@@ -31,6 +31,20 @@
   "xpLevelFactor": 0.2,
   "xpMinFactor": 0.1,
   "xpMaxFactor": 3,
-  "statPointsPerLevel": 3,
-  "hpPerLevel": 3
+  "statPointsPerLevel": 5,
+  "hpPerLevel": 3,
+  "defDamagePerPoint": 1.5,
+  "vitHpPercent": 5,
+  "intTechniqueAccuracy": 1,
+  "spiFpCostPercent": 2,
+  "spiFpCostMax": 50,
+  "spiFpRecovery": 1,
+  "spiResistPercent": 3,
+  "spiResistMax": 60,
+  "counterBaseChance": 10,
+  "counterIntFactor": 2,
+  "counterMinChance": 5,
+  "counterMaxChance": 35,
+  "counterReflectMult": 1.25,
+  "counterFailMult": 1.25
 }

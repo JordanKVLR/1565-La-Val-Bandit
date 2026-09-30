@@ -1,6 +1,7 @@
 import type {
   Attack,
   BalanceConfig,
+  PilotStats,
   BattleMap,
   BattleSetup,
   Frame,
@@ -32,8 +33,8 @@ import {
   TerrainSchema,
   WeaponSchema,
 } from './schemas';
-import { statsAtLevel } from './progression';
-import type { BattleSource, MapSource } from './schemas';
+import { derivedStats, statsAtLevel } from './progression';
+import type { BattleSource, Character, MapSource } from './schemas';
 
 export * from './progression';
 export * from './schemas';
@@ -132,7 +133,7 @@ export interface RosterEntry {
   readonly characterId: string;
   readonly level: number;
   readonly xp: number;
-  readonly stats: { readonly str: number; readonly skl: number; readonly agi: number };
+  readonly stats: PilotStats;
   readonly frame: string;
   readonly weapon: string;
   /** Unspent stat points from level-ups. */
@@ -150,6 +151,27 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
         (a.frameClasses.length === 0 || a.frameClasses.includes(frame.class)),
     )
     .map(({ faction: _f, weaponTypes: _w, frameClasses: _c, ...attack }) => attack as Attack);
+}
+
+/**
+ * A unit's full stats: saved/explicit values first; named characters fill gaps from their
+ * expected build at this level; generic units derive DEF/INT/SPI/VIT from level and frame.
+ */
+function resolveStats(
+  given: { readonly [K in keyof PilotStats]?: number | undefined } | undefined,
+  character: Character | undefined,
+  level: number,
+  frameClass: Frame['class'],
+  lib: Library,
+): PilotStats {
+  const expected = character
+    ? statsAtLevel(character, level, lib.balance.statPointsPerLevel)
+    : undefined;
+  const fallback = expected ?? { str: 6, skl: 6, agi: 6, ...derivedStats(level, frameClass) };
+  const out = { ...fallback };
+  for (const [k, v] of Object.entries(given ?? {}))
+    if (v !== undefined) out[k as keyof PilotStats] = v;
+  return out;
 }
 
 /**
@@ -192,7 +214,7 @@ export function buildBattle(
       ...(u.ai ? { ai: u.ai } : {}),
       level: u.level,
       // Without a saved roster entry, a named character arrives at the level the battle expects.
-      stats: u.stats ?? statsAtLevel(character!, u.level, lib.balance.statPointsPerLevel),
+      stats: resolveStats(u.stats, character, u.level, frame.class, lib),
       frame,
       weapon,
       attacks: attackPool(lib, frame, weapon),

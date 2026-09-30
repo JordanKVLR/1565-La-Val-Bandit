@@ -37,11 +37,22 @@ export interface Frame {
   readonly agility: number;
 }
 
+/**
+ * The pilot's attributes. STR damage · SKL accuracy · AGI evasion and turn order · DEF damage
+ * blocked · INT counter odds and technique accuracy · SPI fatigue control · VIT max HP.
+ */
 export interface PilotStats {
   readonly str: number;
   readonly skl: number;
   readonly agi: number;
+  readonly def: number;
+  readonly int: number;
+  readonly spi: number;
+  readonly vit: number;
 }
+
+export type StatName = keyof PilotStats;
+export const STAT_NAMES: readonly StatName[] = ['str', 'skl', 'agi', 'def', 'int', 'spi', 'vit'];
 
 /** Everything needed to put a unit on the field. Resolved from content by the loader. */
 export interface UnitSpec {
@@ -93,6 +104,12 @@ export interface UnitState {
   skl: number;
   /** Effective AGI: pilot AGI plus the frame modifier. */
   agi: number;
+  def: number;
+  int: number;
+  spi: number;
+  vit: number;
+  /** Max HP before VIT: frame HP plus the per-level bonus. */
+  baseHp: number;
   arm: number;
   mov: number;
   pos: Coord;
@@ -100,8 +117,14 @@ export interface UnitState {
   defeated: boolean;
 }
 
+/** Max HP from base HP and VIT (each VIT point adds a percentage of the base). */
+export function maxHpFor(baseHp: number, vit: number, balance: BalanceConfig): number {
+  return Math.round(baseHp * (1 + (vit * balance.vitHpPercent) / 100));
+}
+
 export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
-  const hp = spec.frame.hp + (spec.level - 1) * balance.hpPerLevel;
+  const baseHp = spec.frame.hp + (spec.level - 1) * balance.hpPerLevel;
+  const hp = maxHpFor(baseHp, spec.stats.vit, balance);
   return {
     id: spec.id,
     characterId: spec.characterId ?? null,
@@ -124,6 +147,11 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     str: spec.stats.str,
     skl: spec.stats.skl,
     agi: spec.stats.agi + spec.frame.agility,
+    def: spec.stats.def,
+    int: spec.stats.int,
+    spi: spec.stats.spi,
+    vit: spec.stats.vit,
+    baseHp,
     arm: spec.frame.armour,
     mov: spec.frame.move,
     pos: { ...spec.at },
@@ -133,8 +161,16 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
 }
 
 /** The pilot's own stats (without the frame's AGI modifier): what attack requirements check. */
-export function pilotStats(u: Pick<UnitState, 'str' | 'skl' | 'agi' | 'frameAgility'>): PilotStats {
-  return { str: u.str, skl: u.skl, agi: u.agi - u.frameAgility };
+export function pilotStats(u: PilotStats & Pick<UnitState, 'frameAgility'>): PilotStats {
+  return {
+    str: u.str,
+    skl: u.skl,
+    agi: u.agi - u.frameAgility,
+    def: u.def,
+    int: u.int,
+    spi: u.spi,
+    vit: u.vit,
+  };
 }
 
 export function isHostile(a: Pick<UnitState, 'side'>, b: Pick<UnitState, 'side'>): boolean {

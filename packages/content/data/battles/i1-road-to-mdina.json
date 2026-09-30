@@ -58,7 +58,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [6, 4],
@@ -66,8 +66,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -75,7 +75,7 @@
       "id": "sipahi-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [4, 2],
@@ -83,8 +83,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
+        "str": 8,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -92,7 +92,7 @@
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [2, 4],
@@ -100,8 +100,8 @@
       "ai": "defensive",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
+        "str": 7,
+        "skl": 7,
         "agi": 7
       }
     },
@@ -109,7 +109,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [7, 1],
@@ -117,8 +117,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 5,
-        "skl": 6,
+        "str": 7,
+        "skl": 8,
         "agi": 5
       }
     }

@@ -70,7 +70,7 @@ export class GameSession {
       screen: { kind: 'title' },
       stage: save?.stage ?? EMPTY_STAGE,
       chapter: save?.chapter ?? { title: '', subtitle: '' },
-      roster: save?.roster ?? [],
+      roster: (save?.roster ?? []).map((r) => normalizeEntry(lib, r)),
       scudi: save?.scudi ?? 0,
       armory: save?.armory ?? [],
       completedBattles: save?.completedBattles ?? [],
@@ -317,4 +317,10 @@ export class GameSession {
     };
     return writeSave(slot, save);
   }
+}
+
+/** Saves from before DEF/INT/SPI/VIT existed get those stats from the character's base values. */
+function normalizeEntry(lib: Library, r: RosterEntry): RosterEntry {
+  const base = lib.characters.get(r.characterId)?.stats;
+  return base ? { ...r, stats: { ...base, ...r.stats } } : r;
 }
