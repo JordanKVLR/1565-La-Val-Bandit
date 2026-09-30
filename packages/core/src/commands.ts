@@ -2,15 +2,16 @@ import type { Attack } from './attacks';
 import { meetsRequirements } from './attacks';
 import type { Reaction } from './combat';
 import {
+  attackBackWith,
+  attackFpCost,
   attackInRange,
   availableReactions,
   canAct,
   counterChance,
   damageFor,
   facingToward,
-  findAttack,
-  fpCostFor,
   hitChanceFor,
+  reactionFpCost,
   reflectDamage,
   resisted,
   strikeNumbers,
@@ -190,15 +191,10 @@ function resolveAttack(
 ): void {
   const b = state.balance;
   attacker.ap -= attack.apCost;
-  attacker.fp = Math.min(b.fpMax, attacker.fp + fpCostFor(state, attacker, attack.fpCost));
-  const backAttack = findAttack(target, 'basic');
-  if (reaction === 'avoid' || reaction === 'counter') {
-    target.ap -= b.avoidApCost;
-    target.fp = Math.min(b.fpMax, target.fp + fpCostFor(state, target, b.avoidFpCost));
-  } else if (reaction === 'attackBack') {
-    target.ap -= backAttack.apCost;
-    target.fp = Math.min(b.fpMax, target.fp + fpCostFor(state, target, backAttack.fpCost));
-  }
+  attacker.fp = Math.min(b.fpMax, attacker.fp + attackFpCost(state, attacker, attack));
+  // Reactions cost the defender FP only, never AP.
+  const backAttack = attackBackWith(target);
+  target.fp = Math.min(b.fpMax, target.fp + reactionFpCost(state, target, reaction));
   attacker.facing = facingToward(attacker.pos, target.pos, attacker.facing);
 
   const pending: BattleEvent[] = [];

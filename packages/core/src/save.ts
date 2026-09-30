@@ -53,6 +53,20 @@ const migrations: Record<number, Migration> = {
     }));
     return { ...raw, balance, units };
   },
+  // v4: reactions cost FP instead of AP, and every attack carries an FP surcharge.
+  3: (raw) => {
+    const old = { ...(raw.balance as Record<string, unknown>) };
+    delete old.avoidApCost;
+    const balance = {
+      ...DEFAULT_BALANCE,
+      ...old,
+      defendFpCost: DEFAULT_BALANCE.defendFpCost,
+      avoidFpCost: DEFAULT_BALANCE.avoidFpCost,
+      counterFpCost: DEFAULT_BALANCE.counterFpCost,
+      attackFpSurcharge: DEFAULT_BALANCE.attackFpSurcharge,
+    };
+    return { ...raw, balance };
+  },
 };
 
 export function serializeBattle(state: BattleState): string {

@@ -98,8 +98,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 7
       }
     },
@@ -115,8 +115,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 7
       }
     },
@@ -132,8 +132,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 7
       }
     },
@@ -149,8 +149,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 7,
-        "skl": 8,
+        "str": 10,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -166,8 +166,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 7,
-        "skl": 7,
+        "str": 10,
+        "skl": 9,
         "agi": 7
       }
     }

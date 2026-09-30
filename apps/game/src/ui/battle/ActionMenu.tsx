@@ -34,10 +34,25 @@ export function ActionMenu({ ctl }: { ctl: BattleController }) {
   );
 }
 
-export function SubModeBar({ label, onCancel }: { label: string; onCancel: () => void }) {
+export function SubModeBar({
+  label,
+  onCancel,
+  confirm,
+  onConfirm,
+}: {
+  label: string;
+  onCancel: () => void;
+  confirm?: string;
+  onConfirm?: () => void;
+}) {
   return (
     <div class="submode">
       <span>{label}</span>
+      {confirm && onConfirm && (
+        <button type="button" class="btn" onClick={onConfirm}>
+          {confirm}
+        </button>
+      )}
       <button type="button" class="btn ghost" onClick={onCancel}>
         Back
       </button>

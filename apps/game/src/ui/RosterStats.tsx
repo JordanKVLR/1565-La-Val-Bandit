@@ -2,7 +2,7 @@ import type { StatName } from '@m1565/core';
 import { meetsRequirements } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 import { attackPool } from '@m1565/content';
-import { STAT_INFO } from './battle/statInfo';
+import { ArmMovIcons, AttributeBars } from './battle/StatBars';
 
 /** A pilot's seven stats with + buttons for unspent points, and (optionally) learned techniques. */
 export function RosterStats({
@@ -26,24 +26,15 @@ export function RosterStats({
       : [];
   return (
     <div class="roster-stats">
-      <div class="rs-line">
-        {STAT_INFO.map(({ key, label, help }) => (
-          <span class="rs-stat" key={key} title={help}>
-            {label} {entry.stats[key]}
-            {points > 0 && (
-              <button
-                type="button"
-                class="btn mini"
-                aria-label={`Raise ${label} for ${entry.characterId}`}
-                onClick={() => onRaise(key)}
-              >
-                +
-              </button>
-            )}
-          </span>
-        ))}
-        {points > 0 && <b class="rs-points">{points} pts</b>}
+      <div class="rs-head">
+        {frame && <ArmMovIcons arm={frame.armour} mov={frame.move} />}
+        {points > 0 && <b class="rs-points">{points} points to spend</b>}
       </div>
+      <AttributeBars
+        stats={entry.stats}
+        {...(points > 0 ? { onRaise } : {})}
+        raiseLabel={(label) => `Raise ${label} for ${entry.characterId}`}
+      />
       {showAttacks && (
         <ul class="rs-attacks">
           <li class="ok">

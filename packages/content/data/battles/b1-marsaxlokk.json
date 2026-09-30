@@ -3,8 +3,17 @@
   "name": "Shore of Marsaxlokk",
   "map": "b1-marsaxlokk",
   "seed": 1565,
-  "victory": [{ "type": "rout" }],
-  "defeat": [{ "type": "protect", "unitId": "ninu" }],
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
   "units": [
     {
       "id": "ninu",
@@ -20,7 +29,11 @@
     {
       "id": "militia-1",
       "name": "Militia Ġanni",
-      "stats": { "str": 5, "skl": 5, "agi": 5 },
+      "stats": {
+        "str": 5,
+        "skl": 5,
+        "agi": 5
+      },
       "side": "player",
       "controller": "human",
       "level": 1,
@@ -32,7 +45,11 @@
     {
       "id": "militia-2",
       "name": "Militia Rożi",
-      "stats": { "str": 4, "skl": 7, "agi": 5 },
+      "stats": {
+        "str": 4,
+        "skl": 7,
+        "agi": 5
+      },
       "side": "player",
       "controller": "human",
       "level": 1,
@@ -44,7 +61,11 @@
     {
       "id": "levend-1",
       "name": "Levend",
-      "stats": { "str": 5, "skl": 5, "agi": 5 },
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 5
+      },
       "side": "enemy",
       "controller": "ai",
       "ai": "aggressive",
@@ -57,7 +78,11 @@
     {
       "id": "levend-2",
       "name": "Levend",
-      "stats": { "str": 5, "skl": 5, "agi": 5 },
+      "stats": {
+        "str": 8,
+        "skl": 7,
+        "agi": 5
+      },
       "side": "enemy",
       "controller": "ai",
       "ai": "aggressive",
@@ -70,7 +95,11 @@
     {
       "id": "yeniceri-1",
       "name": "Yeniçeri Aga",
-      "stats": { "str": 6, "skl": 6, "agi": 4 },
+      "stats": {
+        "str": 9,
+        "skl": 8,
+        "agi": 4
+      },
       "side": "enemy",
       "controller": "ai",
       "ai": "defensive",

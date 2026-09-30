@@ -86,8 +86,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 9,
-        "skl": 8,
+        "str": 12,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -103,8 +103,8 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 9,
-        "skl": 8,
+        "str": 12,
+        "skl": 10,
         "agi": 5
       }
     },
@@ -120,8 +120,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 8,
-        "skl": 9,
+        "str": 11,
+        "skl": 11,
         "agi": 5
       }
     },
@@ -137,8 +137,8 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 7,
-        "skl": 9,
+        "str": 10,
+        "skl": 11,
         "agi": 5
       }
     },
@@ -154,8 +154,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 8,
-        "skl": 7,
+        "str": 11,
+        "skl": 9,
         "agi": 8
       }
     }

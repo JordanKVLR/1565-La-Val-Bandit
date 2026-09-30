@@ -1,13 +1,15 @@
-import type { AttackForecast, BattleState, Reaction, UnitState } from '@m1565/core';
+import type { AttackForecast, BattleState, Reaction, ReactionChoice, UnitState } from '@m1565/core';
+import { attackFpCost } from '@m1565/core';
 import { attackTags } from './attackText';
-import { Portrait, UnitBars } from './StatBars';
+import type { CostPreview } from './StatBars';
+import { ArmMovIcons, Portrait, UnitBars } from './StatBars';
 
 const REACTION_LABEL: Record<Reaction, string> = {
   defend: 'Defend',
   avoid: 'Avoid',
   attackBack: 'Attack back',
   counter: 'Counter',
-  none: 'Take the hit',
+  none: 'Do nothing',
 };
 
 /** The odds line under each reaction button. */
@@ -27,19 +29,29 @@ interface Props {
   attacker: UnitState;
   defender: UnitState;
   forecast: AttackForecast;
-  /** Reactions offered to the player when they are the defender. */
-  reactions?: readonly Reaction[];
+  /** The full reaction menu when the player is the defender; unusable ones are greyed out. */
+  choices?: readonly ReactionChoice[];
   onReact?: (r: Reaction) => void;
   onConfirm?: () => void;
   onCancel?: () => void;
 }
 
-function Side({ unit, state, extra }: { unit: UnitState; state: BattleState; extra: string }) {
+function Side({
+  unit,
+  state,
+  extra,
+  preview,
+}: {
+  unit: UnitState;
+  state: BattleState;
+  extra: string;
+  preview?: CostPreview;
+}) {
   return (
     <section class={`fc-side fc-${unit.side}`}>
       <div class="fc-head">
         <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
-        <UnitBars unit={unit} apMax={state.balance.apMax} fpMax={state.balance.fpMax} />
+        <UnitBars unit={unit} balance={state.balance} preview={preview} />
       </div>
       <div class="fc-rows">
         <div class="fc-row">
@@ -48,7 +60,7 @@ function Side({ unit, state, extra }: { unit: UnitState; state: BattleState; ext
         </div>
         <div class="fc-row">
           <span>{unit.weapon.name}</span>
-          <span>ARM {unit.arm}</span>
+          <ArmMovIcons arm={unit.arm} mov={unit.mov} />
         </div>
         <div class="fc-row fc-extra">{extra}</div>
       </div>
@@ -65,7 +77,7 @@ export function ForecastPanel({
   attacker,
   defender,
   forecast,
-  reactions,
+  choices,
   onReact,
   onConfirm,
   onCancel,
@@ -86,18 +98,36 @@ export function ForecastPanel({
     forecast.zone === 'rear'
       ? 'Hit from behind: can only avoid'
       : answers.join(' · ') || 'Cannot strike back';
+  // The player's own attack: show what it will cost on the attacker's bars.
+  const cost: CostPreview | undefined = choices
+    ? undefined
+    : { ap: forecast.attack.apCost, fp: attackFpCost(state, attacker, forecast.attack) };
   return (
     <div class="forecast" role="dialog" aria-label="Combat forecast">
       <div class="fc-sides">
-        <Side unit={attacker} state={state} extra={`${technique}${zone}${assist}`} />
+        <Side
+          unit={attacker}
+          state={state}
+          extra={`${technique}${zone}${assist}`}
+          {...(cost ? { preview: cost } : {})}
+        />
         <Side unit={defender} state={state} extra={counter} />
       </div>
       <div class="fc-choices">
-        {reactions ? (
-          reactions.map((r) => (
-            <button type="button" class="btn fc-choice" key={r} onClick={() => onReact?.(r)}>
-              <span class="fc-choice-name">{REACTION_LABEL[r]}</span>
-              <span class="fc-choice-odds">{reactionOdds(forecast, r)}</span>
+        {choices ? (
+          choices.map((c) => (
+            <button
+              type="button"
+              class={`btn fc-choice${c.reaction === 'none' ? ' ghost' : ''}`}
+              key={c.reaction}
+              disabled={!c.available}
+              onClick={() => onReact?.(c.reaction)}
+            >
+              <span class="fc-choice-name">{REACTION_LABEL[c.reaction]}</span>
+              <span class="fc-choice-odds">
+                {c.fpCost > 0 && <span class="fc-cost">FP +{c.fpCost}</span>}
+                {c.available ? reactionOdds(forecast, c.reaction) : c.reason}
+              </span>
             </button>
           ))
         ) : (

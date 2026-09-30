@@ -1,5 +1,12 @@
 import type { BattleSetup, BattleState, Facing } from '@m1565/core';
-import { findUnit, formatTerrainLabel, getTile, terrainAt, unitAt } from '@m1565/core';
+import {
+  attackFpCost,
+  findUnit,
+  formatTerrainLabel,
+  getTile,
+  terrainAt,
+  unitAt,
+} from '@m1565/core';
 import type { Library } from '@m1565/content';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { BattleView } from '../render/BattleView';
@@ -12,6 +19,7 @@ import { EndOverlay } from './battle/EndOverlay';
 import { FacingPicker } from './battle/FacingPicker';
 import { BattleMenu, LogPanel } from './battle/BattleMenu';
 import { HelpPanel } from './battle/HelpPanel';
+import type { CostPreview } from './battle/StatBars';
 import { UnitCard, UnitDetails } from './battle/UnitPanels';
 import { SettingsPanel } from './SettingsPanel';
 import { LevelUpPanel } from './battle/LevelUpPanel';
@@ -85,6 +93,21 @@ export function BattleScreen({
   const tile = inspected && getTile(state.map, inspected);
   const terrain = inspected && terrainAt(state, inspected);
   const inspectedUnit = inspected && unitAt(state, inspected);
+  // Your unit's own card stays up while you plan its turn, showing what each step will cost.
+  const planning =
+    active?.controller === 'human' &&
+    ['command', 'move', 'attackMenu', 'target'].includes(mode.kind);
+  const preview = ((): CostPreview | undefined => {
+    if (!active) return undefined;
+    if (mode.kind === 'move' && mode.pending) return { ap: mode.pending.cost };
+    if (mode.kind === 'target') {
+      const attack = active.attacks.find((a) => a.id === mode.attackId);
+      if (attack) return { ap: attack.apCost, fp: attackFpCost(state, active, attack) };
+    }
+    return undefined;
+  })();
+  const [detailsFor, setDetailsFor] = useState<string | null>(null);
+  const detailsUnit = detailsFor ? findUnit(state, detailsFor) : undefined;
 
   const facingCorners = (): Record<'upLeft' | 'upRight' | 'downLeft' | 'downRight', Facing> =>
     viewRef.current?.screenFacings() ?? {
@@ -147,8 +170,29 @@ export function BattleScreen({
       )}
 
       <div class="hud-bottom-left">
-        {inspectedUnit && !BUSY_MODES.includes(mode.kind) && (
-          <UnitCard unit={inspectedUnit} state={state} onDetails={() => setPanel('unit')} />
+        {inspectedUnit &&
+          !BUSY_MODES.includes(mode.kind) &&
+          !(planning && inspectedUnit.id === active?.id) && (
+            <UnitCard
+              unit={inspectedUnit}
+              state={state}
+              onDetails={() => {
+                setDetailsFor(inspectedUnit.id);
+                setPanel('unit');
+              }}
+            />
+          )}
+        {planning && active && (
+          <UnitCard
+            unit={active}
+            state={state}
+            preview={preview}
+            testId="active-card"
+            onDetails={() => {
+              setDetailsFor(active.id);
+              setPanel('unit');
+            }}
+          />
         )}
         {tile && terrain && (
           <div class="terrain-label" data-testid="terrain-label">
@@ -159,7 +203,15 @@ export function BattleScreen({
 
       {mode.kind === 'command' && panel === 'none' && <ActionMenu ctl={ctl} />}
       {mode.kind === 'move' && (
-        <SubModeBar label="Tap a blue tile to move" onCancel={() => ctl.cancel()} />
+        <SubModeBar
+          label={
+            mode.pending
+              ? `AP −${mode.pending.cost} · tap again to move`
+              : 'Tap a blue tile to see the cost'
+          }
+          onCancel={() => ctl.cancel()}
+          {...(mode.pending ? { confirm: 'Move here', onConfirm: () => ctl.confirmMove() } : {})}
+        />
       )}
       {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
@@ -203,7 +255,7 @@ export function BattleScreen({
             attacker={findUnit(state, mode.attackerId)!}
             defender={findUnit(state, mode.defenderId)!}
             forecast={mode.forecast}
-            reactions={mode.options}
+            choices={mode.choices}
             onReact={(r) => ctl.chooseReaction(r)}
           />
         </div>
@@ -221,8 +273,8 @@ export function BattleScreen({
       {panel === 'log' && <LogPanel log={log} onClose={() => setPanel('menu')} />}
       {panel === 'help' && <HelpPanel onClose={() => setPanel('menu')} />}
       {panel === 'settings' && <SettingsPanel onClose={() => setPanel('menu')} />}
-      {panel === 'unit' && inspectedUnit && (
-        <UnitDetails unit={inspectedUnit} state={state} onClose={close} />
+      {panel === 'unit' && detailsUnit && (
+        <UnitDetails unit={detailsUnit} state={state} onClose={close} />
       )}
       {mode.kind === 'ended' && (
         <EndOverlay

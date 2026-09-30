@@ -76,29 +76,32 @@ queue on the HUD.
 - Moving costs AP per tile by terrain: Road 3 · Plain 4 · Field/Scrub 5 · Rubble 8 ·
   Shallows 10. Climbing costs +4 per height step. MOV caps tiles per turn.
 - An attack costs the weapon's AP (sword 25, lance 30, arquebus 35, bombard 50).
-- Reactions cost AP too (see below), so an exhausted unit is vulnerable.
+- Reactions never cost AP; they cost FP (see below).
+- The unit card previews every cost before you commit: tapping a tile shows the route and the
+  AP it will take (tap again to move), and picking a technique shows its AP and FP.
 
 **Fatigue Points (FP):**
 
-- Every attack adds fatigue (weapon-dependent, +10 to +25), and so do reactions (Avoid and
-  Counter +10, Attack back = weapon fatigue).
-- FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100 (_Spent_): the unit must rest
-  next turn.
+- Every attack adds its technique's FP **plus a flat 20** (Attack back included), so attacking
+  every turn wears a pilot out. Reactions add FP too (below). SPI reduces all FP costs.
+- FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100 (_Spent_): the unit can't attack or
+  react until it recovers.
 - FP recovers 15 per turn, or 35 if the unit ends its turn with **Rest** (no action).
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction        | Cost                  | Effect                                                                                                                                                                      |
-| --------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Defend**      | free                  | Always hit, damage ×0.5                                                                                                                                                     |
-| **Avoid**       | 10 AP, +10 FP         | The hit rolls at the normal chance; if it lands, full damage                                                                                                                |
-| **Attack back** | weapon AP + weapon FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                            |
-| **Counter**     | as Avoid              | A gamble: chance = 10% + 2% × (your INT − attacker INT), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
+| Reaction        | Cost          | Effect                                                                                                                                                                      |
+| --------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Defend**      | +30 FP        | Always hit, damage ×0.5                                                                                                                                                     |
+| **Avoid**       | +20 FP        | The hit rolls at the normal chance; if it lands, full damage                                                                                                                |
+| **Attack back** | the attack FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                            |
+| **Counter**     | +20 FP        | A gamble: chance = 10% + 2% × (your INT − attacker INT), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
+| **Do nothing**  | free          | Take the hit (+15% to be hit)                                                                                                                                               |
 
-**Direction matters:** from the front, all four are offered. From the side: Defend, Avoid and
-Attack back. From the **rear** a unit can only try to Avoid (or takes the hit if it can't afford
-it). Only reactions the defender can afford are offered, and techniques that block counters also
-block Attack back and Counter. A Spent unit (FP 100) can only Defend.
+The reaction menu always appears, listing every reaction; ones that can't be used are greyed out
+with the reason. **Direction matters:** from the front, all are offered. From the side: Defend,
+Avoid and Attack back. From the **rear** a unit can only Avoid. Techniques that block counters also
+block Attack back and Counter. A Spent unit (FP 100) can only Do nothing.
 Attackers turn to face their target, and a defender that survives turns to face its attacker.
 
 **Hit chance** = clamp(5, 95):
