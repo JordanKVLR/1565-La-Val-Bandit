@@ -8,8 +8,8 @@
     "style": "slash",
     "power": 1.15,
     "accuracy": 0,
-    "apCost": 28,
-    "fpCost": 15,
+    "apCost": 35,
+    "fpCost": 5,
     "requires": {
       "str": 9
     },
@@ -24,8 +24,8 @@
     "style": "thrust",
     "power": 1.0,
     "accuracy": 12,
-    "apCost": 28,
-    "fpCost": 15,
+    "apCost": 35,
+    "fpCost": 5,
     "requires": {
       "skl": 10,
       "int": 7
@@ -42,13 +42,13 @@
     "style": "overhead",
     "power": 1.3,
     "accuracy": -8,
-    "apCost": 32,
-    "fpCost": 20,
+    "apCost": 40,
+    "fpCost": 7,
     "requires": {
       "str": 12
     },
     "description": "A crushing blow that jars the enemy's springs.",
-    "apDamage": 15
+    "fatigue": 15
   },
   {
     "id": "order-eight-point",
@@ -59,8 +59,8 @@
     "style": "slash",
     "power": 0.7,
     "accuracy": 4,
-    "apCost": 34,
-    "fpCost": 20,
+    "apCost": 40,
+    "fpCost": 7,
     "requires": {
       "skl": 13,
       "agi": 10,
@@ -78,8 +78,8 @@
     "style": "overhead",
     "power": 1.6,
     "accuracy": -10,
-    "apCost": 40,
-    "fpCost": 30,
+    "apCost": 50,
+    "fpCost": 10,
     "requires": {
       "str": 16,
       "skl": 11,
@@ -96,14 +96,14 @@
     "style": "bash",
     "power": 0.9,
     "accuracy": 8,
-    "apCost": 24,
-    "fpCost": 12,
+    "apCost": 30,
+    "fpCost": 5,
     "requires": {
       "str": 9
     },
     "description": "Drive the shield rim forward. The foe cannot answer in time.",
     "noCounter": true,
-    "apDamage": 10
+    "fatigue": 10
   },
   {
     "id": "order-bell-ringer",
@@ -114,8 +114,8 @@
     "style": "overhead",
     "power": 1.35,
     "accuracy": 0,
-    "apCost": 34,
-    "fpCost": 20,
+    "apCost": 40,
+    "fpCost": 7,
     "requires": {
       "str": 13
     },
@@ -131,8 +131,8 @@
     "style": "charge",
     "power": 1.25,
     "accuracy": 0,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "str": 10,
       "agi": 8
@@ -150,8 +150,8 @@
     "style": "thrust",
     "power": 1.0,
     "accuracy": 10,
-    "apCost": 28,
-    "fpCost": 15,
+    "apCost": 35,
+    "fpCost": 5,
     "requires": {
       "skl": 12,
       "def": 7
@@ -168,8 +168,8 @@
     "style": "charge",
     "power": 1.5,
     "accuracy": -6,
-    "apCost": 40,
-    "fpCost": 30,
+    "apCost": 50,
+    "fpCost": 10,
     "requires": {
       "str": 15,
       "agi": 11,
@@ -188,8 +188,8 @@
     "style": "slash",
     "power": 1.1,
     "accuracy": 5,
-    "apCost": 26,
-    "fpCost": 12,
+    "apCost": 30,
+    "fpCost": 5,
     "requires": {
       "agi": 9
     },
@@ -204,8 +204,8 @@
     "style": "slash",
     "power": 0.65,
     "accuracy": 8,
-    "apCost": 30,
-    "fpCost": 15,
+    "apCost": 40,
+    "fpCost": 5,
     "requires": {
       "agi": 11,
       "skl": 8,
@@ -223,8 +223,8 @@
     "style": "sweep",
     "power": 1.3,
     "accuracy": 0,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "str": 12
     },
@@ -240,8 +240,8 @@
     "style": "overhead",
     "power": 1.55,
     "accuracy": -8,
-    "apCost": 38,
-    "fpCost": 25,
+    "apCost": 50,
+    "fpCost": 8,
     "requires": {
       "str": 15,
       "agi": 10
@@ -257,8 +257,8 @@
     "style": "thrust",
     "power": 1.0,
     "accuracy": 10,
-    "apCost": 26,
-    "fpCost": 12,
+    "apCost": 30,
+    "fpCost": 5,
     "requires": {
       "skl": 8
     },
@@ -275,8 +275,8 @@
     "style": "thrust",
     "power": 1.3,
     "accuracy": 0,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "str": 11
     },
@@ -294,17 +294,17 @@
     "style": "sweep",
     "power": 1.2,
     "accuracy": 4,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "agi": 12,
       "str": 10,
       "spi": 7
     },
     "description": "Sweeps the legs and scatters the springs.",
-    "apDamage": 20,
     "minRange": 1,
-    "maxRange": 2
+    "maxRange": 2,
+    "fatigue": 20
   },
   {
     "id": "militia-aimed-shot",
@@ -315,8 +315,8 @@
     "style": "shot",
     "power": 1.0,
     "accuracy": 15,
-    "apCost": 35,
-    "fpCost": 15,
+    "apCost": 45,
+    "fpCost": 5,
     "requires": {
       "skl": 9
     },
@@ -331,8 +331,8 @@
     "style": "shot",
     "power": 1.35,
     "accuracy": -8,
-    "apCost": 38,
-    "fpCost": 25,
+    "apCost": 50,
+    "fpCost": 8,
     "requires": {
       "str": 9,
       "skl": 11
@@ -348,8 +348,8 @@
     "style": "volley",
     "power": 0.65,
     "accuracy": 5,
-    "apCost": 40,
-    "fpCost": 22,
+    "apCost": 50,
+    "fpCost": 7,
     "requires": {
       "skl": 13,
       "spi": 7
@@ -366,8 +366,8 @@
     "style": "shot",
     "power": 1.2,
     "accuracy": 20,
-    "apCost": 40,
-    "fpCost": 20,
+    "apCost": 50,
+    "fpCost": 7,
     "requires": {
       "skl": 16,
       "agi": 10,
@@ -385,8 +385,8 @@
     "style": "slash",
     "power": 1.15,
     "accuracy": 5,
-    "apCost": 26,
-    "fpCost": 14,
+    "apCost": 30,
+    "fpCost": 5,
     "requires": {
       "skl": 9
     },
@@ -401,8 +401,8 @@
     "style": "overhead",
     "power": 1.4,
     "accuracy": 0,
-    "apCost": 34,
-    "fpCost": 20,
+    "apCost": 40,
+    "fpCost": 7,
     "requires": {
       "str": 12,
       "skl": 9
@@ -418,8 +418,8 @@
     "style": "slash",
     "power": 0.7,
     "accuracy": 6,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "agi": 12,
       "skl": 10,
@@ -437,8 +437,8 @@
     "style": "slash",
     "power": 1.6,
     "accuracy": 0,
-    "apCost": 40,
-    "fpCost": 28,
+    "apCost": 50,
+    "fpCost": 9,
     "requires": {
       "str": 15,
       "skl": 13,
@@ -456,8 +456,8 @@
     "style": "shot",
     "power": 1.0,
     "accuracy": 12,
-    "apCost": 35,
-    "fpCost": 15,
+    "apCost": 45,
+    "fpCost": 5,
     "requires": {
       "skl": 9
     },
@@ -472,8 +472,8 @@
     "style": "volley",
     "power": 0.6,
     "accuracy": 6,
-    "apCost": 40,
-    "fpCost": 22,
+    "apCost": 50,
+    "fpCost": 7,
     "requires": {
       "skl": 12
     },
@@ -489,8 +489,8 @@
     "style": "shot",
     "power": 1.3,
     "accuracy": 15,
-    "apCost": 42,
-    "fpCost": 22,
+    "apCost": 50,
+    "fpCost": 7,
     "requires": {
       "skl": 15,
       "int": 9
@@ -507,8 +507,8 @@
     "style": "charge",
     "power": 1.3,
     "accuracy": 0,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "agi": 10
     },
@@ -525,8 +525,8 @@
     "style": "thrust",
     "power": 1.0,
     "accuracy": 12,
-    "apCost": 28,
-    "fpCost": 15,
+    "apCost": 35,
+    "fpCost": 5,
     "requires": {
       "agi": 12,
       "skl": 9,
@@ -546,8 +546,8 @@
     "style": "charge",
     "power": 1.6,
     "accuracy": -4,
-    "apCost": 40,
-    "fpCost": 28,
+    "apCost": 50,
+    "fpCost": 9,
     "requires": {
       "agi": 15,
       "str": 11
@@ -566,8 +566,8 @@
     "style": "throw",
     "power": 1.1,
     "accuracy": 0,
-    "apCost": 38,
-    "fpCost": 18,
+    "apCost": 50,
+    "fpCost": 6,
     "requires": {
       "skl": 9
     },
@@ -583,14 +583,14 @@
     "style": "throw",
     "power": 1.0,
     "accuracy": 10,
-    "apCost": 38,
-    "fpCost": 18,
+    "apCost": 50,
+    "fpCost": 6,
     "requires": {
       "skl": 12,
       "int": 8
     },
     "description": "Blinding smoke that jams gears.",
-    "apDamage": 25
+    "fatigue": 25
   },
   {
     "id": "ottoman-burning-pitch",
@@ -601,8 +601,8 @@
     "style": "throw",
     "power": 1.5,
     "accuracy": -10,
-    "apCost": 45,
-    "fpCost": 28,
+    "apCost": 55,
+    "fpCost": 9,
     "requires": {
       "skl": 15,
       "str": 9,
@@ -620,8 +620,8 @@
     "style": "slash",
     "power": 1.1,
     "accuracy": 8,
-    "apCost": 24,
-    "fpCost": 12,
+    "apCost": 30,
+    "fpCost": 5,
     "requires": {
       "agi": 9
     },
@@ -636,8 +636,8 @@
     "style": "slash",
     "power": 0.65,
     "accuracy": 10,
-    "apCost": 30,
-    "fpCost": 15,
+    "apCost": 40,
+    "fpCost": 5,
     "requires": {
       "agi": 12,
       "spi": 7
@@ -654,8 +654,8 @@
     "style": "sweep",
     "power": 1.3,
     "accuracy": 0,
-    "apCost": 32,
-    "fpCost": 18,
+    "apCost": 40,
+    "fpCost": 6,
     "requires": {
       "str": 11,
       "agi": 10
@@ -672,8 +672,8 @@
     "style": "sweep",
     "power": 1.55,
     "accuracy": 0,
-    "apCost": 38,
-    "fpCost": 25,
+    "apCost": 50,
+    "fpCost": 8,
     "requires": {
       "agi": 15,
       "str": 12,
@@ -691,14 +691,14 @@
     "style": "thrust",
     "power": 0.9,
     "accuracy": 8,
-    "apCost": 26,
-    "fpCost": 12,
+    "apCost": 30,
+    "fpCost": 5,
     "requires": {
       "str": 9
     },
     "description": "Hook the frame and haul it off balance.",
     "noCounter": true,
-    "apDamage": 20
+    "fatigue": 20
   },
   {
     "id": "corsair-keelhaul",
@@ -709,8 +709,8 @@
     "style": "bash",
     "power": 1.3,
     "accuracy": 0,
-    "apCost": 32,
-    "fpCost": 20,
+    "apCost": 40,
+    "fpCost": 7,
     "requires": {
       "str": 12
     },
@@ -726,8 +726,8 @@
     "style": "bash",
     "power": 1.25,
     "accuracy": 0,
-    "apCost": 30,
-    "fpCost": 15,
+    "apCost": 40,
+    "fpCost": 5,
     "requires": {
       "str": 8
     },
@@ -742,8 +742,8 @@
     "style": "overhead",
     "power": 1.5,
     "accuracy": -8,
-    "apCost": 36,
-    "fpCost": 20,
+    "apCost": 45,
+    "fpCost": 7,
     "requires": {
       "str": 10
     },
@@ -759,8 +759,8 @@
     "style": "bash",
     "power": 1.8,
     "accuracy": -12,
-    "apCost": 42,
-    "fpCost": 35,
+    "apCost": 50,
+    "fpCost": 12,
     "requires": {
       "str": 12,
       "vit": 6
@@ -777,8 +777,8 @@
     "style": "volley",
     "power": 0.7,
     "accuracy": 5,
-    "apCost": 38,
-    "fpCost": 18,
+    "apCost": 50,
+    "fpCost": 6,
     "requires": {
       "skl": 8
     },
@@ -794,8 +794,8 @@
     "style": "shot",
     "power": 1.4,
     "accuracy": 0,
-    "apCost": 40,
-    "fpCost": 20,
+    "apCost": 50,
+    "fpCost": 7,
     "requires": {
       "skl": 10
     },
@@ -811,8 +811,8 @@
     "style": "volley",
     "power": 0.9,
     "accuracy": -10,
-    "apCost": 45,
-    "fpCost": 30,
+    "apCost": 55,
+    "fpCost": 10,
     "requires": {
       "skl": 12,
       "str": 10,

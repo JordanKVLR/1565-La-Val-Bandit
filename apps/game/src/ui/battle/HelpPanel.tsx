@@ -13,9 +13,10 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>Techniques</dt>
           <dd>
-            Attack opens your techniques. Each frame faction (Order, militia, Ottoman, corsair) has
-            its own, depending on the weapon type and frame weight. New ones are learned as your
-            attributes grow; you'll be told when one unlocks.
+            Every pilot starts with two attacks for their weapon: blades Slash (accurate, lighter)
+            and Thrust; polearms Thrust and Long Thrust (reaches 2 tiles, less accurate); maces Bash
+            and Smash; guns Fire (2–4 tiles) and a weak Stock Strike up close. Each faction adds its
+            own techniques, learned as your attributes grow; you'll be told when one unlocks.
           </dd>
           <dt>XP and levels</dt>
           <dd>
@@ -30,23 +31,24 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>AP (blue)</dt>
           <dd>
-            Action points. Each turn adds 40, up to 100. Moving and attacking spend AP; reacting
-            never does. Your card shows the cost of a move or technique before you commit.
+            Action points. Every turn starts with a full 100. Moving and attacking spend AP;
+            reacting never does. Your card shows the cost of a move or technique before you commit.
+            AP you don't spend is not wasted: it rests you (see FP).
           </dd>
           <dt>FP (yellow)</dt>
           <dd>
-            Fatigue. Every attack adds its technique's FP plus 20, and reactions add FP too. At 50
-            you fight worse. At 100 you are Spent: you can't attack or react until it drops. Ending
-            a turn without moving or attacking rests you faster.
+            Fatigue. Your own attacks add only a little (Slash and Thrust: 5). Reacting is what
+            tires you. At the end of your turn every 3 AP left unspent removes 2 FP, so a turn spent
+            waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a turn.
           </dd>
           <dt>Reactions</dt>
           <dd>
             When attacked you always choose. <b>Defend</b> (FP +30) halves the hit. <b>Avoid</b> (FP
-            +20) may dodge it. <b>Attack back</b> (the attack's FP) takes the hit, then strikes back
-            if you survive and are in range. From the front only, <b>Counter</b> (FP +20) is a
-            gamble: if it works the blow is repelled onto the attacker at 1.25×; if it fails you
-            take 1.25×. INT improves the odds. From behind you can only Avoid. <b>Do nothing</b>{' '}
-            costs nothing.
+            +20) may dodge it. <b>Attack back</b> (FP equal to the strike's AP, e.g. 30) takes the
+            hit, then strikes back if you survive and are in range. From the front only,{' '}
+            <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto the attacker
+            at 1.25×; if it fails you take 1.25×. INT improves the odds. From behind you can only
+            Avoid. <b>Do nothing</b> costs nothing.
           </dd>
           <dt>Position</dt>
           <dd>

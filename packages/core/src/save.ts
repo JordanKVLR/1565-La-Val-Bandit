@@ -1,4 +1,5 @@
-import { basicAttack } from './attacks';
+import type { Attack } from './attacks';
+import { BASIC_ATTACK_ID, basicAttack, starterAttacks } from './attacks';
 import { DEFAULT_BALANCE } from './balance';
 import { SAVE_VERSION } from './battle';
 import type { BattleState } from './state';
@@ -63,9 +64,26 @@ const migrations: Record<number, Migration> = {
       defendFpCost: DEFAULT_BALANCE.defendFpCost,
       avoidFpCost: DEFAULT_BALANCE.avoidFpCost,
       counterFpCost: DEFAULT_BALANCE.counterFpCost,
-      attackFpSurcharge: DEFAULT_BALANCE.attackFpSurcharge,
     };
     return { ...raw, balance };
+  },
+  // v5: AP refills each turn, unused AP is the only FP recovery, every pilot has two starter
+  // attacks, and the flat attack FP surcharge is gone.
+  4: (raw) => {
+    const old = { ...(raw.balance as Record<string, unknown>) };
+    for (const k of ['fpRecovery', 'fpRestRecovery', 'attackFpSurcharge']) delete old[k];
+    const balance = {
+      ...DEFAULT_BALANCE,
+      ...old,
+      apStart: DEFAULT_BALANCE.apStart,
+      apRegen: DEFAULT_BALANCE.apRegen,
+      apPerFpRecovered: DEFAULT_BALANCE.apPerFpRecovered,
+    };
+    const units = (raw.units as Array<Record<string, unknown>>).map((u) => {
+      const learned = (u.attacks as Attack[]).filter((a) => a.id !== BASIC_ATTACK_ID);
+      return { ...u, attacks: [...starterAttacks(u.weapon as Weapon), ...learned] };
+    });
+    return { ...raw, balance, units };
   },
 };
 

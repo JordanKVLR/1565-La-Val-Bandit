@@ -152,10 +152,14 @@ describe('stat points', () => {
         ],
       }),
     ).state;
-    expect(unlockedAttacks(requireUnit(s, 'a')).map((x) => x.id)).toEqual(['basic']);
+    expect(unlockedAttacks(requireUnit(s, 'a')).map((x) => x.id)).toEqual(['basic', 'thrust']);
     s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, statPoints: 1 } : u)) };
     s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'str' }).state;
-    expect(unlockedAttacks(requireUnit(s, 'a')).map((x) => x.id)).toEqual(['basic', 'heavy']);
+    expect(unlockedAttacks(requireUnit(s, 'a')).map((x) => x.id)).toEqual([
+      'basic',
+      'thrust',
+      'heavy',
+    ]);
   });
 });
 
@@ -228,8 +232,8 @@ describe('attacks', () => {
     });
     // 30 FP to defend plus 20 fatigue from the technique; AP damage 15.
     expect(requireUnit(state, 'e')).toMatchObject({ fp: 50, ap: 45 });
-    // 20 FP technique cost plus the 20 FP attack surcharge.
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 60 - 35, fp: 40 });
+    // Attacking costs the technique's AP from a full 100, and only its own FP.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 100 - 35, fp: 20 });
   });
 });
 
@@ -250,7 +254,7 @@ describe('save migration', () => {
     const loaded = deserializeBattle(JSON.stringify(v1));
     expect(loaded.saveVersion).toBe(SAVE_VERSION);
     const a = requireUnit(loaded, 'a');
-    expect(a.attacks.map((x) => x.id)).toEqual(['basic']);
+    expect(a.attacks.map((x) => x.id)).toEqual(['basic', 'thrust']);
     expect(a.weapon.type).toBe('blade');
     expect(a.xp).toBeLessThan(100);
   });

@@ -99,20 +99,20 @@ describe('reaction and attack costs', () => {
     expect(fpAfter('none')).toMatchObject({ fp: 0, ap: 60 });
   });
 
-  it('attack back costs the attack FP plus the surcharge, and no AP', () => {
+  it('attack back pays the strike AP cost as FP, and spends no AP', () => {
     const s = duel('north');
     const t = requireUnit(s, 't');
     const r = fpAfter('attackBack');
     expect(r.ap).toBe(60);
-    expect(r.fp).toBeGreaterThanOrEqual(attackFpCost(s, t, t.attacks[0]!));
+    expect(r.fp).toBe(t.attacks[0]!.apCost); // Slash: 30 AP → 30 FP
   });
 
-  it('every attack adds 20 FP on top of the technique cost', () => {
+  it('attacking on your own turn costs only the technique FP (Slash: 5)', () => {
     const s = duel('north');
     const a = requireUnit(s, 'a');
     const attack = a.attacks[0]!;
-    expect(attackFpCost(s, a, attack)).toBe(attack.fpCost + 20);
-    expect(fpAfter('none').attacker.fp).toBe(attack.fpCost + 20);
+    expect(attackFpCost(s, a, attack)).toBe(5);
+    expect(fpAfter('none').attacker.fp).toBe(5);
   });
 });
 
@@ -195,7 +195,7 @@ describe('new stats', () => {
     expect(after.hp).toBe(50 + (after.maxHp - a.maxHp));
   });
 
-  it('INT sharpens techniques but not basic attacks', () => {
+  it('INT sharpens learned techniques but not starter attacks', () => {
     // The target's AGI keeps both chances under the 95% cap so the full difference shows.
     const s = duel('north', { a: { int: 10, str: 20 }, t: { agi: 20 } });
     const TECH = {
@@ -206,11 +206,12 @@ describe('new stats', () => {
       accuracy: 0,
       apCost: 25,
       fpCost: 10,
-      requires: {},
+      requires: { str: 1 },
     };
     const a = { ...requireUnit(s, 'a'), attacks: [...requireUnit(s, 'a').attacks, TECH] };
     const t = requireUnit(s, 't');
-    const basic = forecastAttack(s, a, t, a.pos, a.attacks[0]);
+    // Thrust: a starter attack with the same ×1 power and ±0 accuracy as TECH.
+    const basic = forecastAttack(s, a, t, a.pos, a.attacks[1]);
     const tech = forecastAttack(s, a, t, a.pos, TECH);
     expect(tech.hitChance.avoid - basic.hitChance.avoid).toBe(10);
   });
@@ -233,7 +234,7 @@ describe('save migration v3 → v4', () => {
       avoidApCost: 10,
       avoidFpCost: 10,
     };
-    for (const k of ['defendFpCost', 'counterFpCost', 'attackFpSurcharge']) delete oldBalance[k];
+    for (const k of ['defendFpCost', 'counterFpCost']) delete oldBalance[k];
     const v3 = { ...now, saveVersion: 3, balance: oldBalance };
     const loaded = deserializeBattle(JSON.stringify(v3));
     expect(loaded.saveVersion).toBe(SAVE_VERSION);
@@ -241,7 +242,6 @@ describe('save migration v3 → v4', () => {
       defendFpCost: 30,
       avoidFpCost: 20,
       counterFpCost: 20,
-      attackFpSurcharge: 20,
     });
     expect('avoidApCost' in loaded.balance).toBe(false);
   });

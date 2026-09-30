@@ -1,5 +1,5 @@
 import type { Attack } from './attacks';
-import { basicAttack } from './attacks';
+import { starterAttacks } from './attacks';
 import type { BalanceConfig } from './balance';
 import type { Coord, Facing } from './grid';
 
@@ -67,7 +67,7 @@ export interface UnitSpec {
   readonly stats: PilotStats;
   readonly frame: Frame;
   readonly weapon: Weapon;
-  /** Attacks this frame/weapon combination can learn (besides the basic one). */
+  /** Attacks this frame/weapon combination can learn (besides the two starter attacks). */
   readonly attacks?: readonly Attack[];
   readonly xp?: number;
   /** Unspent stat points carried in from earlier level-ups. */
@@ -136,7 +136,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     frameClass: spec.frame.class,
     frameAgility: spec.frame.agility,
     weapon: spec.weapon,
-    attacks: [basicAttack(spec.weapon), ...(spec.attacks ?? [])],
+    attacks: [...starterAttacks(spec.weapon), ...(spec.attacks ?? [])],
     level: spec.level,
     xp: spec.xp ?? 0,
     statPoints: spec.statPoints ?? 0,

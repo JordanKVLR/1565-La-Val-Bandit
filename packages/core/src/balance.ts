@@ -11,8 +11,11 @@ export interface BalanceConfig {
   /** Largest height difference a unit can step up or down in one tile. */
   readonly maxClimb: number;
   readonly fpMax: number;
-  readonly fpRecovery: number;
-  readonly fpRestRecovery: number;
+  /**
+   * AP left unspent at the end of a turn is traded for rest: every this-many AP remove 1 FP
+   * (1.5 means 3 AP recover 2 FP). There is no other recovery.
+   */
+  readonly apPerFpRecovered: number;
   /** At or above this fatigue a unit is Tired. */
   readonly fpTired: number;
   /** Hit-chance penalty when a Tired unit attacks (and bonus when it is attacked). */
@@ -21,8 +24,6 @@ export interface BalanceConfig {
   readonly defendFpCost: number;
   readonly avoidFpCost: number;
   readonly counterFpCost: number;
-  /** Flat FP added to every attack (and Attack back) on top of the technique's own cost. */
-  readonly attackFpSurcharge: number;
   readonly hitMin: number;
   readonly hitMax: number;
   readonly sklHitFactor: number;
@@ -77,19 +78,17 @@ export interface BalanceConfig {
 
 export const DEFAULT_BALANCE: BalanceConfig = {
   apMax: 100,
-  apStart: 20,
-  apRegen: 40,
+  apStart: 100,
+  apRegen: 100,
   climbApPerStep: 4,
   maxClimb: 2,
   fpMax: 100,
-  fpRecovery: 15,
-  fpRestRecovery: 35,
+  apPerFpRecovered: 1.5,
   fpTired: 50,
   tiredPenalty: 10,
   defendFpCost: 30,
   avoidFpCost: 20,
   counterFpCost: 20,
-  attackFpSurcharge: 20,
   hitMin: 5,
   hitMax: 95,
   sklHitFactor: 2,

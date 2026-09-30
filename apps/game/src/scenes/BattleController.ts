@@ -506,6 +506,9 @@ export class BattleController {
     this.highlight([]);
     await this.renderer?.focus(unit.pos, 300 / this.speed());
     if (unit.controller === 'human') {
+      if (unit.fp >= state.balance.fpMax) {
+        this.notify(`${unit.name} has fainted from fatigue and must rest this turn.`);
+      }
       this.patch({ mode: { kind: 'command' } });
     } else {
       this.patch({ mode: { kind: 'busy' } });

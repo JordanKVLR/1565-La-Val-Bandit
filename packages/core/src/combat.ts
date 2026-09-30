@@ -96,21 +96,38 @@ export interface ReactionChoice {
   readonly reason?: string;
 }
 
-/** The attack a defender strikes back with. */
-export function attackBackWith(defender: UnitState): Attack {
-  return findAttack(defender, 'basic');
+/**
+ * The attack a defender strikes back with: its main attack, or its other starter attack when
+ * only that one reaches (a gunner clubbing an adjacent attacker with the stock).
+ */
+export function attackBackWith(defender: UnitState, attackerPos?: Coord): Attack {
+  const main = findAttack(defender, 'basic');
+  const second = defender.attacks[1];
+  if (!attackerPos || attackInRange(main, defender.weapon, defender.pos, attackerPos)) return main;
+  if (
+    second &&
+    Object.keys(second.requires).length === 0 &&
+    attackInRange(second, defender.weapon, defender.pos, attackerPos)
+  ) {
+    return second;
+  }
+  return main;
 }
 
-/** FP an attack costs this unit: the technique's FP plus the flat per-attack surcharge, after SPI. */
+/** FP an attack costs this unit on its own turn (after SPI). */
 export function attackFpCost(state: BattleState, unit: UnitState, attack: Attack): number {
-  return fpCostFor(state, unit, attack.fpCost + state.balance.attackFpSurcharge);
+  return fpCostFor(state, unit, attack.fpCost);
 }
 
-/** FP a reaction costs this defender. */
+/**
+ * FP a reaction costs this defender. Striking back turns the attack's whole AP cost into FP,
+ * which makes it the most tiring answer.
+ */
 export function reactionFpCost(
   state: BattleState,
   defender: UnitState,
   reaction: Reaction,
+  attackerPos?: Coord,
 ): number {
   const b = state.balance;
   switch (reaction) {
@@ -121,7 +138,7 @@ export function reactionFpCost(
     case 'counter':
       return fpCostFor(state, defender, b.counterFpCost);
     case 'attackBack':
-      return attackFpCost(state, defender, attackBackWith(defender));
+      return fpCostFor(state, defender, attackBackWith(defender, attackerPos).apCost);
     case 'none':
       return 0;
   }
@@ -141,10 +158,10 @@ export function reactionChoices(
   const choice = (reaction: Reaction, reason: string | undefined): ReactionChoice => ({
     reaction,
     available: reason === undefined,
-    fpCost: reactionFpCost(state, defender, reaction),
+    fpCost: reactionFpCost(state, defender, reaction, attackerPos),
     ...(reason === undefined ? {} : { reason }),
   });
-  const back = attackBackWith(defender);
+  const back = attackBackWith(defender, attackerPos);
   return [
     choice('defend', !fresh ? spent : zone === 'rear' ? "Can't defend from behind" : undefined),
     choice('avoid', !fresh ? spent : undefined),
@@ -244,7 +261,9 @@ export function strikeNumbers(
   const tired =
     (attacker.fp >= b.fpTired ? -b.tiredPenalty : 0) +
     (target.fp >= b.fpTired ? b.tiredPenalty : 0);
-  const technique = attack.id === 'basic' ? 0 : attacker.int * b.intTechniqueAccuracy;
+  // Starter attacks (no requirements) are plain weapon work; INT sharpens learned techniques.
+  const technique =
+    Object.keys(attack.requires).length === 0 ? 0 : attacker.int * b.intTechniqueAccuracy;
   const baseHit =
     attacker.weapon.accuracy +
     attack.accuracy +

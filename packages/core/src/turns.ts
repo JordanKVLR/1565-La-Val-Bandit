@@ -53,16 +53,19 @@ export function advanceTurn(state: BattleState, events: BattleEvent[]): void {
   startRound(state, events);
 }
 
-/** Ends the active unit's turn: fatigue recovers (more if it neither moved nor acted). */
+/**
+ * Ends the active unit's turn. Unspent AP is traded for rest (3 AP → 2 FP by default) plus a
+ * little per point of SPI; that is the only way fatigue recovers. A fainted unit (FP at max)
+ * can do nothing, so skipping its turn brings it back round.
+ */
 export function endTurn(state: BattleState, events: BattleEvent[]): void {
   const turn = state.turn;
   if (!turn) return;
   const unit = requireUnit(state, turn.unitId);
   const rested = !turn.moved && !turn.acted;
   if (!unit.defeated) {
-    const recovery =
-      (rested ? state.balance.fpRestRecovery : state.balance.fpRecovery) +
-      unit.spi * state.balance.spiFpRecovery;
+    const b = state.balance;
+    const recovery = Math.floor(unit.ap / b.apPerFpRecovered) + unit.spi * b.spiFpRecovery;
     unit.fp = Math.max(0, unit.fp - recovery);
   }
   events.push({ type: 'turnEnded', unitId: unit.id, rested });
