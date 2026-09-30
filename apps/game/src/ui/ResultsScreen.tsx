@@ -1,5 +1,7 @@
 import type { Library } from '@m1565/content';
 import type { GameSession, Screen } from '../campaign/GameSession';
+import { useStore } from '../state/store';
+import { RosterStats } from './RosterStats';
 
 export function ResultsScreen({
   session,
@@ -10,7 +12,7 @@ export function ResultsScreen({
   screen: Extract<Screen, { kind: 'results' }>;
   lib: Library;
 }) {
-  const roster = session.state.roster;
+  const roster = useStore(session.view).roster;
   return (
     <main class="results-screen">
       <h2>Victory</h2>
@@ -19,30 +21,23 @@ export function ResultsScreen({
           <li key={i}>{l}</li>
         ))}
       </ul>
-      <table class="roster-table">
-        <thead>
-          <tr>
-            <th>Pilot</th>
-            <th>Lv</th>
-            <th>XP</th>
-            <th>STR</th>
-            <th>SKL</th>
-            <th>AGI</th>
-          </tr>
-        </thead>
-        <tbody>
-          {roster.map((r) => (
-            <tr key={r.characterId}>
-              <td>{lib.characters.get(r.characterId)?.name ?? r.characterId}</td>
-              <td>{r.level}</td>
-              <td>{r.xp}</td>
-              <td>{r.stats.str}</td>
-              <td>{r.stats.skl}</td>
-              <td>{r.stats.agi}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div class="results-roster">
+        {roster.map((r) => (
+          <div class="results-pilot" key={r.characterId}>
+            <strong>
+              {lib.characters.get(r.characterId)?.name ?? r.characterId} <small>Lv {r.level}</small>
+            </strong>
+            <span class="xp-track wide">
+              <span style={{ width: `${r.xp}%` }} />
+            </span>
+            <RosterStats
+              lib={lib}
+              entry={r}
+              onRaise={(stat) => session.raiseStat(r.characterId, stat)}
+            />
+          </div>
+        ))}
+      </div>
       <button type="button" class="btn" onClick={() => session.closeResults()}>
         Continue
       </button>

@@ -19,6 +19,7 @@ export function makeMap(rows: string[], heights?: string[]): BattleMap {
 
 export const SWORD: Weapon = {
   id: 'sword',
+  type: 'blade',
   name: 'Sword',
   power: 24,
   accuracy: 80,
@@ -29,6 +30,7 @@ export const SWORD: Weapon = {
 };
 export const GUN: Weapon = {
   id: 'gun',
+  type: 'firearm',
   name: 'Arquebus',
   power: 22,
   accuracy: 70,
@@ -37,7 +39,15 @@ export const GUN: Weapon = {
   minRange: 2,
   maxRange: 4,
 };
-export const FRAME: Frame = { id: 'frame', name: 'Frame', hp: 80, armour: 8, move: 4, agility: 0 };
+export const FRAME: Frame = {
+  class: 'medium',
+  id: 'frame',
+  name: 'Frame',
+  hp: 80,
+  armour: 8,
+  move: 4,
+  agility: 0,
+};
 
 export function unit(over: Partial<UnitSpec> & Pick<UnitSpec, 'id' | 'at'>): UnitSpec {
   return {

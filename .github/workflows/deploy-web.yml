@@ -31,6 +31,8 @@ jobs:
       - run: pnpm build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+      # Unknown paths under the site load the game instead of GitHub's error page.
+      - run: cp apps/game/dist/index.html apps/game/dist/404.html
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

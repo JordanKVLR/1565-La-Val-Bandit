@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'preact/hooks';
-import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { sfx } from '../../platform/audio';
+import { DuelStage } from '../../render/DuelStage';
+import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
 import { settings } from '../../state/settings';
 
 interface Props {
@@ -8,95 +9,148 @@ interface Props {
   onDone: () => void;
 }
 
-type Phase = { strike: number; step: 'bark' | 'impact' | 'reply' };
+const SIDE_COLOR = { player: '#3d6fbd', enemy: '#bd4a3d' } as const;
+
+interface Popup {
+  readonly key: number;
+  readonly side: 'left' | 'right';
+  readonly text: string;
+  readonly kind: 'dmg' | 'miss' | 'xp' | 'level';
+}
 
 /**
- * Cinematic duel cut-in: both combatants side by side with a line each, the blow, the result.
- * Tap anywhere to skip. Timing scales with the battle-speed setting.
+ * Cinematic duel: a 3D stage with both pilots as stick figures, animated by the attack style
+ * and the defender's reaction. Tap anywhere to skip.
  */
 export function CloseUp({ data, onDone }: Props) {
-  const [phase, setPhase] = useState<Phase>({ strike: 0, step: 'bark' });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hp, setHp] = useState<Record<string, number>>({
     [data.left.id]: data.left.hpBefore,
     [data.right.id]: data.right.hpBefore,
   });
-  const speed = settings.get().battleSpeed;
+  const [lines, setLines] = useState<{ left: string; right: string }>({ left: '', right: '' });
+  const [popups, setPopups] = useState<Popup[]>([]);
+  const doneRef = useRef(onDone);
+  doneRef.current = onDone;
 
   useEffect(() => {
-    const strike = data.strikes[phase.strike];
-    if (!strike) {
-      onDone();
-      return;
-    }
-    const ms = { bark: 700, impact: 650, reply: 800 }[phase.step] / speed;
-    const t = setTimeout(() => {
-      if (phase.step === 'bark') {
-        sfx(
-          !strike.result.hit
-            ? 'miss'
-            : phase.strike > 0
-              ? 'counter'
-              : data.reaction === 'defend'
-                ? 'defend'
-                : 'hit',
-        );
-        setHp((h) => ({ ...h, [strike.result.targetId]: strike.result.targetHp }));
-        setPhase({ strike: phase.strike, step: 'impact' });
-      } else if (phase.step === 'impact') {
-        setPhase({ strike: phase.strike, step: 'reply' });
-      } else {
-        setPhase({ strike: phase.strike + 1, step: 'bark' });
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const speed = settings.get().battleSpeed;
+    const stage = new DuelStage(
+      canvas,
+      {
+        color: SIDE_COLOR[data.left.side],
+        weaponType: data.left.weaponType,
+        frameClass: data.left.frameClass,
+      },
+      {
+        color: SIDE_COLOR[data.right.side],
+        weaponType: data.right.weaponType,
+        frameClass: data.right.frameClass,
+      },
+      '#5b6b35',
+      speed,
+    );
+    let cancelled = false;
+    let key = 0;
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms / speed));
+    const sideOf = (id: string): 'left' | 'right' => (id === data.left.id ? 'left' : 'right');
+    const pop = (p: Omit<Popup, 'key'>) => {
+      const k = ++key;
+      setPopups((ps) => [...ps, { ...p, key: k }]);
+      setTimeout(() => setPopups((ps) => ps.filter((x) => x.key !== k)), 1400 / speed);
+    };
+    const firstAttacker = data.strikes[0]?.result.attackerId;
+
+    void (async () => {
+      for (const s of data.strikes) {
+        if (cancelled) return;
+        const atkSide = sideOf(s.result.attackerId);
+        const defSide = atkSide === 'left' ? 'right' : 'left';
+        if (s.bark) setLines((l) => ({ ...l, [atkSide]: s.bark, [defSide]: '' }));
+        await stage.playStrike({
+          attacker: atkSide,
+          style: s.style,
+          hit: s.result.hit,
+          defeated: s.result.defeated,
+          reaction: s.result.attackerId === firstAttacker ? data.reaction : 'none',
+          onImpact: () => {
+            sfx(
+              !s.result.hit
+                ? 'miss'
+                : s.result.attackerId !== firstAttacker
+                  ? 'counter'
+                  : data.reaction === 'defend'
+                    ? 'defend'
+                    : 'hit',
+            );
+            setHp((h) => ({ ...h, [s.result.targetId]: s.result.targetHp }));
+            pop({
+              side: defSide,
+              text: s.result.hit ? `${s.result.damage}` : 'Miss',
+              kind: s.result.hit ? 'dmg' : 'miss',
+            });
+            if (s.result.xp > 0) pop({ side: atkSide, text: `+${s.result.xp} XP`, kind: 'xp' });
+            if (s.levelUp) pop({ side: atkSide, text: `LEVEL UP! Lv ${s.levelUp}`, kind: 'level' });
+          },
+        });
+        if (cancelled) return;
+        if (s.reply) setLines((l) => ({ ...l, [defSide]: s.reply }));
+        await wait(450);
       }
-    }, ms);
-    return () => clearTimeout(t);
-  }, [phase, data, onDone, speed]);
+      await wait(350);
+      if (!cancelled) doneRef.current();
+    })();
+    return () => {
+      cancelled = true;
+      stage.dispose();
+    };
+  }, [data]);
 
-  const strike = data.strikes[phase.strike];
-  if (!strike) return null;
-  const attackerId = strike.result.attackerId;
-  const leftAttacks = attackerId === data.left.id;
-  const impact = phase.step !== 'bark';
-  const resultText = strike.result.hit ? `${strike.result.damage}` : 'Miss';
-
-  const fighter = (s: CloseUpSide, isLeft: boolean) => {
-    const attacking = s.id === attackerId;
-    const hit = impact && !attacking && strike.result.hit;
-    const hpNow = hp[s.id] ?? s.hpBefore;
+  const bar = (s: CloseUpSide) => {
+    const now = hp[s.id] ?? s.hpBefore;
     return (
-      <div
-        class={`cu-fighter ${isLeft ? 'left' : 'right'} ${attacking && impact ? 'lunge' : ''} ${hit ? 'hit' : ''}`}
-      >
-        <div class={`cu-frame cu-${s.side}`}>{s.initial}</div>
-        {impact && !attacking && (
-          <div class={`cu-result ${strike.result.hit ? 'dmg' : 'miss'}`}>{resultText}</div>
-        )}
+      <div class="cu-status">
+        <strong>{s.name}</strong>
         <div class="cu-hp">
-          <span style={{ width: `${(hpNow / s.maxHp) * 100}%` }} />
+          <span style={{ width: `${(now / s.maxHp) * 100}%` }} />
         </div>
-        <div class="cu-hp-num">
-          {hpNow}/{s.maxHp}
-        </div>
+        <span class="cu-hp-num">
+          {now}/{s.maxHp}
+        </span>
       </div>
     );
   };
 
-  const leftLine = leftAttacks ? strike.bark : phase.step === 'reply' ? strike.reply : '';
-  const rightLine = !leftAttacks ? strike.bark : phase.step === 'reply' ? strike.reply : '';
-
   return (
-    <div class="closeup" role="dialog" aria-label="Duel" onClick={onDone} data-testid="closeup">
+    <div
+      class="closeup"
+      role="dialog"
+      aria-label="Duel"
+      onClick={() => onDone()}
+      data-testid="closeup"
+    >
       <div class="cu-stage">
-        {fighter(data.left, true)}
-        {impact && strike.result.hit && <div class="cu-flash" />}
-        {fighter(data.right, false)}
+        <canvas ref={canvasRef} class="cu-canvas" aria-hidden="true" />
+        <div class="cu-top">
+          {bar(data.left)}
+          <div class="cu-attack">{data.attackName}</div>
+          {bar(data.right)}
+        </div>
+        {popups.map((p) => (
+          <div key={p.key} class={`cu-pop ${p.side} ${p.kind}`}>
+            {p.text}
+          </div>
+        ))}
       </div>
       <div class="cu-lines">
         <div class={`cu-line ${data.left.side}`}>
           <div class={`portrait portrait-${data.left.side}`}>{data.left.initial}</div>
-          <p>{leftLine}</p>
+          <p>{lines.left}</p>
         </div>
         <div class={`cu-line right ${data.right.side}`}>
-          <p>{rightLine}</p>
+          <p>{lines.right}</p>
           <div class={`portrait portrait-${data.right.side}`}>{data.right.initial}</div>
         </div>
       </div>

@@ -34,8 +34,19 @@ export interface BalanceConfig {
   readonly defendDamageMult: number;
   /** A defender that counters or cannot react is easier to hit than one that avoids. */
   readonly counterHitBonus: number;
+  /** Base XP for landing a hit, and for the blow that defeats a unit. */
   readonly xpHit: number;
   readonly xpDefeat: number;
+  /** XP needed for each level. Always the same amount; leftover XP carries over. */
+  readonly xpPerLevel: number;
+  /** XP changes by this fraction per level the target is above (+) or below (−) the attacker. */
+  readonly xpLevelFactor: number;
+  readonly xpMinFactor: number;
+  readonly xpMaxFactor: number;
+  /** Stat points granted per level-up, spent by the player on STR/SKL/AGI. */
+  readonly statPointsPerLevel: number;
+  /** Max HP gained per level. */
+  readonly hpPerLevel: number;
 }
 
 export const DEFAULT_BALANCE: BalanceConfig = {
@@ -66,5 +77,11 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   defendDamageMult: 0.5,
   counterHitBonus: 15,
   xpHit: 10,
-  xpDefeat: 30,
+  xpDefeat: 40,
+  xpPerLevel: 100,
+  xpLevelFactor: 0.2,
+  xpMinFactor: 0.1,
+  xpMaxFactor: 3,
+  statPointsPerLevel: 3,
+  hpPerLevel: 3,
 };

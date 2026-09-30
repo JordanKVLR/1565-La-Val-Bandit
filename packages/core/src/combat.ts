@@ -1,9 +1,11 @@
+import type { Attack } from './attacks';
+import { attackRange, basicAttack, meetsRequirements } from './attacks';
 import type { Coord, Facing } from './grid';
 import { DIRECTIONS, manhattan } from './grid';
 import type { BattleState } from './state';
 import { heightAt, livingUnits, terrainAt } from './state';
 import type { UnitState, Weapon } from './units';
-import { isHostile } from './units';
+import { isHostile, pilotStats } from './units';
 
 export type Reaction = 'defend' | 'avoid' | 'counter';
 export type FacingZone = 'front' | 'side' | 'rear';
@@ -31,28 +33,64 @@ export function facingToward(from: Coord, to: Coord, fallback: Facing = 'south')
   return dy > 0 ? 'south' : 'north';
 }
 
+/** Weapon reach with its basic attack. */
 export function inRange(weapon: Weapon, from: Coord, to: Coord): boolean {
   const d = manhattan(from, to);
   return d >= weapon.minRange && d <= weapon.maxRange;
+}
+
+export function attackInRange(attack: Attack, weapon: Weapon, from: Coord, to: Coord): boolean {
+  const r = attackRange(attack, weapon);
+  const d = manhattan(from, to);
+  return d >= r.min && d <= r.max;
 }
 
 export function canAct(state: BattleState, unit: UnitState): boolean {
   return !unit.defeated && unit.fp < state.balance.fpMax;
 }
 
-/** Reactions the defender can afford against this attacker. Defend is always possible. */
+/** Attacks whose stat requirements the pilot currently meets (always includes the basic one). */
+export function unlockedAttacks(unit: UnitState): Attack[] {
+  const stats = pilotStats(unit);
+  return unit.attacks.filter((a) => meetsRequirements(stats, a));
+}
+
+export function findAttack(unit: UnitState, attackId: string | undefined): Attack {
+  return (
+    unit.attacks.find((a) => a.id === (attackId ?? 'basic')) ??
+    unit.attacks[0] ??
+    basicAttack(unit.weapon)
+  );
+}
+
+/** Unlocked attacks the unit can afford and that reach `to` from `from`. */
+export function usableAttacks(
+  unit: UnitState,
+  from: Coord,
+  to: Coord,
+  apAvailable: number = unit.ap,
+): Attack[] {
+  return unlockedAttacks(unit).filter(
+    (a) => a.apCost <= apAvailable && attackInRange(a, unit.weapon, from, to),
+  );
+}
+
+/** Reactions the defender can afford against this attack. Defend is always possible. */
 export function availableReactions(
   state: BattleState,
   defender: UnitState,
   attacker: UnitState,
   attackerPos: Coord = attacker.pos,
+  attack?: Attack,
 ): Reaction[] {
   const out: Reaction[] = ['defend'];
   if (!canAct(state, defender)) return out;
   if (defender.ap >= state.balance.avoidApCost) out.push('avoid');
+  const counter = defender.attacks[0] ?? basicAttack(defender.weapon);
   if (
-    defender.ap >= defender.weapon.apCost &&
-    inRange(defender.weapon, defender.pos, attackerPos)
+    !attack?.noCounter &&
+    defender.ap >= counter.apCost &&
+    attackInRange(counter, defender.weapon, defender.pos, attackerPos)
   ) {
     out.push('counter');
   }
@@ -66,16 +104,18 @@ export interface StrikeNumbers {
   readonly zone: FacingZone;
   readonly heightDiff: number;
   readonly assist: number;
+  readonly pierce: number;
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 
-/** Raw numbers for `attacker` (standing at `from`) hitting `target`. */
+/** Raw numbers for `attacker` (standing at `from`) hitting `target` with `attack`. */
 export function strikeNumbers(
   state: BattleState,
   attacker: UnitState,
   target: UnitState,
   from: Coord = attacker.pos,
+  attack: Attack = attacker.attacks[0] ?? basicAttack(attacker.weapon),
 ): StrikeNumbers {
   const b = state.balance;
   const zone = facingZone(target.pos, target.facing, from);
@@ -90,6 +130,7 @@ export function strikeNumbers(
     (target.fp >= b.fpTired ? b.tiredPenalty : 0);
   const baseHit =
     attacker.weapon.accuracy +
+    attack.accuracy +
     attacker.skl * b.sklHitFactor -
     target.agi * b.agiEvadeFactor +
     heightDiff * b.heightHitPerStep +
@@ -99,8 +140,8 @@ export function strikeNumbers(
     tired;
   const heightMult = 1 + clamp(heightDiff, 0, b.heightDamageMaxSteps) * b.heightDamagePerStep;
   const zoneMult = zone === 'rear' ? b.rearDamageMult : 1;
-  const raw = (attacker.weapon.power + attacker.str) * heightMult * zoneMult;
-  return { baseHit, baseDamage: raw, zone, heightDiff, assist };
+  const raw = (attacker.weapon.power + attacker.str) * attack.power * heightMult * zoneMult;
+  return { baseHit, baseDamage: raw, zone, heightDiff, assist, pierce: attack.pierce ?? 0 };
 }
 
 export function hitChanceFor(
@@ -121,14 +162,34 @@ export function damageFor(
   reaction: Reaction | 'none',
 ): number {
   const mult = reaction === 'defend' ? state.balance.defendDamageMult : 1;
-  return Math.max(1, Math.round(n.baseDamage * mult) - target.arm);
+  const armour = Math.round(target.arm * (1 - n.pierce));
+  return Math.max(1, Math.round(n.baseDamage * mult) - armour);
+}
+
+/** XP an attacker earns for a hit (or defeating blow) on a target, scaled by level difference. */
+export function xpFor(
+  state: BattleState,
+  attacker: UnitState,
+  target: UnitState,
+  defeated: boolean,
+): number {
+  const b = state.balance;
+  const factor = clamp(
+    1 + (target.level - attacker.level) * b.xpLevelFactor,
+    b.xpMinFactor,
+    b.xpMaxFactor,
+  );
+  return Math.max(1, Math.round((defeated ? b.xpDefeat : b.xpHit) * factor));
 }
 
 export interface AttackForecast {
+  readonly attack: Attack;
+  readonly hits: number;
   readonly zone: FacingZone;
   readonly heightDiff: number;
   readonly assist: number;
   readonly reactions: readonly Reaction[];
+  /** Per-strike chance and damage for each reaction. */
   readonly hitChance: Readonly<Record<Reaction, number>>;
   readonly damage: Readonly<Record<Reaction, number>>;
   /** Present when the target could counter from where it stands. */
@@ -141,9 +202,10 @@ export function forecastAttack(
   attacker: UnitState,
   target: UnitState,
   from: Coord = attacker.pos,
+  attack: Attack = attacker.attacks[0] ?? basicAttack(attacker.weapon),
 ): AttackForecast {
-  const n = strikeNumbers(state, attacker, target, from);
-  const reactions = availableReactions(state, target, attacker, from);
+  const n = strikeNumbers(state, attacker, target, from, attack);
+  const reactions = availableReactions(state, target, attacker, from, attack);
   const hitChance = {} as Record<Reaction, number>;
   const damage = {} as Record<Reaction, number>;
   for (const r of REACTIONS) {
@@ -151,6 +213,8 @@ export function forecastAttack(
     damage[r] = damageFor(state, n, target, r);
   }
   const base = {
+    attack,
+    hits: attack.hits ?? 1,
     zone: n.zone,
     heightDiff: n.heightDiff,
     assist: n.assist,

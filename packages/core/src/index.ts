@@ -1,3 +1,4 @@
+export * from './attacks';
 export * from './ai';
 export * from './balance';
 export * from './battle';

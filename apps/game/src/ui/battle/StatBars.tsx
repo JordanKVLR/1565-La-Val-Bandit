@@ -1,3 +1,4 @@
+import { portraitUrl } from '../../render/art';
 import type { UnitState } from '@m1565/core';
 
 interface BarProps {
@@ -41,10 +42,19 @@ export function UnitBars({
 }
 
 /** Placeholder portrait: side colour, initial and a faction stripe. Swapped for art later. */
-export function Portrait({ name, side }: { name: string; side: UnitState['side'] }) {
+export function Portrait({
+  name,
+  side,
+  castId,
+}: {
+  name: string;
+  side: UnitState['side'];
+  castId?: string | null;
+}) {
+  const url = portraitUrl(castId);
   return (
     <div class={`portrait portrait-${side}`} aria-hidden="true">
-      {name.charAt(0)}
+      {url ? <img src={url} alt="" /> : name.charAt(0)}
     </div>
   );
 }

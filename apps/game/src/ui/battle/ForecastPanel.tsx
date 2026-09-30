@@ -1,4 +1,5 @@
 import type { AttackForecast, BattleState, Reaction, UnitState } from '@m1565/core';
+import { attackTags } from './attackText';
 import { Portrait, UnitBars } from './StatBars';
 
 const REACTION_LABEL: Record<Reaction, string> = {
@@ -23,7 +24,7 @@ function Side({ unit, state, extra }: { unit: UnitState; state: BattleState; ext
   return (
     <section class={`fc-side fc-${unit.side}`}>
       <div class="fc-head">
-        <Portrait name={unit.name} side={unit.side} />
+        <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
         <UnitBars unit={unit} apMax={state.balance.apMax} fpMax={state.balance.fpMax} />
       </div>
       <div class="fc-rows">
@@ -56,6 +57,8 @@ export function ForecastPanel({
   onCancel,
 }: Props) {
   const zone = forecast.zone === 'front' ? '' : ` · ${forecast.zone} attack`;
+  const tags = attackTags(forecast.attack);
+  const technique = `${forecast.attack.name}${tags.length ? ` (${tags.join(', ')})` : ''}`;
   const assist = forecast.assist ? ` · assist +${forecast.assist}%` : '';
   const counter = forecast.counter
     ? `Counter: ${forecast.counter.hitChance}% · ${forecast.counter.damage} dmg`
@@ -63,7 +66,7 @@ export function ForecastPanel({
   return (
     <div class="forecast" role="dialog" aria-label="Combat forecast">
       <div class="fc-sides">
-        <Side unit={attacker} state={state} extra={`Attack${zone}${assist}`} />
+        <Side unit={attacker} state={state} extra={`${technique}${zone}${assist}`} />
         <Side unit={defender} state={state} extra={counter} />
       </div>
       <div class="fc-choices">
@@ -81,6 +84,7 @@ export function ForecastPanel({
             <div class="fc-odds" data-testid="forecast-odds">
               Hit {forecast.hitChance.avoid}–{forecast.hitChance.counter}% · Dmg{' '}
               {forecast.damage.avoid}
+              {forecast.hits > 1 ? ` ×${forecast.hits}` : ''}
               <small> ({forecast.damage.defend} if defended)</small>
             </div>
             <button type="button" class="btn go" onClick={onConfirm}>

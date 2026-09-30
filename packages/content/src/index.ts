@@ -1,4 +1,5 @@
 import type {
+  Attack,
   BalanceConfig,
   BattleMap,
   BattleSetup,
@@ -9,6 +10,7 @@ import type {
   Weapon,
 } from '@m1565/core';
 import { getTile, validateMap } from '@m1565/core';
+import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
 import castData from '../data/cast.json';
@@ -18,6 +20,7 @@ import shopData from '../data/shop.json';
 import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
 import {
+  AttackSchema,
   BalanceSchema,
   BarksSchema,
   BattleSourceSchema,
@@ -113,6 +116,7 @@ export function loadLibrary() {
     barks: BarksSchema.parse(barkData),
     cast: byId(CastSchema.array().parse(castData), 'cast member'),
     shop: ShopItemSchema.array().parse(shopData),
+    attacks: AttackSchema.array().parse(attackData),
   };
 }
 export type Library = ReturnType<typeof loadLibrary>;
@@ -131,6 +135,21 @@ export interface RosterEntry {
   readonly stats: { readonly str: number; readonly skl: number; readonly agi: number };
   readonly frame: string;
   readonly weapon: string;
+  /** Unspent stat points from level-ups. */
+  readonly statPoints?: number;
+}
+
+/** Techniques a pilot in this frame with this weapon can learn (stat requirements aside). */
+export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[] {
+  const faction = lib.frameFactions.get(frame.id);
+  return lib.attacks
+    .filter(
+      (a) =>
+        a.faction === faction &&
+        a.weaponTypes.includes(weapon.type) &&
+        (a.frameClasses.length === 0 || a.frameClasses.includes(frame.class)),
+    )
+    .map(({ faction: _f, weaponTypes: _w, frameClasses: _c, ...attack }) => attack as Attack);
 }
 
 /**
@@ -159,6 +178,8 @@ export function buildBattle(
     const terrain = tile && lib.terrains.get(tile.terrain);
     if (!terrain || terrain.impassable)
       throw new Error(`${where}: unit ${u.id} is placed off-map or on impassable terrain`);
+    const frame = need(lib.frames, u.frame, 'frame', where);
+    const weapon = need(lib.weapons, u.weapon, 'weapon', where);
     const key = `${at.x},${at.y}`;
     if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
     occupied.add(key);
@@ -171,9 +192,11 @@ export function buildBattle(
       ...(u.ai ? { ai: u.ai } : {}),
       level: u.level,
       // Without a saved roster entry, a named character arrives at the level the battle expects.
-      stats: u.stats ?? statsAtLevel(character!, u.level),
-      frame: need(lib.frames, u.frame, 'frame', where),
-      weapon: need(lib.weapons, u.weapon, 'weapon', where),
+      stats: u.stats ?? statsAtLevel(character!, u.level, lib.balance.statPointsPerLevel),
+      frame,
+      weapon,
+      attacks: attackPool(lib, frame, weapon),
+      ...(r ? { xp: r.xp, statPoints: r.statPoints ?? 0 } : {}),
       at,
       facing: u.facing,
     };

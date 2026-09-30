@@ -1,3 +1,5 @@
+import type { Attack } from './attacks';
+import { basicAttack } from './attacks';
 import type { BalanceConfig } from './balance';
 import type { Coord, Facing } from './grid';
 
@@ -6,9 +8,13 @@ export type Controller = 'human' | 'ai';
 /** How the AI plays this unit: charge in, only strike what it can reach, or never move. */
 export type AiProfile = 'aggressive' | 'defensive' | 'hold';
 
+export type WeaponType = 'blade' | 'polearm' | 'blunt' | 'firearm' | 'explosive';
+export type FrameClass = 'light' | 'medium' | 'heavy';
+
 export interface Weapon {
   readonly id: string;
   readonly name: string;
+  readonly type: WeaponType;
   readonly power: number;
   /** Base hit chance in percentage points. */
   readonly accuracy: number;
@@ -22,6 +28,7 @@ export interface Weapon {
 export interface Frame {
   readonly id: string;
   readonly name: string;
+  readonly class: FrameClass;
   readonly hp: number;
   readonly armour: number;
   /** Maximum tiles per move. */
@@ -49,6 +56,11 @@ export interface UnitSpec {
   readonly stats: PilotStats;
   readonly frame: Frame;
   readonly weapon: Weapon;
+  /** Attacks this frame/weapon combination can learn (besides the basic one). */
+  readonly attacks?: readonly Attack[];
+  readonly xp?: number;
+  /** Unspent stat points carried in from earlier level-ups. */
+  readonly statPoints?: number;
   readonly at: Coord;
   readonly facing: Facing;
 }
@@ -62,15 +74,24 @@ export interface UnitState {
   controller: Controller;
   ai: AiProfile;
   frameId: string;
+  frameClass: FrameClass;
+  /** The frame's AGI modifier, kept so the pilot's own AGI can be recovered. */
+  frameAgility: number;
   weapon: Weapon;
+  /** Basic attack first, then every technique this frame and weapon allow. */
+  attacks: Attack[];
   level: number;
+  /** XP towards the next level (0 to balance.xpPerLevel - 1). */
   xp: number;
+  /** Points earned from level-ups that the player has not yet spent. */
+  statPoints: number;
   maxHp: number;
   hp: number;
   ap: number;
   fp: number;
   str: number;
   skl: number;
+  /** Effective AGI: pilot AGI plus the frame modifier. */
   agi: number;
   arm: number;
   mov: number;
@@ -79,10 +100,8 @@ export interface UnitState {
   defeated: boolean;
 }
 
-/** Pilots add toughness as they level: frame HP plus this much per level above 1. */
-export const HP_PER_LEVEL = 3;
-
 export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
+  const hp = spec.frame.hp + (spec.level - 1) * balance.hpPerLevel;
   return {
     id: spec.id,
     characterId: spec.characterId ?? null,
@@ -91,11 +110,15 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     controller: spec.controller,
     ai: spec.ai ?? 'aggressive',
     frameId: spec.frame.id,
+    frameClass: spec.frame.class,
+    frameAgility: spec.frame.agility,
     weapon: spec.weapon,
+    attacks: [basicAttack(spec.weapon), ...(spec.attacks ?? [])],
     level: spec.level,
-    xp: 0,
-    maxHp: spec.frame.hp + (spec.level - 1) * HP_PER_LEVEL,
-    hp: spec.frame.hp + (spec.level - 1) * HP_PER_LEVEL,
+    xp: spec.xp ?? 0,
+    statPoints: spec.statPoints ?? 0,
+    maxHp: hp,
+    hp,
     ap: balance.apStart,
     fp: 0,
     str: spec.stats.str,
@@ -107,6 +130,11 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     facing: spec.facing,
     defeated: false,
   };
+}
+
+/** The pilot's own stats (without the frame's AGI modifier): what attack requirements check. */
+export function pilotStats(u: Pick<UnitState, 'str' | 'skl' | 'agi' | 'frameAgility'>): PilotStats {
+  return { str: u.str, skl: u.skl, agi: u.agi - u.frameAgility };
 }
 
 export function isHostile(a: Pick<UnitState, 'side'>, b: Pick<UnitState, 'side'>): boolean {

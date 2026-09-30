@@ -1,19 +1,25 @@
 import type {
+  Attack,
   AttackForecast,
+  AttackStyle,
   BattleEvent,
   BattleSetup,
   BattleState,
   Command,
   Coord,
   Facing,
+  FrameClass,
   Reach,
   Reaction,
+  StatName,
   StrikeResult,
   UnitState,
+  WeaponType,
 } from '@m1565/core';
 import {
   activeUnit,
   applyCommand,
+  attackInRange,
   availableReactions,
   chooseReaction,
   CommandError,
@@ -21,11 +27,13 @@ import {
   createBattle,
   findUnit,
   forecastAttack,
-  inRange,
   livingUnits,
+  meetsRequirements,
+  pilotStats,
   planAiTurn,
   reachableTiles,
   unitAt,
+  unlockedAttacks,
 } from '@m1565/core';
 import type { BarkSet, Library } from '@m1565/content';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
@@ -49,27 +57,49 @@ export interface CloseUpSide {
   readonly side: UnitState['side'];
   readonly initial: string;
   readonly weapon: string;
+  readonly weaponType: WeaponType;
+  readonly frameClass: FrameClass;
   readonly maxHp: number;
   readonly hpBefore: number;
+}
+
+export interface CloseUpStrike {
+  readonly result: StrikeResult;
+  readonly style: AttackStyle;
+  readonly bark: string;
+  readonly reply: string;
+  /** Set when this strike levelled the striker up. */
+  readonly levelUp?: number;
 }
 
 export interface CloseUpData {
   readonly left: CloseUpSide;
   readonly right: CloseUpSide;
+  readonly attackName: string;
   readonly reaction: Reaction;
-  readonly strikes: ReadonlyArray<{
-    readonly result: StrikeResult;
-    readonly bark: string;
-    readonly reply: string;
-  }>;
+  readonly strikes: readonly CloseUpStrike[];
+}
+
+/** An attack as the attack menu shows it. */
+export interface AttackOption {
+  readonly attack: Attack;
+  readonly unlocked: boolean;
+  readonly affordable: boolean;
+  readonly targets: readonly string[];
 }
 
 export type Mode =
   | { readonly kind: 'busy' }
   | { readonly kind: 'command' }
   | { readonly kind: 'move'; readonly reach: ReadonlyMap<string, Reach> }
-  | { readonly kind: 'target'; readonly targets: readonly string[] }
-  | { readonly kind: 'forecast'; readonly targetId: string; readonly forecast: AttackForecast }
+  | { readonly kind: 'attackMenu' }
+  | { readonly kind: 'target'; readonly attackId: string; readonly targets: readonly string[] }
+  | {
+      readonly kind: 'forecast';
+      readonly attackId: string;
+      readonly targetId: string;
+      readonly forecast: AttackForecast;
+    }
   | { readonly kind: 'facing' }
   | {
       readonly kind: 'reaction';
@@ -79,6 +109,7 @@ export type Mode =
       readonly options: readonly Reaction[];
     }
   | { readonly kind: 'closeUp'; readonly data: CloseUpData }
+  | { readonly kind: 'levelUp'; readonly unitId: string }
   | { readonly kind: 'ended'; readonly outcome: 'victory' | 'defeat' };
 
 export interface BattleView {
@@ -105,6 +136,7 @@ export class BattleController {
   private renderer: BattleRenderer | undefined;
   private pendingReaction: ((r: Reaction) => void) | undefined;
   private pendingCloseUp: (() => void) | undefined;
+  private pendingLevelUp: (() => void) | undefined;
   private running = false;
   private disposed = false;
 
@@ -161,17 +193,14 @@ export class BattleController {
       this.toCommand();
     } else if (mode.kind === 'target' || mode.kind === 'forecast') {
       const target = unitAt(this.state, c);
-      if (target && (mode.kind === 'forecast' || mode.targets.includes(target.id))) {
-        if (mode.kind === 'forecast' && target.id === mode.targetId) {
-          this.confirmAttack();
-          return;
-        }
-        if (mode.kind === 'target' || this.targetsFor(this.active()!).includes(target.id)) {
-          this.showForecast(target.id);
-          return;
-        }
+      const targets =
+        mode.kind === 'target' ? mode.targets : this.targetsFor(this.active()!, mode.attackId);
+      if (target && targets.includes(target.id)) {
+        if (mode.kind === 'forecast' && target.id === mode.targetId) this.confirmAttack();
+        else this.showForecast(mode.attackId, target.id);
+        return;
       }
-      if (mode.kind === 'target') this.toCommand();
+      if (mode.kind === 'target') this.chooseAttack();
     }
     this.patch({ inspected: c });
     this.renderer?.select(c);
@@ -191,23 +220,47 @@ export class BattleController {
     ]);
   }
 
+  /** Opens the list of techniques. */
   chooseAttack(): void {
     const unit = this.active();
-    if (!unit || this.mode.kind !== 'command' || !this.canAttack()) return;
+    if (!unit || !['command', 'target', 'forecast'].includes(this.mode.kind) || !this.canAttack())
+      return;
     sfx('select');
-    const targets = this.targetsFor(unit);
-    this.patch({ mode: { kind: 'target', targets } });
+    this.patch({ mode: { kind: 'attackMenu' } });
+    this.highlight([]);
+  }
+
+  /** Picks a technique from the menu; enemies in its reach light up. */
+  chooseTechnique(attackId: string): void {
+    const unit = this.active();
+    const option = this.attackOptions().find((o) => o.attack.id === attackId);
+    if (
+      !unit ||
+      this.mode.kind !== 'attackMenu' ||
+      !option?.unlocked ||
+      !option.affordable ||
+      !option.targets.length
+    )
+      return;
+    sfx('select');
+    this.patch({ mode: { kind: 'target', attackId, targets: option.targets } });
     this.highlight([
-      { kind: 'range', tiles: this.rangeTiles(unit) },
-      { kind: 'target', tiles: targets.map((id) => findUnit(this.state, id)!.pos) },
+      { kind: 'range', tiles: this.rangeTiles(unit, option.attack) },
+      { kind: 'target', tiles: option.targets.map((id) => findUnit(this.state, id)!.pos) },
     ]);
   }
 
   confirmAttack(): void {
     const mode = this.mode;
     if (mode.kind !== 'forecast') return;
-    const reaction = chooseReaction(this.state, mode.targetId, this.activeId());
-    void this.run({ type: 'attack', unitId: this.activeId(), targetId: mode.targetId, reaction });
+    const reaction = this.defenderReaction(mode.targetId, mode.attackId);
+    void this.run({
+      type: 'attack',
+      unitId: this.activeId(),
+      targetId: mode.targetId,
+      reaction,
+      attackId: mode.attackId,
+    });
   }
 
   undoMove(): void {
@@ -226,9 +279,11 @@ export class BattleController {
     void this.run({ type: 'endTurn', unitId: this.activeId(), facing });
   }
 
-  /** Back out of a sub-mode (move/target/forecast/facing) to the action menu. */
+  /** Back out of a sub-mode to the previous step. */
   cancel(): void {
-    if (['move', 'target', 'forecast', 'facing'].includes(this.mode.kind)) this.toCommand();
+    const k = this.mode.kind;
+    if (k === 'target' || k === 'forecast') this.chooseAttack();
+    else if (['move', 'attackMenu', 'facing'].includes(k)) this.toCommand();
   }
 
   chooseReaction(r: Reaction): void {
@@ -241,6 +296,23 @@ export class BattleController {
   finishCloseUp(): void {
     const resolve = this.pendingCloseUp;
     this.pendingCloseUp = undefined;
+    resolve?.();
+  }
+
+  /** Spends one of a unit's stat points. Works whenever the unit has points to spend. */
+  raiseStat(unitId: string, stat: StatName): void {
+    try {
+      const { state } = applyCommand(this.state, { type: 'raiseStat', unitId, stat });
+      sfx('tap');
+      this.patch({ state });
+    } catch (e) {
+      if (!(e instanceof CommandError)) throw e;
+    }
+  }
+
+  finishLevelUp(): void {
+    const resolve = this.pendingLevelUp;
+    this.pendingLevelUp = undefined;
     resolve?.();
   }
 
@@ -264,8 +336,7 @@ export class BattleController {
       !!u &&
       !t.acted &&
       u.fp < this.state.balance.fpMax &&
-      u.ap >= u.weapon.apCost &&
-      this.targetsFor(u).length > 0
+      this.attackOptions().some((o) => o.unlocked && o.affordable && o.targets.length > 0)
     );
   }
 
@@ -274,34 +345,63 @@ export class BattleController {
     return !!t && t.moved && !t.acted;
   }
 
+  /** Every technique of the active unit, with whether it can be used right now. */
+  attackOptions(): AttackOption[] {
+    const unit = this.active();
+    if (!unit) return [];
+    const stats = pilotStats(unit);
+    return unit.attacks.map((attack) => ({
+      attack,
+      unlocked: meetsRequirements(stats, attack),
+      affordable: unit.ap >= attack.apCost,
+      targets: this.targetsFor(unit, attack.id),
+    }));
+  }
+
   // ── Internals ──────────────────────────────────────────────────────────────
 
   private activeId(): string {
     return this.state.turn?.unitId ?? '';
   }
 
-  private targetsFor(unit: UnitState): string[] {
+  private targetsFor(unit: UnitState, attackId: string): string[] {
+    const attack = unit.attacks.find((a) => a.id === attackId);
+    if (!attack) return [];
     return livingUnits(this.state)
-      .filter((u) => u.side !== unit.side && inRange(unit.weapon, unit.pos, u.pos))
+      .filter((u) => u.side !== unit.side && attackInRange(attack, unit.weapon, unit.pos, u.pos))
       .map((u) => u.id);
   }
 
-  private rangeTiles(unit: UnitState): Coord[] {
+  private rangeTiles(unit: UnitState, attack: Attack): Coord[] {
     const out: Coord[] = [];
     const { width, depth } = this.state.map;
     for (let y = 0; y < depth; y++) {
       for (let x = 0; x < width; x++)
-        if (inRange(unit.weapon, unit.pos, { x, y })) out.push({ x, y });
+        if (attackInRange(attack, unit.weapon, unit.pos, { x, y })) out.push({ x, y });
     }
     return out;
   }
 
-  private showForecast(targetId: string): void {
+  private attackOf(unit: UnitState, attackId: string): Attack {
+    return unit.attacks.find((a) => a.id === attackId) ?? unit.attacks[0]!;
+  }
+
+  private defenderReaction(targetId: string, attackId: string): Reaction {
+    return chooseReaction(this.state, targetId, this.activeId(), attackId);
+  }
+
+  private showForecast(attackId: string, targetId: string): void {
     const unit = this.active();
     const target = findUnit(this.state, targetId);
     if (!unit || !target) return;
-    const forecast = forecastAttack(this.state, unit, target);
-    this.patch({ mode: { kind: 'forecast', targetId, forecast }, inspected: target.pos });
+    const forecast = forecastAttack(
+      this.state,
+      unit,
+      target,
+      unit.pos,
+      this.attackOf(unit, attackId),
+    );
+    this.patch({ mode: { kind: 'forecast', attackId, targetId, forecast }, inspected: target.pos });
     this.renderer?.select(target.pos);
   }
 
@@ -377,8 +477,8 @@ export class BattleController {
         const defender = findUnit(this.state, cmd.targetId);
         const reaction =
           defender?.controller === 'human'
-            ? await this.askReaction(unitId, cmd.targetId)
-            : chooseReaction(this.state, cmd.targetId, unitId);
+            ? await this.askReaction(unitId, cmd.targetId, cmd.attackId ?? 'basic')
+            : chooseReaction(this.state, cmd.targetId, unitId, cmd.attackId);
         cmd = { ...cmd, reaction };
       }
       if (!(await this.execute(cmd))) break;
@@ -392,12 +492,13 @@ export class BattleController {
     await this.beginTurn();
   }
 
-  private askReaction(attackerId: string, defenderId: string): Promise<Reaction> {
+  private askReaction(attackerId: string, defenderId: string, attackId: string): Promise<Reaction> {
     const attacker = findUnit(this.state, attackerId)!;
     const defender = findUnit(this.state, defenderId)!;
-    const options = availableReactions(this.state, defender, attacker);
+    const attack = this.attackOf(attacker, attackId);
+    const options = availableReactions(this.state, defender, attacker, attacker.pos, attack);
     if (options.length === 1) return Promise.resolve(options[0]!);
-    const forecast = forecastAttack(this.state, attacker, defender);
+    const forecast = forecastAttack(this.state, attacker, defender, attacker.pos, attack);
     this.renderer?.select(defender.pos);
     this.patch({ mode: { kind: 'reaction', attackerId, defenderId, forecast, options } });
     return new Promise((resolve) => {
@@ -438,13 +539,34 @@ export class BattleController {
       }
       throw e;
     }
-    for (const ev of result.events) await this.play(ev, before, result.state);
+    for (const ev of result.events) await this.play(ev, before, result.events);
     this.patch({ state: result.state });
     this.syncUnits();
+    // Level-ups pause the battle so the player can spend their new stat points.
+    for (const ev of result.events) {
+      if (ev.type !== 'levelUp') continue;
+      const unit = findUnit(this.state, ev.unitId);
+      if (unit?.controller === 'human' && unit.statPoints > 0) await this.promptLevelUp(unit.id);
+    }
     return true;
   }
 
-  private async play(ev: BattleEvent, before: BattleState, after: BattleState): Promise<void> {
+  private promptLevelUp(unitId: string): Promise<void> {
+    const previous = this.mode;
+    this.patch({ mode: { kind: 'levelUp', unitId } });
+    return new Promise((resolve) => {
+      this.pendingLevelUp = () => {
+        this.patch({ mode: previous.kind === 'levelUp' ? { kind: 'busy' } : previous });
+        resolve();
+      };
+    });
+  }
+
+  private async play(
+    ev: BattleEvent,
+    before: BattleState,
+    all: readonly BattleEvent[],
+  ): Promise<void> {
     const r = this.renderer;
     switch (ev.type) {
       case 'unitMoved':
@@ -453,14 +575,20 @@ export class BattleController {
         break;
       case 'attackResolved': {
         this.pushLog(describeAttack(before, ev));
-        if (settings.get().closeUps) await this.playCloseUp(before, after, ev);
-        else sfx(ev.strike.hit ? (ev.reaction === 'defend' ? 'defend' : 'hit') : 'miss');
-        r?.shake(ev.strike.targetId);
+        const first = ev.strikes[0];
+        if (settings.get().closeUps) await this.playCloseUp(before, ev, all);
+        else if (first) sfx(first.hit ? (ev.reaction === 'defend' ? 'defend' : 'hit') : 'miss');
+        if (first) r?.shake(first.targetId);
         break;
       }
       case 'unitDefeated':
         sfx('defeat');
         this.pushLog(`${findUnit(before, ev.unitId)?.name ?? ev.unitId} is defeated.`);
+        break;
+      case 'levelUp':
+        this.pushLog(
+          `★ ${findUnit(before, ev.unitId)?.name ?? ev.unitId} reached level ${ev.level}!`,
+        );
         break;
       case 'roundStarted':
         this.pushLog(`— Round ${ev.round} —`);
@@ -472,32 +600,45 @@ export class BattleController {
 
   private playCloseUp(
     before: BattleState,
-    after: BattleState,
     ev: Extract<BattleEvent, { type: 'attackResolved' }>,
+    all: readonly BattleEvent[],
   ): Promise<void> {
-    const a = findUnit(before, ev.strike.attackerId)!;
-    const d = findUnit(before, ev.strike.targetId)!;
+    const first = ev.strikes[0];
+    if (!first) return Promise.resolve();
+    const a = findUnit(before, first.attackerId)!;
+    const d = findUnit(before, first.targetId)!;
     const side = (u: UnitState): CloseUpSide => ({
       id: u.id,
       name: u.name,
       side: u.side,
       initial: u.name.charAt(0),
       weapon: u.weapon.name,
+      weaponType: u.weapon.type,
+      frameClass: u.frameClass,
       maxHp: u.maxHp,
       hpBefore: u.hp,
     });
+    // Level reached by each striker during this exchange (for the "LEVEL UP" flourish).
+    const levelUps = new Map<string, number>();
+    for (const e of all) if (e.type === 'levelUp') levelUps.set(e.unitId, e.level);
+    const markLevel = (result: StrikeResult, isLast: boolean) =>
+      isLast && levelUps.has(result.attackerId)
+        ? { levelUp: levelUps.get(result.attackerId)! }
+        : {};
+
     // Player units sit on the left, as in a duel viewed from the defenders' side.
     const [left, right] = a.side === 'player' ? [a, d] : [d, a];
-    const strikes = [
-      {
-        result: ev.strike,
-        bark: pickLine(this.barks(a).attack),
-        reply: pickLine(replyLines(this.barks(d), ev.reaction, ev.strike)),
-      },
-    ];
+    const strikes: CloseUpStrike[] = ev.strikes.map((result, i) => ({
+      result,
+      style: ev.style,
+      bark: i === 0 ? pickLine(this.barks(a).attack) : '',
+      reply: pickLine(replyLines(this.barks(d), ev.reaction, result)),
+      ...markLevel(result, i === ev.strikes.length - 1 && !ev.counter),
+    }));
     if (ev.counter) {
       strikes.push({
         result: ev.counter,
+        style: ev.counterStyle ?? 'slash',
         bark: pickLine(this.barks(d).counter),
         reply: pickLine(
           ev.counter.defeated
@@ -506,13 +647,19 @@ export class BattleController {
               ? this.barks(a).hurt
               : this.barks(a).avoid,
         ),
+        ...markLevel(ev.counter, true),
       });
     }
-    void after;
     this.patch({
       mode: {
         kind: 'closeUp',
-        data: { left: side(left), right: side(right), reaction: ev.reaction, strikes },
+        data: {
+          left: side(left),
+          right: side(right),
+          attackName: ev.attackName,
+          reaction: ev.reaction,
+          strikes,
+        },
       },
     });
     return new Promise((resolve) => {
@@ -536,6 +683,9 @@ export class BattleController {
   }
 }
 
+/** Unlocked techniques for a unit, for UIs outside battle (prep screen). */
+export { unlockedAttacks };
+
 function replyLines(b: BarkSet, reaction: Reaction, s: StrikeResult): readonly string[] {
   if (s.defeated) return b.defeated;
   if (!s.hit) return b.avoid;
@@ -548,11 +698,15 @@ function describeAttack(
   ev: Extract<BattleEvent, { type: 'attackResolved' }>,
 ): string {
   const name = (id: string) => findUnit(state, id)?.name ?? id;
-  const s = ev.strike;
-  const main = s.hit
-    ? `${name(s.attackerId)} hits ${name(s.targetId)} for ${s.damage} (${ev.reaction}).`
-    : `${name(s.targetId)} avoids ${name(s.attackerId)}'s attack.`;
+  const first = ev.strikes[0];
+  if (!first) return '';
+  const hits = ev.strikes.filter((s) => s.hit);
+  const dmg = hits.reduce((n, s) => n + s.damage, 0);
+  const xp = ev.strikes.reduce((n, s) => n + s.xp, 0);
+  const main = hits.length
+    ? `${name(first.attackerId)} uses ${ev.attackName} on ${name(first.targetId)}: ${dmg} damage (${ev.reaction})${xp ? `, +${xp} XP` : ''}.`
+    : `${name(first.targetId)} avoids ${name(first.attackerId)}'s ${ev.attackName}.`;
   if (!ev.counter) return main;
   const c = ev.counter;
-  return `${main} Counter: ${c.hit ? `${c.damage} damage` : 'miss'}.`;
+  return `${main} Counter: ${c.hit ? `${c.damage} damage${c.xp ? `, +${c.xp} XP` : ''}` : 'miss'}.`;
 }
