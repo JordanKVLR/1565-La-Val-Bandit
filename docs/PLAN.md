@@ -53,20 +53,22 @@ Story scene (isometric diorama + portrait dialogue, choices)
 
 ### 2.2 Battle rules (initial numbers; the balance sim tunes them)
 
-**Stats per unit:** HP, AP (0–100), FP (0–100), ARM (armour), MOV (tiles), weapon and gear, plus
-seven pilot attributes:
+**Stats per unit:** HP, AP (0–100), FP (0–100), ARM (armour), MOV (tiles), weapon, charm and
+amulet, plus the six classic pilot attributes (each 0–32). Gear bonuses add on top of the pilot's
+own values, still capped at 32.
 
-| Attribute | Effect                                                                                                          |
-| --------- | --------------------------------------------------------------------------------------------------------------- |
-| **STR**   | Adds to damage                                                                                                  |
-| **SKL**   | +2% hit chance per point                                                                                        |
-| **AGI**   | −2% enemy hit chance per point; turn order                                                                      |
-| **DEF**   | −1.5 damage taken per point (after ARM)                                                                         |
-| **INT**   | Counter odds; +1% accuracy per point for techniques (not the basic attack)                                      |
-| **SPI**   | −2% FP cost per point (max 50%), +1 FP recovery per turn, 3% resistance to fatigue/AP drain per point (max 60%) |
-| **VIT**   | +5% of base HP per point                                                                                        |
+| Attribute | Effect                                       |
+| --------- | -------------------------------------------- |
+| **BAS**   | Base: +4 max HP per point                    |
+| **POW**   | Power: damage of every attack                |
+| **DEX**   | Dexterity: +2% hit chance per point          |
+| **AGL**   | Agility: −2% to be hit per point; turn order |
+| **DEF**   | Defence: −1.5 damage taken per point         |
+| **WEP**   | Weapon skill: damage, like POW               |
 
-**Turn order:** each round, units act in descending `AGI + d6` (seeded RNG), shown as a
+**Max HP** = level × 2 + BAS × 4 + 10 + armatura HP.
+
+**Turn order:** each round, units act in descending `AGL + d6` (seeded RNG), shown as a
 queue on the HUD.
 
 **Action Points (AP):**
@@ -74,43 +76,43 @@ queue on the HUD.
 This section follows the classic Vanguard Bandits framework (see §1: mechanics, not assets).
 
 - Every turn starts with a **full 100 AP**.
-- Moving costs AP per tile by terrain: Road 3 · Plain 4 · Field/Scrub 5 · Rubble 8 ·
-  Shallows 10. Climbing costs +4 per height step. MOV caps tiles per turn.
-- Attacks cost their own AP (starters 25–35, techniques 30–60).
+- Moving costs AP per tile by terrain: Road 6 · Plain 8 · Field/Scrub 10 · Rubble 14 ·
+  Shallows 18. Climbing costs +6 per height step. MOV caps tiles per turn.
+- Attacks cost AP and FP by power, and stronger attacks are less accurate (one formula for
+  every technique, with p = power × hits − 1): **AP = 30 + 50p** (min 20, rounded to 5),
+  **FP = 5 + 15p** (min 5), **accuracy = −60p %** (max +20%).
 - Reactions never cost AP; they cost FP (see below).
 - The unit card previews every cost before you commit: tapping a tile shows the route and the
   AP it will take (tap again to move), and picking a technique shows its AP and FP.
 
 **Starter attacks** (every pilot, no requirements; faction techniques come on top):
 
-| Weapon    | Attack 1                   | Attack 2                                      |
-| --------- | -------------------------- | --------------------------------------------- |
-| Blade     | Slash ×0.8, +20%, 30 AP    | Thrust ×1.0, ±0, 30 AP                        |
-| Polearm   | Thrust ×1.0, ±0, 30 AP     | Long Thrust ×1.0, −20%, 35 AP, reach 1–2      |
-| Blunt     | Bash ×0.8, +20%, 30 AP     | Smash ×1.0, ±0, 30 AP                         |
-| Firearm   | Fire ×1.0, gun range (2–4) | Stock Strike ×0.5, +10%, 25 AP, adjacent only |
-| Explosive | Throw ×1.0, weapon range   | Shove ×0.5, +10%, 25 AP, adjacent only        |
-
-All starters cost 5 FP. Faction techniques cost 30–60 AP and 5–12 FP.
+| Weapon    | Attack 1                          | Attack 2                                      |
+| --------- | --------------------------------- | --------------------------------------------- |
+| Blade     | Slash ×0.8, +12%, 20 AP, 5 FP     | Thrust ×1.0, ±0, 30 AP, 5 FP                  |
+| Polearm   | Thrust ×1.0, ±0, 30 AP            | Long Thrust ×1.0, −20%, 35 AP, reach 1–2      |
+| Blunt     | Bash ×0.8, +12%, 20 AP            | Smash ×1.0, ±0, 30 AP                         |
+| Firearm   | Fire ×1.0, gun range, weapon's AP | Stock Strike ×0.5, +20%, 20 AP, adjacent only |
+| Explosive | Throw ×1.0, weapon range          | Shove ×0.5, +20%, 20 AP, adjacent only        |
 
 **Fatigue Points (FP):**
 
-- Your own attacks add little FP (the attack's FP, 5–12). Reacting is what tires a pilot;
-  **Attack back** pays the strike's whole AP cost as FP. SPI reduces all FP costs.
-- **Recovery:** at the end of a turn, every 3 AP left unspent removes 2 FP (plus 1 per SPI). A
+- Your own attacks add their FP (5 for starters, more for stronger techniques). Reacting is what
+  tires a pilot most; **Attack back** pays the strike's whole AP cost as FP.
+- **Recovery:** at the end of a turn, every 3 AP left unspent removes 2 FP. A
   turn spent waiting clears 66 FP. There is no other recovery.
 - FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100: the pilot **faints**: it can't move,
   attack or react, and must pass its turn (which recovers 66).
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction        | Cost              | Effect                                                                                                                                                                      |
-| --------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Defend**      | +30 FP            | Always hit, damage ×0.5                                                                                                                                                     |
-| **Avoid**       | +20 FP            | The hit rolls at the normal chance; if it lands, full damage                                                                                                                |
-| **Attack back** | strike's AP as FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                            |
-| **Counter**     | +20 FP            | A gamble: chance = 10% + 2% × (your INT − attacker INT), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
-| **Do nothing**  | free              | Take the hit (+15% to be hit)                                                                                                                                               |
+| Reaction        | Cost              | Effect                                                                                                                                                                                      |
+| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Defend**      | +30 FP            | Always hit, damage ×0.5                                                                                                                                                                     |
+| **Avoid**       | +20 FP            | The hit rolls at the normal chance; if it lands, full damage                                                                                                                                |
+| **Attack back** | strike's AP as FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                                            |
+| **Counter**     | +20 FP            | A gamble: chance = 10% + 1% × ((your DEX + AGL) − (attacker DEX + AGL)), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
+| **Do nothing**  | free              | Take the hit (+15% to be hit)                                                                                                                                                               |
 
 The reaction menu always appears, listing every reaction; ones that can't be used are greyed out
 with the reason. **Direction matters:** from the front, all are offered. From the side: Defend,
@@ -119,12 +121,12 @@ block Attack back and Counter. A Spent unit (FP 100) can only Do nothing.
 Attackers turn to face their target, and a defender that survives turns to face its attacker.
 
 **Hit chance** = clamp(5, 95):
-`weapon.acc + SKL×2 − target.AGI×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties`
+`65 + technique accuracy + DEX×2 − target AGL×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties` (+15 when the target attacks back or does nothing)
 
 - Facing bonus: front 0, side +10, rear +25. Rear hits also deal ×1.25 damage.
 - **Assist:** +5% for each ally adjacent to the target and able to act, up to +15%.
 
-**Damage** = `max(1, (weapon.pow + STR) × heightMult × facingMult × reactionMult − (ARM + DEF × 1.5) × (1 − pierce))`,
+**Damage** = `max(1, (POW + WEP) × 1.6 × technique power × heightMult × facingMult × reactionMult − (ARM + DEF × 1.5) × (1 − pierce))`,
 where heightMult is 1 + 0.1 per step above the target (max +0.3).
 
 **Terrain label** in the HUD corner uses the format `<height>H <avoid>% <name>`
@@ -141,10 +143,14 @@ deterministic given the RNG seed.
 
 Every combatant is a **pilot + Armatura** pair, as in the reference game.
 
-- **Pilot:** has a level, growth stats (STR/SKL/AGI), skills, affinity and a portrait.
-- **Frame:** sets base HP/ARM/MOV, weight class, weapon types and 2 gear slots.
-- Pilots can switch frames between battles (the Prep screen), within their faction's
-  unlocked frames.
+- **Pilot:** has a level, the six attributes, affinity and a portrait.
+- **Frame:** sets base HP/ARM/MOV, weight class and attribute bonuses; it carries one charm,
+  and the pilot wears one amulet. Each frame has its own figure (knight, militia farmer,
+  gunner, janissary, sipahi, corsair, Scala machine); Ninu's is white and red with gold trim
+  and a half-medallion.
+- **Gear is owned, not unlimited.** Fitting an armatura or weapon takes it from the stores;
+  spares can be moved between pilots on the Prep screen, which compares every stat before and
+  after. Armaturas come only from the story and from salvage after a victory.
 
 | Side             | Frames (weight · role)                                                                                                                                                   |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -171,21 +177,23 @@ skippable on tap.
 
 ### 2.5 Progression
 
-- **XP during battle:** every hit earns XP, and the blow that defeats a unit earns much more (base
-  20 and 60). Surviving an enemy attack with a reaction earns 3. XP scales with the level gap: ×(1 + 0.2 × (target level − attacker level)), limited
-  to ×0.1–×3. So beating stronger enemies is rewarded and farming weak ones isn't. Only the
-  player's side earns XP.
-- **Levels:** always 100 XP per level; leftover XP carries over. Each level-up happens the moment
-  it's earned, mid-battle. It gives +3 base HP and **5 stat points the player assigns** to any of the
-  seven attributes (AI-controlled allies spend theirs automatically). Unspent points can be saved and
-  spent later on the results or preparation screen.
+- **XP during battle** (classic rules): XP comes **only from landing a blow**. A hit earns
+  30 + 100 × (damage ÷ target max HP), so more damage earns slightly more, and a defeating blow
+  adds 150. Head-on hits earn ×1, side ×0.8, rear ×0.5. XP scales with the level gap:
+  ×(1 + 0.2 × (target level − attacker level)), limited to ×0.1–×3. Reactions that don't land
+  a blow earn nothing. Only the player's side earns XP.
+- **Levels:** 500 XP per level; leftover XP carries over. Each level-up happens the moment it's
+  earned, mid-battle, and gives +2 max HP and **3 attribute points the player assigns** (AI
+  allies spend theirs on their lowest attribute). Unspent points can be spent later.
 - **Techniques:** each frame faction (Order, militia, Ottoman, corsair, Scala) has its own list of
   attacks (`packages/content/data/attacks.json`, 46 in total). What a pilot can learn depends on
   the weapon type and frame weight class; when they can use it depends on stat requirements. Locked techniques are hidden; the
   game announces "New technique learned" when raising a stat unlocks one.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.
-- Equipment shop between chapters, using _scudi_ (currency).
+- **Armoury**, open between every battle: buys and sells weapons, charms and amulets for
+  _scudi_ (spares sell for half price). Armaturas are never sold. Battles pay 50 scudi plus
+  20 + 5 × level per enemy defeated.
 - **Affinity:** hidden relationship values changed by dialogue choices; they gate scenes, routes
   and ending variations.
 
