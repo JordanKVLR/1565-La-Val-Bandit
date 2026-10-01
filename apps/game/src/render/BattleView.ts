@@ -29,6 +29,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { applyTerrainArt } from './art';
 import type { TerrainAtlas } from './terrainTextures';
 import { createTerrainAtlas } from './terrainTextures';
+import type { FigureSpec } from './Armatura';
+import { bakeFigure } from './Armatura';
 import type { UnitLook } from './unitSprite';
 import { createUnitSprite, drawUnit } from './unitSprite';
 
@@ -44,6 +46,8 @@ export interface UnitVisual extends UnitLook {
   readonly at: Coord;
   readonly facing: Facing;
   readonly arrowColor: string;
+  /** The armatura standing on the arrow; story actors without one show only their badge. */
+  readonly figure?: FigureSpec;
 }
 
 export type HighlightKind = 'move' | 'path' | 'range' | 'target' | 'danger' | 'goal';
@@ -66,6 +70,9 @@ const FACING_ANGLE: Record<Facing, number> = {
 
 /** Where the unit's badge floats and where its arrow sits, relative to the tile top. */
 const LABEL_OFFSET = new Vector3(0, 0.42, 0);
+/** With a figure on the arrow the badge floats above its head instead. */
+const FIGURE_LABEL_OFFSET = new Vector3(0, 1.0, 0);
+const FIGURE_SCALE = 0.42;
 const ARROW_OFFSET = new Vector3(0, 0.1, 0);
 
 /**
@@ -107,6 +114,7 @@ function setArrowActive(arrow: Group, active: boolean): void {
 interface UnitNode {
   sprite: Sprite;
   arrow: Group;
+  labelOffset: Vector3;
   look: UnitLook;
   at: Coord;
 }
@@ -210,8 +218,18 @@ export class BattleView {
       if (!node) {
         const sprite = createUnitSprite(u);
         const arrow = createArrowMarker(u.color);
+        if (u.figure) {
+          const figure = new Mesh(
+            bakeFigure(u.figure),
+            new MeshLambertMaterial({ vertexColors: true }),
+          );
+          figure.scale.setScalar(FIGURE_SCALE);
+          arrow.add(figure);
+          sprite.scale.multiplyScalar(0.75);
+        }
         this.scene.add(sprite, arrow);
-        node = { sprite, arrow, look: u, at: u.at };
+        const labelOffset = u.figure ? FIGURE_LABEL_OFFSET : LABEL_OFFSET;
+        node = { sprite, arrow, labelOffset, look: u, at: u.at };
         this.units.set(u.id, node);
         this.placeNode(node, u.at);
       } else {
@@ -258,7 +276,7 @@ export class BattleView {
         const b = points[seg + 1]!;
         const pos = a.clone().lerp(b, local);
         pos.y = Math.max(a.y, b.y) * Math.sin(local * Math.PI) * 0.15 + a.y + (b.y - a.y) * local;
-        node.sprite.position.copy(pos).add(LABEL_OFFSET);
+        node.sprite.position.copy(pos).add(node.labelOffset);
         node.arrow.position.copy(pos).add(ARROW_OFFSET);
         const dir = { x: Math.sign(b.x - a.x), y: Math.sign(b.z - a.z) };
         const facing = (Object.keys(DIRECTIONS) as Facing[]).find(
@@ -279,7 +297,7 @@ export class BattleView {
   shake(id: string): void {
     const node = this.units.get(id);
     if (!node) return;
-    const base = this.tileTop(node.at).add(LABEL_OFFSET);
+    const base = this.tileTop(node.at).add(node.labelOffset);
     const start = performance.now();
     this.addTween((now) => {
       const t = Math.max(0, (now - start) / 300);
@@ -375,7 +393,7 @@ export class BattleView {
   private placeNode(node: UnitNode, c: Coord): void {
     node.at = c;
     const p = this.tileTop(c);
-    node.sprite.position.copy(p).add(LABEL_OFFSET);
+    node.sprite.position.copy(p).add(node.labelOffset);
     node.arrow.position.copy(p).add(ARROW_OFFSET);
   }
 

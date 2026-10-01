@@ -6,7 +6,7 @@ import { attackStats, attackTags } from './attackText';
 import type { CostPreview } from './StatBars';
 import { ATTRIBUTE_BAR_MAX, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
-import { frameName, gearName, VbBars } from './vb';
+import { frameName, gearName, unitFigure, VbBars } from './vb';
 
 const SIDE_COLOR = { player: '#3d6fbd', enemy: '#bd4a3d' } as const;
 
@@ -76,17 +76,12 @@ function Figure({ unit }: { unit: UnitState }) {
     if (!ref.current) return;
     let viewer: UnitViewer | null = null;
     try {
-      viewer = new UnitViewer(
-        ref.current,
-        SIDE_COLOR[unit.side],
-        unit.weapon.type,
-        unit.frameClass,
-      );
+      viewer = new UnitViewer(ref.current, unitFigure(unit, SIDE_COLOR[unit.side]));
     } catch {
       // No WebGL: the equipment list still shows.
     }
     return () => viewer?.dispose();
-  }, [unit.id, unit.side, unit.weapon.type, unit.frameClass]);
+  }, [unit.id, unit.side, unit.weapon.type, unit.frameId]);
   return <canvas ref={ref} class="vbd-figure" aria-hidden="true" />;
 }
 

@@ -1,4 +1,3 @@
-import type { FrameClass, WeaponType } from '@m1565/core';
 import {
   AmbientLight,
   CylinderGeometry,
@@ -10,17 +9,17 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
-import { guardFor, StickFighter } from './StickFighter';
+import type { FigureSpec } from './Armatura';
+import { ArmaturaFighter, guardFor } from './Armatura';
 
 /**
- * A single unit on a stone plinth, turning slowly: the figure on the unit details screen until
- * real frame art exists.
+ * A single unit on a stone plinth, turning slowly: the armatura on the unit details screen.
  */
 export class UnitViewer {
   private readonly renderer: WebGLRenderer;
   private readonly scene = new Scene();
   private readonly camera = new PerspectiveCamera(32, 1, 0.1, 50);
-  private readonly fighter: StickFighter;
+  private readonly fighter: ArmaturaFighter;
   private readonly plinth: Mesh;
   private readonly resizeObserver: ResizeObserver;
   private frame = 0;
@@ -28,9 +27,7 @@ export class UnitViewer {
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    color: string,
-    weaponType: WeaponType,
-    frameClass: FrameClass,
+    spec: FigureSpec,
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -47,8 +44,8 @@ export class UnitViewer {
     );
     this.plinth.position.y = -0.08;
     this.scene.add(this.plinth);
-    this.fighter = new StickFighter(color, weaponType, frameClass, 0, 1);
-    this.fighter.apply(guardFor(weaponType));
+    this.fighter = new ArmaturaFighter(spec, 0, 1);
+    this.fighter.apply(guardFor(spec.weaponType));
     this.scene.add(this.fighter.root);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);

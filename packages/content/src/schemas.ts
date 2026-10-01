@@ -82,6 +82,20 @@ export const WeaponSchema = z
 
 export const FACTIONS = ['order', 'militia', 'ottoman', 'corsair', 'scala'] as const;
 
+/** How an armatura is drawn (see apps/game/src/render/Armatura.ts). */
+export const ARMATURA_MODELS = [
+  'knight',
+  'militia',
+  'gunner',
+  'janissary',
+  'sipahi',
+  'corsair',
+  'machine',
+  'tower',
+  'barge',
+] as const;
+export type ArmaturaModel = (typeof ARMATURA_MODELS)[number];
+
 export const FrameSchema = z.object({
   id,
   name: z.string().min(1),
@@ -91,6 +105,7 @@ export const FrameSchema = z.object({
   armour: z.number().int().min(0),
   move: z.number().int().positive(),
   bonus,
+  model: z.enum(ARMATURA_MODELS),
 });
 
 /** Charms are fitted to the armatura, amulets worn by the pilot. Both only add attributes. */
@@ -114,6 +129,8 @@ export const CharacterSchema = z.object({
   frame: id,
   weapon: id,
   allegiance,
+  /** A unique colour scheme for the protagonist's armatura. */
+  livery: z.enum(['hero']).optional(),
 });
 export type Character = z.infer<typeof CharacterSchema>;
 

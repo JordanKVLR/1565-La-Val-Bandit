@@ -9,7 +9,8 @@
     "move": 4,
     "bonus": {
       "def": 1
-    }
+    },
+    "model": "knight"
   },
   {
     "id": "bastiun",
@@ -22,7 +23,8 @@
     "bonus": {
       "def": 3,
       "agl": -3
-    }
+    },
+    "model": "knight"
   },
   {
     "id": "lanza",
@@ -34,7 +36,8 @@
     "move": 4,
     "bonus": {
       "wep": 1
-    }
+    },
+    "model": "knight"
   },
   {
     "id": "kaptan",
@@ -48,7 +51,8 @@
       "pow": 1,
       "dex": 1,
       "agl": 1
-    }
+    },
+    "model": "knight"
   },
   {
     "id": "haddiem",
@@ -61,7 +65,8 @@
     "bonus": {
       "bas": 1,
       "agl": 2
-    }
+    },
+    "model": "militia"
   },
   {
     "id": "moschetta",
@@ -74,7 +79,8 @@
     "bonus": {
       "dex": 1,
       "agl": 2
-    }
+    },
+    "model": "gunner"
   },
   {
     "id": "artigjan",
@@ -87,7 +93,8 @@
     "bonus": {
       "def": 1,
       "agl": 1
-    }
+    },
+    "model": "militia"
   },
   {
     "id": "yeniceri",
@@ -101,7 +108,8 @@
       "dex": 1,
       "wep": 1,
       "agl": 1
-    }
+    },
+    "model": "janissary"
   },
   {
     "id": "sipahi",
@@ -114,7 +122,8 @@
     "bonus": {
       "wep": 1,
       "agl": 3
-    }
+    },
+    "model": "sipahi"
   },
   {
     "id": "humbaraci",
@@ -127,7 +136,8 @@
     "bonus": {
       "pow": 1,
       "agl": -1
-    }
+    },
+    "model": "janissary"
   },
   {
     "id": "levend",
@@ -140,7 +150,8 @@
     "bonus": {
       "dex": 1,
       "agl": 4
-    }
+    },
+    "model": "corsair"
   },
   {
     "id": "reis",
@@ -153,7 +164,8 @@
     "bonus": {
       "pow": 1,
       "agl": 2
-    }
+    },
+    "model": "corsair"
   },
   {
     "id": "prototipo",
@@ -165,7 +177,8 @@
     "move": 4,
     "bonus": {
       "pow": 2
-    }
+    },
+    "model": "machine"
   },
   {
     "id": "barge",
@@ -177,7 +190,8 @@
     "move": 1,
     "bonus": {
       "agl": -4
-    }
+    },
+    "model": "barge"
   },
   {
     "id": "siege-tower",
@@ -190,7 +204,8 @@
     "bonus": {
       "def": 2,
       "agl": -6
-    }
+    },
+    "model": "tower"
   },
   {
     "id": "colossus",
@@ -204,6 +219,7 @@
       "pow": 2,
       "def": 2,
       "agl": -2
-    }
+    },
+    "model": "machine"
   }
 ]

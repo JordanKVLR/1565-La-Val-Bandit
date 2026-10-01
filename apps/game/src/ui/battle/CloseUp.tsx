@@ -9,8 +9,6 @@ interface Props {
   onDone: () => void;
 }
 
-const SIDE_COLOR = { player: '#3d6fbd', enemy: '#bd4a3d' } as const;
-
 interface Popup {
   readonly key: number;
   readonly side: 'left' | 'right';
@@ -37,21 +35,7 @@ export function CloseUp({ data, onDone }: Props) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const speed = settings.get().battleSpeed;
-    const stage = new DuelStage(
-      canvas,
-      {
-        color: SIDE_COLOR[data.left.side],
-        weaponType: data.left.weaponType,
-        frameClass: data.left.frameClass,
-      },
-      {
-        color: SIDE_COLOR[data.right.side],
-        weaponType: data.right.weaponType,
-        frameClass: data.right.frameClass,
-      },
-      '#5b6b35',
-      speed,
-    );
+    const stage = new DuelStage(canvas, data.left.figure, data.right.figure, '#5b6b35', speed);
     let cancelled = false;
     let key = 0;
     const wait = (ms: number) => new Promise((r) => setTimeout(r, ms / speed));

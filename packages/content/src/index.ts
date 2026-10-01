@@ -124,6 +124,11 @@ export function loadLibrary() {
         .parse(frameData)
         .map((f) => [f.id, f.faction]),
     ),
+    frameModels: new Map(
+      FrameSchema.array()
+        .parse(frameData)
+        .map((f) => [f.id, f.model]),
+    ),
     barks: BarksSchema.parse(barkData),
     cast: byId(CastSchema.array().parse(castData), 'cast member'),
     shop: ShopItemSchema.array().parse(shopData),

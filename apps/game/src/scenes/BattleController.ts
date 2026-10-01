@@ -8,14 +8,12 @@ import type {
   Command,
   Coord,
   Facing,
-  FrameClass,
   Reach,
   Reaction,
   ReactionChoice,
   StatName,
   StrikeResult,
   UnitState,
-  WeaponType,
 } from '@m1565/core';
 import {
   activeUnit,
@@ -37,6 +35,8 @@ import {
   unlockedAttacks,
 } from '@m1565/core';
 import type { BarkSet, Library } from '@m1565/content';
+import type { FigureSpec } from '../render/Armatura';
+import { figureSpec } from '../render/Armatura';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
 import { sfx } from '../platform/audio';
 import { settings } from '../state/settings';
@@ -58,8 +58,7 @@ export interface CloseUpSide {
   readonly side: UnitState['side'];
   readonly initial: string;
   readonly weapon: string;
-  readonly weaponType: WeaponType;
-  readonly frameClass: FrameClass;
+  readonly figure: FigureSpec;
   readonly maxHp: number;
   readonly hpBefore: number;
 }
@@ -486,6 +485,7 @@ export class BattleController {
         active: u.id === activeId,
         at: u.pos,
         facing: u.facing,
+        figure: figureSpec(this.lib, u, SIDE_COLORS[u.side]),
       })),
     );
   }
@@ -663,8 +663,7 @@ export class BattleController {
       side: u.side,
       initial: u.name.charAt(0),
       weapon: u.weapon.name,
-      weaponType: u.weapon.type,
-      frameClass: u.frameClass,
+      figure: figureSpec(this.lib, u, SIDE_COLORS[u.side]),
       maxHp: u.maxHp,
       hpBefore: u.hp,
     });
