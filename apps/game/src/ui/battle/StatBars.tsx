@@ -2,8 +2,8 @@ import type { BalanceConfig, PilotStats, StatName, UnitState } from '@m1565/core
 import { portraitUrl } from '../../render/art';
 import { STAT_INFO } from './statInfo';
 
-/** Attribute bars are full at this value; higher values still show their number. */
-export const ATTRIBUTE_BAR_MAX = 40;
+/** Attributes top out at 32 (the classic cap), so a full bar means a maxed attribute. */
+export const ATTRIBUTE_BAR_MAX = 32;
 
 type BarKind = 'hp' | 'ap' | 'fp' | 'attr';
 
@@ -18,12 +18,14 @@ interface BarProps {
    */
   delta?: number;
   title?: string;
+  /** Extra text after the number, e.g. the value with gear. */
+  note?: string;
 }
 
 const pct = (v: number, max: number) => Math.max(0, Math.min(100, (v / max) * 100));
 
 /** One horizontal bar: label, track and number, with an optional "about to change" preview. */
-export function Bar({ label, value, max, kind, delta = 0, title }: BarProps) {
+export function Bar({ label, value, max, kind, delta = 0, title, note }: BarProps) {
   const after = Math.max(0, Math.min(max, value + delta));
   const solid = Math.min(value, after);
   const ghostFrom = pct(solid, max);
@@ -47,7 +49,10 @@ export function Bar({ label, value, max, kind, delta = 0, title }: BarProps) {
           />
         )}
       </span>
-      <span class={`bar-value${delta !== 0 ? ' changing' : ''}`}>{text}</span>
+      <span class={`bar-value${delta !== 0 ? ' changing' : ''}`}>
+        {text}
+        {note && <small class="bar-note"> {note}</small>}
+      </span>
     </div>
   );
 }
@@ -76,15 +81,25 @@ export function UnitBars({
   );
 }
 
-/** The seven pilot attributes as bars (full at 40), optionally with a + button each. */
+/**
+ * The six pilot attributes as bars (full at 32), optionally with a + button each. With `geared`
+ * the bars show the values with gear, and the gear's share in brackets, e.g. "14 (+1)".
+ */
+/** "(+2)" after a gear-inclusive attribute: how much of it the gear gives. */
+export function gearNote(diff: number): string {
+  return `(${diff > 0 ? '+' : ''}${diff})`;
+}
+
 export function AttributeBars({
   stats,
+  geared,
   help = false,
   onRaise,
   canRaise = true,
   raiseLabel,
 }: {
   stats: PilotStats;
+  geared?: PilotStats | undefined;
   help?: boolean;
   onRaise?: ((stat: StatName) => void) | undefined;
   canRaise?: boolean;
@@ -96,17 +111,20 @@ export function AttributeBars({
         <div class="attr-row" key={s.key}>
           <Bar
             label={s.label}
-            value={stats[s.key]}
+            value={geared ? geared[s.key] : stats[s.key]}
             max={ATTRIBUTE_BAR_MAX}
             kind="attr"
             title={s.help}
+            {...(geared && geared[s.key] !== stats[s.key]
+              ? { note: gearNote(geared[s.key] - stats[s.key]) }
+              : {})}
           />
           {onRaise && (
             <button
               type="button"
               class="btn icon raise"
               aria-label={raiseLabel ? raiseLabel(s.label) : `Raise ${s.label}`}
-              disabled={!canRaise}
+              disabled={!canRaise || stats[s.key] >= ATTRIBUTE_BAR_MAX}
               onClick={() => onRaise(s.key)}
             >
               +

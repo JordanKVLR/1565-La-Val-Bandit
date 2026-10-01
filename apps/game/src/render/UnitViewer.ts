@@ -1,4 +1,3 @@
-import type { FrameClass, WeaponType } from '@m1565/core';
 import {
   AmbientLight,
   CylinderGeometry,
@@ -10,17 +9,17 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
-import { guardFor, StickFighter } from './StickFighter';
+import type { FigureSpec } from './Armatura';
+import { ArmaturaFighter, guardFor } from './Armatura';
 
 /**
- * A single unit on a stone plinth, turning slowly: the figure on the unit details screen until
- * real frame art exists.
+ * A single unit on a stone plinth, turning slowly: the armatura on the unit details screen.
  */
 export class UnitViewer {
   private readonly renderer: WebGLRenderer;
   private readonly scene = new Scene();
   private readonly camera = new PerspectiveCamera(32, 1, 0.1, 50);
-  private readonly fighter: StickFighter;
+  private readonly fighter: ArmaturaFighter;
   private readonly plinth: Mesh;
   private readonly resizeObserver: ResizeObserver;
   private frame = 0;
@@ -28,14 +27,12 @@ export class UnitViewer {
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    color: string,
-    weaponType: WeaponType,
-    frameClass: FrameClass,
+    spec: FigureSpec,
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.camera.position.set(0, 1.25, 5.2);
-    this.camera.lookAt(0, 0.95, 0);
+    this.camera.position.set(0, 1.2, 3.9);
+    this.camera.lookAt(0, 1.0, 0);
     this.scene.add(new HemisphereLight(0xdfe8ff, 0x3a2e1e, 1.1));
     this.scene.add(new AmbientLight(0xffffff, 0.45));
     const sun = new DirectionalLight(0xfff0d0, 1.9);
@@ -47,8 +44,8 @@ export class UnitViewer {
     );
     this.plinth.position.y = -0.08;
     this.scene.add(this.plinth);
-    this.fighter = new StickFighter(color, weaponType, frameClass, 0, 1);
-    this.fighter.apply(guardFor(weaponType));
+    this.fighter = new ArmaturaFighter(spec, 0, 1);
+    this.fighter.apply(guardFor(spec.weaponType));
     this.scene.add(this.fighter.root);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
@@ -56,7 +53,8 @@ export class UnitViewer {
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const tick = (now: number) => {
       if (this.disposed) return;
-      this.fighter.root.rotation.y = reduced ? -0.6 : now / 2400;
+      // Three-quarter view, turning slowly.
+      this.fighter.root.rotation.y = reduced ? -0.9 : -0.9 + Math.sin(now / 2400) * 0.9;
       this.renderer.render(this.scene, this.camera);
       if (!reduced) this.frame = requestAnimationFrame(tick);
     };
@@ -77,7 +75,7 @@ export class UnitViewer {
     if (!w || !h) return;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    this.camera.position.z = Math.max(5.2, 4 / this.camera.aspect);
+    this.camera.position.z = Math.max(3.9, 3 / this.camera.aspect);
     this.camera.updateProjectionMatrix();
     this.renderer.render(this.scene, this.camera);
   }

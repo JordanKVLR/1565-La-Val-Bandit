@@ -93,9 +93,9 @@
       "ai": "aggressive",
       "name": "Pasha's Guard",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 6
+        "pow": 12,
+        "dex": 11,
+        "agl": 6
       }
     },
     {
@@ -110,9 +110,9 @@
       "ai": "aggressive",
       "name": "Pasha's Guard",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 6
+        "pow": 12,
+        "dex": 11,
+        "agl": 6
       }
     },
     {
@@ -127,9 +127,9 @@
       "ai": "defensive",
       "name": "Pasha's Guard",
       "stats": {
-        "str": 11,
-        "skl": 12,
-        "agi": 5
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
       }
     },
     {
@@ -144,9 +144,9 @@
       "ai": "defensive",
       "name": "Pasha's Guard",
       "stats": {
-        "str": 11,
-        "skl": 12,
-        "agi": 5
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
       }
     },
     {
@@ -161,9 +161,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 12,
-        "skl": 10,
-        "agi": 8
+        "pow": 12,
+        "dex": 10,
+        "agl": 8
       }
     },
     {
@@ -178,9 +178,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 13,
-        "skl": 11,
-        "agi": 5
+        "pow": 13,
+        "dex": 11,
+        "agl": 5
       }
     }
   ]

@@ -10,7 +10,7 @@ describe('AI', () => {
       setup({
         map,
         units: [
-          unit({ id: 'ai', stats: { str: 6, skl: 6, agi: 30 }, at: { x: 0, y: 0 } }),
+          unit({ id: 'ai', stats: { pow: 6, dex: 6, agl: 30 }, at: { x: 0, y: 0 } }),
           unit({ id: 'p', side: 'enemy', at: { x: 2, y: 1 } }),
         ],
       }),
@@ -24,7 +24,7 @@ describe('AI', () => {
       setup({
         map: makeMap(['pppppppppppp']),
         units: [
-          unit({ id: 'ai', stats: { str: 6, skl: 6, agi: 30 }, at: { x: 0, y: 0 } }),
+          unit({ id: 'ai', stats: { pow: 6, dex: 6, agl: 30 }, at: { x: 0, y: 0 } }),
           unit({ id: 'p', side: 'enemy', at: { x: 11, y: 0 } }),
         ],
       }),
@@ -39,7 +39,7 @@ describe('AI', () => {
         map: makeMap(['pppppppppppp']),
         victory: [{ type: 'escape', unitId: 'runner', tiles: [{ x: 11, y: 0 }] }],
         units: [
-          unit({ id: 'runner', stats: { str: 6, skl: 6, agi: 30 }, at: { x: 4, y: 0 } }),
+          unit({ id: 'runner', stats: { pow: 6, dex: 6, agl: 30 }, at: { x: 4, y: 0 } }),
           unit({ id: 'e', side: 'enemy', at: { x: 3, y: 0 } }),
         ],
       }),
@@ -57,11 +57,11 @@ describe('AI', () => {
           unit({
             id: 'ai',
             ai: 'defensive',
-            stats: { str: 6, skl: 6, agi: 30 },
+            stats: { pow: 6, dex: 6, agl: 30 },
             at: { x: 0, y: 3 },
           }),
           // An aggressive ally keeps 'ai' in its cautious role (a lone cautious unit goes on the attack).
-          unit({ id: 'ally', stats: { str: 6, skl: 6, agi: 1 }, at: { x: 0, y: 0 } }),
+          unit({ id: 'ally', stats: { pow: 6, dex: 6, agl: 1 }, at: { x: 0, y: 0 } }),
           unit({ id: 'p1', side: 'enemy', at: { x: 3, y: 1 } }),
           unit({ id: 'p2', side: 'enemy', at: { x: 4, y: 1 } }),
           unit({ id: 'p3', side: 'enemy', at: { x: 3, y: 0 } }),
@@ -77,7 +77,7 @@ describe('AI', () => {
       setup({
         map,
         units: [
-          unit({ id: 'ai', ai: 'hold', stats: { str: 6, skl: 6, agi: 30 }, at: { x: 0, y: 0 } }),
+          unit({ id: 'ai', ai: 'hold', stats: { pow: 6, dex: 6, agl: 30 }, at: { x: 0, y: 0 } }),
           unit({ id: 'p', side: 'enemy', at: { x: 3, y: 3 } }),
         ],
       }),
@@ -90,7 +90,7 @@ describe('AI', () => {
       setup({
         map,
         units: [
-          unit({ id: 'a', stats: { str: 6, skl: 6, agi: 30 }, at: { x: 1, y: 1 } }),
+          unit({ id: 'a', stats: { pow: 6, dex: 6, agl: 30 }, at: { x: 1, y: 1 } }),
           unit({ id: 'd', side: 'enemy', at: { x: 1, y: 2 }, facing: 'north' }),
         ],
       }),

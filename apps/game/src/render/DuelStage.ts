@@ -1,4 +1,4 @@
-import type { AttackStyle, FrameClass, Reaction, WeaponType } from '@m1565/core';
+import type { AttackStyle, Reaction } from '@m1565/core';
 import {
   AmbientLight,
   CircleGeometry,
@@ -15,14 +15,10 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three';
-import type { Pose } from './StickFighter';
-import { guardFor, POSE_KEYS, StickFighter } from './StickFighter';
+import type { FigureSpec, Pose } from './Armatura';
+import { ArmaturaFighter, guardFor, POSE_KEYS } from './Armatura';
 
-export interface DuelFighter {
-  readonly color: string;
-  readonly weaponType: WeaponType;
-  readonly frameClass: FrameClass;
-}
+export type DuelFighter = FigureSpec;
 
 export interface StrikePlay {
   readonly attacker: 'left' | 'right';
@@ -228,15 +224,15 @@ function reactionKeys(play: StrikePlay): Key[] {
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
 /**
- * The duel close-up: two stick-figure pilots on a small stage, animated per attack style and
+ * The duel close-up: two armaturas on a small stage, animated per attack style and
  * per reaction. Only presentation; results come from the rules engine.
  */
 export class DuelStage {
   private readonly renderer: WebGLRenderer;
   private readonly scene = new Scene();
   private readonly camera = new PerspectiveCamera(38, 1, 0.1, 100);
-  private readonly left: StickFighter;
-  private readonly right: StickFighter;
+  private readonly left: ArmaturaFighter;
+  private readonly right: ArmaturaFighter;
   private readonly fx = new Group();
   private readonly resizeObserver: ResizeObserver;
   private disposed = false;
@@ -278,8 +274,8 @@ export class DuelStage {
       this.scene.add(tuft);
     }
 
-    this.left = new StickFighter(left.color, left.weaponType, left.frameClass, -GAP / 2, 1);
-    this.right = new StickFighter(right.color, right.weaponType, right.frameClass, GAP / 2, -1);
+    this.left = new ArmaturaFighter(left, -GAP / 2, 1);
+    this.right = new ArmaturaFighter(right, GAP / 2, -1);
     this.scene.add(this.left.root, this.right.root, this.fx);
 
     this.resizeObserver = new ResizeObserver(() => this.resize());

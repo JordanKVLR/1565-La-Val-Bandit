@@ -25,14 +25,13 @@ export function makeMap(rows: string[], heights?: string[]): BattleMap {
   return { id: 'test', name: 'Test', width: rows[0]!.length, depth: rows.length, tiles };
 }
 
+/** WEP+4 like a basic arming sword. */
 export const SWORD: Weapon = {
   id: 'sword',
   type: 'blade',
   name: 'Sword',
-  power: 24,
-  accuracy: 80,
+  bonus: { wep: 4 },
   apCost: 25,
-  fpCost: 15,
   minRange: 1,
   maxRange: 1,
 };
@@ -40,24 +39,26 @@ export const GUN: Weapon = {
   id: 'gun',
   type: 'firearm',
   name: 'Arquebus',
-  power: 22,
-  accuracy: 70,
+  bonus: { wep: 3 },
   apCost: 35,
-  fpCost: 20,
   minRange: 2,
   maxRange: 4,
 };
+/** With the default BAS 5 at level 1: 2 + 20 + 10 + 48 = 80 HP. */
 export const FRAME: Frame = {
   class: 'medium',
   id: 'frame',
   name: 'Frame',
-  hp: 80,
+  hp: 48,
   armour: 8,
   move: 4,
-  agility: 0,
+  bonus: {},
 };
 
-/** A unit spec with sensible defaults; stats not given default to 6 (STR/SKL/AGI) or 0. */
+/**
+ * A unit spec with sensible defaults: BAS 5, POW 6, DEX 6, AGL 6, DEF 0, WEP 5. With the sword
+ * (WEP+4) that is (6 + 9) × 2 = 30 raw damage and 80 HP, easy numbers to check by hand.
+ */
 export function unit(
   over: Omit<Partial<UnitSpec>, 'stats'> &
     Pick<UnitSpec, 'id' | 'at'> & { stats?: Partial<PilotStats> },
@@ -72,15 +73,21 @@ export function unit(
     weapon: SWORD,
     facing: 'north',
     ...rest,
-    stats: { str: 6, skl: 6, agi: 6, def: 0, int: 0, spi: 0, vit: 0, ...stats },
+    stats: { bas: 5, pow: 6, dex: 6, agl: 6, def: 0, wep: 5, ...stats },
   };
 }
+
+/**
+ * Rules tests run on a fixed reference balance (round numbers that are easy to check by hand),
+ * so retuning the shipped defaults doesn't rewrite every expected value.
+ */
+export const TEST_BALANCE = { ...DEFAULT_BALANCE, baseHit: 75, damagePerPoint: 2 };
 
 export function setup(over: Partial<BattleSetup> & Pick<BattleSetup, 'units'>): BattleSetup {
   return {
     map: makeMap(Array.from({ length: 8 }, () => 'pppppppp')),
     terrains: TERRAINS,
-    balance: DEFAULT_BALANCE,
+    balance: TEST_BALANCE,
     victory: [{ type: 'rout' }],
     seed: 1565,
     ...over,

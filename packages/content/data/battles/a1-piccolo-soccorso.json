@@ -81,11 +81,11 @@
       "facing": "west",
       "name": "Relief Captain",
       "stats": {
-        "str": 7,
-        "skl": 7,
-        "agi": 5,
+        "pow": 7,
+        "dex": 7,
+        "agl": 5,
         "def": 8,
-        "vit": 10
+        "bas": 10
       }
     },
     {
@@ -100,9 +100,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 11,
-        "skl": 9,
-        "agi": 7
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
       }
     },
     {
@@ -117,9 +117,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 11,
-        "skl": 9,
-        "agi": 7
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
       }
     },
     {
@@ -134,9 +134,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 11,
-        "skl": 9,
-        "agi": 7
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
       }
     },
     {
@@ -151,9 +151,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 10,
-        "skl": 10,
-        "agi": 5
+        "pow": 8,
+        "dex": 10,
+        "agl": 5
       }
     },
     {
@@ -168,9 +168,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 10,
-        "skl": 9,
-        "agi": 7
+        "pow": 8,
+        "dex": 9,
+        "agl": 7
       }
     }
   ]

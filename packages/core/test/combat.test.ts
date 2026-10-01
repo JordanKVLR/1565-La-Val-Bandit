@@ -54,10 +54,10 @@ describe('forecast', () => {
   it('computes golden numbers for a frontal attack on flat ground', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
-    // Thrust: hit = 80 + 6*2 - 6*2 = 80; attack back / no reaction +15 → 95 (cap); defend and a failed counter always hit
+    // Thrust: hit = 75 + DEX 6×2 − AGL 6×2 = 75; attack back / no reaction +15 → 90; defend and a failed counter always hit
     expect(f.zone).toBe('front');
-    expect(f.hitChance).toEqual({ defend: 100, avoid: 80, attackBack: 95, counter: 100, none: 95 });
-    // damage = (24 + 6) - 8 = 22; defend = round(30*0.5) - 8 = 7
+    expect(f.hitChance).toEqual({ defend: 100, avoid: 75, attackBack: 90, counter: 100, none: 90 });
+    // damage = (POW 6 + WEP 9) × 2 − 8 = 22; defend = round(30*0.5) - 8 = 7
     // failed counter: 30 × 1.25 − 8 = 29.5 → 30
     expect(f.damage).toEqual({ defend: 7, avoid: 22, attackBack: 22, counter: 30, none: 22 });
   });
@@ -74,12 +74,12 @@ describe('forecast', () => {
     const up = duel({ heights: ['00200', '00000', '00000'] });
     const fu = forecastAttack(up.state, up.a, up.t, up.a.pos, findAttack(up.a, 'thrust'));
     expect(fu.heightDiff).toBe(2);
-    expect(fu.hitChance.avoid).toBe(90);
+    expect(fu.hitChance.avoid).toBe(85);
     expect(fu.damage.avoid).toBe(Math.round(30 * 1.2) - 8);
 
     const down = duel({ heights: ['00000', '00200', '00000'] });
     const fd = forecastAttack(down.state, down.a, down.t, down.a.pos, findAttack(down.a, 'thrust'));
-    expect(fd.hitChance.avoid).toBe(70);
+    expect(fd.hitChance.avoid).toBe(65);
     expect(fd.damage.avoid).toBe(22); // no damage penalty downhill
   });
 

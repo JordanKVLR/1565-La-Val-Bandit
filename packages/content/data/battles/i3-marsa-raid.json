@@ -83,9 +83,9 @@
       "ai": "hold",
       "name": "Camp Aga",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 5
+        "pow": 12,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -100,9 +100,9 @@
       "ai": "defensive",
       "name": "Camp Guard",
       "stats": {
-        "str": 11,
-        "skl": 11,
-        "agi": 5
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -117,9 +117,9 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "str": 11,
-        "skl": 10,
-        "agi": 7
+        "pow": 11,
+        "dex": 10,
+        "agl": 7
       }
     },
     {
@@ -134,9 +134,9 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "str": 12,
-        "skl": 10,
-        "agi": 5
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
       }
     },
     {
@@ -151,9 +151,9 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "str": 11,
-        "skl": 10,
-        "agi": 7
+        "pow": 11,
+        "dex": 10,
+        "agl": 7
       }
     },
     {
@@ -168,9 +168,9 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 10,
-        "skl": 11,
-        "agi": 5
+        "pow": 10,
+        "dex": 11,
+        "agl": 5
       }
     }
   ]

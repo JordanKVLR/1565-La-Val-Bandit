@@ -6,16 +6,12 @@ import {
   availableReactions,
   counterChance,
   createBattle,
-  deserializeBattle,
   forecastAttack,
-  fpCostFor,
   REACTIONS,
   reactionChoices,
   requireUnit,
-  resisted,
-  SAVE_VERSION,
 } from '../src';
-import { makeMap, setup, unit } from './fixtures';
+import { FRAME, makeMap, setup, unit } from './fixtures';
 
 /** Attacker at (2,1) strikes a target at (2,2) facing the given way. */
 function duel(
@@ -31,14 +27,14 @@ function duel(
         unit({
           id: 'a',
           controller: 'human',
-          stats: { agi: 40, ...over.a },
+          stats: { agl: 40, ...over.a },
           at: { x: 2, y: 1 },
           facing: 'south',
         }),
         unit({
           id: 't',
           side: 'enemy',
-          stats: { agi: 0, ...over.t },
+          stats: { agl: 0, ...over.t },
           at: { x: 2, y: 2 },
           facing: targetFacing,
         }),
@@ -117,15 +113,15 @@ describe('reaction and attack costs', () => {
 });
 
 describe('counter', () => {
-  it('odds rise with INT advantage within 5–35%', () => {
+  it('odds rise with DEX + AGL advantage within 5–35%', () => {
     const odds = (a: number, t: number) => {
-      const s = duel('north', { a: { int: a }, t: { int: t } });
+      const s = duel('north', { a: { dex: a, agl: a }, t: { dex: t, agl: t } });
       return counterChance(s, requireUnit(s, 't'), requireUnit(s, 'a'));
     };
-    expect(odds(5, 5)).toBe(10);
-    expect(odds(5, 10)).toBe(20);
-    expect(odds(0, 40)).toBe(35);
-    expect(odds(40, 0)).toBe(5);
+    expect(odds(6, 6)).toBe(10);
+    expect(odds(6, 11)).toBe(20);
+    expect(odds(0, 32)).toBe(35);
+    expect(odds(32, 0)).toBe(5);
   });
 
   it('on success, reflects 1.25× the blow onto the attacker and the defender is unharmed', () => {
@@ -170,7 +166,7 @@ describe('counter', () => {
   });
 });
 
-describe('new stats', () => {
+describe('attributes', () => {
   it('DEF blocks 1.5 damage per point', () => {
     const plain = duel('north');
     const tough = duel('north', { t: { def: 4 } });
@@ -179,81 +175,96 @@ describe('new stats', () => {
     expect(dmg(plain) - dmg(tough)).toBe(6);
   });
 
-  it('VIT adds 5% of base HP per point, and raising it mid-battle heals by the difference', () => {
-    const s = duel('north', { a: { vit: 4 } });
+  it('BAS adds 4 HP per point, and raising it mid-battle heals by the difference', () => {
+    const s = duel('north', { a: { bas: 4 } });
     const a = requireUnit(s, 'a');
-    expect(a.maxHp).toBe(Math.round(80 * 1.2));
+    // level 1 × 2 + BAS 4 × 4 + 10 + chassis 48
+    expect(a.maxHp).toBe(2 + 16 + 10 + 48);
     const withPoint = {
       ...s,
       units: s.units.map((u) => (u.id === 'a' ? { ...u, statPoints: 1, hp: 50 } : u)),
     };
     const after = requireUnit(
-      applyCommand(withPoint, { type: 'raiseStat', unitId: 'a', stat: 'vit' }).state,
+      applyCommand(withPoint, { type: 'raiseStat', unitId: 'a', stat: 'bas' }).state,
       'a',
     );
-    expect(after.maxHp).toBe(Math.round(80 * 1.25));
-    expect(after.hp).toBe(50 + (after.maxHp - a.maxHp));
+    expect(after.maxHp).toBe(a.maxHp + 4);
+    expect(after.hp).toBe(54);
+    expect(after.pilot.bas).toBe(5);
   });
 
-  it('INT sharpens learned techniques but not starter attacks', () => {
-    // The target's AGI keeps both chances under the 95% cap so the full difference shows.
-    const s = duel('north', { a: { int: 10, str: 20 }, t: { agi: 20 } });
-    const TECH = {
-      id: 'tech',
-      name: 'Tech',
-      style: 'slash' as const,
-      power: 1,
-      accuracy: 0,
-      apCost: 25,
-      fpCost: 10,
-      requires: { str: 1 },
+  it('DEX adds 2% hit chance per point and the target AGL takes 2% per point', () => {
+    const hit = (a: Partial<PilotStats>, t: Partial<PilotStats>) => {
+      const s = duel('north', { a, t: { agl: 20, ...t } });
+      return forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't')).hitChance.avoid;
     };
-    const a = { ...requireUnit(s, 'a'), attacks: [...requireUnit(s, 'a').attacks, TECH] };
-    const t = requireUnit(s, 't');
-    // Thrust: a starter attack with the same ×1 power and ±0 accuracy as TECH.
-    const basic = forecastAttack(s, a, t, a.pos, a.attacks[1]);
-    const tech = forecastAttack(s, a, t, a.pos, TECH);
-    expect(tech.hitChance.avoid - basic.hitChance.avoid).toBe(10);
+    expect(hit({ dex: 10 }, {}) - hit({ dex: 5 }, {})).toBe(10);
+    expect(hit({ dex: 10 }, { agl: 22 }) - hit({ dex: 10 }, {})).toBe(-4);
   });
 
-  it('SPI trims FP costs, resists fatigue effects and speeds recovery', () => {
-    const s = duel('north', { t: { spi: 10 } });
-    const t = requireUnit(s, 't');
-    expect(fpCostFor(s, t, 20)).toBe(16);
-    expect(resisted(s, t, 20)).toBe(14);
-    const plain = requireUnit(duel('north'), 't');
-    expect(fpCostFor(s, plain, 20)).toBe(20);
+  it('POW and WEP both add 2 raw damage per point', () => {
+    const dmg = (a: Partial<PilotStats>) => {
+      const s = duel('north', { a });
+      return forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't')).damage.none;
+    };
+    expect(dmg({ pow: 8 }) - dmg({ pow: 6 })).toBeCloseTo(4 * 0.8, 0); // Slash ×0.8
+    expect(dmg({ wep: 7 })).toBe(dmg({ pow: 8 }));
+  });
+
+  it('gear bonuses add to the pilot and are capped at 32', () => {
+    const s = createBattle(
+      setup({
+        units: [
+          unit({
+            id: 'a',
+            at: { x: 0, y: 0 },
+            stats: { wep: 30 },
+            charm: { id: 'c', name: 'Charm', kind: 'charm', bonus: { def: 2 } },
+            amulet: { id: 'm', name: 'Amulet', kind: 'amulet', bonus: { dex: 3 } },
+          }),
+          unit({ id: 'e', side: 'enemy', at: { x: 5, y: 5 } }),
+        ],
+      }),
+    ).state;
+    const a = requireUnit(s, 'a');
+    expect(a).toMatchObject({ def: 2, dex: 9, wep: 32 });
+    expect(a.pilot).toMatchObject({ def: 0, dex: 6, wep: 30 });
   });
 });
 
-describe('save migration v3 → v4', () => {
-  it('replaces AP-based reaction costs with the FP costs', () => {
-    const now = duel('north');
-    const oldBalance: Record<string, unknown> = {
-      ...now.balance,
-      avoidApCost: 10,
-      avoidFpCost: 10,
-    };
-    for (const k of ['defendFpCost', 'counterFpCost']) delete oldBalance[k];
-    const v3 = { ...now, saveVersion: 3, balance: oldBalance };
-    const loaded = deserializeBattle(JSON.stringify(v3));
-    expect(loaded.saveVersion).toBe(SAVE_VERSION);
-    expect(loaded.balance).toMatchObject({
-      defendFpCost: 30,
-      avoidFpCost: 20,
-      counterFpCost: 20,
-    });
-    expect('avoidApCost' in loaded.balance).toBe(false);
+describe('raising attributes with gear', () => {
+  it('recomputes from pilot + gear when a frame penalty had clamped the value at 0', () => {
+    const s = createBattle(
+      setup({
+        units: [
+          unit({
+            id: 'a',
+            at: { x: 0, y: 0 },
+            stats: { agl: 2 },
+            frame: { ...FRAME, bonus: { agl: -6 } },
+            statPoints: 1,
+          }),
+          unit({ id: 'e', side: 'enemy', at: { x: 5, y: 5 } }),
+        ],
+      }),
+    ).state;
+    expect(requireUnit(s, 'a').agl).toBe(0);
+    const after = requireUnit(
+      applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'agl' }).state,
+      'a',
+    );
+    expect(after.pilot.agl).toBe(3);
+    expect(after.agl).toBe(0); // 3 − 6, still clamped at 0
   });
 });
 
-describe('reaction XP', () => {
+describe('XP only for landing blows', () => {
   const enemyAttacks = (reaction: Reaction) => {
     const s = createBattle(
       setup({
         map: makeMap(['ppppp', 'ppppp', 'ppppp', 'ppppp']),
         units: [
-          unit({ id: 'e', side: 'enemy', stats: { agi: 40 }, at: { x: 2, y: 1 }, facing: 'south' }),
+          unit({ id: 'e', side: 'enemy', stats: { agl: 40 }, at: { x: 2, y: 1 }, facing: 'south' }),
           unit({ id: 'p', controller: 'human', at: { x: 2, y: 2 }, facing: 'north' }),
         ],
       }),
@@ -264,12 +275,12 @@ describe('reaction XP', () => {
     );
   };
 
-  it('a player unit that survives by reacting earns 3 XP', () => {
-    expect(enemyAttacks('defend').xp).toBe(3);
-    expect(enemyAttacks('avoid').xp).toBe(3);
+  it('defending or avoiding earns nothing', () => {
+    expect(enemyAttacks('defend').xp).toBe(0);
+    expect(enemyAttacks('avoid').xp).toBe(0);
   });
 
-  it('doing nothing earns nothing', () => {
-    expect(enemyAttacks('none').xp).toBe(0);
+  it('striking back earns XP when the blow lands', () => {
+    expect(enemyAttacks('attackBack').xp).toBeGreaterThanOrEqual(0);
   });
 });

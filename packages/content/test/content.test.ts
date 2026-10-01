@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { BattleId } from '../src';
 import {
   attackPool,
+  battleSalvage,
   battleSources,
   BattleSourceSchema,
   buildBattle,
@@ -81,12 +82,28 @@ describe('battles', () => {
   });
 });
 
-describe('shop', () => {
-  it('only sells real items', () => {
-    const lib = loadLibrary();
+describe('armoury and gear', () => {
+  const lib = loadLibrary();
+
+  it('only sells real weapons, charms and amulets (never armaturas)', () => {
     for (const s of lib.shop) {
-      const known = s.kind === 'weapon' ? lib.weapons.has(s.item) : lib.frames.has(s.item);
+      const known =
+        s.kind === 'weapon' ? lib.weapons.has(s.item) : lib.gear.get(s.item)?.kind === s.kind;
       expect(known, s.item).toBe(true);
+    }
+  });
+
+  it('every weapon grants attribute bonuses and has a price', () => {
+    for (const w of lib.weapons.values()) {
+      const total = Object.values(w.bonus).reduce((a, b) => a + (b ?? 0), 0);
+      expect(total, w.id).toBeGreaterThan(0);
+      expect(w.price, w.id).toBeGreaterThan(0);
+    }
+  });
+
+  it('salvage only names real armaturas', () => {
+    for (const id of Object.keys(battleSources) as BattleId[]) {
+      for (const f of battleSalvage(id)) expect(lib.frames.has(f), `${id}: ${f}`).toBe(true);
     }
   });
 });
@@ -98,13 +115,17 @@ describe('roster', () => {
         characterId: 'ninu',
         level: 4,
         xp: 10,
-        stats: { str: 10, skl: 9, agi: 9, def: 5, int: 6, spi: 6, vit: 5 },
+        stats: { bas: 6, pow: 10, dex: 9, agl: 9, def: 5, wep: 7 },
         frame: 'cavaliere',
         weapon: 'bastard-sword',
+        charm: 'charm-def-1',
+        amulet: 'pilgrim-shell',
       },
     ]);
     const ninu = setup.units.find((u) => u.id === 'ninu')!;
-    expect(ninu).toMatchObject({ level: 4, stats: { str: 10, skl: 9, agi: 9, def: 5 } });
+    expect(ninu).toMatchObject({ level: 4, stats: { pow: 10, dex: 9, agl: 9, def: 5, wep: 7 } });
+    expect(ninu.charm?.id).toBe('charm-def-1');
+    expect(ninu.amulet?.id).toBe('pilgrim-shell');
     expect(ninu.frame.id).toBe('cavaliere');
     expect(ninu.weapon.id).toBe('bastard-sword');
   });
@@ -117,9 +138,22 @@ describe('attacks', () => {
     const ids = lib.attacks.map((a) => a.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const a of lib.attacks) {
-      const total = (a.requires.str ?? 0) + (a.requires.skl ?? 0) + (a.requires.agi ?? 0);
-      // A level 15 pilot has ~42 points on top of base stats around 6 each.
-      expect(total, a.id).toBeLessThanOrEqual(30);
+      const total = Object.values(a.requires).reduce((n: number, v) => n + (v ?? 0), 0);
+      // A level 15 pilot has 42 points on top of base stats around 5 each, plus gear.
+      expect(total, a.id).toBeLessThanOrEqual(32);
+    }
+  });
+
+  it('cost more AP and FP, and lose accuracy, the stronger they are', () => {
+    const ninu = lib.characters.get('ninu')!;
+    const techs = attackPool(lib, lib.frames.get('cavaliere')!, lib.weapons.get('arming-sword')!);
+    expect(ninu).toBeDefined();
+    const byPower = [...techs].sort((a, b) => a.power * (a.hits ?? 1) - b.power * (b.hits ?? 1));
+    for (let i = 1; i < byPower.length; i++) {
+      const [lo, hi] = [byPower[i - 1]!, byPower[i]!];
+      expect(hi.apCost, hi.id).toBeGreaterThanOrEqual(lo.apCost);
+      expect(hi.fpCost, hi.id).toBeGreaterThanOrEqual(lo.fpCost);
+      expect(hi.accuracy, hi.id).toBeLessThanOrEqual(lo.accuracy);
     }
   });
 

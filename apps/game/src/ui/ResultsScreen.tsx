@@ -28,7 +28,7 @@ export function ResultsScreen({
               {lib.characters.get(r.characterId)?.name ?? r.characterId} <small>Lv {r.level}</small>
             </strong>
             <span class="xp-track wide">
-              <span style={{ width: `${r.xp}%` }} />
+              <span style={{ width: `${(r.xp / lib.balance.xpPerLevel) * 100}%` }} />
             </span>
             <RosterStats
               lib={lib}

@@ -1,5 +1,7 @@
 import type { BalanceConfig, Coord, UnitState } from '@m1565/core';
 import { loadLibrary } from '@m1565/content';
+import type { FigureSpec } from '../../render/Armatura';
+import { figureSpec } from '../../render/Armatura';
 
 /**
  * Pieces of the classic tactical-RPG battle look: framed panels with AP/FP/HP bars labelled
@@ -12,6 +14,19 @@ let lib: ReturnType<typeof loadLibrary> | null = null;
 export function frameName(unit: UnitState): string {
   lib ??= loadLibrary();
   return lib.frames.get(unit.frameId)?.name ?? unit.frameClass;
+}
+
+/** The armatura figure for the details sheet. */
+export function unitFigure(unit: UnitState, accent: string): FigureSpec {
+  lib ??= loadLibrary();
+  return figureSpec(lib, unit, accent);
+}
+
+/** Name of a charm or amulet by id, or "No charm" / "No amulet". */
+export function gearName(id: string | null, slot: 'charm' | 'amulet'): string {
+  if (!id) return slot === 'charm' ? 'No charm' : 'No amulet';
+  lib ??= loadLibrary();
+  return lib.gear.get(id)?.name ?? id;
 }
 
 const pct = (v: number, max: number) => Math.max(0, Math.min(100, (v / max) * 100));

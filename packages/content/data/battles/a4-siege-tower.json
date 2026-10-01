@@ -83,9 +83,9 @@
       "ai": "hold",
       "name": "Scala's Siege Tower",
       "stats": {
-        "str": 10,
-        "skl": 11,
-        "agi": 0
+        "pow": 10,
+        "dex": 11,
+        "agl": 0
       }
     },
     {
@@ -100,9 +100,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 12,
-        "skl": 12,
-        "agi": 6
+        "pow": 12,
+        "dex": 12,
+        "agl": 6
       }
     },
     {
@@ -117,9 +117,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 12,
-        "skl": 12,
-        "agi": 6
+        "pow": 12,
+        "dex": 12,
+        "agl": 6
       }
     },
     {
@@ -134,9 +134,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 8
+        "pow": 12,
+        "dex": 11,
+        "agl": 8
       }
     },
     {
@@ -151,9 +151,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 8
+        "pow": 12,
+        "dex": 11,
+        "agl": 8
       }
     },
     {
@@ -168,9 +168,9 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 11,
-        "skl": 12,
-        "agi": 5
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
       }
     }
   ]

@@ -17,7 +17,7 @@ export function startRound(state: BattleState, events: BattleEvent[]): void {
     .map((u) => {
       const [d6, rng] = nextInt(state.rng, 1, 6);
       state.rng = rng;
-      return { id: u.id, init: u.agi + d6 };
+      return { id: u.id, init: u.agl + d6 };
     });
   rolls.sort((a, b) => b.init - a.init || a.id.localeCompare(b.id));
   state.turnOrder = rolls.map((r) => r.id);
@@ -54,8 +54,8 @@ export function advanceTurn(state: BattleState, events: BattleEvent[]): void {
 }
 
 /**
- * Ends the active unit's turn. Unspent AP is traded for rest (3 AP → 2 FP by default) plus a
- * little per point of SPI; that is the only way fatigue recovers. A fainted unit (FP at max)
+ * Ends the active unit's turn. Unspent AP is traded for rest (3 AP → 2 FP by default); that is
+ * the only way fatigue recovers. A fainted unit (FP at max)
  * can do nothing, so skipping its turn brings it back round.
  */
 export function endTurn(state: BattleState, events: BattleEvent[]): void {
@@ -65,7 +65,7 @@ export function endTurn(state: BattleState, events: BattleEvent[]): void {
   const rested = !turn.moved && !turn.acted;
   if (!unit.defeated) {
     const b = state.balance;
-    const recovery = Math.floor(unit.ap / b.apPerFpRecovered) + unit.spi * b.spiFpRecovery;
+    const recovery = Math.floor(unit.ap / b.apPerFpRecovered);
     unit.fp = Math.max(0, unit.fp - recovery);
   }
   events.push({ type: 'turnEnded', unitId: unit.id, rested });

@@ -30,9 +30,9 @@
       "id": "militia-1",
       "name": "Militia Ġanni",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 5
+        "pow": 5,
+        "dex": 5,
+        "agl": 5
       },
       "side": "player",
       "controller": "human",
@@ -46,9 +46,9 @@
       "id": "militia-2",
       "name": "Militia Rożi",
       "stats": {
-        "str": 4,
-        "skl": 7,
-        "agi": 5
+        "pow": 4,
+        "dex": 7,
+        "agl": 5
       },
       "side": "player",
       "controller": "human",
@@ -62,9 +62,9 @@
       "id": "levend-1",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 5
+        "pow": 5,
+        "dex": 5,
+        "agl": 5
       },
       "side": "enemy",
       "controller": "ai",
@@ -79,9 +79,9 @@
       "id": "levend-2",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 5
+        "pow": 5,
+        "dex": 5,
+        "agl": 5
       },
       "side": "enemy",
       "controller": "ai",
@@ -96,9 +96,9 @@
       "id": "yeniceri-1",
       "name": "Yeniçeri Aga",
       "stats": {
-        "str": 6,
-        "skl": 6,
-        "agi": 4
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
       },
       "side": "enemy",
       "controller": "ai",
@@ -109,5 +109,6 @@
       "at": [6, 2],
       "facing": "south"
     }
-  ]
+  ],
+  "salvage": ["moschetta"]
 }

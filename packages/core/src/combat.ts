@@ -5,7 +5,7 @@ import { DIRECTIONS, manhattan } from './grid';
 import type { BattleState } from './state';
 import { heightAt, livingUnits, terrainAt } from './state';
 import type { UnitState, Weapon } from './units';
-import { isHostile, pilotStats } from './units';
+import { isHostile, unitStats } from './units';
 
 /**
  * How a defender answers an attack:
@@ -62,7 +62,7 @@ export function canAct(state: BattleState, unit: UnitState): boolean {
 
 /** Attacks whose stat requirements the pilot currently meets (always includes the basic one). */
 export function unlockedAttacks(unit: UnitState): Attack[] {
-  const stats = pilotStats(unit);
+  const stats = unitStats(unit);
   return unit.attacks.filter((a) => meetsRequirements(stats, a));
 }
 
@@ -116,7 +116,7 @@ export function attackBackWith(defender: UnitState, attackerPos?: Coord): Attack
 
 /** FP an attack costs this unit on its own turn (after SPI). */
 export function attackFpCost(state: BattleState, unit: UnitState, attack: Attack): number {
-  return fpCostFor(state, unit, attack.fpCost);
+  return attack.fpCost;
 }
 
 /**
@@ -132,13 +132,13 @@ export function reactionFpCost(
   const b = state.balance;
   switch (reaction) {
     case 'defend':
-      return fpCostFor(state, defender, b.defendFpCost);
+      return b.defendFpCost;
     case 'avoid':
-      return fpCostFor(state, defender, b.avoidFpCost);
+      return b.avoidFpCost;
     case 'counter':
-      return fpCostFor(state, defender, b.counterFpCost);
+      return b.counterFpCost;
     case 'attackBack':
-      return fpCostFor(state, defender, attackBackWith(defender, attackerPos).apCost);
+      return attackBackWith(defender, attackerPos).apCost;
     case 'none':
       return 0;
   }
@@ -212,22 +212,11 @@ export function counterChance(
 ): number {
   const b = state.balance;
   return clamp(
-    b.counterBaseChance + b.counterIntFactor * (defender.int - attacker.int),
+    b.counterBaseChance +
+      b.counterStatFactor * (defender.dex + defender.agl - (attacker.dex + attacker.agl)),
     b.counterMinChance,
     b.counterMaxChance,
   );
-}
-
-/** FP an action actually costs this unit after SPI. */
-export function fpCostFor(state: BattleState, unit: UnitState, base: number): number {
-  const b = state.balance;
-  return Math.round(base * (1 - Math.min(b.spiFpCostMax, unit.spi * b.spiFpCostPercent) / 100));
-}
-
-/** Size of an enemy fatigue/AP-drain effect after this unit's SPI resistance. */
-export function resisted(state: BattleState, unit: UnitState, amount: number): number {
-  const b = state.balance;
-  return Math.round(amount * (1 - Math.min(b.spiResistMax, unit.spi * b.spiResistPercent) / 100));
 }
 
 export interface StrikeNumbers {
@@ -276,15 +265,11 @@ export function strikeNumbers(
   const tired =
     (attacker.fp >= b.fpTired ? -b.tiredPenalty : 0) +
     (target.fp >= b.fpTired ? b.tiredPenalty : 0);
-  // Starter attacks (no requirements) are plain weapon work; INT sharpens learned techniques.
-  const technique =
-    Object.keys(attack.requires).length === 0 ? 0 : attacker.int * b.intTechniqueAccuracy;
   const baseHit =
-    attacker.weapon.accuracy +
+    b.baseHit +
     attack.accuracy +
-    technique +
-    attacker.skl * b.sklHitFactor -
-    target.agi * b.agiEvadeFactor +
+    attacker.dex * b.dexHitFactor -
+    target.agl * b.aglEvadeFactor +
     heightDiff * b.heightHitPerStep +
     zoneHit +
     assist -
@@ -292,7 +277,8 @@ export function strikeNumbers(
     tired;
   const heightMult = 1 + clamp(heightDiff, 0, b.heightDamageMaxSteps) * b.heightDamagePerStep;
   const zoneMult = zone === 'rear' ? b.rearDamageMult : 1;
-  const raw = (attacker.weapon.power + attacker.str) * attack.power * heightMult * zoneMult;
+  const raw =
+    (attacker.pow + attacker.wep) * b.damagePerPoint * attack.power * heightMult * zoneMult;
   return { baseHit, baseDamage: raw, zone, heightDiff, assist, pierce: attack.pierce ?? 0 };
 }
 
@@ -317,20 +303,29 @@ export function damageFor(
   return Math.max(1, Math.round(n.baseDamage * mult - blocked));
 }
 
-/** XP an attacker earns for a hit (or defeating blow) on a target, scaled by level difference. */
+/**
+ * XP for landing a hit, in the classic way: a base amount plus a share for how much of the
+ * target's max HP the blow took, scaled by the level gap and by direction (head-on is worth
+ * the most, from behind the least), plus a bonus for the defeating blow.
+ */
 export function xpFor(
   state: BattleState,
   attacker: UnitState,
   target: UnitState,
+  damage: number,
+  zone: FacingZone,
   defeated: boolean,
 ): number {
   const b = state.balance;
-  const factor = clamp(
+  const level = clamp(
     1 + (target.level - attacker.level) * b.xpLevelFactor,
     b.xpMinFactor,
     b.xpMaxFactor,
   );
-  return Math.max(1, Math.round((defeated ? b.xpDefeat : b.xpHit) * factor));
+  const direction = zone === 'front' ? b.xpFront : zone === 'side' ? b.xpSide : b.xpRear;
+  const share = Math.min(1, damage / Math.max(1, target.maxHp));
+  const hit = (b.xpHitBase + b.xpDamageShare * share) * direction;
+  return Math.max(1, Math.round((hit + (defeated ? b.xpDefeat : 0)) * level));
 }
 
 export interface AttackForecast {

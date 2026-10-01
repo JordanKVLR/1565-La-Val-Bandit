@@ -44,8 +44,9 @@ describe('pathfinding', () => {
         ],
       }),
     );
-    expect(stepCost(state, { x: 0, y: 0 }, { x: 1, y: 0 })).toBe(4 + 4);
-    expect(stepCost(state, { x: 1, y: 0 }, { x: 2, y: 0 })).toBe(4 + 8);
+    // climbing costs 6 AP per height step
+    expect(stepCost(state, { x: 0, y: 0 }, { x: 1, y: 0 })).toBe(4 + 6);
+    expect(stepCost(state, { x: 1, y: 0 }, { x: 2, y: 0 })).toBe(4 + 12);
     expect(stepCost(state, { x: 0, y: 0 }, { x: 0, y: 1 })).toBe(4);
     expect(stepCost(state, { x: 2, y: 0 }, { x: 3, y: 0 })).toBeNull(); // drop of 3
     expect(stepCost(state, { x: 1, y: 1 }, { x: 2, y: 1 })).toBeNull(); // sea

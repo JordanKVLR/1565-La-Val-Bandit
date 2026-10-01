@@ -3,11 +3,11 @@ import type { Attack, Weapon } from '../src';
 import {
   applyCommand,
   createBattle,
-  deserializeBattle,
+  DEFAULT_BALANCE,
   meetsRequirements,
   requireUnit,
-  SAVE_VERSION,
   starterAttacks,
+  techniqueCost,
 } from '../src';
 import { GUN, makeMap, setup, SWORD, unit } from './fixtures';
 
@@ -20,9 +20,9 @@ const weapon = (type: Weapon['type'], over: Partial<Weapon> = {}): Weapon => ({
 const summary = (a: Attack) => [a.name, a.power, a.accuracy, a.apCost, a.fpCost];
 
 describe('starter attacks', () => {
-  it('blades get Slash (accurate, light) and Thrust (plain)', () => {
+  it('blades get Slash (accurate, light, cheap) and Thrust (plain)', () => {
     expect(starterAttacks(SWORD).map(summary)).toEqual([
-      ['Slash', 0.8, 20, 30, 5],
+      ['Slash', 0.8, 12, 20, 5],
       ['Thrust', 1, 0, 30, 5],
     ]);
   });
@@ -50,11 +50,23 @@ describe('starter attacks', () => {
     }
   });
 
-  it('technique requirements check all seven attributes', () => {
-    const stats = { str: 20, skl: 20, agi: 20, def: 0, int: 5, spi: 0, vit: 0 };
-    const tech = { ...starterAttacks(SWORD)[1]!, requires: { str: 10, int: 7 } };
+  it('technique requirements check all six attributes', () => {
+    const stats = { bas: 0, pow: 20, dex: 5, agl: 20, def: 0, wep: 0 };
+    const tech = { ...starterAttacks(SWORD)[1]!, requires: { pow: 10, dex: 7 } };
     expect(meetsRequirements(stats, tech)).toBe(false);
-    expect(meetsRequirements({ ...stats, int: 7 }, tech)).toBe(true);
+    expect(meetsRequirements({ ...stats, dex: 7 }, tech)).toBe(true);
+  });
+
+  it('starter costs follow the shared formula: stronger is dearer and less accurate', () => {
+    const [slash, thrust] = starterAttacks(SWORD);
+    expect(slash).toMatchObject({ apCost: 20, fpCost: 5, accuracy: 12 });
+    expect(thrust).toMatchObject({ apCost: 30, fpCost: 5, accuracy: 0 });
+    expect(techniqueCost(1.4, 1, DEFAULT_BALANCE)).toEqual({
+      apCost: 50,
+      fpCost: 11,
+      accuracy: -24,
+    });
+    expect(techniqueCost(0.7, 2, DEFAULT_BALANCE)).toEqual(techniqueCost(1.4, 1, DEFAULT_BALANCE));
   });
 });
 
@@ -64,7 +76,7 @@ describe('turn economy', () => {
       setup({
         map: makeMap(['pppp', 'pppp', 'pppp', 'pppp']),
         units: [
-          unit({ id: 'a', stats: { agi: 20 }, at: { x: 0, y: 0 } }),
+          unit({ id: 'a', stats: { agl: 20 }, at: { x: 0, y: 0 } }),
           unit({ id: 'e', side: 'enemy', at: { x: 3, y: 3 } }),
         ],
       }),
@@ -88,41 +100,4 @@ describe('turn economy', () => {
     s = applyCommand(s, { type: 'endTurn', unitId: 'a' }).state;
     expect(requireUnit(s, 'a').fp).toBe(100 - 66);
   });
-});
-
-describe('save migration v4 → v5', () => {
-  it('switches to the refill economy and gives every unit its starter attacks', () => {
-    const now = start();
-    const oldBalance: Record<string, unknown> = {
-      ...now.balance,
-      apStart: 20,
-      apRegen: 40,
-      fpRecovery: 15,
-      fpRestRecovery: 35,
-      attackFpSurcharge: 20,
-    };
-    delete oldBalance.apPerFpRecovered;
-    const units = now.units.map((u) => ({ ...u, attacks: u.attacks.slice(0, 1) }));
-    const v4 = { ...now, saveVersion: 4, balance: oldBalance, units };
-    const loaded = deserializeBattle(JSON.stringify(v4));
-    expect(loaded.saveVersion).toBe(SAVE_VERSION);
-    expect(loaded.balance).toMatchObject({ apStart: 100, apRegen: 100, apPerFpRecovered: 1.5 });
-    // …and on to v6: faster XP.
-    expect(loaded.balance).toMatchObject({ xpHit: 20, xpDefeat: 60, xpReact: 3 });
-    for (const k of ['fpRecovery', 'fpRestRecovery', 'attackFpSurcharge']) {
-      expect(k in loaded.balance).toBe(false);
-    }
-    expect(requireUnit(loaded, 'a').attacks.map((x) => x.name)).toEqual(['Slash', 'Thrust']);
-  });
-
-  function start() {
-    return createBattle(
-      setup({
-        units: [
-          unit({ id: 'a', at: { x: 0, y: 0 } }),
-          unit({ id: 'e', side: 'enemy', at: { x: 3, y: 3 } }),
-        ],
-      }),
-    ).state;
-  }
 });

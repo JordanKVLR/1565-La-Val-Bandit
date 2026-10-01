@@ -86,9 +86,9 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 5,
-        "agi": 5
+        "pow": 6,
+        "dex": 5,
+        "agl": 5
       }
     },
     {
@@ -103,9 +103,9 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 5,
-        "agi": 5
+        "pow": 6,
+        "dex": 5,
+        "agl": 5
       }
     },
     {
@@ -120,9 +120,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 5,
-        "skl": 6,
-        "agi": 4
+        "pow": 5,
+        "dex": 6,
+        "agl": 4
       }
     },
     {
@@ -137,9 +137,9 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 5,
-        "agi": 5
+        "pow": 6,
+        "dex": 5,
+        "agl": 5
       }
     },
     {
@@ -154,9 +154,9 @@
       "ai": "aggressive",
       "name": "Iayalar",
       "stats": {
-        "str": 6,
-        "skl": 4,
-        "agi": 6
+        "pow": 6,
+        "dex": 4,
+        "agl": 6
       }
     },
     {
@@ -171,10 +171,11 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 4,
-        "skl": 6,
-        "agi": 4
+        "pow": 4,
+        "dex": 6,
+        "agl": 4
       }
     }
-  ]
+  ],
+  "salvage": ["kaptan"]
 }
