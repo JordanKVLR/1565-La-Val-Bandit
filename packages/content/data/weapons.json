@@ -3,165 +3,262 @@
     "id": "arming-sword",
     "name": "Arming Sword",
     "type": "blade",
-    "power": 24,
-    "accuracy": 80,
     "apCost": 25,
-    "fpCost": 15,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 4,
+      "dex": 1
+    },
+    "price": 275
   },
   {
     "id": "bastard-sword",
     "name": "Bastard Sword",
     "type": "blade",
-    "power": 30,
-    "accuracy": 72,
     "apCost": 30,
-    "fpCost": 20,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 7
+    },
+    "price": 365
   },
   {
     "id": "mace-shield",
     "name": "Mace & Shield",
     "type": "blunt",
-    "power": 26,
-    "accuracy": 75,
     "apCost": 25,
-    "fpCost": 15,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 5
+    },
+    "price": 275
   },
   {
     "id": "pike",
     "name": "Pike",
     "type": "polearm",
-    "power": 25,
-    "accuracy": 75,
     "apCost": 30,
-    "fpCost": 15,
     "minRange": 1,
-    "maxRange": 2
+    "maxRange": 2,
+    "bonus": {
+      "wep": 5
+    },
+    "price": 275
   },
   {
     "id": "arquebus",
     "name": "Arquebus",
     "type": "firearm",
-    "power": 26,
-    "accuracy": 65,
     "apCost": 35,
-    "fpCost": 20,
     "minRange": 2,
-    "maxRange": 4
+    "maxRange": 4,
+    "bonus": {
+      "wep": 5
+    },
+    "price": 275
   },
   {
     "id": "boat-hook",
     "name": "Boat Hook",
     "type": "polearm",
-    "power": 20,
-    "accuracy": 82,
     "apCost": 20,
-    "fpCost": 10,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 2,
+      "dex": 2
+    },
+    "price": 230
   },
   {
     "id": "kilij",
     "name": "Kilij",
     "type": "blade",
-    "power": 25,
-    "accuracy": 82,
     "apCost": 25,
-    "fpCost": 15,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 5,
+      "dex": 2
+    },
+    "price": 365
   },
   {
     "id": "tufek",
     "name": "Tüfek",
     "type": "firearm",
-    "power": 27,
-    "accuracy": 68,
     "apCost": 35,
-    "fpCost": 20,
     "minRange": 2,
-    "maxRange": 4
+    "maxRange": 4,
+    "bonus": {
+      "wep": 6
+    },
+    "price": 320
   },
   {
     "id": "sipahi-lance",
     "name": "Sipahi Lance",
     "type": "polearm",
-    "power": 27,
-    "accuracy": 74,
     "apCost": 30,
-    "fpCost": 20,
     "minRange": 1,
-    "maxRange": 2
+    "maxRange": 2,
+    "bonus": {
+      "wep": 6
+    },
+    "price": 320
   },
   {
     "id": "grenado",
     "name": "Grenado Sling",
     "type": "explosive",
-    "power": 28,
-    "accuracy": 60,
     "apCost": 40,
-    "fpCost": 20,
     "minRange": 2,
-    "maxRange": 3
+    "maxRange": 3,
+    "bonus": {
+      "wep": 6
+    },
+    "price": 320
   },
   {
     "id": "cutlass",
     "name": "Cutlass",
     "type": "blade",
-    "power": 22,
-    "accuracy": 84,
     "apCost": 20,
-    "fpCost": 10,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 3,
+      "dex": 2
+    },
+    "price": 275
   },
   {
     "id": "swivel-gun",
     "name": "Swivel Gun",
     "type": "firearm",
-    "power": 16,
-    "accuracy": 60,
     "apCost": 30,
-    "fpCost": 10,
     "minRange": 1,
-    "maxRange": 3
+    "maxRange": 3,
+    "bonus": {
+      "wep": 1
+    },
+    "price": 95
   },
   {
     "id": "ram-arm",
     "name": "Ram-Arm",
     "type": "blunt",
-    "power": 32,
-    "accuracy": 74,
     "apCost": 30,
-    "fpCost": 15,
     "minRange": 1,
-    "maxRange": 1
+    "maxRange": 1,
+    "bonus": {
+      "wep": 8
+    },
+    "price": 410
   },
   {
     "id": "colossus-cannon",
     "name": "Colossus Cannon",
     "type": "firearm",
-    "power": 34,
-    "accuracy": 70,
     "apCost": 35,
-    "fpCost": 15,
     "minRange": 1,
-    "maxRange": 3
+    "maxRange": 3,
+    "bonus": {
+      "wep": 9
+    },
+    "price": 455
   },
   {
     "id": "tower-guns",
     "name": "Tower Guns",
     "type": "firearm",
-    "power": 26,
-    "accuracy": 66,
     "apCost": 30,
-    "fpCost": 10,
     "minRange": 2,
-    "maxRange": 4
+    "maxRange": 4,
+    "bonus": {
+      "wep": 5
+    },
+    "price": 275
+  },
+  {
+    "id": "falchion",
+    "name": "Falchion",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "pow": 1,
+      "wep": 6
+    },
+    "price": 365
+  },
+  {
+    "id": "war-hammer",
+    "name": "War Hammer",
+    "type": "blunt",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "pow": 2,
+      "wep": 7
+    },
+    "price": 455
+  },
+  {
+    "id": "partisan",
+    "name": "Partisan",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "bonus": {
+      "dex": 1,
+      "wep": 8
+    },
+    "price": 455
+  },
+  {
+    "id": "wheellock",
+    "name": "Wheellock Musket",
+    "type": "firearm",
+    "apCost": 35,
+    "minRange": 2,
+    "maxRange": 4,
+    "bonus": {
+      "dex": 2,
+      "wep": 6
+    },
+    "price": 410
+  },
+  {
+    "id": "yatagan",
+    "name": "Yatağan",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "agl": 1,
+      "wep": 6
+    },
+    "price": 365
+  },
+  {
+    "id": "long-tufek",
+    "name": "Long Tüfek",
+    "type": "firearm",
+    "apCost": 40,
+    "minRange": 2,
+    "maxRange": 5,
+    "bonus": {
+      "dex": 1,
+      "wep": 7
+    },
+    "price": 410
   }
 ]

@@ -1,0 +1,184 @@
+[
+  {
+    "id": "charm-pow-1",
+    "name": "Ember Charm",
+    "kind": "charm",
+    "bonus": {
+      "pow": 1
+    },
+    "price": 120,
+    "description": "A brass charm wired into the boiler; it burns hotter."
+  },
+  {
+    "id": "charm-pow-2",
+    "name": "Brazier Charm",
+    "kind": "charm",
+    "bonus": {
+      "pow": 2
+    },
+    "price": 220,
+    "description": "A brass charm wired into the boiler; it burns hotter."
+  },
+  {
+    "id": "charm-pow-3",
+    "name": "Furnace Charm",
+    "kind": "charm",
+    "bonus": {
+      "pow": 4
+    },
+    "price": 450,
+    "description": "A brass charm wired into the boiler; it burns hotter."
+  },
+  {
+    "id": "charm-def-1",
+    "name": "Limestone Ward",
+    "kind": "charm",
+    "bonus": {
+      "def": 1
+    },
+    "price": 120,
+    "description": "A chip of Maltese globigerina set in the breastplate."
+  },
+  {
+    "id": "charm-def-2",
+    "name": "Bastion Ward",
+    "kind": "charm",
+    "bonus": {
+      "def": 2
+    },
+    "price": 220,
+    "description": "A chip of Maltese globigerina set in the breastplate."
+  },
+  {
+    "id": "charm-def-3",
+    "name": "Fortress Ward",
+    "kind": "charm",
+    "bonus": {
+      "def": 4
+    },
+    "price": 450,
+    "description": "A chip of Maltese globigerina set in the breastplate."
+  },
+  {
+    "id": "charm-bas-1",
+    "name": "Carob Charm",
+    "kind": "charm",
+    "bonus": {
+      "bas": 1
+    },
+    "price": 120,
+    "description": "Carved from a village tree; the harness feels sturdier."
+  },
+  {
+    "id": "charm-bas-2",
+    "name": "Olive-Wood Charm",
+    "kind": "charm",
+    "bonus": {
+      "bas": 2
+    },
+    "price": 220,
+    "description": "Carved from a village tree; the harness feels sturdier."
+  },
+  {
+    "id": "charm-bas-3",
+    "name": "Fig-Heart Charm",
+    "kind": "charm",
+    "bonus": {
+      "bas": 4
+    },
+    "price": 450,
+    "description": "Carved from a village tree; the harness feels sturdier."
+  },
+  {
+    "id": "charm-agl-1",
+    "name": "Luzzu Eye",
+    "kind": "charm",
+    "bonus": {
+      "agl": 1
+    },
+    "price": 120,
+    "description": "The watchful eye fishermen paint on their boats."
+  },
+  {
+    "id": "charm-agl-2",
+    "name": "Painted Eye",
+    "kind": "charm",
+    "bonus": {
+      "agl": 2
+    },
+    "price": 220,
+    "description": "The watchful eye fishermen paint on their boats."
+  },
+  {
+    "id": "charm-agl-3",
+    "name": "Ever-Open Eye",
+    "kind": "charm",
+    "bonus": {
+      "agl": 4
+    },
+    "price": 450,
+    "description": "The watchful eye fishermen paint on their boats."
+  },
+  {
+    "id": "pilgrim-shell",
+    "name": "Pilgrim's Shell",
+    "kind": "amulet",
+    "bonus": {
+      "dex": 1
+    },
+    "price": 100,
+    "description": "A scallop shell from a pilgrimage; a steadier aim."
+  },
+  {
+    "id": "coral-horn",
+    "name": "Coral Horn",
+    "kind": "amulet",
+    "bonus": {
+      "agl": 1
+    },
+    "price": 100,
+    "description": "A red coral charm against the evil eye."
+  },
+  {
+    "id": "lace-token",
+    "name": "Bizzilla Token",
+    "kind": "amulet",
+    "bonus": {
+      "bas": 1
+    },
+    "price": 100,
+    "description": "A scrap of Gozitan lace, a keepsake from home."
+  },
+  {
+    "id": "oath-ring",
+    "name": "Oath Ring",
+    "kind": "amulet",
+    "bonus": {
+      "wep": 2
+    },
+    "price": 220,
+    "description": "Sworn on a blade; the wearer fights with it like a part of the arm."
+  },
+  {
+    "id": "navigator-medal",
+    "name": "Navigator's Medal",
+    "kind": "amulet",
+    "bonus": {
+      "dex": 2,
+      "agl": 1
+    },
+    "price": 360,
+    "description": "Struck for the galley pilots of the Order."
+  },
+  {
+    "id": "grand-masters-favour",
+    "name": "Grand Master's Favour",
+    "kind": "amulet",
+    "bonus": {
+      "pow": 2,
+      "def": 2
+    },
+    "price": 600,
+    "description": "A token from La Valette himself."
+  }
+]

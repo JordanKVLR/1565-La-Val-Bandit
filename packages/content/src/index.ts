@@ -5,18 +5,20 @@ import type {
   BattleMap,
   BattleSetup,
   Frame,
+  Gear,
   TerrainType,
   Tile,
   UnitSpec,
   Weapon,
 } from '@m1565/core';
-import { getTile, validateMap } from '@m1565/core';
+import { getTile, techniqueCost, validateMap } from '@m1565/core';
 import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
 import castData from '../data/cast.json';
 import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
+import gearData from '../data/gear.json';
 import shopData from '../data/shop.json';
 import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
@@ -29,6 +31,7 @@ import {
   ShopItemSchema,
   CharacterSchema,
   FrameSchema,
+  GearSchema,
   MapSourceSchema,
   TerrainSchema,
   WeaponSchema,
@@ -106,8 +109,15 @@ export function loadLibrary() {
   return {
     balance: BalanceSchema.parse(balanceData) as BalanceConfig,
     terrains: loadTerrains(),
-    weapons: byId(WeaponSchema.array().parse(weaponData) as Weapon[], 'weapon'),
+    weapons: byId(
+      WeaponSchema.array().parse(weaponData) as (Weapon & { price: number })[],
+      'weapon',
+    ),
     frames: byId(FrameSchema.array().parse(frameData) as Frame[], 'frame'),
+    gear: byId(
+      GearSchema.array().parse(gearData) as (Gear & { price: number; description: string })[],
+      'gear',
+    ),
     characters: byId(CharacterSchema.array().parse(characterData), 'character'),
     frameFactions: new Map(
       FrameSchema.array()
@@ -136,6 +146,9 @@ export interface RosterEntry {
   readonly stats: PilotStats;
   readonly frame: string;
   readonly weapon: string;
+  /** Charm fitted to the armatura and amulet worn by the pilot (gear ids), if any. */
+  readonly charm?: string | null;
+  readonly amulet?: string | null;
   /** Unspent stat points from level-ups. */
   readonly statPoints?: number;
 }
@@ -150,12 +163,19 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
         a.weaponTypes.includes(weapon.type) &&
         (a.frameClasses.length === 0 || a.frameClasses.includes(frame.class)),
     )
-    .map(({ faction: _f, weaponTypes: _w, frameClasses: _c, ...attack }) => attack as Attack);
+    .map(
+      ({ faction: _f, weaponTypes: _w, frameClasses: _c, ...attack }) =>
+        ({
+          ...attack,
+          // Stronger techniques cost more AP and FP and are less accurate (one shared formula).
+          ...techniqueCost(attack.power, attack.hits ?? 1, lib.balance),
+        }) as Attack,
+    );
 }
 
 /**
  * A unit's full stats: saved/explicit values first; named characters fill gaps from their
- * expected build at this level; generic units derive DEF/INT/SPI/VIT from level and frame.
+ * expected build at this level; generic units derive BAS/DEF/WEP from level and frame.
  */
 function resolveStats(
   given: { readonly [K in keyof PilotStats]?: number | undefined } | undefined,
@@ -168,7 +188,7 @@ function resolveStats(
   const expected = character
     ? statsAtLevel(character, level, lib.balance.statPointsPerLevel)
     : undefined;
-  const fallback = expected ?? { str: 6, skl: 6, agi: 6, ...derivedStats(level, frameClass, side) };
+  const fallback = expected ?? { pow: 6, dex: 6, agl: 6, ...derivedStats(level, frameClass, side) };
   const out = { ...fallback };
   for (const [k, v] of Object.entries(given ?? {}))
     if (v !== undefined) out[k as keyof PilotStats] = v;
@@ -203,6 +223,8 @@ export function buildBattle(
       throw new Error(`${where}: unit ${u.id} is placed off-map or on impassable terrain`);
     const frame = need(lib.frames, u.frame, 'frame', where);
     const weapon = need(lib.weapons, u.weapon, 'weapon', where);
+    const charm = r?.charm ? lib.gear.get(r.charm) : undefined;
+    const amulet = r?.amulet ? lib.gear.get(r.amulet) : undefined;
     const key = `${at.x},${at.y}`;
     if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
     occupied.add(key);
@@ -218,6 +240,8 @@ export function buildBattle(
       stats: resolveStats(u.stats, character, u.level, frame.class, u.side, lib),
       frame,
       weapon,
+      ...(charm ? { charm } : {}),
+      ...(amulet ? { amulet } : {}),
       attacks: attackPool(lib, frame, weapon),
       ...(r ? { xp: r.xp, statPoints: r.statPoints ?? 0 } : {}),
       at,
@@ -263,4 +287,10 @@ export function loadBattle(
 
 export function isBattleId(id: string): id is BattleId {
   return id in battleSources;
+}
+
+/** Armaturas the player recovers from the field after winning this battle. */
+export function battleSalvage(id: BattleId): readonly string[] {
+  const raw = battleSources[id];
+  return raw ? BattleSourceSchema.parse(raw).salvage : [];
 }

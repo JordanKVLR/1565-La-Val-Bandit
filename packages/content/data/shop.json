@@ -1,67 +1,296 @@
 [
-  { "item": "pike", "kind": "weapon", "price": 150, "allegiance": "malta", "after": null },
-  { "item": "arquebus", "kind": "weapon", "price": 250, "allegiance": "malta", "after": null },
+  {
+    "item": "pike",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "arquebus",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": null
+  },
   {
     "item": "mace-shield",
     "kind": "weapon",
-    "price": 300,
     "allegiance": "malta",
     "after": "b2-marsa-wells"
   },
   {
     "item": "bastard-sword",
     "kind": "weapon",
-    "price": 450,
-    "allegiance": "malta",
-    "after": "b3-sciberras"
-  },
-  { "item": "moschetta", "kind": "frame", "price": 300, "allegiance": "malta", "after": null },
-  {
-    "item": "artigjan",
-    "kind": "frame",
-    "price": 350,
-    "allegiance": "malta",
-    "after": "b2-marsa-wells"
-  },
-  {
-    "item": "lanza",
-    "kind": "frame",
-    "price": 600,
     "allegiance": "malta",
     "after": "b3-sciberras"
   },
   {
-    "item": "cavaliere",
-    "kind": "frame",
-    "price": 750,
-    "allegiance": "malta",
-    "after": "b4-night-crossing"
-  },
-  {
-    "item": "bastiun",
-    "kind": "frame",
-    "price": 900,
-    "allegiance": "malta",
-    "after": "b4-night-crossing"
-  },
-  {
-    "item": "kaptan",
-    "kind": "frame",
-    "price": 1100,
-    "allegiance": "malta",
-    "after": "b7-st-elmo-ravelin"
-  },
-  { "item": "kilij", "kind": "weapon", "price": 250, "allegiance": "ottoman", "after": null },
-  { "item": "tufek", "kind": "weapon", "price": 300, "allegiance": "ottoman", "after": null },
-  {
-    "item": "sipahi-lance",
+    "item": "kilij",
     "kind": "weapon",
-    "price": 350,
     "allegiance": "ottoman",
     "after": null
   },
-  { "item": "grenado", "kind": "weapon", "price": 450, "allegiance": "ottoman", "after": null },
-  { "item": "yeniceri", "kind": "frame", "price": 500, "allegiance": "ottoman", "after": null },
-  { "item": "sipahi", "kind": "frame", "price": 600, "allegiance": "ottoman", "after": null },
-  { "item": "humbaraci", "kind": "frame", "price": 700, "allegiance": "ottoman", "after": null }
+  {
+    "item": "tufek",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "sipahi-lance",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "grenado",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "falchion",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b6-kalkara-chapel"
+  },
+  {
+    "item": "war-hammer",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b6-kalkara-chapel"
+  },
+  {
+    "item": "partisan",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b8-turgut-battery"
+  },
+  {
+    "item": "wheellock",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "yatagan",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "long-tufek",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c3-pasha-tribunal"
+  },
+  {
+    "item": "charm-pow-1",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "charm-pow-1",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "charm-pow-2",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "charm-pow-2",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "charm-pow-3",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "charm-pow-3",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c4-corradino-heights"
+  },
+  {
+    "item": "charm-def-1",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "charm-def-1",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "charm-def-2",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "charm-def-2",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "charm-def-3",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "charm-def-3",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c4-corradino-heights"
+  },
+  {
+    "item": "charm-bas-1",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "charm-bas-1",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "charm-bas-2",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "charm-bas-2",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "charm-bas-3",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "charm-bas-3",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c4-corradino-heights"
+  },
+  {
+    "item": "charm-agl-1",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "charm-agl-1",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "charm-agl-2",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "charm-agl-2",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "charm-agl-3",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "charm-agl-3",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c4-corradino-heights"
+  },
+  {
+    "item": "pilgrim-shell",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "pilgrim-shell",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "coral-horn",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "coral-horn",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "lace-token",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "lace-token",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "oath-ring",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": "b4-night-crossing"
+  },
+  {
+    "item": "oath-ring",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "navigator-medal",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": "b7-st-elmo-ravelin"
+  },
+  {
+    "item": "navigator-medal",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "grand-masters-favour",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  }
 ]

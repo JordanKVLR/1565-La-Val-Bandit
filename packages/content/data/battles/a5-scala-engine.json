@@ -83,9 +83,9 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "str": 15,
-        "skl": 13,
-        "agi": 5
+        "pow": 15,
+        "dex": 13,
+        "agl": 5
       }
     },
     {
@@ -100,9 +100,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 5
+        "pow": 12,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -117,9 +117,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 12,
-        "skl": 11,
-        "agi": 5
+        "pow": 12,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -134,9 +134,9 @@
       "ai": "aggressive",
       "name": "Scala's Hireling",
       "stats": {
-        "str": 11,
-        "skl": 11,
-        "agi": 8
+        "pow": 11,
+        "dex": 11,
+        "agl": 8
       }
     },
     {
@@ -151,9 +151,9 @@
       "ai": "aggressive",
       "name": "Scala's Hireling",
       "stats": {
-        "str": 11,
-        "skl": 11,
-        "agi": 8
+        "pow": 11,
+        "dex": 11,
+        "agl": 8
       }
     }
   ]

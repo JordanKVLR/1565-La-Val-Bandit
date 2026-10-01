@@ -65,9 +65,9 @@
       "ai": "aggressive",
       "name": "Scala's Guard Captain",
       "stats": {
-        "str": 10,
-        "skl": 8,
-        "agi": 6
+        "pow": 10,
+        "dex": 8,
+        "agl": 6
       }
     },
     {
@@ -82,9 +82,9 @@
       "ai": "aggressive",
       "name": "Hired Guard",
       "stats": {
-        "str": 8,
-        "skl": 7,
-        "agi": 7
+        "pow": 8,
+        "dex": 7,
+        "agl": 7
       }
     },
     {
@@ -99,10 +99,11 @@
       "ai": "defensive",
       "name": "Hired Gunner",
       "stats": {
-        "str": 7,
-        "skl": 9,
-        "agi": 5
+        "pow": 7,
+        "dex": 9,
+        "agl": 5
       }
     }
-  ]
+  ],
+  "salvage": ["yeniceri", "sipahi", "humbaraci"]
 }

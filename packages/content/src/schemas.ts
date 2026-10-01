@@ -1,3 +1,5 @@
+import type { BalanceConfig } from '@m1565/core';
+import { DEFAULT_BALANCE } from '@m1565/core';
 import { z } from 'zod';
 
 export const TerrainSchema = z.object({
@@ -41,18 +43,23 @@ export type MapSource = z.infer<typeof MapSourceSchema>;
 const id = z.string().regex(/^[a-z0-9-]+$/);
 const coord = z.tuple([z.number().int().min(0), z.number().int().min(0)]);
 const facing = z.enum(['north', 'east', 'south', 'west']);
-const stat = z.number().int();
-const stats = z.object({
-  str: stat,
-  skl: stat,
-  agi: stat,
-  def: stat,
-  int: stat,
-  spi: stat,
-  vit: stat,
-});
-/** Generic battle units may give only STR/SKL/AGI; the rest are derived from level and frame. */
-const partialStats = stats.partial({ def: true, int: true, spi: true, vit: true });
+const stat = z.number().int().min(0).max(32);
+/** BAS max HP · POW damage · DEX accuracy · AGL evasion · DEF damage blocked · WEP weapon damage. */
+const stats = z.object({ bas: stat, pow: stat, dex: stat, agl: stat, def: stat, wep: stat });
+/** Generic battle units give POW/DEX/AGL; BAS, DEF and WEP are derived from level and frame. */
+const partialStats = stats.partial({ bas: true, def: true, wep: true });
+/** Attribute bonuses from gear. Most are positive; heavy frames may slow (negative AGL). */
+const bonus = z
+  .object({
+    bas: z.number().int(),
+    pow: z.number().int(),
+    dex: z.number().int(),
+    agl: z.number().int(),
+    def: z.number().int(),
+    wep: z.number().int(),
+  })
+  .partial()
+  .strict();
 
 export const WEAPON_TYPES = ['blade', 'polearm', 'blunt', 'firearm', 'explosive'] as const;
 export const FRAME_CLASSES = ['light', 'medium', 'heavy'] as const;
@@ -62,12 +69,14 @@ export const WeaponSchema = z
     id,
     name: z.string().min(1),
     type: z.enum(WEAPON_TYPES),
-    power: z.number().int().positive(),
-    accuracy: z.number().int().min(0).max(100),
+    /** Added to the wielder's attributes. */
+    bonus,
+    /** AP of the weapon's main ranged attack (Fire, Throw). */
     apCost: z.number().int().positive(),
-    fpCost: z.number().int().min(0),
     minRange: z.number().int().min(1),
     maxRange: z.number().int().min(1),
+    /** Armoury price; items sell back for half. */
+    price: z.number().int().positive(),
   })
   .refine((w) => w.maxRange >= w.minRange, 'maxRange must be >= minRange');
 
@@ -81,19 +90,21 @@ export const FrameSchema = z.object({
   hp: z.number().int().positive(),
   armour: z.number().int().min(0),
   move: z.number().int().positive(),
-  agility: z.number().int(),
+  bonus,
+});
+
+/** Charms are fitted to the armatura, amulets worn by the pilot. Both only add attributes. */
+export const GearSchema = z.object({
+  id,
+  name: z.string().min(1),
+  kind: z.enum(['charm', 'amulet']),
+  bonus,
+  price: z.number().int().positive(),
+  description: z.string(),
 });
 
 const rate = z.number().int().min(0).max(100);
-const growth = z.object({
-  str: rate,
-  skl: rate,
-  agi: rate,
-  def: rate,
-  int: rate,
-  spi: rate,
-  vit: rate,
-});
+const growth = z.object({ bas: rate, pow: rate, dex: rate, agl: rate, def: rate, wep: rate });
 const allegiance = z.enum(['malta', 'ottoman']);
 export const CharacterSchema = z.object({
   id,
@@ -106,60 +117,18 @@ export const CharacterSchema = z.object({
 });
 export type Character = z.infer<typeof CharacterSchema>;
 
-export const BalanceSchema = z.object({
-  apMax: z.number().positive(),
-  apStart: z.number().min(0),
-  apRegen: z.number().positive(),
-  climbApPerStep: z.number().min(0),
-  maxClimb: z.number().int().min(0),
-  fpMax: z.number().positive(),
-  apPerFpRecovered: z.number().positive(),
-  fpTired: z.number().min(0),
-  tiredPenalty: z.number().min(0),
-  defendFpCost: z.number().min(0),
-  avoidFpCost: z.number().min(0),
-  counterFpCost: z.number().min(0),
-  hitMin: z.number().min(0).max(100),
-  hitMax: z.number().min(0).max(100),
-  sklHitFactor: z.number(),
-  agiEvadeFactor: z.number(),
-  heightHitPerStep: z.number(),
-  heightDamagePerStep: z.number(),
-  heightDamageMaxSteps: z.number().int().min(0),
-  sideHitBonus: z.number(),
-  rearHitBonus: z.number(),
-  rearDamageMult: z.number().positive(),
-  assistPerAlly: z.number().min(0),
-  assistMax: z.number().min(0),
-  defendDamageMult: z.number().min(0).max(1),
-  defDamagePerPoint: z.number().min(0),
-  vitHpPercent: z.number().min(0),
-  intTechniqueAccuracy: z.number().min(0),
-  spiFpCostPercent: z.number().min(0),
-  spiFpCostMax: z.number().min(0).max(100),
-  spiFpRecovery: z.number().min(0),
-  spiResistPercent: z.number().min(0),
-  spiResistMax: z.number().min(0).max(100),
-  counterBaseChance: z.number().min(0).max(100),
-  counterIntFactor: z.number().min(0),
-  counterMinChance: z.number().min(0).max(100),
-  counterMaxChance: z.number().min(0).max(100),
-  counterReflectMult: z.number().positive(),
-  counterFailMult: z.number().positive(),
-  counterHitBonus: z.number(),
-  xpHit: z.number().int().min(0),
-  xpDefeat: z.number().int().min(0),
-  xpReact: z.number().int().min(0),
-  xpPerLevel: z.number().int().positive(),
-  xpLevelFactor: z.number().min(0),
-  xpMinFactor: z.number().min(0),
-  xpMaxFactor: z.number().positive(),
-  statPointsPerLevel: z.number().int().min(0),
-  hpPerLevel: z.number().int().min(0),
-});
+/** Every tuning number the engine knows, and nothing else (typos and stale keys fail). */
+export const BalanceSchema = z
+  .object(
+    Object.fromEntries(Object.keys(DEFAULT_BALANCE).map((k) => [k, z.number()])) as Record<
+      keyof BalanceConfig,
+      z.ZodNumber
+    >,
+  )
+  .strict();
 
 const req = z.number().int().min(0).optional();
-const statReq = z.object({ str: req, skl: req, agi: req, def: req, int: req, spi: req, vit: req });
+const statReq = z.object({ bas: req, pow: req, dex: req, agl: req, def: req, wep: req }).strict();
 
 /** A faction technique, unlocked by weapon type, frame class and the pilot's stats. */
 export const AttackSchema = z
@@ -181,10 +150,8 @@ export const AttackSchema = z
       'volley',
       'throw',
     ]),
+    /** Per-strike power; AP, FP and accuracy follow from it (see techniqueCost). */
     power: z.number().positive(),
-    accuracy: z.number().int(),
-    apCost: z.number().int().positive(),
-    fpCost: z.number().int().min(0),
     minRange: z.number().int().min(1).optional(),
     maxRange: z.number().int().min(1).optional(),
     hits: z.number().int().min(1).max(3).optional(),
@@ -233,6 +200,8 @@ export const BattleSourceSchema = z.object({
     .min(1),
   defeat: z.array(z.object({ type: z.literal('protect'), unitId: id })).default([]),
   units: z.array(BattleUnitSchema).min(2),
+  /** Armaturas recovered from the field after a victory, added to the player's stores. */
+  salvage: z.array(id).default([]),
 });
 
 export type BattleSource = z.infer<typeof BattleSourceSchema>;
@@ -267,10 +236,10 @@ export const CastSchema = z.object({
 });
 export type CastMember = z.infer<typeof CastSchema>;
 
+/** Armoury stock: what is on sale (prices live with the items). Armaturas are never sold. */
 export const ShopItemSchema = z.object({
   item: id,
-  kind: z.enum(['weapon', 'frame']),
-  price: z.number().int().positive(),
+  kind: z.enum(['weapon', 'charm', 'amulet']),
   allegiance,
   /** Battle id that must be won before this goes on sale; null = from the start. */
   after: id.nullable(),

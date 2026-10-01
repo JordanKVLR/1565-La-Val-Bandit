@@ -83,9 +83,9 @@
       "ai": "hold",
       "name": "Topçu Aga",
       "stats": {
-        "str": 6,
-        "skl": 7,
-        "agi": 4
+        "pow": 6,
+        "dex": 7,
+        "agl": 4
       }
     },
     {
@@ -100,9 +100,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 6,
-        "agi": 4
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
       }
     },
     {
@@ -117,9 +117,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 6,
-        "agi": 4
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
       }
     },
     {
@@ -134,9 +134,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 6
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
       }
     },
     {
@@ -151,10 +151,11 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 6
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
       }
     }
-  ]
+  ],
+  "salvage": ["lanza"]
 }

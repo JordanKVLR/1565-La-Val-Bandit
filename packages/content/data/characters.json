@@ -3,22 +3,20 @@
     "id": "ninu",
     "name": "Ninu",
     "stats": {
-      "str": 7,
-      "skl": 6,
-      "agi": 7,
+      "bas": 5,
+      "pow": 7,
+      "dex": 6,
+      "agl": 7,
       "def": 4,
-      "int": 5,
-      "spi": 6,
-      "vit": 5
+      "wep": 6
     },
     "growth": {
-      "str": 60,
-      "skl": 55,
-      "agi": 55,
+      "bas": 50,
+      "pow": 60,
+      "dex": 55,
+      "agl": 55,
       "def": 40,
-      "int": 35,
-      "spi": 45,
-      "vit": 50
+      "wep": 58
     },
     "frame": "haddiem",
     "weapon": "arming-sword",
@@ -28,22 +26,20 @@
     "id": "kateri",
     "name": "Kateri",
     "stats": {
-      "str": 5,
-      "skl": 8,
-      "agi": 6,
+      "bas": 4,
+      "pow": 5,
+      "dex": 8,
+      "agl": 6,
       "def": 3,
-      "int": 8,
-      "spi": 6,
-      "vit": 4
+      "wep": 6
     },
     "growth": {
-      "str": 35,
-      "skl": 70,
-      "agi": 50,
+      "bas": 35,
+      "pow": 35,
+      "dex": 70,
+      "agl": 50,
       "def": 30,
-      "int": 65,
-      "spi": 45,
-      "vit": 35
+      "wep": 53
     },
     "frame": "moschetta",
     "weapon": "arquebus",
@@ -53,22 +49,20 @@
     "id": "luis",
     "name": "Fra Luis",
     "stats": {
-      "str": 8,
-      "skl": 8,
-      "agi": 5,
+      "bas": 5,
+      "pow": 8,
+      "dex": 8,
+      "agl": 5,
       "def": 6,
-      "int": 6,
-      "spi": 7,
-      "vit": 5
+      "wep": 7
     },
     "growth": {
-      "str": 55,
-      "skl": 50,
-      "agi": 35,
+      "bas": 45,
+      "pow": 55,
+      "dex": 50,
+      "agl": 35,
       "def": 55,
-      "int": 40,
-      "spi": 50,
-      "vit": 45
+      "wep": 53
     },
     "frame": "cavaliere",
     "weapon": "bastard-sword",
@@ -78,22 +72,20 @@
     "id": "ganni",
     "name": "Ġanni",
     "stats": {
-      "str": 6,
-      "skl": 5,
-      "agi": 5,
+      "bas": 6,
+      "pow": 6,
+      "dex": 5,
+      "agl": 5,
       "def": 5,
-      "int": 3,
-      "spi": 4,
-      "vit": 6
+      "wep": 5
     },
     "growth": {
-      "str": 55,
-      "skl": 40,
-      "agi": 45,
+      "bas": 60,
+      "pow": 55,
+      "dex": 40,
+      "agl": 45,
       "def": 50,
-      "int": 25,
-      "spi": 30,
-      "vit": 60
+      "wep": 48
     },
     "frame": "haddiem",
     "weapon": "pike",
@@ -103,22 +95,20 @@
     "id": "rozi",
     "name": "Rożi",
     "stats": {
-      "str": 4,
-      "skl": 7,
-      "agi": 6,
+      "bas": 4,
+      "pow": 4,
+      "dex": 7,
+      "agl": 6,
       "def": 3,
-      "int": 6,
-      "spi": 5,
-      "vit": 4
+      "wep": 5
     },
     "growth": {
-      "str": 35,
-      "skl": 65,
-      "agi": 50,
+      "bas": 35,
+      "pow": 35,
+      "dex": 65,
+      "agl": 50,
       "def": 30,
-      "int": 50,
-      "spi": 40,
-      "vit": 35
+      "wep": 50
     },
     "frame": "moschetta",
     "weapon": "arquebus",
@@ -128,22 +118,20 @@
     "id": "balbi",
     "name": "Balbi",
     "stats": {
-      "str": 5,
-      "skl": 9,
-      "agi": 5,
+      "bas": 4,
+      "pow": 5,
+      "dex": 9,
+      "agl": 5,
       "def": 4,
-      "int": 8,
-      "spi": 6,
-      "vit": 4
+      "wep": 6
     },
     "growth": {
-      "str": 40,
-      "skl": 65,
-      "agi": 40,
+      "bas": 35,
+      "pow": 40,
+      "dex": 65,
+      "agl": 40,
       "def": 35,
-      "int": 60,
-      "spi": 50,
-      "vit": 35
+      "wep": 53
     },
     "frame": "moschetta",
     "weapon": "arquebus",
@@ -153,22 +141,20 @@
     "id": "anastagi",
     "name": "Anastagi",
     "stats": {
-      "str": 8,
-      "skl": 7,
-      "agi": 8,
+      "bas": 5,
+      "pow": 8,
+      "dex": 7,
+      "agl": 8,
       "def": 5,
-      "int": 6,
-      "spi": 6,
-      "vit": 5
+      "wep": 7
     },
     "growth": {
-      "str": 55,
-      "skl": 50,
-      "agi": 55,
+      "bas": 50,
+      "pow": 55,
+      "dex": 50,
+      "agl": 55,
       "def": 45,
-      "int": 40,
-      "spi": 45,
-      "vit": 50
+      "wep": 53
     },
     "frame": "kaptan",
     "weapon": "pike",
@@ -178,22 +164,20 @@
     "id": "deniz",
     "name": "Deniz",
     "stats": {
-      "str": 6,
-      "skl": 7,
-      "agi": 8,
+      "bas": 4,
+      "pow": 6,
+      "dex": 7,
+      "agl": 8,
       "def": 3,
-      "int": 6,
-      "spi": 6,
-      "vit": 4
+      "wep": 6
     },
     "growth": {
-      "str": 45,
-      "skl": 55,
-      "agi": 65,
+      "bas": 40,
+      "pow": 45,
+      "dex": 55,
+      "agl": 65,
       "def": 30,
-      "int": 45,
-      "spi": 50,
-      "vit": 40
+      "wep": 50
     },
     "frame": "levend",
     "weapon": "kilij",
@@ -203,22 +187,20 @@
     "id": "yusuf",
     "name": "Yusuf Reis",
     "stats": {
-      "str": 8,
-      "skl": 7,
-      "agi": 6,
+      "bas": 6,
+      "pow": 8,
+      "dex": 7,
+      "agl": 6,
       "def": 5,
-      "int": 6,
-      "spi": 6,
-      "vit": 6
+      "wep": 7
     },
     "growth": {
-      "str": 55,
-      "skl": 50,
-      "agi": 45,
+      "bas": 55,
+      "pow": 55,
+      "dex": 50,
+      "agl": 45,
       "def": 45,
-      "int": 40,
-      "spi": 45,
-      "vit": 55
+      "wep": 53
     },
     "frame": "reis",
     "weapon": "cutlass",
@@ -228,22 +210,20 @@
     "id": "leyla",
     "name": "Leyla",
     "stats": {
-      "str": 5,
-      "skl": 9,
-      "agi": 7,
+      "bas": 4,
+      "pow": 5,
+      "dex": 9,
+      "agl": 7,
       "def": 3,
-      "int": 9,
-      "spi": 8,
-      "vit": 4
+      "wep": 6
     },
     "growth": {
-      "str": 35,
-      "skl": 65,
-      "agi": 55,
+      "bas": 35,
+      "pow": 35,
+      "dex": 65,
+      "agl": 55,
       "def": 30,
-      "int": 70,
-      "spi": 60,
-      "vit": 35
+      "wep": 50
     },
     "frame": "humbaraci",
     "weapon": "grenado",

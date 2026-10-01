@@ -83,11 +83,11 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "str": 15,
-        "skl": 13,
-        "agi": 5,
+        "pow": 15,
+        "dex": 13,
+        "agl": 5,
         "def": 11,
-        "vit": 12
+        "bas": 12
       }
     },
     {
@@ -102,9 +102,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 14,
-        "skl": 11,
-        "agi": 5
+        "pow": 14,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -119,9 +119,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 14,
-        "skl": 11,
-        "agi": 5
+        "pow": 14,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -136,9 +136,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 13,
-        "skl": 12,
-        "agi": 6
+        "pow": 13,
+        "dex": 12,
+        "agl": 6
       }
     },
     {
@@ -153,9 +153,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 13,
-        "skl": 12,
-        "agi": 6
+        "pow": 13,
+        "dex": 12,
+        "agl": 6
       }
     }
   ]

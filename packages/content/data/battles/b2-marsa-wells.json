@@ -75,9 +75,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 5
+        "pow": 5,
+        "dex": 5,
+        "agl": 5
       }
     },
     {
@@ -92,9 +92,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "str": 5,
-        "skl": 5,
-        "agi": 6
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
       }
     },
     {
@@ -109,9 +109,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
-        "agi": 6
+        "pow": 6,
+        "dex": 5,
+        "agl": 6
       }
     },
     {
@@ -126,9 +126,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 6,
-        "skl": 5,
-        "agi": 6
+        "pow": 6,
+        "dex": 5,
+        "agl": 6
       }
     },
     {
@@ -143,10 +143,11 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 6,
-        "skl": 6,
-        "agi": 4
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
       }
     }
-  ]
+  ],
+  "salvage": ["artigjan"]
 }

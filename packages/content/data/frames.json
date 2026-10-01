@@ -4,159 +4,206 @@
     "name": "Cavaliere",
     "faction": "order",
     "class": "medium",
-    "hp": 86,
+    "hp": 65,
     "armour": 10,
     "move": 4,
-    "agility": 0
+    "bonus": {
+      "def": 1
+    }
   },
   {
     "id": "bastiun",
     "name": "Bastiun",
     "faction": "order",
     "class": "heavy",
-    "hp": 100,
+    "hp": 75,
     "armour": 15,
     "move": 3,
-    "agility": -3
+    "bonus": {
+      "def": 3,
+      "agl": -3
+    }
   },
   {
     "id": "lanza",
     "name": "Lanza",
     "faction": "order",
     "class": "medium",
-    "hp": 80,
+    "hp": 60,
     "armour": 9,
     "move": 4,
-    "agility": 0
+    "bonus": {
+      "wep": 1
+    }
   },
   {
     "id": "kaptan",
     "name": "Kaptan",
     "faction": "order",
     "class": "medium",
-    "hp": 84,
+    "hp": 63,
     "armour": 10,
     "move": 4,
-    "agility": 1
+    "bonus": {
+      "pow": 1,
+      "dex": 1,
+      "agl": 1
+    }
   },
   {
     "id": "haddiem",
     "name": "Ħaddiem",
     "faction": "militia",
     "class": "light",
-    "hp": 70,
+    "hp": 53,
     "armour": 6,
     "move": 5,
-    "agility": 2
+    "bonus": {
+      "bas": 1,
+      "agl": 2
+    }
   },
   {
     "id": "moschetta",
     "name": "Moschetta",
     "faction": "militia",
     "class": "light",
-    "hp": 64,
+    "hp": 48,
     "armour": 5,
     "move": 4,
-    "agility": 2
+    "bonus": {
+      "dex": 1,
+      "agl": 2
+    }
   },
   {
     "id": "artigjan",
     "name": "Artiġjan",
     "faction": "militia",
     "class": "light",
-    "hp": 66,
+    "hp": 50,
     "armour": 6,
     "move": 4,
-    "agility": 1
+    "bonus": {
+      "def": 1,
+      "agl": 1
+    }
   },
   {
     "id": "yeniceri",
     "name": "Yeniçeri",
     "faction": "ottoman",
     "class": "medium",
-    "hp": 84,
+    "hp": 63,
     "armour": 9,
     "move": 4,
-    "agility": 1
+    "bonus": {
+      "dex": 1,
+      "wep": 1,
+      "agl": 1
+    }
   },
   {
     "id": "sipahi",
     "name": "Sipahi",
     "faction": "ottoman",
     "class": "light",
-    "hp": 72,
+    "hp": 54,
     "armour": 7,
     "move": 6,
-    "agility": 3
+    "bonus": {
+      "wep": 1,
+      "agl": 3
+    }
   },
   {
     "id": "humbaraci",
     "name": "Humbaracı",
     "faction": "ottoman",
     "class": "medium",
-    "hp": 76,
+    "hp": 57,
     "armour": 8,
     "move": 3,
-    "agility": -1
+    "bonus": {
+      "pow": 1,
+      "agl": -1
+    }
   },
   {
     "id": "levend",
     "name": "Levend",
     "faction": "corsair",
     "class": "light",
-    "hp": 68,
+    "hp": 51,
     "armour": 5,
     "move": 5,
-    "agility": 4
+    "bonus": {
+      "dex": 1,
+      "agl": 4
+    }
   },
   {
     "id": "reis",
     "name": "Reis",
     "faction": "corsair",
     "class": "medium",
-    "hp": 82,
+    "hp": 62,
     "armour": 8,
     "move": 4,
-    "agility": 2
+    "bonus": {
+      "pow": 1,
+      "agl": 2
+    }
   },
   {
     "id": "prototipo",
     "name": "Prototipo",
     "faction": "scala",
     "class": "medium",
-    "hp": 100,
+    "hp": 75,
     "armour": 11,
     "move": 4,
-    "agility": 0
+    "bonus": {
+      "pow": 2
+    }
   },
   {
     "id": "barge",
     "name": "Supply Barge",
     "faction": "militia",
     "class": "heavy",
-    "hp": 70,
+    "hp": 53,
     "armour": 6,
     "move": 1,
-    "agility": -4
+    "bonus": {
+      "agl": -4
+    }
   },
   {
     "id": "siege-tower",
     "name": "Siege Tower",
     "faction": "scala",
     "class": "heavy",
-    "hp": 140,
+    "hp": 105,
     "armour": 14,
     "move": 1,
-    "agility": -6
+    "bonus": {
+      "def": 2,
+      "agl": -6
+    }
   },
   {
     "id": "colossus",
     "name": "Colossus",
     "faction": "scala",
     "class": "heavy",
-    "hp": 150,
+    "hp": 113,
     "armour": 13,
     "move": 3,
-    "agility": -2
+    "bonus": {
+      "pow": 2,
+      "def": 2,
+      "agl": -2
+    }
   }
 ]

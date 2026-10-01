@@ -10,7 +10,7 @@ export function growthAt(level: number, rate: number): number {
   return Math.floor((level * rate) / 100) - Math.floor(((level - 1) * rate) / 100);
 }
 
-const KEYS = ['str', 'skl', 'agi', 'def', 'int', 'spi', 'vit'] as const;
+const KEYS = ['bas', 'pow', 'dex', 'agl', 'def', 'wep'] as const;
 
 /**
  * Typical stats for a character who has reached `level`: base stats plus the stat points from
@@ -20,7 +20,7 @@ const KEYS = ['str', 'skl', 'agi', 'def', 'int', 'spi', 'vit'] as const;
 export function statsAtLevel(
   c: Pick<Character, 'stats' | 'growth'>,
   level: number,
-  pointsPerLevel = 5,
+  pointsPerLevel = 3,
 ): Stats {
   const total = Math.max(0, level - 1) * pointsPerLevel;
   const weight = KEYS.reduce((n, k) => n + c.growth[k], 0) || 1;
@@ -39,22 +39,20 @@ export function statsAtLevel(
 }
 
 /**
- * DEF/INT/SPI/VIT for generic units that only list STR/SKL/AGI: they grow with level, and
- * heavier frames are sturdier.
+ * BAS/DEF/WEP for generic units that only list POW/DEX/AGL: they grow with level, and heavier
+ * frames are sturdier. Enemies are kept lighter than allied militia, so fights are won by tactics
+ * rather than attrition (tuned with the balance simulation).
  */
 export function derivedStats(
   level: number,
   frameClass: 'light' | 'medium' | 'heavy',
   side: 'player' | 'enemy' = 'enemy',
-): Pick<Stats, 'def' | 'int' | 'spi' | 'vit'> {
+): Pick<Stats, 'bas' | 'def' | 'wep'> {
   const heft = frameClass === 'heavy' ? 2 : frameClass === 'medium' ? 1 : 0;
-  // Tuned with the balance simulation. Enemies are kept lighter than allied militia so fights
-  // are won by tactics rather than attrition; generic allies keep their sturdier build.
   const mine = side === 'player';
   return {
-    def: mine ? 2 + Math.round(level * 0.6) + heft * 2 : 1 + Math.round(level * 0.3) + heft,
-    int: 4 + Math.round(level * 0.5),
-    spi: 4 + Math.round(level * 0.5),
-    vit: mine ? 3 + Math.round(level * 0.9) + heft * 2 : 1 + Math.round(level * 0.45) + heft,
+    bas: (mine ? 4 : 3) + Math.round(level * 0.5) + heft,
+    def: mine ? 2 + Math.round(level * 0.5) + heft * 2 : 1 + Math.round(level * 0.3) + heft,
+    wep: 4 + Math.round(level * 0.5),
   };
 }

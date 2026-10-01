@@ -52,9 +52,9 @@
       "facing": "south",
       "name": "Corsair Hamid",
       "stats": {
-        "str": 6,
-        "skl": 5,
-        "agi": 6
+        "pow": 6,
+        "dex": 5,
+        "agl": 6
       }
     },
     {
@@ -68,9 +68,9 @@
       "facing": "south",
       "name": "Gunner Ilyas",
       "stats": {
-        "str": 5,
-        "skl": 7,
-        "agi": 4
+        "pow": 5,
+        "dex": 7,
+        "agl": 4
       }
     },
     {
@@ -85,9 +85,9 @@
       "ai": "aggressive",
       "name": "Knight of Auvergne",
       "stats": {
-        "str": 11,
-        "skl": 9,
-        "agi": 4
+        "pow": 11,
+        "dex": 9,
+        "agl": 4
       }
     },
     {
@@ -102,9 +102,9 @@
       "ai": "aggressive",
       "name": "Knight of Italy",
       "stats": {
-        "str": 11,
-        "skl": 9,
-        "agi": 4
+        "pow": 11,
+        "dex": 9,
+        "agl": 4
       }
     },
     {
@@ -119,9 +119,9 @@
       "ai": "aggressive",
       "name": "Militia Raider",
       "stats": {
-        "str": 9,
-        "skl": 8,
-        "agi": 5
+        "pow": 9,
+        "dex": 8,
+        "agl": 5
       }
     },
     {
@@ -136,9 +136,9 @@
       "ai": "defensive",
       "name": "Militia Gunner",
       "stats": {
-        "str": 8,
-        "skl": 10,
-        "agi": 5
+        "pow": 8,
+        "dex": 10,
+        "agl": 5
       }
     }
   ]

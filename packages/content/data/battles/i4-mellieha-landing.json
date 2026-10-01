@@ -89,9 +89,9 @@
       "facing": "west",
       "name": "Tercio Sergeant",
       "stats": {
-        "str": 8,
-        "skl": 7,
-        "agi": 4
+        "pow": 8,
+        "dex": 7,
+        "agl": 4
       }
     },
     {
@@ -106,9 +106,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "str": 13,
-        "skl": 11,
-        "agi": 5
+        "pow": 13,
+        "dex": 11,
+        "agl": 5
       }
     },
     {
@@ -123,9 +123,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 12,
-        "skl": 12,
-        "agi": 6
+        "pow": 12,
+        "dex": 12,
+        "agl": 6
       }
     },
     {
@@ -140,9 +140,9 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "str": 13,
-        "skl": 11,
-        "agi": 6
+        "pow": 13,
+        "dex": 11,
+        "agl": 6
       }
     },
     {
@@ -157,9 +157,9 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "str": 12,
-        "skl": 10,
-        "agi": 8
+        "pow": 12,
+        "dex": 10,
+        "agl": 8
       }
     },
     {
@@ -174,9 +174,9 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "str": 11,
-        "skl": 12,
-        "agi": 5
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
       }
     }
   ]
