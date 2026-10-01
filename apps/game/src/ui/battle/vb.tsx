@@ -14,6 +14,13 @@ export function frameName(unit: UnitState): string {
   return lib.frames.get(unit.frameId)?.name ?? unit.frameClass;
 }
 
+/** Name of a charm or amulet by id, or "Nothing". */
+export function gearName(id: string | null): string {
+  if (!id) return 'Nothing';
+  lib ??= loadLibrary();
+  return lib.gear.get(id)?.name ?? id;
+}
+
 const pct = (v: number, max: number) => Math.max(0, Math.min(100, (v / max) * 100));
 
 /** "AP  70/100" over a bar; `delta` previews a cost (negative) or fatigue (positive). */

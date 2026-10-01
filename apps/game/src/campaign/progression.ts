@@ -1,5 +1,4 @@
 import type { BattleState, StatName } from '@m1565/core';
-import { pilotStats } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 
 export function newRosterEntry(
@@ -18,12 +17,14 @@ export function newRosterEntry(
     stats: { ...c.stats },
     frame: frame && lib.frames.has(frame) ? frame : c.frame,
     weapon: weapon && lib.weapons.has(weapon) ? weapon : c.weapon,
+    charm: null,
+    amulet: null,
   };
 }
 
 /**
  * Carries each pilot's battle progress (level, XP, stats, unspent points) back into the roster.
- * Levelling itself happens during battle, every 100 XP; this only records the result.
+ * Levelling itself happens during battle; this only records the result.
  */
 export function applyBattleResults(
   lib: Library,
@@ -48,7 +49,7 @@ export function applyBattleResults(
       level: unit.level,
       xp: unit.xp,
       statPoints: unit.statPoints,
-      stats: pilotStats(unit),
+      stats: { ...unit.pilot },
     };
   });
   return { roster: next, lines };
@@ -59,9 +60,10 @@ export function raiseRosterStat(
   roster: readonly RosterEntry[],
   characterId: string,
   stat: StatName,
+  max = 32,
 ): RosterEntry[] {
   return roster.map((r) =>
-    r.characterId === characterId && (r.statPoints ?? 0) > 0
+    r.characterId === characterId && (r.statPoints ?? 0) > 0 && r.stats[stat] < max
       ? {
           ...r,
           statPoints: (r.statPoints ?? 0) - 1,

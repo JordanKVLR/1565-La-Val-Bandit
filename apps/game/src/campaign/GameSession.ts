@@ -1,6 +1,7 @@
 import type { BattleSetup, BattleState, Facing, StatName } from '@m1565/core';
-import type { Library } from '@m1565/content';
-import { isBattleId, loadBattle } from '@m1565/content';
+import { deserializeBattle } from '@m1565/core';
+import type { Library, ShopItem } from '@m1565/content';
+import { battleSalvage, isBattleId, loadBattle } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
 import {
   BATTLE_ACHIEVEMENTS,
@@ -12,6 +13,9 @@ import { readSave, writeSave } from '../platform/storage';
 import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
+import type { Holdings, ItemKind, Stores } from './inventory';
+import { addItem, buy, equip, sell } from './inventory';
+import { migrateCampaign } from './migrate';
 import { applyBattleResults, newRosterEntry, raiseRosterStat } from './progression';
 import type { CampaignSave, ChapterInfo, RosterEntry, StageState } from './types';
 import { CAMPAIGN_SAVE_VERSION } from './types';
@@ -42,7 +46,8 @@ export interface SessionView {
   readonly chapter: ChapterInfo;
   readonly roster: readonly RosterEntry[];
   readonly scudi: number;
-  readonly armory: readonly string[];
+  /** Spare items: armaturas, weapons, charms and amulets nobody has fitted. */
+  readonly stores: Stores;
   readonly completedBattles: readonly string[];
 }
 
@@ -72,7 +77,7 @@ export class GameSession {
       chapter: save?.chapter ?? { title: '', subtitle: '' },
       roster: (save?.roster ?? []).map((r) => normalizeEntry(lib, r)),
       scudi: save?.scudi ?? 0,
-      armory: save?.armory ?? [],
+      stores: save?.stores ?? {},
       completedBattles: save?.completedBattles ?? [],
     });
     if (save) {
@@ -91,8 +96,9 @@ export class GameSession {
   }
 
   static load(lib: Library, slot: SlotId): GameSession | null {
-    const save = readSave<CampaignSave>(slot);
-    if (!save || save.version !== CAMPAIGN_SAVE_VERSION) return null;
+    const raw = readSave<Record<string, unknown>>(slot);
+    const save = raw ? migrateCampaign(lib, raw) : null;
+    if (!save) return null;
     try {
       return new GameSession(lib, save);
     } catch {
@@ -150,24 +156,36 @@ export class GameSession {
       return;
     }
     const { roster, lines } = applyBattleResults(this.lib, this.state.roster, state);
-    const reward = 100 + 25 * state.units.filter((u) => u.side === 'enemy' && u.defeated).length;
-    const completedBattles = this.state.completedBattles.includes(screen.battleId)
-      ? this.state.completedBattles
-      : [...this.state.completedBattles, screen.battleId];
-    this.patch({ roster, scudi: this.state.scudi + reward, completedBattles });
+    // Scudi for every enemy brought down (more for veterans), plus a purse for the victory.
+    const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
+    const reward = 50 + fallen.reduce((n, u) => n + 20 + 5 * u.level, 0);
+    const firstWin = !this.state.completedBattles.includes(screen.battleId);
+    const completedBattles = firstWin
+      ? [...this.state.completedBattles, screen.battleId]
+      : this.state.completedBattles;
+    // Armaturas recovered from the field, once per battle.
+    const salvage = firstWin ? battleSalvage(screen.battleId) : [];
+    let stores = this.state.stores;
+    for (const id of salvage) stores = addItem(stores, 'frame', id);
+    const salvaged = salvage.map(
+      (id) => `Salvaged armatura: ${this.lib.frames.get(id)?.name ?? id}`,
+    );
+    this.patch({ roster, stores, scudi: this.state.scudi + reward, completedBattles });
     this.runner.setVar('last_battle', screen.battleId);
     unlockAchievement(BATTLE_ACHIEVEMENTS[screen.battleId]);
     this.show({
       kind: 'results',
       battleId: screen.battleId,
-      lines: [`+${reward} scudi`, ...lines],
+      lines: [`+${reward} scudi`, ...salvaged, ...lines],
     });
     this.autosave();
   }
 
   /** Spends a pilot's unspent stat point between battles. */
   raiseStat(characterId: string, stat: StatName): void {
-    this.patch({ roster: raiseRosterStat(this.state.roster, characterId, stat) });
+    this.patch({
+      roster: raiseRosterStat(this.state.roster, characterId, stat, this.lib.balance.statMax),
+    });
     this.autosave();
   }
 
@@ -176,9 +194,31 @@ export class GameSession {
     this.autosave();
   }
 
-  closePrep(roster: readonly RosterEntry[], scudi: number, armory: readonly string[]): void {
-    this.patch({ roster, scudi, armory });
+  closePrep(): void {
     this.advance();
+    this.autosave();
+  }
+
+  /** Fits a spare item to a pilot (or takes off a charm/amulet with null). */
+  equipItem(characterId: string, kind: ItemKind, id: string | null): void {
+    this.applyHoldings(equip(this.lib, this.holdings(), characterId, kind, id));
+  }
+
+  buyItem(item: ShopItem): void {
+    this.applyHoldings(buy(this.lib, this.holdings(), item));
+  }
+
+  sellItem(kind: ItemKind, id: string): void {
+    this.applyHoldings(sell(this.lib, this.holdings(), kind, id));
+  }
+
+  private holdings(): Holdings {
+    const { roster, stores, scudi } = this.state;
+    return { roster, stores, scudi };
+  }
+
+  private applyHoldings(h: Holdings): void {
+    this.patch({ roster: h.roster, stores: h.stores, scudi: h.scudi });
     this.autosave();
   }
 
@@ -239,8 +279,8 @@ export class GameSession {
         const [id, frame, weapon] = args;
         if (!id || this.state.roster.some((r) => r.characterId === id)) return false;
         const entry = newRosterEntry(this.lib, id, frame, weapon);
-        const armory = [...new Set([...this.state.armory, entry.frame, entry.weapon])];
-        this.patch({ roster: [...this.state.roster, entry], armory });
+        // New pilots arrive with their own armatura and weapon fitted.
+        this.patch({ roster: [...this.state.roster, entry] });
         return false;
       }
       case 'leave':
@@ -273,8 +313,15 @@ export class GameSession {
     }
   }
 
-  private startBattle(id: string, initial?: BattleState): void {
+  private startBattle(id: string, saved?: BattleState): void {
     if (!isBattleId(id)) return;
+    // A snapshot from older rules can't resume; the battle restarts from its beginning.
+    let initial: BattleState | undefined;
+    try {
+      initial = saved ? deserializeBattle(JSON.stringify(saved)) : undefined;
+    } catch {
+      initial = undefined;
+    }
     const setup = loadBattle(id, this.lib, this.state.roster);
     this.battleCounter += 1;
     this.show({
@@ -306,7 +353,7 @@ export class GameSession {
       ink: this.runner.saveState(),
       roster: s.roster,
       scudi: s.scudi,
-      armory: s.armory,
+      stores: s.stores,
       completedBattles: s.completedBattles,
       stage: s.stage,
       chapter: s.chapter,
@@ -319,8 +366,9 @@ export class GameSession {
   }
 }
 
-/** Saves from before DEF/INT/SPI/VIT existed get those stats from the character's base values. */
+/** Fills any attribute or slot a save lacks from the character's base values. */
 function normalizeEntry(lib: Library, r: RosterEntry): RosterEntry {
   const base = lib.characters.get(r.characterId)?.stats;
-  return base ? { ...r, stats: { ...base, ...r.stats } } : r;
+  const filled = { charm: null, amulet: null, ...r };
+  return base ? { ...filled, stats: { ...base, ...r.stats } } : filled;
 }

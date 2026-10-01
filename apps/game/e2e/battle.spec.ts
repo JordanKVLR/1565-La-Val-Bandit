@@ -10,7 +10,7 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
   }
   const levelUp = page.getByRole('dialog', { name: 'Level up' });
   if (await levelUp.isVisible()) {
-    await levelUp.getByRole('button', { name: 'Raise STR' }).click();
+    await levelUp.getByRole('button', { name: 'Raise POW' }).click();
     await levelUp.getByRole('button', { name: /Continue|Save points/ }).click();
     return true;
   }

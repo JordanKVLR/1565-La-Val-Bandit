@@ -1,7 +1,14 @@
 import type { Attack, PilotStats, Weapon } from '@m1565/core';
 import { attackRange } from '@m1565/core';
 
-const STAT_LABEL = { str: 'STR', skl: 'SKL', agi: 'AGI' } as const;
+const STAT_LABEL = {
+  bas: 'BAS',
+  pow: 'POW',
+  dex: 'DEX',
+  agl: 'AGL',
+  def: 'DEF',
+  wep: 'WEP',
+} as const;
 
 /** Short tags for an attack's special properties, e.g. "×2 hits", "pierce 30%". */
 export function attackTags(a: Attack): string[] {
@@ -14,7 +21,7 @@ export function attackTags(a: Attack): string[] {
   return tags;
 }
 
-/** `fpCost` is what the attack really costs this pilot (after SPI). */
+/** AP, FP, power, accuracy and range of a technique, e.g. "POW 100% · AP 30 · FP 5 · range 1". */
 export function attackStats(a: Attack, weapon: Weapon, fpCost: number = a.fpCost): string {
   const r = attackRange(a, weapon);
   const range = r.min === r.max ? `${r.min}` : `${r.min}–${r.max}`;
@@ -22,7 +29,7 @@ export function attackStats(a: Attack, weapon: Weapon, fpCost: number = a.fpCost
   return `POW ${Math.round(a.power * 100)}%${acc} · AP ${a.apCost} · FP ${fpCost} · range ${range}`;
 }
 
-/** "STR 12 · SKL 9" with the pilot's shortfalls, or '' when there are no requirements. */
+/** "POW 12 · DEX 9" with the pilot's shortfalls, or '' when there are no requirements. */
 export function requirementText(a: Attack, stats?: PilotStats): string {
   return (Object.keys(STAT_LABEL) as Array<keyof typeof STAT_LABEL>)
     .filter((k) => a.requires[k])

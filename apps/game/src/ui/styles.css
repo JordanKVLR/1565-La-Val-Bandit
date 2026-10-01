@@ -1094,6 +1094,93 @@ input[type='range'] {
   border: 1px solid var(--gold);
   border-radius: 4px;
 }
+.prep-row.loadout {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+.prep-slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.gear-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  min-height: 56px;
+  padding: 4px 8px;
+  font: inherit;
+  color: var(--parchment);
+  text-align: left;
+  background: var(--ink);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.gear-slot small {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+}
+.item-bonus {
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.prep-sub {
+  margin: 6px 0 0;
+  color: var(--gold);
+  font-size: 1rem;
+  font-variant: small-caps;
+}
+.prep-picker header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.prep-picker h3 {
+  margin: 0;
+  color: var(--gold);
+  font-variant: small-caps;
+}
+.picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.picker-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  background: var(--panel);
+  border: 1px solid rgba(201, 164, 92, 0.4);
+  border-radius: 6px;
+}
+.pi-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cmp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.cmp .up {
+  color: #8fd18b;
+}
+.cmp .down {
+  color: #e98a7a;
+}
 .prep-foot {
   display: flex;
   justify-content: flex-end;
@@ -1719,7 +1806,7 @@ input[type='range'] {
 }
 .vbd-attr {
   display: grid;
-  grid-template-columns: 2.4em 1.8em 1fr;
+  grid-template-columns: 2.4em 3.2em 1fr;
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
@@ -1730,6 +1817,11 @@ input[type='range'] {
 }
 .vbd-attr b {
   text-align: right;
+}
+.vbd-gear {
+  margin-left: 2px;
+  color: var(--gold);
+  font-size: 0.85em;
 }
 .vb-ticks {
   display: grid;

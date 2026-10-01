@@ -2,9 +2,13 @@ import type { StatName } from '@m1565/core';
 import { meetsRequirements, starterAttacks } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 import { attackPool } from '@m1565/content';
+import { summarize } from '../campaign/inventory';
 import { ArmMovIcons, AttributeBars } from './battle/StatBars';
 
-/** A pilot's seven stats with + buttons for unspent points, and (optionally) learned techniques. */
+/**
+ * A pilot's six attributes (with gear in brackets) and + buttons for unspent points, and
+ * (optionally) the techniques this loadout already allows.
+ */
 export function RosterStats({
   lib,
   entry,
@@ -19,11 +23,12 @@ export function RosterStats({
   const points = entry.statPoints ?? 0;
   const frame = lib.frames.get(entry.frame);
   const weapon = lib.weapons.get(entry.weapon);
+  const geared = summarize(lib, entry).stats;
   // Locked techniques stay hidden: only what this pilot can already use with this loadout.
   const learned =
     frame && weapon
       ? [...starterAttacks(weapon), ...attackPool(lib, frame, weapon)].filter((a) =>
-          meetsRequirements(entry.stats, a),
+          meetsRequirements(geared, a),
         )
       : [];
   return (
@@ -34,6 +39,7 @@ export function RosterStats({
       </div>
       <AttributeBars
         stats={entry.stats}
+        geared={geared}
         {...(points > 0 ? { onRaise } : {})}
         raiseLabel={(label) => `Raise ${label} for ${entry.characterId}`}
       />

@@ -16,19 +16,21 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
             Every pilot starts with two attacks for their weapon: blades Slash (accurate, lighter)
             and Thrust; polearms Thrust and Long Thrust (reaches 2 tiles, less accurate); maces Bash
             and Smash; guns Fire (2–4 tiles) and a weak Stock Strike up close. Each faction adds its
-            own techniques, learned as your attributes grow; you'll be told when one unlocks.
+            own techniques, learned as your attributes grow. The stronger a technique, the more AP
+            and FP it costs and the less accurate it is.
           </dd>
           <dt>XP and levels</dt>
           <dd>
-            Every hit earns 20 XP and a defeating blow 60; surviving an enemy attack with a reaction
-            earns 3. Beating stronger enemies earns more than beating weaker ones. At 100 XP you
-            level up, gain HP and 5 points to spend.
+            XP comes only from landing a blow: about 30 for a hit, a little more the more damage it
+            does, and a large bonus for a defeating blow. Head-on hits earn the most, rear attacks
+            the least; stronger enemies give more, weaker ones less. Defending and dodging earn
+            nothing. Every 500 XP is a level: more HP and 3 attribute points.
           </dd>
           <dt>Attributes</dt>
           <dd>
-            <b>STR</b> damage · <b>SKL</b> accuracy · <b>AGI</b> dodging · <b>DEF</b> −1.5 damage
-            taken per point · <b>INT</b> Counter odds and technique accuracy · <b>SPI</b> cheaper
-            techniques, faster fatigue recovery, resists drains · <b>VIT</b> +5% max HP per point.
+            <b>BAS</b> +4 max HP per point · <b>POW</b> and <b>WEP</b> damage (+2 each per point) ·{' '}
+            <b>DEX</b> +2% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> −1.5
+            damage taken per point. Armaturas, weapons, charms and amulets add to them (max 32).
           </dd>
           <dt>AP (blue)</dt>
           <dd>
@@ -38,18 +40,19 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>FP (yellow)</dt>
           <dd>
-            Fatigue. Your own attacks add only a little (Slash and Thrust: 5). Reacting is what
-            tires you. At the end of your turn every 3 AP left unspent removes 2 FP, so a turn spent
-            waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a turn.
+            Fatigue. Your own attacks add their technique's FP (Slash and Thrust: 5). Reacting is
+            what tires you most. At the end of your turn every 3 AP left unspent removes 2 FP, so a
+            turn spent waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a
+            turn.
           </dd>
           <dt>Reactions</dt>
           <dd>
             When attacked you always choose. <b>Defend</b> (FP +30) halves the hit. <b>Avoid</b> (FP
-            +20) may dodge it. <b>Attack back</b> (FP equal to the strike's AP, e.g. 30) takes the
-            hit, then strikes back if you survive and are in range. From the front only,{' '}
+            +20) may dodge it. <b>Attack back</b> (FP equal to the strike's AP, e.g. Slash 20) takes
+            the hit, then strikes back if you survive and are in range. From the front only,{' '}
             <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto the attacker
-            at 1.25×; if it fails you take 1.25×. INT improves the odds. From behind you can only
-            Avoid. <b>Do nothing</b> costs nothing.
+            at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker improves the
+            odds. From behind you can only Avoid. <b>Do nothing</b> costs nothing.
           </dd>
           <dt>Position</dt>
           <dd>

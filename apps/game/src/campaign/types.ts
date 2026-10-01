@@ -1,5 +1,6 @@
 import type { BattleState, Facing } from '@m1565/core';
 import type { RosterEntry } from '@m1565/content';
+import type { Stores } from './inventory';
 import type { StoryStep } from '../story/StoryRunner';
 
 export type { RosterEntry };
@@ -20,7 +21,7 @@ export interface ChapterInfo {
   readonly subtitle: string;
 }
 
-export const CAMPAIGN_SAVE_VERSION = 1;
+export const CAMPAIGN_SAVE_VERSION = 2;
 
 export interface CampaignSave {
   readonly version: number;
@@ -28,8 +29,8 @@ export interface CampaignSave {
   readonly ink: string;
   readonly roster: readonly RosterEntry[];
   readonly scudi: number;
-  /** Frame and weapon designs the player owns; any pilot of the right allegiance may use them. */
-  readonly armory: readonly string[];
+  /** Spare armaturas, weapons, charms and amulets ("kind:id" → count). */
+  readonly stores: Stores;
   readonly completedBattles: readonly string[];
   readonly stage: StageState;
   readonly chapter: ChapterInfo;

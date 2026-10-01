@@ -1,12 +1,12 @@
 import type { BattleState, UnitState } from '@m1565/core';
-import { attackFpCost, attackRange, pilotStats, unlockedAttacks } from '@m1565/core';
+import { attackFpCost, attackRange, unlockedAttacks } from '@m1565/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { UnitViewer } from '../../render/UnitViewer';
 import { attackStats, attackTags } from './attackText';
 import type { CostPreview } from './StatBars';
 import { ATTRIBUTE_BAR_MAX, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
-import { frameName, VbBars } from './vb';
+import { frameName, gearName, VbBars } from './vb';
 
 const SIDE_COLOR = { player: '#3d6fbd', enemy: '#bd4a3d' } as const;
 
@@ -106,7 +106,6 @@ export function UnitDetails({
   onSpend?: () => void;
 }) {
   const [page, setPage] = useState<'stats' | 'techniques'>('stats');
-  const stats = pilotStats(unit);
   // Enemies' techniques stay a mystery; your own are listed.
   const techniques = unit.side === 'player' ? unlockedAttacks(unit) : [];
   const reach = attackRange(unit.attacks[0]!, unit.weapon);
@@ -126,7 +125,11 @@ export function UnitDetails({
             </li>
             <li>
               <span class="eq-icon item" aria-hidden="true" />
-              Nothing
+              {gearName(unit.charmId)}
+            </li>
+            <li>
+              <span class="eq-icon item" aria-hidden="true" />
+              {gearName(unit.amuletId)}
             </li>
           </ul>
         </section>
@@ -142,8 +145,16 @@ export function UnitDetails({
                   {STAT_INFO.map((s) => (
                     <div class="vbd-attr" key={s.key} title={s.help}>
                       <span class="lbl">{s.label}</span>
-                      <b>{stats[s.key]}</b>
-                      <Ticks value={stats[s.key]} />
+                      <b>
+                        {unit[s.key]}
+                        {unit[s.key] !== unit.pilot[s.key] && (
+                          <small class="vbd-gear">
+                            {unit[s.key] > unit.pilot[s.key] ? '+' : ''}
+                            {unit[s.key] - unit.pilot[s.key]}
+                          </small>
+                        )}
+                      </b>
+                      <Ticks value={unit[s.key]} />
                     </div>
                   ))}
                 </div>
