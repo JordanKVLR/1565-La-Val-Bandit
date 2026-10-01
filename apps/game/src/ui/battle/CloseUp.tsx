@@ -28,6 +28,8 @@ export function CloseUp({ data, onDone }: Props) {
   });
   const [lines, setLines] = useState<{ left: string; right: string }>({ left: '', right: '' });
   const [popups, setPopups] = useState<Popup[]>([]);
+  // The banner names the technique in play: the attack, then the one used to strike back.
+  const [title, setTitle] = useState(data.attackName);
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
 
@@ -53,6 +55,7 @@ export function CloseUp({ data, onDone }: Props) {
         const atkSide = sideOf(s.result.attackerId);
         const defSide = atkSide === 'left' ? 'right' : 'left';
         if (s.bark) setLines((l) => ({ ...l, [atkSide]: s.bark, [defSide]: '' }));
+        if (s.result.attackerId !== firstAttacker && data.backName) setTitle(data.backName);
         await stage.playStrike({
           attacker: atkSide,
           style: s.style,
@@ -129,7 +132,7 @@ export function CloseUp({ data, onDone }: Props) {
         <canvas ref={canvasRef} class="cu-canvas" aria-hidden="true" />
         <div class="cu-top">
           {bar(data.left)}
-          <div class="cu-attack">{data.attackName}</div>
+          <div class="cu-attack">{title}</div>
           {bar(data.right)}
         </div>
         {popups.map((p) => (

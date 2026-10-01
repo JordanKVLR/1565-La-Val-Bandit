@@ -112,7 +112,7 @@ describe('attacks', () => {
     });
   });
 
-  it('attack back turns the attack AP cost into FP, spends no AP and strikes back', () => {
+  it("attack back pays the technique's AP and FP as FP, spends no AP and strikes back", () => {
     const { state, events } = applyCommand(withAp(adjacent(), 'e', 60), {
       type: 'attack',
       unitId: 'a',
@@ -121,7 +121,7 @@ describe('attacks', () => {
     });
     const e = requireUnit(state, 'e');
     expect(e.ap).toBe(60);
-    expect(e.fp).toBe(20); // Slash costs 20 AP, paid as 20 FP when striking back
+    expect(e.fp).toBe(25); // Slash: 20 AP + 5 FP, all paid as FP when striking back
     const ev = events[0];
     expect(ev?.type === 'attackResolved' && ev.retaliation?.attackerId).toBe('e');
   });
