@@ -1887,6 +1887,14 @@ input[type='range'] {
   gap: 4px;
   margin-top: auto;
 }
+.vb-cmd-head {
+  grid-column: 1 / -1;
+  padding: 2px 12px;
+  font-family: var(--font-vb);
+  font-size: 1rem;
+  color: var(--vb-text);
+  opacity: 0.8;
+}
 .vbd-actions .vb-cmd {
   border: 1px solid var(--vb-line);
   background: rgba(70, 26, 18, 0.9);

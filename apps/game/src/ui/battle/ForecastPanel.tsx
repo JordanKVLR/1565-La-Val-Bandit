@@ -1,5 +1,11 @@
 import type { AttackForecast, BattleState, Reaction, ReactionChoice, UnitState } from '@m1565/core';
-import { assistFor, attackFpCost, chooseReaction } from '@m1565/core';
+import {
+  assistFor,
+  attackBackOptions,
+  attackFpCost,
+  chooseReaction,
+  forecastAttack,
+} from '@m1565/core';
 import { useState } from 'preact/hooks';
 import { attackTags } from './attackText';
 import { Portrait } from './StatBars';
@@ -21,7 +27,8 @@ interface Props {
   forecast: AttackForecast;
   /** The full reaction menu when the player is the defender; unusable ones are greyed out. */
   choices?: readonly ReactionChoice[];
-  onReact?: (r: Reaction) => void;
+  /** With Attack back, also the technique chosen to strike back with. */
+  onReact?: (r: Reaction, backAttackId?: string) => void;
   onConfirm?: () => void;
   onCancel?: () => void;
 }
@@ -104,6 +111,13 @@ export function ForecastPanel({
   const firstChoice =
     choices?.find((c) => c.available && c.reaction !== 'none')?.reaction ?? 'none';
   const [picked, setPicked] = useState<Reaction>(firstChoice);
+  // Attack back opens a technique list; the default is the main attack (or what reaches).
+  const [backId, setBackId] = useState<string | undefined>(f.retaliation?.attackId);
+  const [pickingBack, setPickingBack] = useState(false);
+  const backOptions = choices ? attackBackOptions(state, defender, attacker.pos) : [];
+  const backForecast = (id: string) =>
+    forecastAttack(state, attacker, defender, attacker.pos, f.attack, id).retaliation;
+  const back = choices && backId ? backForecast(backId) : f.retaliation;
   // On the player's turn, the enemy's reaction is decided up front and shown, as in the classic.
   const reaction: Reaction = choices
     ? picked
@@ -119,8 +133,8 @@ export function ForecastPanel({
       : `${f.damage[reaction]}${times} dmg${zone}${tags.length ? ` · ${tags.join(', ')}` : ''}`;
   const choice = choices?.find((c) => c.reaction === reaction);
   const defenderDetail =
-    reaction === 'attackBack' && f.retaliation
-      ? `strikes back for ${f.retaliation.damage}`
+    reaction === 'attackBack' && back
+      ? `strikes back for ${back.damage}${back.hits > 1 ? ` ×${back.hits}` : ''}`
       : reaction === 'counter' && f.counter
         ? `reflects ${f.counter.reflect} on success`
         : reaction === 'defend'
@@ -147,20 +161,56 @@ export function ForecastPanel({
           unit={defender}
           state={state}
           assist={defAssist}
-          line={REACTION_LABEL[reaction]}
-          odds={defenderOdds(f, reaction)}
+          line={reaction === 'attackBack' && back ? back.attackName : REACTION_LABEL[reaction]}
+          odds={reaction === 'attackBack' && back ? `${back.hitChance}` : defenderOdds(f, reaction)}
           detail={defenderDetail}
-          {...(choice ? { fp: choice.fpCost } : {})}
+          {...(choice
+            ? { fp: reaction === 'attackBack' && back ? back.fpCost : choice.fpCost }
+            : {})}
         />
       </div>
       <nav class="vb-commands" aria-label={choices ? 'Reactions' : 'Attack'}>
-        {choices ? (
+        {choices && pickingBack ? (
+          <>
+            <div class="vb-cmd-head">Strike back with</div>
+            {backOptions.map((o) => {
+              const r = o.available ? backForecast(o.attack.id) : undefined;
+              return (
+                <button
+                  type="button"
+                  key={o.attack.id}
+                  class={`vb-cmd fc-choice${o.attack.id === backId ? ' on' : ''}`}
+                  disabled={!o.available}
+                  aria-pressed={o.attack.id === backId}
+                  title={o.reason}
+                  onClick={() => {
+                    setBackId(o.attack.id);
+                    setPickingBack(false);
+                  }}
+                >
+                  <span>{o.attack.name}</span>
+                  {r ? (
+                    <small>
+                      FP {o.fpCost} · {r.hitChance}% · {r.damage}
+                      {r.hits > 1 ? `×${r.hits}` : ''} dmg
+                    </small>
+                  ) : (
+                    <small class="why">{o.reason}</small>
+                  )}
+                </button>
+              );
+            })}
+            <button type="button" class="vb-cmd" onClick={() => setPickingBack(false)}>
+              Back
+            </button>
+          </>
+        ) : choices ? (
           <>
             <button
               type="button"
               class="vb-cmd go"
               data-testid="react-go"
-              onClick={() => onReact?.(picked)}
+              onClick={() => onReact?.(picked, picked === 'attackBack' ? backId : undefined)}
             >
               Go!
             </button>
@@ -172,11 +222,20 @@ export function ForecastPanel({
                 disabled={!c.available}
                 aria-pressed={c.reaction === picked}
                 title={c.reason}
-                onClick={() => setPicked(c.reaction)}
+                onClick={() => {
+                  setPicked(c.reaction);
+                  if (c.reaction === 'attackBack') setPickingBack(true);
+                }}
               >
                 <span>{REACTION_LABEL[c.reaction]}</span>
                 {c.available ? (
-                  c.fpCost > 0 && <small>FP {c.fpCost}</small>
+                  c.reaction === 'attackBack' && back ? (
+                    <small>
+                      {back.attackName} · FP {back.fpCost}
+                    </small>
+                  ) : (
+                    c.fpCost > 0 && <small>FP {c.fpCost}</small>
+                  )
                 ) : (
                   <small class="why">{c.reason}</small>
                 )}

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleState, Facing, PilotStats, Reaction } from '../src';
+import type { Attack, BattleState, Facing, PilotStats, Reaction } from '../src';
 import {
   applyCommand,
+  attackBackOptions,
   attackFpCost,
   availableReactions,
   counterChance,
@@ -10,8 +11,9 @@ import {
   REACTIONS,
   reactionChoices,
   requireUnit,
+  starterAttacks,
 } from '../src';
-import { FRAME, makeMap, setup, unit } from './fixtures';
+import { FRAME, GUN, makeMap, setup, unit } from './fixtures';
 
 /** Attacker at (2,1) strikes a target at (2,2) facing the given way. */
 function duel(
@@ -95,12 +97,13 @@ describe('reaction and attack costs', () => {
     expect(fpAfter('none')).toMatchObject({ fp: 0, ap: 60 });
   });
 
-  it('attack back pays the strike AP cost as FP, and spends no AP', () => {
+  it("attack back pays the technique's AP and FP as FP, and spends no AP", () => {
     const s = duel('north');
     const t = requireUnit(s, 't');
     const r = fpAfter('attackBack');
     expect(r.ap).toBe(60);
-    expect(r.fp).toBe(t.attacks[0]!.apCost); // Slash: 30 AP → 30 FP
+    const slash = t.attacks[0]!;
+    expect(r.fp).toBe(slash.apCost + slash.fpCost); // Slash: 20 AP + 5 FP → 25 FP
   });
 
   it('attacking on your own turn costs only the technique FP (Slash: 5)', () => {
@@ -109,6 +112,119 @@ describe('reaction and attack costs', () => {
     const attack = a.attacks[0]!;
     expect(attackFpCost(s, a, attack)).toBe(5);
     expect(fpAfter('none').attacker.fp).toBe(5);
+  });
+});
+
+describe('choosing the strike back', () => {
+  const TWIN: Attack = {
+    id: 'twin',
+    name: 'Twin Cut',
+    style: 'slash',
+    power: 0.6,
+    accuracy: 0,
+    apCost: 30,
+    fpCost: 15,
+    hits: 2,
+    requires: {},
+  };
+  /** Target 't' (facing the attacker) knows Twin Cut on top of its sword starters. */
+  const withTwin = (fp = 0): BattleState => {
+    const s = createBattle(
+      setup({
+        map: makeMap(['ppppp', 'ppppp', 'ppppp', 'ppppp']),
+        units: [
+          unit({
+            id: 'a',
+            controller: 'human',
+            stats: { bas: 20, agl: 40 },
+            at: { x: 2, y: 1 },
+            facing: 'south',
+          }),
+          unit({ id: 't', side: 'enemy', at: { x: 2, y: 2 }, facing: 'north', attacks: [TWIN] }),
+        ],
+      }),
+    ).state;
+    return { ...s, units: s.units.map((u) => (u.id === 't' ? { ...u, fp } : u)) };
+  };
+  const options = (s: BattleState) =>
+    attackBackOptions(s, requireUnit(s, 't'), requireUnit(s, 'a').pos);
+
+  it('lists every unlocked technique with its FP cost (AP + FP)', () => {
+    expect(options(withTwin()).map((o) => [o.attack.name, o.fpCost, o.available])).toEqual([
+      ['Slash', 25, true],
+      ['Thrust', 35, true],
+      ['Twin Cut', 45, true],
+    ]);
+  });
+
+  it('greys out techniques that would take FP past 100, and out-of-reach ones', () => {
+    const tired = options(withTwin(70));
+    expect(tired.map((o) => o.available)).toEqual([true, false, false]);
+    expect(tired[1]!.reason).toMatch(/Too tired/);
+    const gunner = { ...requireUnit(withTwin(), 't'), weapon: GUN, attacks: starterAttacks(GUN) };
+    const s = withTwin();
+    const fire = attackBackOptions(s, gunner, requireUnit(s, 'a').pos)[0]!;
+    expect(fire).toMatchObject({ available: false, reason: 'Out of reach' });
+    // Too tired for any of them: the reaction itself says why.
+    const spent = withTwin(80);
+    const choice = reactionChoices(spent, requireUnit(spent, 't'), requireUnit(spent, 'a')).find(
+      (c) => c.reaction === 'attackBack',
+    );
+    expect(choice).toMatchObject({ available: false, reason: 'Too tired to strike back' });
+  });
+
+  it('strikes back with the chosen technique: its FP, every hit, and its name', () => {
+    const { state, events } = applyCommand(withTwin(), {
+      type: 'attack',
+      unitId: 'a',
+      targetId: 't',
+      reaction: 'attackBack',
+      backAttackId: 'twin',
+    });
+    expect(requireUnit(state, 't')).toMatchObject({ fp: 45, ap: 100 });
+    const ev = events.find((e) => e.type === 'attackResolved');
+    if (ev?.type !== 'attackResolved') throw new Error('no attack');
+    expect(ev.retaliationName).toBe('Twin Cut');
+    expect(ev.retaliation?.attackerId).toBe('t');
+    expect(ev.retaliationFollowUps).toHaveLength(1);
+  });
+
+  it('uses the main attack when no technique is named (as the AI does)', () => {
+    const { state, events } = applyCommand(withTwin(), {
+      type: 'attack',
+      unitId: 'a',
+      targetId: 't',
+      reaction: 'attackBack',
+    });
+    expect(requireUnit(state, 't').fp).toBe(25);
+    const ev = events.find((e) => e.type === 'attackResolved');
+    expect(ev?.type === 'attackResolved' && ev.retaliationName).toBe('Slash');
+  });
+
+  it('refuses a technique that is out of reach, too tiring or unknown', () => {
+    const attackBack = (s: BattleState, backAttackId: string) =>
+      applyCommand(s, {
+        type: 'attack',
+        unitId: 'a',
+        targetId: 't',
+        reaction: 'attackBack',
+        backAttackId,
+      });
+    expect(() => attackBack(withTwin(70), 'twin')).toThrow(/Too tired/);
+    expect(() => attackBack(withTwin(), 'nope')).toThrow(/Can't strike back/);
+  });
+
+  it('forecasts the chosen strike back', () => {
+    const s = withTwin();
+    const f = forecastAttack(
+      s,
+      requireUnit(s, 'a'),
+      requireUnit(s, 't'),
+      undefined,
+      undefined,
+      'twin',
+    );
+    expect(f.retaliation).toMatchObject({ attackId: 'twin', hits: 2, fpCost: 45 });
   });
 });
 

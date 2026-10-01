@@ -98,7 +98,7 @@ This section follows the classic Vanguard Bandits framework (see §1: mechanics,
 **Fatigue Points (FP):**
 
 - Your own attacks add their FP (5 for starters, more for stronger techniques). Reacting is what
-  tires a pilot most; **Attack back** pays the strike's whole AP cost as FP.
+  tires a pilot most; **Attack back** pays the chosen technique's AP and FP, all as FP (Slash: 25).
 - **Recovery:** at the end of a turn, every 3 AP left unspent removes 2 FP. A
   turn spent waiting clears 66 FP. There is no other recovery.
 - FP ≥ 50 (_Tired_): −10% hit and −10% evade. FP 100: the pilot **faints**: it can't move,
@@ -106,13 +106,13 @@ This section follows the classic Vanguard Bandits framework (see §1: mechanics,
 
 **Defender reactions** (chosen by the defender; the AI picks for enemies):
 
-| Reaction        | Cost              | Effect                                                                                                                                                                                      |
-| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Defend**      | +30 FP            | Always hit, damage ×0.5                                                                                                                                                                     |
-| **Avoid**       | +20 FP            | The hit rolls at the normal chance; if it lands, full damage                                                                                                                                |
-| **Attack back** | strike's AP as FP | Take the hit (+15% to be hit); if you survive and are in range, strike back once                                                                                                            |
-| **Counter**     | +20 FP            | A gamble: chance = 10% + 1% × ((your DEX + AGL) − (attacker DEX + AGL)), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25× |
-| **Do nothing**  | free              | Take the hit (+15% to be hit)                                                                                                                                                               |
+| Reaction        | Cost                     | Effect                                                                                                                                                                                                                         |
+| --------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Defend**      | +30 FP                   | Always hit, damage ×0.5                                                                                                                                                                                                        |
+| **Avoid**       | +20 FP                   | The hit rolls at the normal chance; if it lands, full damage                                                                                                                                                                   |
+| **Attack back** | technique AP + FP, as FP | Take the hit (+15% to be hit); if you survive, strike back with a technique you choose that reaches (all its hits and effects apply). Only techniques that keep FP ≤ 100 are offered; the AI strikes back with its main attack |
+| **Counter**     | +20 FP                   | A gamble: chance = 10% + 1% × ((your DEX + AGL) − (attacker DEX + AGL)), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25×                                    |
+| **Do nothing**  | free                     | Take the hit (+15% to be hit)                                                                                                                                                                                                  |
 
 The reaction menu always appears, listing every reaction; ones that can't be used are greyed out
 with the reason. **Direction matters:** from the front, all are offered. From the side: Defend,

@@ -96,22 +96,72 @@ export interface ReactionChoice {
   readonly reason?: string;
 }
 
+/** FP a strike back costs: the technique's AP and FP together, all paid as FP (no AP). */
+export function attackBackFpCost(attack: Attack): number {
+  return attack.apCost + attack.fpCost;
+}
+
+export interface BackAttackOption {
+  readonly attack: Attack;
+  readonly available: boolean;
+  /** FP the strike back would cost. */
+  readonly fpCost: number;
+  /** Why it can't be used, for the menu. */
+  readonly reason?: string;
+}
+
 /**
- * The attack a defender strikes back with: its main attack, or its other starter attack when
- * only that one reaches (a gunner clubbing an adjacent attacker with the stock).
+ * Every unlocked technique the defender could strike back with: it must reach the attacker, and
+ * paying its FP must not take the defender past full fatigue.
  */
-export function attackBackWith(defender: UnitState, attackerPos?: Coord): Attack {
+export function attackBackOptions(
+  state: BattleState,
+  defender: UnitState,
+  attackerPos?: Coord,
+): BackAttackOption[] {
+  const stats = unitStats(defender);
+  const fpLeft = state.balance.fpMax - defender.fp;
+  return defender.attacks
+    .filter((a) => meetsRequirements(stats, a))
+    .map((attack) => {
+      const fpCost = attackBackFpCost(attack);
+      const reason =
+        attackerPos && !attackInRange(attack, defender.weapon, defender.pos, attackerPos)
+          ? 'Out of reach'
+          : fpCost > fpLeft
+            ? `Too tired (needs ${fpCost} FP)`
+            : undefined;
+      return { attack, available: reason === undefined, fpCost, ...(reason ? { reason } : {}) };
+    });
+}
+
+/**
+ * The attack a defender strikes back with. With `attackId`, that technique (if usable);
+ * otherwise the main attack, or the other starter when only that one reaches (a gunner clubbing
+ * an adjacent attacker with the stock), or failing both any usable technique. The AI always
+ * uses this default.
+ */
+export function attackBackWith(
+  state: BattleState,
+  defender: UnitState,
+  attackerPos?: Coord,
+  attackId?: string,
+): Attack {
+  const options = attackBackOptions(state, defender, attackerPos);
+  const usable = (id: string | undefined) =>
+    options.find((o) => o.available && o.attack.id === id)?.attack;
+  if (attackId !== undefined) {
+    const chosen = usable(attackId);
+    if (chosen) return chosen;
+  }
   const main = findAttack(defender, 'basic');
   const second = defender.attacks[1];
-  if (!attackerPos || attackInRange(main, defender.weapon, defender.pos, attackerPos)) return main;
-  if (
-    second &&
-    Object.keys(second.requires).length === 0 &&
-    attackInRange(second, defender.weapon, defender.pos, attackerPos)
-  ) {
-    return second;
-  }
-  return main;
+  return (
+    usable(main.id) ??
+    (second && Object.keys(second.requires).length === 0 ? usable(second.id) : undefined) ??
+    options.find((o) => o.available)?.attack ??
+    main
+  );
 }
 
 /** FP an attack costs this unit on its own turn (after SPI). */
@@ -120,7 +170,7 @@ export function attackFpCost(state: BattleState, unit: UnitState, attack: Attack
 }
 
 /**
- * FP a reaction costs this defender. Striking back turns the attack's whole AP cost into FP,
+ * FP a reaction costs this defender. Striking back pays the chosen technique's AP and FP as FP,
  * which makes it the most tiring answer.
  */
 export function reactionFpCost(
@@ -128,6 +178,7 @@ export function reactionFpCost(
   defender: UnitState,
   reaction: Reaction,
   attackerPos?: Coord,
+  backAttackId?: string,
 ): number {
   const b = state.balance;
   switch (reaction) {
@@ -138,7 +189,7 @@ export function reactionFpCost(
     case 'counter':
       return b.counterFpCost;
     case 'attackBack':
-      return attackBackWith(defender, attackerPos).apCost;
+      return attackBackFpCost(attackBackWith(state, defender, attackerPos, backAttackId));
     case 'none':
       return 0;
   }
@@ -161,7 +212,7 @@ export function reactionChoices(
     fpCost: reactionFpCost(state, defender, reaction, attackerPos),
     ...(reason === undefined ? {} : { reason }),
   });
-  const back = attackBackWith(defender, attackerPos);
+  const backs = attackBackOptions(state, defender, attackerPos);
   return [
     choice('defend', !fresh ? spent : zone === 'rear' ? "Can't defend from behind" : undefined),
     choice('avoid', !fresh ? spent : undefined),
@@ -173,9 +224,11 @@ export function reactionChoices(
           ? "Can't strike back from behind"
           : attack?.noCounter
             ? `${attack.name} can't be answered`
-            : !attackInRange(back, defender.weapon, defender.pos, attackerPos)
-              ? 'Attacker out of reach'
-              : undefined,
+            : backs.some((o) => o.available)
+              ? undefined
+              : backs.every((o) => o.reason === 'Out of reach')
+                ? 'Attacker out of reach'
+                : 'Too tired to strike back',
     ),
     choice(
       'counter',
@@ -339,7 +392,16 @@ export interface AttackForecast {
   readonly hitChance: Readonly<Record<Reaction, number>>;
   readonly damage: Readonly<Record<Reaction, number>>;
   /** Present when the target could attack back from where it stands. */
-  readonly retaliation?: { readonly hitChance: number; readonly damage: number };
+  readonly retaliation?: {
+    readonly attackId: string;
+    readonly attackName: string;
+    /** Strikes the technique lands (twin techniques strike twice). */
+    readonly hits: number;
+    readonly fpCost: number;
+    /** Per strike. */
+    readonly hitChance: number;
+    readonly damage: number;
+  };
   /** Present when the target could Counter: success chance and the damage it would reflect. */
   readonly counter?: { readonly chance: number; readonly reflect: number };
 }
@@ -351,6 +413,8 @@ export function forecastAttack(
   target: UnitState,
   from: Coord = attacker.pos,
   attack: Attack = attacker.attacks[0] ?? basicAttack(attacker.weapon),
+  /** The technique the target would strike back with (its default when omitted). */
+  backAttackId?: string,
 ): AttackForecast {
   const n = strikeNumbers(state, attacker, target, from, attack);
   const reactions = availableReactions(state, target, attacker, from, attack);
@@ -378,10 +442,15 @@ export function forecastAttack(
     facing: facingToward(from, target.pos, attacker.facing),
   };
   if (reactions.includes('attackBack')) {
-    const back = strikeNumbers(state, target, movedAttacker, target.pos);
+    const backAttack = attackBackWith(state, target, from, backAttackId);
+    const back = strikeNumbers(state, target, movedAttacker, target.pos, backAttack);
     out = {
       ...out,
       retaliation: {
+        attackId: backAttack.id,
+        attackName: backAttack.name,
+        hits: backAttack.hits ?? 1,
+        fpCost: attackBackFpCost(backAttack),
         hitChance: hitChanceFor(state, back, 'none'),
         damage: damageFor(state, back, movedAttacker, 'none'),
       },

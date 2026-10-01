@@ -2,6 +2,7 @@ import type { Attack } from './attacks';
 import { meetsRequirements } from './attacks';
 import type { Reaction } from './combat';
 import {
+  attackBackOptions,
   attackBackWith,
   attackFpCost,
   attackInRange,
@@ -38,6 +39,8 @@ export type Command =
       readonly reaction: Reaction;
       /** Which of the unit's attacks to use; the basic weapon attack when omitted. */
       readonly attackId?: string;
+      /** With Attack back: the defender's technique for the strike back (its default if omitted). */
+      readonly backAttackId?: string;
     }
   | { readonly type: 'endTurn'; readonly unitId: string; readonly facing?: Facing }
   /** Spend one unspent stat point. Allowed at any time, even outside the unit's turn. */
@@ -103,7 +106,16 @@ export function applyCommand(
       if (!availableReactions(state, target, unit, unit.pos, attack).includes(cmd.reaction)) {
         throw new CommandError(`Reaction "${cmd.reaction}" is not available`);
       }
-      resolveAttack(state, unit, target, attack, cmd.reaction, events);
+      if (cmd.reaction === 'attackBack' && cmd.backAttackId !== undefined) {
+        const option = attackBackOptions(state, target, unit.pos).find(
+          (o) => o.attack.id === cmd.backAttackId,
+        );
+        if (!option?.available)
+          throw new CommandError(
+            `Can't strike back with "${cmd.backAttackId}"${option?.reason ? `: ${option.reason}` : ''}`,
+          );
+      }
+      resolveAttack(state, unit, target, attack, cmd.reaction, events, cmd.backAttackId);
       turn.acted = true;
       break;
     }
@@ -195,18 +207,24 @@ function resolveAttack(
   attack: Attack,
   reaction: Reaction,
   events: BattleEvent[],
+  backAttackId?: string,
 ): void {
   const b = state.balance;
   attacker.ap -= attack.apCost;
   attacker.fp = Math.min(b.fpMax, attacker.fp + attackFpCost(state, attacker, attack));
   // Reactions cost the defender FP only, never AP.
-  const backAttack = attackBackWith(target, attacker.pos);
-  target.fp = Math.min(b.fpMax, target.fp + reactionFpCost(state, target, reaction, attacker.pos));
+  // Chosen before paying, so the FP check sees the defender's fatigue as it was.
+  const backAttack = attackBackWith(state, target, attacker.pos, backAttackId);
+  target.fp = Math.min(
+    b.fpMax,
+    target.fp + reactionFpCost(state, target, reaction, attacker.pos, backAttack.id),
+  );
   attacker.facing = facingToward(attacker.pos, target.pos, attacker.facing);
 
   const pending: BattleEvent[] = [];
   const strikes: StrikeResult[] = [];
   let retaliation: StrikeResult | undefined;
+  const followUps: StrikeResult[] = [];
   let counter: { success: boolean; chance: number } | undefined;
 
   if (reaction === 'counter') {
@@ -244,7 +262,11 @@ function resolveAttack(
       strikes.push(strikeOnce(state, attacker, target, attack, reaction, pending));
     }
     if (reaction === 'attackBack' && !target.defeated && !attacker.defeated) {
+      // A strike back is a full technique: every hit and effect applies.
       retaliation = strikeOnce(state, target, attacker, backAttack, 'none', pending);
+      for (let i = 1; i < (backAttack.hits ?? 1) && !attacker.defeated; i++) {
+        followUps.push(strikeOnce(state, target, attacker, backAttack, 'none', pending));
+      }
     }
   }
   if (!target.defeated) target.facing = facingToward(target.pos, attacker.pos, target.facing);
@@ -256,7 +278,12 @@ function resolveAttack(
     style: attack.style,
     strikes,
     ...(retaliation
-      ? { retaliation, retaliationStyle: counter?.success ? attack.style : backAttack.style }
+      ? {
+          retaliation,
+          retaliationStyle: counter?.success ? attack.style : backAttack.style,
+          ...(counter?.success ? {} : { retaliationName: backAttack.name }),
+          ...(followUps.length ? { retaliationFollowUps: followUps } : {}),
+        }
       : {}),
     ...(counter ? { counter } : {}),
   });

@@ -112,7 +112,7 @@ describe('forecast', () => {
     // A gunner can't fire at point-blank range but strikes back with the stock.
     const gunner = { ...t, weapon: GUN, attacks: starterAttacks(GUN) };
     expect(availableReactions(state, gunner, a)).toEqual(all);
-    expect(attackBackWith(gunner, a.pos).name).toBe('Stock Strike');
+    expect(attackBackWith(state, gunner, a.pos).name).toBe('Stock Strike');
     // With no melee option it can't strike back, but a Counter needs no reach.
     const fireOnly = { ...gunner, attacks: gunner.attacks.slice(0, 1) };
     expect(availableReactions(state, fireOnly, a)).toEqual(['defend', 'avoid', 'counter', 'none']);
@@ -126,7 +126,14 @@ describe('forecast', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
     // The defender strikes back with Slash: 80 + 20 = 100 → 95 (cap); (24 + 6) × 0.8 − 8 = 16
-    expect(f.retaliation).toEqual({ hitChance: 95, damage: 16 });
+    expect(f.retaliation).toEqual({
+      attackId: 'basic',
+      attackName: 'Slash',
+      hits: 1,
+      fpCost: 25,
+      hitChance: 95,
+      damage: 16,
+    });
     // equal INT: 10% base chance; reflects the Thrust's 22 × 1.25 = 27.5 → 28
     expect(f.counter).toEqual({ chance: 10, reflect: 28 });
   });

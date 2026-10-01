@@ -50,6 +50,10 @@ export type BattleEvent =
       /** The defender's blow back: from Attack back, or a successful Counter's reflection. */
       readonly retaliation?: StrikeResult;
       readonly retaliationStyle?: AttackStyle;
+      /** The technique used to strike back (absent for a Counter's reflection). */
+      readonly retaliationName?: string;
+      /** Further strikes of a multi-hit strike back, after `retaliation`. */
+      readonly retaliationFollowUps?: readonly StrikeResult[];
       /** Set when the defender chose Counter: whether it worked, and the odds it had. */
       readonly counter?: { readonly success: boolean; readonly chance: number };
     }

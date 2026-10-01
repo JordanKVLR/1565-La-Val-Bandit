@@ -20,6 +20,7 @@ import {
   applyCommand,
   attackInRange,
   reactionChoices,
+  attackBackOptions,
   chooseReaction,
   CommandError,
   coordKey,
@@ -80,6 +81,8 @@ export interface CloseUpData {
   readonly left: CloseUpSide;
   readonly right: CloseUpSide;
   readonly attackName: string;
+  /** The technique the defender strikes back with, if it does. */
+  readonly backName?: string;
   readonly reaction: Reaction;
   readonly strikes: readonly CloseUpStrike[];
   readonly counter?: { readonly success: boolean; readonly chance: number };
@@ -123,6 +126,11 @@ export type Mode =
   | { readonly kind: 'levelUp'; readonly unitId: string }
   | { readonly kind: 'ended'; readonly outcome: 'victory' | 'defeat' };
 
+interface ReactionAnswer {
+  readonly reaction: Reaction;
+  readonly backAttackId?: string;
+}
+
 export interface BattleView {
   readonly state: BattleState;
   readonly mode: Mode;
@@ -147,7 +155,7 @@ const pickLine = (lines: readonly string[]) =>
 export class BattleController {
   readonly view: Store<BattleView>;
   private renderer: BattleRenderer | undefined;
-  private pendingReaction: ((r: Reaction) => void) | undefined;
+  private pendingReaction: ((answer: ReactionAnswer) => void) | undefined;
   private pendingCloseUp: (() => void) | undefined;
   private pendingLevelUp: (() => void) | undefined;
   private running = false;
@@ -324,13 +332,25 @@ export class BattleController {
     else if (['move', 'attackMenu', 'facing'].includes(k)) this.toCommand();
   }
 
-  chooseReaction(r: Reaction): void {
+  /** The player's answer to an enemy attack; with Attack back, the technique to strike with. */
+  chooseReaction(r: Reaction, backAttackId?: string): void {
     const resolve = this.pendingReaction;
     const mode = this.mode;
     if (!resolve || mode.kind !== 'reaction') return;
     if (!mode.choices.some((c) => c.reaction === r && c.available)) return;
+    if (r === 'attackBack' && backAttackId !== undefined) {
+      const defender = findUnit(this.state, mode.defenderId);
+      const attacker = findUnit(this.state, mode.attackerId);
+      const ok =
+        defender &&
+        attacker &&
+        attackBackOptions(this.state, defender, attacker.pos).some(
+          (o) => o.available && o.attack.id === backAttackId,
+        );
+      if (!ok) return;
+    }
     this.pendingReaction = undefined;
-    resolve(r);
+    resolve({ reaction: r, ...(r === 'attackBack' && backAttackId ? { backAttackId } : {}) });
   }
 
   finishCloseUp(): void {
@@ -526,11 +546,12 @@ export class BattleController {
       let cmd: Command = planned;
       if (cmd.type === 'attack') {
         const defender = findUnit(this.state, cmd.targetId);
-        const reaction =
+        // The AI strikes back with its main attack; the player picks the technique.
+        const answer: ReactionAnswer =
           defender?.controller === 'human'
             ? await this.askReaction(unitId, cmd.targetId, cmd.attackId ?? 'basic')
-            : chooseReaction(this.state, cmd.targetId, unitId, cmd.attackId);
-        cmd = { ...cmd, reaction };
+            : { reaction: chooseReaction(this.state, cmd.targetId, unitId, cmd.attackId) };
+        cmd = { ...cmd, ...answer };
       }
       if (!(await this.execute(cmd))) break;
       if (cmd.type !== 'endTurn') await delay(200 / this.speed());
@@ -543,7 +564,11 @@ export class BattleController {
     await this.beginTurn();
   }
 
-  private askReaction(attackerId: string, defenderId: string, attackId: string): Promise<Reaction> {
+  private askReaction(
+    attackerId: string,
+    defenderId: string,
+    attackId: string,
+  ): Promise<ReactionAnswer> {
     const attacker = findUnit(this.state, attackerId)!;
     const defender = findUnit(this.state, defenderId)!;
     const attack = this.attackOf(attacker, attackId);
@@ -553,9 +578,9 @@ export class BattleController {
     this.renderer?.select(defender.pos);
     this.patch({ mode: { kind: 'reaction', attackerId, defenderId, forecast, choices } });
     return new Promise((resolve) => {
-      this.pendingReaction = (r) => {
+      this.pendingReaction = (answer) => {
         this.patch({ mode: { kind: 'busy' } });
-        resolve(r);
+        resolve(answer);
       };
     });
   }
@@ -690,16 +715,18 @@ export class BattleController {
       ...markLevel(result, i === ev.strikes.length - 1 && !ev.retaliation),
     }));
     if (ev.retaliation) {
-      const r = ev.retaliation;
-      strikes.push({
-        result: r,
-        style: ev.retaliationStyle ?? 'slash',
-        bark: repelled ? '' : pickLine(this.barks(d).counter),
-        reply: pickLine(
-          r.defeated ? this.barks(a).defeated : r.hit ? this.barks(a).hurt : this.barks(a).avoid,
-        ),
-        ...(repelled ? { reflected: true } : {}),
-        ...markLevel(r, true),
+      const back = [ev.retaliation, ...(ev.retaliationFollowUps ?? [])];
+      back.forEach((r, i) => {
+        strikes.push({
+          result: r,
+          style: ev.retaliationStyle ?? 'slash',
+          bark: repelled || i > 0 ? '' : pickLine(this.barks(d).counter),
+          reply: pickLine(
+            r.defeated ? this.barks(a).defeated : r.hit ? this.barks(a).hurt : this.barks(a).avoid,
+          ),
+          ...(repelled ? { reflected: true } : {}),
+          ...markLevel(r, i === back.length - 1),
+        });
       });
     }
     this.patch({
@@ -709,6 +736,7 @@ export class BattleController {
           left: side(left),
           right: side(right),
           attackName: ev.attackName,
+          ...(ev.retaliationName ? { backName: ev.retaliationName } : {}),
           reaction: ev.reaction,
           strikes,
           ...(ev.counter ? { counter: ev.counter } : {}),
@@ -779,8 +807,12 @@ function describeAttack(
     : `${name(first.targetId)} avoids ${name(first.attackerId)}'s ${ev.attackName}.`;
   if (ev.counter && !ev.counter.success) return `${main} The counter failed.`;
   if (!ev.retaliation) return main;
-  const c = ev.retaliation;
-  return `${main} Strikes back: ${c.hit ? `${c.damage} damage${c.xp ? `, +${c.xp} XP` : ''}` : 'miss'}.`;
+  const back = [ev.retaliation, ...(ev.retaliationFollowUps ?? [])];
+  const landed = back.filter((c) => c.hit);
+  const backDmg = landed.reduce((n, c) => n + c.damage, 0);
+  const backXp = back.reduce((n, c) => n + c.xp, 0);
+  const withWhat = ev.retaliationName ? ` with ${ev.retaliationName}` : '';
+  return `${main} Strikes back${withWhat}: ${landed.length ? `${backDmg} damage${backXp ? `, +${backXp} XP` : ''}` : 'miss'}.`;
 }
 
 const REACTION_WORD: Record<Reaction, string> = {

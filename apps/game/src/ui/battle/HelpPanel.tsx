@@ -48,11 +48,12 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           <dt>Reactions</dt>
           <dd>
             When attacked you always choose. <b>Defend</b> (FP +30) halves the hit. <b>Avoid</b> (FP
-            +20) may dodge it. <b>Attack back</b> (FP equal to the strike's AP, e.g. Slash 20) takes
-            the hit, then strikes back if you survive and are in range. From the front only,{' '}
-            <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto the attacker
-            at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker improves the
-            odds. From behind you can only Avoid. <b>Do nothing</b> costs nothing.
+            +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique
+            you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25),
+            and only techniques that reach and keep you at or under 100 FP are offered. From the
+            front only, <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto
+            the attacker at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker
+            improves the odds. From behind you can only Avoid. <b>Do nothing</b> costs nothing.
           </dd>
           <dt>Position</dt>
           <dd>

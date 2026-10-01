@@ -258,7 +258,7 @@ export function BattleScreen({
             defender={findUnit(state, mode.defenderId)!}
             forecast={mode.forecast}
             choices={mode.choices}
-            onReact={(r) => ctl.chooseReaction(r)}
+            onReact={(r, backAttackId) => ctl.chooseReaction(r, backAttackId)}
           />
         </div>
       )}
