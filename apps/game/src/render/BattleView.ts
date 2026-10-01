@@ -71,8 +71,8 @@ const FACING_ANGLE: Record<Facing, number> = {
 /** Where the unit's badge floats and where its arrow sits, relative to the tile top. */
 const LABEL_OFFSET = new Vector3(0, 0.42, 0);
 /** With a figure on the arrow the badge floats above its head instead. */
-const FIGURE_LABEL_OFFSET = new Vector3(0, 1.0, 0);
-const FIGURE_SCALE = 0.42;
+const FIGURE_LABEL_OFFSET = new Vector3(0, 1.15, 0);
+const FIGURE_SCALE = 0.5;
 const ARROW_OFFSET = new Vector3(0, 0.1, 0);
 
 /**

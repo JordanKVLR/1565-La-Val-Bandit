@@ -46,8 +46,19 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
       }
       return true;
     }
-    await menu.getByRole('button', { name: 'End Turn' }).click();
-    await page.getByRole('dialog', { name: 'Choose facing' }).getByRole('button').first().click();
+    // The menu can vanish as the turn passes (an enemy starts acting): if a click misses, the
+    // next step deals with whatever is showing instead of waiting forever.
+    const quick = { timeout: 3000 };
+    await menu
+      .getByRole('button', { name: 'End Turn' })
+      .click(quick)
+      .catch(() => undefined);
+    await page
+      .getByRole('dialog', { name: 'Choose facing' })
+      .getByRole('button')
+      .first()
+      .click(quick)
+      .catch(() => undefined);
     return true;
   }
   return false;

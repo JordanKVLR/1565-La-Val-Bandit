@@ -28,7 +28,7 @@ import {
   forecastAttack,
   livingUnits,
   meetsRequirements,
-  pilotStats,
+  unitStats,
   planAiTurn,
   reachableTiles,
   unitAt,
@@ -395,7 +395,8 @@ export class BattleController {
   attackOptions(): AttackOption[] {
     const unit = this.active();
     if (!unit) return [];
-    const stats = pilotStats(unit);
+    // Requirements count gear bonuses, as the rules engine does.
+    const stats = unitStats(unit);
     return unit.attacks.map((attack) => ({
       attack,
       unlocked: meetsRequirements(stats, attack),

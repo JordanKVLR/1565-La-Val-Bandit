@@ -4,7 +4,7 @@ import { useState } from 'preact/hooks';
 import type { GameSession } from '../campaign/GameSession';
 import type { ItemKind, LoadoutSummary, Stores } from '../campaign/inventory';
 import {
-  armouryStock,
+  companyStock,
   canUse,
   countOf,
   equipped,
@@ -74,14 +74,25 @@ function Comparison({ before, after }: { before: LoadoutSummary; after: LoadoutS
     ['MOV', before.move, after.move],
   ];
   const changed = rows.filter(([, a, b]) => a !== b);
-  if (!changed.length) return <small class="cmp none">No change</small>;
+  const gained = after.techniques.filter((t) => !before.techniques.includes(t));
+  const lost = before.techniques.filter((t) => !after.techniques.includes(t));
+  const reach = before.reach !== after.reach;
+  if (!changed.length && !gained.length && !lost.length && !reach)
+    return <small class="cmp none">No change</small>;
   return (
     <ul class="cmp">
+      {reach && (
+        <li class="info">
+          {before.reach}→{after.reach}
+        </li>
+      )}
       {changed.map(([label, a, b]) => (
         <li key={label} class={b > a ? 'up' : 'down'}>
           {label} {a}→{b} {b > a ? '▲' : '▼'}
         </li>
       ))}
+      {gained.length > 0 && <li class="up">Learns {gained.join(', ')}</li>}
+      {lost.length > 0 && <li class="down">Loses {lost.join(', ')}</li>}
     </ul>
   );
 }
@@ -110,8 +121,8 @@ function Slots({
             onClick={() => onPick(kind)}
           >
             <small>{SLOT_LABEL[kind]}</small>
-            <strong>{d ? d.name : '— empty —'}</strong>
-            {d && <Bonus bonus={d.bonus} />}
+            <strong>{d ? d.name : 'Nothing fitted'}</strong>
+            {d ? <Bonus bonus={d.bonus} /> : <span class="hint">Tap to fit</span>}
           </button>
         );
       })}
@@ -137,7 +148,10 @@ function Picker({
 }) {
   const current = equipped(entry, kind);
   const before = summarize(lib, entry);
-  const options = spares(stores, kind).filter(([id]) => canUse(lib, entry, kind, id));
+  // The fitted item itself is never offered again: picking it would change nothing.
+  const options = spares(stores, kind).filter(
+    ([id]) => id !== current && canUse(lib, entry, kind, id),
+  );
   const withItem = (id: string | null) => summarize(lib, { ...entry, [kind]: id });
   const name = lib.characters.get(entry.characterId)?.name ?? entry.characterId;
   const cur = current ? describe(lib, kind, current) : null;
@@ -153,13 +167,13 @@ function Picker({
           </button>
         </header>
         <div class="picker-current">
-          <small>Fitted</small>{' '}
           {cur ? (
             <>
-              <strong>{cur.name}</strong> <Bonus bonus={cur.bonus} /> <small>{cur.detail}</small>
+              <small>Fitted now:</small> <strong>{cur.name}</strong> <Bonus bonus={cur.bonus} />{' '}
+              <small>{cur.detail}</small>
             </>
           ) : (
-            <strong>nothing</strong>
+            <strong>Nothing fitted</strong>
           )}
         </div>
         <div class="picker-list">
@@ -217,7 +231,7 @@ export function PrepScreen({ session, lib }: { session: GameSession; lib: Librar
 
   const allegianceOf = (id: string) => lib.characters.get(id)?.allegiance ?? 'malta';
   const sides = [...new Set(roster.map((r) => allegianceOf(r.characterId)))];
-  const stock = sides.flatMap((side) => armouryStock(lib, view.completedBattles, side));
+  const stock = companyStock(lib, view.completedBattles, sides);
   const sellable = (['weapon', 'charm', 'amulet'] as const).flatMap((kind) =>
     spares(stores, kind).map(([id, n]) => ({ kind, id, n })),
   );

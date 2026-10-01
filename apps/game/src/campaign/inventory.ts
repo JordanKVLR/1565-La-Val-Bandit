@@ -1,7 +1,7 @@
 import type { PilotStats, StatBonus } from '@m1565/core';
-import { effectiveStats, maxHpFor } from '@m1565/core';
+import { effectiveStats, maxHpFor, meetsRequirements, starterAttacks } from '@m1565/core';
 import type { Library, RosterEntry, ShopItem } from '@m1565/content';
-import { ALLEGIANCE_FACTIONS } from '@m1565/content';
+import { ALLEGIANCE_FACTIONS, attackPool } from '@m1565/content';
 
 /**
  * The player's gear, the classic way: real items, not unlimited designs. An armatura or weapon
@@ -93,6 +93,22 @@ export function equip(
   return { ...h, roster, stores };
 }
 
+/**
+ * A pilot leaves the company: their charm and amulet, and any armatura or weapon that isn't
+ * their own from the start, go back to the stores rather than leaving with them.
+ */
+export function release(lib: Library, h: Holdings, characterId: string): Holdings {
+  const entry = h.roster.find((r) => r.characterId === characterId);
+  if (!entry) return h;
+  const own = lib.characters.get(characterId);
+  let stores = h.stores;
+  if (entry.charm) stores = addItem(stores, 'charm', entry.charm);
+  if (entry.amulet) stores = addItem(stores, 'amulet', entry.amulet);
+  if (entry.frame !== own?.frame) stores = addItem(stores, 'frame', entry.frame);
+  if (entry.weapon !== own?.weapon) stores = addItem(stores, 'weapon', entry.weapon);
+  return { ...h, stores, roster: h.roster.filter((r) => r.characterId !== characterId) };
+}
+
 /** Price of an item in the Armoury (armaturas have none: they are never sold or bought). */
 export function priceOf(lib: Library, kind: ItemKind, id: string): number | null {
   if (kind === 'weapon') return lib.weapons.get(id)?.price ?? null;
@@ -129,6 +145,23 @@ export function armouryStock(
   );
 }
 
+/** Stock for every side in the company, each item listed once. */
+export function companyStock(
+  lib: Library,
+  completedBattles: readonly string[],
+  allegiances: readonly ('malta' | 'ottoman')[],
+): ShopItem[] {
+  const seen = new Set<string>();
+  return allegiances
+    .flatMap((side) => armouryStock(lib, completedBattles, side))
+    .filter((s) => {
+      const key = itemKey(s.kind, s.item);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
 export interface LoadoutSummary {
   readonly stats: PilotStats;
   readonly hp: number;
@@ -140,6 +173,10 @@ export interface LoadoutSummary {
   readonly accuracy: number;
   /** Damage blocked per hit: armour + DEF × defDamagePerPoint. */
   readonly block: number;
+  /** Weapon type and reach, e.g. "firearm 2–4". */
+  readonly reach: string;
+  /** Techniques this loadout can use now (starters first). */
+  readonly techniques: readonly string[];
 }
 
 /** A pilot's fighting numbers with a given loadout (for before → after comparisons). */
@@ -155,6 +192,17 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     b.statMax,
   );
   const armour = frame?.armour ?? 0;
+  const range = weapon
+    ? weapon.minRange === weapon.maxRange
+      ? `${weapon.maxRange}`
+      : `${weapon.minRange}–${weapon.maxRange}`
+    : '';
+  const techniques =
+    frame && weapon
+      ? [...starterAttacks(weapon), ...attackPool(lib, frame, weapon)]
+          .filter((a) => meetsRequirements(stats, a))
+          .map((a) => a.name)
+      : [];
   return {
     stats,
     hp: maxHpFor(entry.level, stats.bas, frame?.hp ?? 0, b),
@@ -163,5 +211,7 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint),
     accuracy: stats.dex * b.dexHitFactor,
     block: Math.round(armour + stats.def * b.defDamagePerPoint),
+    reach: weapon ? `${weapon.type} ${range}` : '',
+    techniques,
   };
 }

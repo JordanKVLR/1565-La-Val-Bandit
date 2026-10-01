@@ -1,3 +1,5 @@
+import type { PilotStats } from '@m1565/core';
+import { STAT_NAMES } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 import type { CampaignSave } from './types';
 import { CAMPAIGN_SAVE_VERSION } from './types';
@@ -17,6 +19,13 @@ export function migrateCampaign(lib: Library, raw: Raw): CampaignSave | null {
   return save.version === CAMPAIGN_SAVE_VERSION ? (save as unknown as CampaignSave) : null;
 }
 
+/** Old builds could pile points into one stat; the classic scale stops at the cap. */
+function capStats(stats: PilotStats, max: number): PilotStats {
+  const out = { ...stats };
+  for (const k of STAT_NAMES) out[k] = Math.max(0, Math.min(max, out[k]));
+  return out;
+}
+
 function v1to2(lib: Library, raw: Raw): Raw {
   const roster = ((raw.roster as Raw[] | undefined) ?? []).map((r): RosterEntry => {
     const s = (r.stats ?? {}) as Record<string, number>;
@@ -29,14 +38,17 @@ function v1to2(lib: Library, raw: Raw): Raw {
       // The new scale levels every 500 XP; carry over progress as a share of a level.
       xp: Math.min(499, Math.round(Number(r.xp ?? 0) * 5)),
       statPoints: Number(r.statPoints ?? 0),
-      stats: {
-        bas: s.vit ?? base?.bas ?? 5,
-        pow: str,
-        dex: skl,
-        agl: s.agi ?? base?.agl ?? 6,
-        def: s.def ?? base?.def ?? 3,
-        wep: Math.max(3, Math.round((str + skl) / 2) - 1),
-      },
+      stats: capStats(
+        {
+          bas: s.vit ?? base?.bas ?? 5,
+          pow: str,
+          dex: skl,
+          agl: s.agi ?? base?.agl ?? 6,
+          def: s.def ?? base?.def ?? 3,
+          wep: Math.max(3, Math.round((str + skl) / 2) - 1),
+        },
+        lib.balance.statMax,
+      ),
       frame: String(r.frame),
       weapon: String(r.weapon),
       charm: null,

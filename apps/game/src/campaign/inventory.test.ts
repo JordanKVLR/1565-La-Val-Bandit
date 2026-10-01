@@ -1,7 +1,19 @@
 import { loadLibrary } from '@m1565/content';
 import { describe, expect, it } from 'vitest';
 import type { Holdings } from './inventory';
-import { addItem, armouryStock, buy, countOf, equip, sell, spares, summarize } from './inventory';
+import {
+  addItem,
+  armouryStock,
+  buy,
+  companyStock,
+  countOf,
+  equip,
+  release,
+  sell,
+  spares,
+  summarize,
+} from './inventory';
+import { migrateCampaign } from './migrate';
 import { newRosterEntry } from './progression';
 
 const lib = loadLibrary();
@@ -80,5 +92,61 @@ describe('inventory', () => {
     );
     expect(after.damage).toBeGreaterThan(before.damage);
     expect(after.block).toBeGreaterThan(before.block);
+  });
+
+  it('returns gear to the stores when a pilot leaves', () => {
+    let h = buy(lib, start(), {
+      item: 'pilgrim-shell',
+      kind: 'amulet',
+      allegiance: 'malta',
+      after: null,
+    });
+    h = equip(lib, h, 'ninu', 'amulet', 'pilgrim-shell');
+    h = equip(lib, h, 'ninu', 'frame', 'cavaliere');
+    const own = lib.characters.get('ninu')!;
+    h = release(lib, h, 'ninu');
+    expect(h.roster.map((r) => r.characterId)).toEqual(['kateri']);
+    expect(countOf(h.stores, 'amulet', 'pilgrim-shell')).toBe(1);
+    expect(countOf(h.stores, 'frame', 'cavaliere')).toBe(1);
+    // Their own armatura went to the stores when the cavaliere was fitted; it isn't doubled.
+    expect(countOf(h.stores, 'frame', own.frame)).toBe(1);
+    // With their own loadout, only trinkets come back.
+    const plain = release(lib, start(), 'kateri');
+    expect(plain.stores).toEqual(start().stores);
+  });
+
+  it('lists each Armoury item once for a mixed company', () => {
+    const all = lib.shop.map((s) => s.after).filter((a): a is string => !!a);
+    const stock = companyStock(lib, all, ['malta', 'ottoman']);
+    const keys = stock.map((s) => `${s.kind}:${s.item}`);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe('campaign save migration', () => {
+  it('maps the seven old stats onto the six, caps them and turns designs into spares', () => {
+    const v1 = {
+      version: 1,
+      scudi: 300,
+      roster: [
+        {
+          characterId: 'ninu',
+          level: 4,
+          xp: 40,
+          statPoints: 2,
+          stats: { str: 40, skl: 8, agi: 9, def: 4, int: 5, spi: 5, vit: 7 },
+          frame: 'haddiem',
+          weapon: 'arming-sword',
+        },
+      ],
+      armory: ['haddiem', 'arming-sword', 'cavaliere', 'pike'],
+    };
+    const save = migrateCampaign(lib, v1)!;
+    const ninu = save.roster[0]!;
+    expect(ninu.stats).toMatchObject({ pow: 32, dex: 8, agl: 9, def: 4, bas: 7 });
+    expect(ninu.xp).toBe(200);
+    expect(countOf(save.stores, 'frame', 'cavaliere')).toBe(1);
+    expect(countOf(save.stores, 'weapon', 'pike')).toBe(1);
+    expect(countOf(save.stores, 'frame', 'haddiem')).toBe(0);
   });
 });

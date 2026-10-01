@@ -394,6 +394,12 @@ body,
   min-width: 3.2em;
   text-align: right;
 }
+.bar-attr .bar-value {
+  min-width: 4.4em;
+}
+.bar-note {
+  color: var(--gold);
+}
 .bar-value.changing {
   color: #f5d77a;
   font-weight: bold;
@@ -752,8 +758,8 @@ body,
     font-size: 0.8rem;
   }
   .btn {
-    min-height: 40px;
-    padding: 0.3em 1.1em;
+    min-height: 44px;
+    padding: 0.25em 1em;
     font-size: 1rem;
   }
   .btn.go {
@@ -1086,7 +1092,7 @@ input[type='range'] {
   font-size: 0.75rem;
 }
 .prep-row select {
-  min-height: 40px;
+  min-height: 44px;
   font: inherit;
   font-size: 0.95rem;
   color: var(--parchment);
@@ -1119,8 +1125,8 @@ input[type='range'] {
   cursor: pointer;
 }
 .gear-slot small {
-  font-size: 0.7rem;
-  opacity: 0.7;
+  font-size: 0.75rem;
+  opacity: 0.85;
   text-transform: uppercase;
 }
 .item-bonus {
@@ -1134,7 +1140,11 @@ input[type='range'] {
   font-size: 1rem;
   font-variant: small-caps;
 }
+.prep-picker {
+  overflow: hidden;
+}
 .prep-picker header {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1149,6 +1159,17 @@ input[type='range'] {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  min-height: 0;
+  overflow-y: auto;
+}
+.gear-slot .hint {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-transform: none;
+}
+.prep-tabs .btn.tab.on {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 .picker-item {
   display: grid;
@@ -1182,9 +1203,14 @@ input[type='range'] {
   color: #e98a7a;
 }
 .prep-foot {
+  position: sticky;
+  bottom: calc(-1 * max(12px, env(safe-area-inset-bottom)));
+  z-index: 2;
   display: flex;
   justify-content: flex-end;
-  margin-top: auto;
+  margin: auto calc(-1 * max(16px, env(safe-area-inset-right))) 0;
+  padding: 8px max(16px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, rgba(20, 14, 10, 0.92) 30%);
 }
 .empty {
   opacity: 0.7;
@@ -1806,7 +1832,7 @@ input[type='range'] {
 }
 .vbd-attr {
   display: grid;
-  grid-template-columns: 2.4em 3.2em 1fr;
+  grid-template-columns: 2.4em 3.8em minmax(0, 1fr);
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
@@ -1920,4 +1946,7 @@ input[type='range'] {
     grid-row: 1 / span 3;
     align-self: center;
   }
+}
+.cmp .info {
+  color: var(--parchment);
 }

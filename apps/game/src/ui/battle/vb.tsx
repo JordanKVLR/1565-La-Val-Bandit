@@ -22,9 +22,9 @@ export function unitFigure(unit: UnitState, accent: string): FigureSpec {
   return figureSpec(lib, unit, accent);
 }
 
-/** Name of a charm or amulet by id, or "Nothing". */
-export function gearName(id: string | null): string {
-  if (!id) return 'Nothing';
+/** Name of a charm or amulet by id, or "No charm" / "No amulet". */
+export function gearName(id: string | null, slot: 'charm' | 'amulet'): string {
+  if (!id) return slot === 'charm' ? 'No charm' : 'No amulet';
   lib ??= loadLibrary();
   return lib.gear.get(id)?.name ?? id;
 }

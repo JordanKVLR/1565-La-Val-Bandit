@@ -11,7 +11,7 @@ import {
   reactionChoices,
   requireUnit,
 } from '../src';
-import { makeMap, setup, unit } from './fixtures';
+import { FRAME, makeMap, setup, unit } from './fixtures';
 
 /** Attacker at (2,1) strikes a target at (2,2) facing the given way. */
 function duel(
@@ -229,6 +229,32 @@ describe('attributes', () => {
     const a = requireUnit(s, 'a');
     expect(a).toMatchObject({ def: 2, dex: 9, wep: 32 });
     expect(a.pilot).toMatchObject({ def: 0, dex: 6, wep: 30 });
+  });
+});
+
+describe('raising attributes with gear', () => {
+  it('recomputes from pilot + gear when a frame penalty had clamped the value at 0', () => {
+    const s = createBattle(
+      setup({
+        units: [
+          unit({
+            id: 'a',
+            at: { x: 0, y: 0 },
+            stats: { agl: 2 },
+            frame: { ...FRAME, bonus: { agl: -6 } },
+            statPoints: 1,
+          }),
+          unit({ id: 'e', side: 'enemy', at: { x: 5, y: 5 } }),
+        ],
+      }),
+    ).state;
+    expect(requireUnit(s, 'a').agl).toBe(0);
+    const after = requireUnit(
+      applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'agl' }).state,
+      'a',
+    );
+    expect(after.pilot.agl).toBe(3);
+    expect(after.agl).toBe(0); // 3 − 6, still clamped at 0
   });
 });
 

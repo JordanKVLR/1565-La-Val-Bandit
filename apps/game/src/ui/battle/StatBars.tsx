@@ -82,9 +82,14 @@ export function UnitBars({
 }
 
 /**
- * The six pilot attributes as bars (full at 32), optionally with a + button each. `geared`
- * shows the value with gear in brackets when it differs from the pilot's own.
+ * The six pilot attributes as bars (full at 32), optionally with a + button each. With `geared`
+ * the bars show the values with gear, and the gear's share in brackets, e.g. "14 (+1)".
  */
+/** "(+2)" after a gear-inclusive attribute: how much of it the gear gives. */
+export function gearNote(diff: number): string {
+  return `(${diff > 0 ? '+' : ''}${diff})`;
+}
+
 export function AttributeBars({
   stats,
   geared,
@@ -106,12 +111,12 @@ export function AttributeBars({
         <div class="attr-row" key={s.key}>
           <Bar
             label={s.label}
-            value={stats[s.key]}
+            value={geared ? geared[s.key] : stats[s.key]}
             max={ATTRIBUTE_BAR_MAX}
             kind="attr"
             title={s.help}
             {...(geared && geared[s.key] !== stats[s.key]
-              ? { note: `(${geared[s.key]} with gear)` }
+              ? { note: gearNote(geared[s.key] - stats[s.key]) }
               : {})}
           />
           {onRaise && (
@@ -119,7 +124,7 @@ export function AttributeBars({
               type="button"
               class="btn icon raise"
               aria-label={raiseLabel ? raiseLabel(s.label) : `Raise ${s.label}`}
-              disabled={!canRaise}
+              disabled={!canRaise || stats[s.key] >= ATTRIBUTE_BAR_MAX}
               onClick={() => onRaise(s.key)}
             >
               +

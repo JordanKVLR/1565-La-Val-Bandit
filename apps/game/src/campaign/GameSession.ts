@@ -14,7 +14,7 @@ import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
 import type { Holdings, ItemKind, Stores } from './inventory';
-import { addItem, buy, equip, sell } from './inventory';
+import { addItem, buy, equip, release, sell } from './inventory';
 import { migrateCampaign } from './migrate';
 import { applyBattleResults, newRosterEntry, raiseRosterStat } from './progression';
 import type { CampaignSave, ChapterInfo, RosterEntry, StageState } from './types';
@@ -283,9 +283,12 @@ export class GameSession {
         this.patch({ roster: [...this.state.roster, entry] });
         return false;
       }
-      case 'leave':
-        this.patch({ roster: this.state.roster.filter((r) => !args.includes(r.characterId)) });
+      case 'leave': {
+        let h = this.holdings();
+        for (const id of args) h = release(this.lib, h, id);
+        this.patch({ roster: h.roster, stores: h.stores });
         return false;
+      }
       case 'scudi':
         this.patch({ scudi: this.state.scudi + Number(args[0] ?? 0) });
         return false;

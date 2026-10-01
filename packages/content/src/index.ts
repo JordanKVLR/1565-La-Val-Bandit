@@ -228,8 +228,13 @@ export function buildBattle(
       throw new Error(`${where}: unit ${u.id} is placed off-map or on impassable terrain`);
     const frame = need(lib.frames, u.frame, 'frame', where);
     const weapon = need(lib.weapons, u.weapon, 'weapon', where);
-    const charm = r?.charm ? lib.gear.get(r.charm) : undefined;
-    const amulet = r?.amulet ? lib.gear.get(r.amulet) : undefined;
+    // A charm only fits the charm slot and an amulet the amulet slot.
+    const gear = (id: string | null | undefined, kind: 'charm' | 'amulet') => {
+      const g = id ? lib.gear.get(id) : undefined;
+      return g?.kind === kind ? g : undefined;
+    };
+    const charm = gear(r?.charm, 'charm');
+    const amulet = gear(r?.amulet, 'amulet');
     const key = `${at.x},${at.y}`;
     if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
     occupied.add(key);

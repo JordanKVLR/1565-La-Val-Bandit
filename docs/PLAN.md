@@ -76,8 +76,8 @@ queue on the HUD.
 This section follows the classic Vanguard Bandits framework (see §1: mechanics, not assets).
 
 - Every turn starts with a **full 100 AP**.
-- Moving costs AP per tile by terrain: Road 6 · Plain 8 · Field/Scrub 10 · Rubble 14 ·
-  Shallows 18. Climbing costs +6 per height step. MOV caps tiles per turn.
+- Moving costs AP per tile by terrain: Road 6 · Plain 8 · Field/Scrub 10 · Sand 12 · Ruin 14 ·
+  Rubble 16 · Shallows 20. Climbing costs +6 per height step. MOV caps tiles per turn.
 - Attacks cost AP and FP by power, and stronger attacks are less accurate (one formula for
   every technique, with p = power × hits − 1): **AP = 30 + 50p** (min 20, rounded to 5),
   **FP = 5 + 15p** (min 5), **accuracy = −60p %** (max +20%).
@@ -179,7 +179,7 @@ skippable on tap.
 
 - **XP during battle** (classic rules): XP comes **only from landing a blow**. A hit earns
   30 + 100 × (damage ÷ target max HP), so more damage earns slightly more, and a defeating blow
-  adds 150. Head-on hits earn ×1, side ×0.8, rear ×0.5. XP scales with the level gap:
+  adds 150. Head-on hits earn ×1, side ×0.8, rear ×0.5 (the defeat bonus isn't reduced). XP scales with the level gap:
   ×(1 + 0.2 × (target level − attacker level)), limited to ×0.1–×3. Reactions that don't land
   a blow earn nothing. Only the player's side earns XP.
 - **Levels:** 500 XP per level; leftover XP carries over. Each level-up happens the moment it's

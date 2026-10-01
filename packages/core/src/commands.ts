@@ -141,7 +141,8 @@ function raiseStat(
 /** Adds one point to a pilot attribute (and the geared value), refreshing HP for BAS. */
 function raisePilot(state: BattleState, unit: UnitState, stat: StatName): void {
   unit.pilot = { ...unit.pilot, [stat]: unit.pilot[stat] + 1 };
-  unit[stat] = Math.min(state.balance.statMax, unit[stat] + 1);
+  // Recomputed from pilot + gear: a gear penalty may have clamped the old value at 0.
+  unit[stat] = Math.max(0, Math.min(state.balance.statMax, unit.pilot[stat] + unit.gear[stat]));
   if (stat === 'bas') refreshMaxHp(state, unit);
 }
 
@@ -170,7 +171,9 @@ function gainXp(
     // Allies the player doesn't control spend their points at once, evening out their stats.
     if (unit.controller === 'ai') {
       while (unit.statPoints > 0) {
-        const stat = STAT_NAMES.reduce((lo, k) => (unit.pilot[k] < unit.pilot[lo] ? k : lo));
+        const open = STAT_NAMES.filter((k) => unit.pilot[k] < b.statMax);
+        if (!open.length) break;
+        const stat = open.reduce((lo, k) => (unit.pilot[k] < unit.pilot[lo] ? k : lo));
         raisePilot(state, unit, stat);
         unit.statPoints -= 1;
       }

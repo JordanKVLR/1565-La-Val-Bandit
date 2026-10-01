@@ -110,6 +110,8 @@ export interface UnitState extends MutableStats {
   amuletId: string | null;
   /** The pilot's own attributes; the unit's top-level stats add all gear bonuses on top. */
   pilot: PilotStats;
+  /** Sum of every gear bonus (unclamped), so a raised attribute can be recomputed exactly. */
+  gear: PilotStats;
   /** Starter attacks first, then every technique this frame and weapon allow. */
   attacks: Attack[];
   level: number;
@@ -147,11 +149,9 @@ export function maxHpFor(level: number, bas: number, frameHp: number, b: Balance
 
 export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
   const pilot = { ...spec.stats };
-  const stats = effectiveStats(
-    pilot,
-    [spec.frame.bonus, spec.weapon.bonus, spec.charm?.bonus, spec.amulet?.bonus],
-    balance.statMax,
-  );
+  const bonuses = [spec.frame.bonus, spec.weapon.bonus, spec.charm?.bonus, spec.amulet?.bonus];
+  const stats = effectiveStats(pilot, bonuses, balance.statMax);
+  const gear = sumBonuses(bonuses);
   const hp = maxHpFor(spec.level, stats.bas, spec.frame.hp, balance);
   return {
     id: spec.id,
@@ -167,6 +167,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     charmId: spec.charm?.id ?? null,
     amuletId: spec.amulet?.id ?? null,
     pilot,
+    gear,
     ...stats,
     attacks: [...starterAttacks(spec.weapon), ...(spec.attacks ?? [])],
     level: spec.level,
@@ -182,6 +183,13 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     facing: spec.facing,
     defeated: false,
   };
+}
+
+/** Every bonus added together, per attribute (may be negative). */
+export function sumBonuses(bonuses: readonly (StatBonus | undefined)[]): PilotStats {
+  const out = { bas: 0, pow: 0, dex: 0, agl: 0, def: 0, wep: 0 };
+  for (const b of bonuses) for (const k of STAT_NAMES) out[k] += b?.[k] ?? 0;
+  return out;
 }
 
 /** The pilot's own attributes, without gear. */

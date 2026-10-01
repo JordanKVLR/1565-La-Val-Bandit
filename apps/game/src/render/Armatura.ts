@@ -123,9 +123,9 @@ const PALETTES: Record<ArmaturaModel | 'hero', Partial<Palette>> = {
   gunner: { cloth: '#5d3b2c', trim: '#c9a24a', dark: '#2f2a26', hat: '#a7adb6' },
   janissary: {
     armour: '#a39a82',
-    cloth: '#28498c',
+    cloth: '#6e2f3a',
     trim: '#c9a24a',
-    dark: '#1d2c55',
+    dark: '#3e1a22',
     hat: '#efe9dc',
   },
   sipahi: { armour: '#a2a6ad', cloth: '#8a2626', trim: '#d1a640', dark: '#3c3236', hat: '#a2a6ad' },

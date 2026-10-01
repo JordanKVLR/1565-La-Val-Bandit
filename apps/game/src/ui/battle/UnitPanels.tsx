@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { UnitViewer } from '../../render/UnitViewer';
 import { attackStats, attackTags } from './attackText';
 import type { CostPreview } from './StatBars';
-import { ATTRIBUTE_BAR_MAX, Portrait } from './StatBars';
+import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
 import { frameName, gearName, unitFigure, VbBars } from './vb';
 
@@ -120,11 +120,11 @@ export function UnitDetails({
             </li>
             <li>
               <span class="eq-icon item" aria-hidden="true" />
-              {gearName(unit.charmId)}
+              {gearName(unit.charmId, 'charm')}
             </li>
             <li>
               <span class="eq-icon item" aria-hidden="true" />
-              {gearName(unit.amuletId)}
+              {gearName(unit.amuletId, 'amulet')}
             </li>
           </ul>
         </section>
@@ -143,9 +143,8 @@ export function UnitDetails({
                       <b>
                         {unit[s.key]}
                         {unit[s.key] !== unit.pilot[s.key] && (
-                          <small class="vbd-gear">
-                            {unit[s.key] > unit.pilot[s.key] ? '+' : ''}
-                            {unit[s.key] - unit.pilot[s.key]}
+                          <small class="vbd-gear" title="From gear">
+                            {gearNote(unit[s.key] - unit.pilot[s.key])}
                           </small>
                         )}
                       </b>
