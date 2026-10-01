@@ -24,10 +24,16 @@ export interface BalanceConfig {
   readonly defendFpCost: number;
   readonly avoidFpCost: number;
   readonly counterFpCost: number;
+  /** Hit chance before attributes: base + DEX × factor − target AGL × factor + modifiers. */
+  readonly baseHit: number;
   readonly hitMin: number;
   readonly hitMax: number;
-  readonly sklHitFactor: number;
-  readonly agiEvadeFactor: number;
+  readonly dexHitFactor: number;
+  readonly aglEvadeFactor: number;
+  /** Raw damage = (POW + WEP) × this × attack power × situational multipliers. */
+  readonly damagePerPoint: number;
+  /** Damage blocked per point of DEF (on top of the armatura's armour). */
+  readonly defDamagePerPoint: number;
   readonly heightHitPerStep: number;
   readonly heightDamagePerStep: number;
   readonly heightDamageMaxSteps: number;
@@ -39,38 +45,47 @@ export interface BalanceConfig {
   readonly defendDamageMult: number;
   /** A defender that attacks back or cannot react is easier to hit than one that avoids. */
   readonly counterHitBonus: number;
-  /** Base XP for landing a hit, and for the blow that defeats a unit. */
-  readonly xpHit: number;
+  /**
+   * XP comes only from landing hits: (base + damage share × the fraction of the target's max HP
+   * dealt) × level-gap factor × direction factor, plus a bonus for the defeating blow.
+   */
+  readonly xpHitBase: number;
+  readonly xpDamageShare: number;
   readonly xpDefeat: number;
-  /** XP for surviving an enemy attack with a reaction (Defend, Avoid, Attack back, Counter). */
-  readonly xpReact: number;
+  /** Direction factors: striking head-on is worth the most, from behind the least. */
+  readonly xpFront: number;
+  readonly xpSide: number;
+  readonly xpRear: number;
   /** XP needed for each level. Always the same amount; leftover XP carries over. */
   readonly xpPerLevel: number;
   /** XP changes by this fraction per level the target is above (+) or below (−) the attacker. */
   readonly xpLevelFactor: number;
   readonly xpMinFactor: number;
   readonly xpMaxFactor: number;
-  /** Stat points granted per level-up, spent by the player on STR/SKL/AGI. */
+  /** Attribute points granted per level-up. */
   readonly statPointsPerLevel: number;
-  /** Max HP gained per level (before VIT). */
+  /** Highest value any attribute can reach (gear included). */
+  readonly statMax: number;
+  /** Max HP = level × hpPerLevel + BAS × hpPerBas + hpBase + the armatura's HP. */
   readonly hpPerLevel: number;
-  /** Damage blocked per point of DEF. */
-  readonly defDamagePerPoint: number;
-  /** Max HP added per point of VIT, as a percentage of base HP. */
-  readonly vitHpPercent: number;
-  /** Accuracy bonus per INT point for techniques (not basic attacks). */
-  readonly intTechniqueAccuracy: number;
-  /** FP cost reduction per SPI point (percent), and its cap. */
-  readonly spiFpCostPercent: number;
-  readonly spiFpCostMax: number;
-  /** Extra FP recovered per turn per SPI point. */
-  readonly spiFpRecovery: number;
-  /** Resistance to enemy fatigue/AP-drain effects per SPI point (percent), and its cap. */
-  readonly spiResistPercent: number;
-  readonly spiResistMax: number;
-  /** Counter: success chance = base + factor × (defender INT − attacker INT), clamped. */
+  readonly hpPerBas: number;
+  readonly hpBase: number;
+  /**
+   * Technique costs grow with power and accuracy falls, so the starters keep their place:
+   * AP = apBase + apPerPower × (power − 1), FP likewise, accuracy = −accPerPower × (power − 1).
+   * "Power" is per-strike power × number of strikes.
+   */
+  readonly techApBase: number;
+  readonly techApPerPower: number;
+  readonly techApMin: number;
+  readonly techFpBase: number;
+  readonly techFpPerPower: number;
+  readonly techFpMin: number;
+  readonly techAccPerPower: number;
+  readonly techAccMax: number;
+  /** Counter: success chance = base + factor × ((DEX + AGL) of defender − of attacker), clamped. */
   readonly counterBaseChance: number;
-  readonly counterIntFactor: number;
+  readonly counterStatFactor: number;
   readonly counterMinChance: number;
   readonly counterMaxChance: number;
   /** On success the attacker takes this multiple of the blow; on failure the defender does. */
@@ -82,7 +97,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   apMax: 100,
   apStart: 100,
   apRegen: 100,
-  climbApPerStep: 4,
+  climbApPerStep: 6,
   maxClimb: 2,
   fpMax: 100,
   apPerFpRecovered: 1.5,
@@ -91,10 +106,13 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   defendFpCost: 30,
   avoidFpCost: 20,
   counterFpCost: 20,
+  baseHit: 75,
   hitMin: 5,
   hitMax: 95,
-  sklHitFactor: 2,
-  agiEvadeFactor: 2,
+  dexHitFactor: 2,
+  aglEvadeFactor: 2,
+  damagePerPoint: 2,
+  defDamagePerPoint: 1.5,
   heightHitPerStep: 5,
   heightDamagePerStep: 0.1,
   heightDamageMaxSteps: 3,
@@ -105,27 +123,48 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   assistMax: 15,
   defendDamageMult: 0.5,
   counterHitBonus: 15,
-  xpHit: 20,
-  xpDefeat: 60,
-  xpReact: 3,
-  xpPerLevel: 100,
+  xpHitBase: 30,
+  xpDamageShare: 100,
+  xpDefeat: 150,
+  xpFront: 1,
+  xpSide: 0.8,
+  xpRear: 0.5,
+  xpPerLevel: 500,
   xpLevelFactor: 0.2,
   xpMinFactor: 0.1,
   xpMaxFactor: 3,
-  statPointsPerLevel: 5,
-  hpPerLevel: 3,
-  defDamagePerPoint: 1.5,
-  vitHpPercent: 5,
-  intTechniqueAccuracy: 1,
-  spiFpCostPercent: 2,
-  spiFpCostMax: 50,
-  spiFpRecovery: 1,
-  spiResistPercent: 3,
-  spiResistMax: 60,
+  statPointsPerLevel: 3,
+  statMax: 32,
+  hpPerLevel: 2,
+  hpPerBas: 4,
+  hpBase: 10,
+  techApBase: 30,
+  techApPerPower: 50,
+  techApMin: 20,
+  techFpBase: 5,
+  techFpPerPower: 15,
+  techFpMin: 5,
+  techAccPerPower: 60,
+  techAccMax: 20,
   counterBaseChance: 10,
-  counterIntFactor: 2,
+  counterStatFactor: 1,
   counterMinChance: 5,
   counterMaxChance: 35,
   counterReflectMult: 1.25,
   counterFailMult: 1.25,
 };
+
+/** AP, FP and accuracy a technique of this total power costs under the shared formula. */
+export function techniqueCost(
+  power: number,
+  hits: number,
+  b: BalanceConfig,
+): { apCost: number; fpCost: number; accuracy: number } {
+  const p = power * hits - 1;
+  const round5 = (v: number) => Math.round(v / 5) * 5;
+  return {
+    apCost: Math.max(b.techApMin, round5(b.techApBase + b.techApPerPower * p)),
+    fpCost: Math.max(b.techFpMin, Math.round(b.techFpBase + b.techFpPerPower * p)),
+    accuracy: Math.min(b.techAccMax, Math.round(-b.techAccPerPower * p)) || 0,
+  };
+}

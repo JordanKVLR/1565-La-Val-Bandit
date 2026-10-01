@@ -13,7 +13,6 @@ import {
   hitChanceFor,
   reactionFpCost,
   reflectDamage,
-  resisted,
   strikeNumbers,
   xpFor,
 } from './combat';
@@ -25,7 +24,7 @@ import type { BattleState } from './state';
 import { requireUnit } from './state';
 import { endTurn, finish } from './turns';
 import type { UnitState } from './units';
-import { isHostile, maxHpFor, pilotStats, STAT_NAMES } from './units';
+import { isHostile, maxHpFor, STAT_NAMES, unitStats } from './units';
 import { evaluateOutcome } from './victory';
 
 export type Command =
@@ -96,7 +95,7 @@ export function applyCommand(
       if (target.defeated || !isHostile(unit, target)) throw new CommandError('Invalid target');
       const attack = unit.attacks.find((a) => a.id === (cmd.attackId ?? 'basic'));
       if (!attack) throw new CommandError(`Unknown attack "${cmd.attackId}"`);
-      if (!meetsRequirements(pilotStats(unit), attack))
+      if (!meetsRequirements(unitStats(unit), attack))
         throw new CommandError(`${attack.name} is not unlocked yet`);
       if (!attackInRange(attack, unit.weapon, unit.pos, target.pos))
         throw new CommandError('Target out of range');
@@ -132,15 +131,23 @@ function raiseStat(
   const state = JSON.parse(JSON.stringify(prev)) as BattleState;
   const unit = requireUnit(state, unitId);
   if (unit.statPoints <= 0) throw new CommandError(`${unit.name} has no stat points to spend`);
+  if (unit.pilot[stat] >= state.balance.statMax)
+    throw new CommandError(`${stat.toUpperCase()} is already at its maximum`);
+  raisePilot(state, unit, stat);
   unit.statPoints -= 1;
-  unit[stat] += 1;
-  if (stat === 'vit') refreshMaxHp(state, unit);
   return { state, events: [{ type: 'statRaised', unitId, stat, value: unit[stat] }] };
 }
 
-/** Recomputes max HP after a level or VIT change; current HP rises by the same amount. */
+/** Adds one point to a pilot attribute (and the geared value), refreshing HP for BAS. */
+function raisePilot(state: BattleState, unit: UnitState, stat: StatName): void {
+  unit.pilot = { ...unit.pilot, [stat]: unit.pilot[stat] + 1 };
+  unit[stat] = Math.min(state.balance.statMax, unit[stat] + 1);
+  if (stat === 'bas') refreshMaxHp(state, unit);
+}
+
+/** Recomputes max HP after a level or BAS change; current HP rises by the same amount. */
 function refreshMaxHp(state: BattleState, unit: UnitState): void {
-  const next = maxHpFor(unit.baseHp, unit.vit, state.balance);
+  const next = maxHpFor(unit.level, unit.bas, unit.frameHp, state.balance);
   if (!unit.defeated) unit.hp += next - unit.maxHp;
   unit.maxHp = next;
 }
@@ -158,17 +165,14 @@ function gainXp(
   while (unit.xp >= b.xpPerLevel) {
     unit.xp -= b.xpPerLevel;
     unit.level += 1;
-    unit.baseHp += b.hpPerLevel;
     refreshMaxHp(state, unit);
     unit.statPoints += b.statPointsPerLevel;
     // Allies the player doesn't control spend their points at once, evening out their stats.
     if (unit.controller === 'ai') {
       while (unit.statPoints > 0) {
-        const p = pilotStats(unit);
-        const stat = STAT_NAMES.reduce((lo, s) => (p[s] < p[lo] ? s : lo));
-        unit[stat] += 1;
+        const stat = STAT_NAMES.reduce((lo, k) => (unit.pilot[k] < unit.pilot[lo] ? k : lo));
+        raisePilot(state, unit, stat);
         unit.statPoints -= 1;
-        if (stat === 'vit') refreshMaxHp(state, unit);
       }
     }
     events.push({
@@ -241,8 +245,6 @@ function resolveAttack(
     }
   }
   if (!target.defeated) target.facing = facingToward(target.pos, attacker.pos, target.facing);
-  // Weathering a blow with a reaction teaches something too (player side only, via gainXp).
-  if (!target.defeated && reaction !== 'none') gainXp(state, target, b.xpReact, pending);
   events.push({
     type: 'attackResolved',
     reaction,
@@ -274,7 +276,7 @@ function applyDamage(
     to.defeated = true;
     events.push({ type: 'unitDefeated', unitId: to.id });
   }
-  const xp = gainXp(state, from, xpFor(state, from, to, defeated), events);
+  const xp = gainXp(state, from, xpFor(state, from, to, damage, zone, defeated), events);
   return {
     attackerId: from.id,
     targetId: to.id,
@@ -304,17 +306,18 @@ function strikeOnce(
   const damage = hit ? damageFor(state, n, target, reaction) : 0;
   target.hp = Math.max(0, target.hp - damage);
   if (hit && target.hp > 0) {
-    if (attack.fatigue)
-      target.fp = Math.min(b.fpMax, target.fp + resisted(state, target, attack.fatigue));
-    if (attack.apDamage)
-      target.ap = Math.max(0, target.ap - resisted(state, target, attack.apDamage));
+    if (attack.fatigue) target.fp = Math.min(b.fpMax, target.fp + attack.fatigue);
+    if (attack.apDamage) target.ap = Math.max(0, target.ap - attack.apDamage);
   }
   const defeated = target.hp === 0;
   if (defeated) {
     target.defeated = true;
     events.push({ type: 'unitDefeated', unitId: target.id });
   }
-  const xp = hit ? gainXp(state, attacker, xpFor(state, attacker, target, defeated), events) : 0;
+  // XP only for landing a blow, scaled by how hard it hit.
+  const xp = hit
+    ? gainXp(state, attacker, xpFor(state, attacker, target, damage, n.zone, defeated), events)
+    : 0;
   return {
     attackerId: attacker.id,
     targetId: target.id,

@@ -4,6 +4,7 @@ import {
   applyCommand,
   createBattle,
   deserializeBattle,
+  OutdatedSaveError,
   forecastAttack,
   requireUnit,
   SAVE_VERSION,
@@ -21,7 +22,7 @@ const TWIN: Attack = {
   apCost: 30,
   fpCost: 15,
   hits: 2,
-  requires: { agi: 10 },
+  requires: { agl: 10 },
 };
 const HEAVY: Attack = {
   id: 'heavy',
@@ -35,7 +36,7 @@ const HEAVY: Attack = {
   fatigue: 20,
   apDamage: 15,
   noCounter: true,
-  requires: { str: 8 },
+  requires: { pow: 8 },
 };
 
 function duel(attackerLevel = 1, targetLevel = 1, targetHp?: number): BattleState {
@@ -47,7 +48,7 @@ function duel(attackerLevel = 1, targetLevel = 1, targetHp?: number): BattleStat
           id: 'a',
           controller: 'human',
           level: attackerLevel,
-          stats: { str: 8, skl: 30, agi: 20 },
+          stats: { pow: 8, dex: 30, agl: 20 },
           at: { x: 1, y: 0 },
           facing: 'south',
           attacks: [TWIN, HEAVY],
@@ -56,7 +57,7 @@ function duel(attackerLevel = 1, targetLevel = 1, targetHp?: number): BattleStat
           id: 'e',
           side: 'enemy',
           level: targetLevel,
-          stats: { str: 6, skl: 6, agi: 0 },
+          stats: { pow: 6, dex: 6, agl: 0 },
           at: { x: 1, y: 1 },
           facing: 'north',
         }),
@@ -69,38 +70,55 @@ function duel(attackerLevel = 1, targetLevel = 1, targetHp?: number): BattleStat
 }
 
 describe('XP', () => {
-  it('KO blows are worth more than hits', () => {
+  it('rises with the share of max HP dealt, and a defeating blow is worth much more', () => {
     const s = duel();
     const a = requireUnit(s, 'a');
     const e = requireUnit(s, 'e');
-    expect(xpFor(s, a, e, true)).toBeGreaterThan(xpFor(s, a, e, false));
+    const small = xpFor(s, a, e, 8, 'front', false);
+    const big = xpFor(s, a, e, 40, 'front', false);
+    // 30 + 100 × 8/80 = 40; 30 + 100 × 40/80 = 80: more damage, slightly more XP
+    expect(small).toBe(40);
+    expect(big).toBe(80);
+    expect(xpFor(s, a, e, 8, 'front', true)).toBe(40 + 150);
+  });
+
+  it('is worth most head-on, less from the side and least from behind', () => {
+    const s = duel();
+    const a = requireUnit(s, 'a');
+    const e = requireUnit(s, 'e');
+    expect(xpFor(s, a, e, 8, 'side', false)).toBe(32);
+    expect(xpFor(s, a, e, 8, 'rear', false)).toBe(20);
   });
 
   it('drops against weaker enemies and rises against stronger ones', () => {
     const even = duel(5, 5);
     const bully = duel(9, 3);
     const brave = duel(3, 7);
-    const hit = (s: BattleState) => xpFor(s, requireUnit(s, 'a'), requireUnit(s, 'e'), false);
+    const hit = (s: BattleState) =>
+      xpFor(s, requireUnit(s, 'a'), requireUnit(s, 'e'), 10, 'front', false);
     expect(hit(bully)).toBeLessThan(hit(even));
     expect(hit(brave)).toBeGreaterThan(hit(even));
     expect(hit(duel(30, 1))).toBeGreaterThanOrEqual(1);
   });
 
-  it('is earned when a hit lands and reported on the strike', () => {
+  it('is earned only when a hit lands, and reported on the strike', () => {
     const { state, events } = applyCommand(duel(), {
       type: 'attack',
       unitId: 'a',
       targetId: 'e',
       reaction: 'defend',
     });
-    expect(requireUnit(state, 'a').xp).toBe(20);
     const ev = events[0];
-    expect(ev?.type === 'attackResolved' && ev.strikes[0]?.xp).toBe(20);
+    if (ev?.type !== 'attackResolved') throw new Error('no attack');
+    const strike = ev.strikes[0]!;
+    expect(strike.hit).toBe(true);
+    expect(strike.xp).toBeGreaterThan(30);
+    expect(requireUnit(state, 'a').xp).toBe(strike.xp);
   });
 
-  it('levels up every 100 XP, carrying the remainder, with HP and stat points', () => {
+  it('levels up every 500 XP, carrying the remainder, with HP and 3 stat points', () => {
     let s = duel(1, 1, 1);
-    s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, xp: 90 } : u)) };
+    s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, xp: 490 } : u)) };
     const before = requireUnit(s, 'a');
     const { state, events } = applyCommand(s, {
       type: 'attack',
@@ -109,10 +127,12 @@ describe('XP', () => {
       reaction: 'defend',
     });
     const a = requireUnit(state, 'a');
+    const ev = events[0];
+    const gained = ev?.type === 'attackResolved' ? ev.strikes[0]!.xp : 0;
     expect(a.level).toBe(2);
-    expect(a.xp).toBe(90 + 60 - 100);
+    expect(a.xp).toBe(490 + gained - 500);
     expect(a.maxHp).toBe(before.maxHp + state.balance.hpPerLevel);
-    expect(a.statPoints).toBe(state.balance.statPointsPerLevel);
+    expect(a.statPoints).toBe(3);
     expect(events.some((e) => e.type === 'levelUp' && e.unitId === 'a' && e.level === 2)).toBe(
       true,
     );
@@ -129,11 +149,11 @@ describe('stat points', () => {
   it('are spent one at a time on the chosen stat, even outside the unit turn', () => {
     let s = duel();
     s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, statPoints: 2 } : u)) };
-    s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'str' }).state;
-    s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'agi' }).state;
+    s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'pow' }).state;
+    s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'agl' }).state;
     const a = requireUnit(s, 'a');
-    expect(a).toMatchObject({ str: 9, statPoints: 0 });
-    expect(() => applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'skl' })).toThrow(
+    expect(a).toMatchObject({ pow: 9, statPoints: 0 });
+    expect(() => applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'dex' })).toThrow(
       /no stat points/,
     );
   });
@@ -144,7 +164,7 @@ describe('stat points', () => {
         units: [
           unit({
             id: 'a',
-            stats: { str: 7, skl: 6, agi: 6 },
+            stats: { pow: 7, dex: 6, agl: 6 },
             at: { x: 0, y: 0 },
             attacks: [HEAVY],
           }),
@@ -154,7 +174,7 @@ describe('stat points', () => {
     ).state;
     expect(unlockedAttacks(requireUnit(s, 'a')).map((x) => x.id)).toEqual(['basic', 'thrust']);
     s = { ...s, units: s.units.map((u) => (u.id === 'a' ? { ...u, statPoints: 1 } : u)) };
-    s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'str' }).state;
+    s = applyCommand(s, { type: 'raiseStat', unitId: 'a', stat: 'pow' }).state;
     expect(unlockedAttacks(requireUnit(s, 'a')).map((x) => x.id)).toEqual([
       'basic',
       'thrust',
@@ -171,7 +191,7 @@ describe('attacks', () => {
         units: [
           unit({
             id: 'a',
-            stats: { str: 6, skl: 6, agi: 30 },
+            stats: { pow: 6, dex: 6, agl: 30 },
             at: { x: 1, y: 0 },
             attacks: [HEAVY],
           }),
@@ -221,8 +241,8 @@ describe('attacks', () => {
     expect(basic.reactions).toContain('attackBack');
     expect(f.reactions).not.toContain('attackBack');
     expect(f.reactions).not.toContain('counter');
-    // (24 + 8) × 1.5 = 48, armour 8 halved to 4 → 44
-    expect(f.damage.avoid).toBe(44);
+    // (POW 8 + WEP 9) × 2 × 1.5 = 51, armour 8 halved to 4 → 47
+    expect(f.damage.avoid).toBe(47);
     const { state } = applyCommand(s, {
       type: 'attack',
       unitId: 'a',
@@ -237,25 +257,15 @@ describe('attacks', () => {
   });
 });
 
-describe('save migration', () => {
-  it('upgrades a version 1 battle save', () => {
-    const v2 = duel();
-    const v1 = {
-      ...v2,
-      saveVersion: 1,
-      units: v2.units.map(
-        ({ attacks: _a, statPoints: _s, frameAgility: _f, frameClass: _c, ...rest }) => ({
-          ...rest,
-          weapon: { ...rest.weapon, type: undefined },
-          xp: 250,
-        }),
-      ),
-    };
-    const loaded = deserializeBattle(JSON.stringify(v1));
-    expect(loaded.saveVersion).toBe(SAVE_VERSION);
-    const a = requireUnit(loaded, 'a');
-    expect(a.attacks.map((x) => x.id)).toEqual(['basic', 'thrust']);
-    expect(a.weapon.type).toBe('blade');
-    expect(a.xp).toBeLessThan(100);
+describe('save compatibility', () => {
+  it('refuses battle saves from before the six-attribute rules, so the battle restarts', () => {
+    const old = { ...duel(), saveVersion: 6 };
+    expect(() => deserializeBattle(JSON.stringify(old))).toThrow(OutdatedSaveError);
+  });
+
+  it('round-trips a current save', () => {
+    const s = duel();
+    expect(deserializeBattle(JSON.stringify(s))).toEqual(JSON.parse(JSON.stringify(s)));
+    expect(s.saveVersion).toBe(SAVE_VERSION);
   });
 });

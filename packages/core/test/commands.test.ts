@@ -5,7 +5,7 @@ import { makeMap, setup, unit } from './fixtures';
 
 function start(
   units = [
-    unit({ id: 'a', stats: { str: 6, skl: 6, agi: 20 }, at: { x: 0, y: 0 }, facing: 'south' }),
+    unit({ id: 'a', stats: { pow: 6, dex: 6, agl: 20 }, at: { x: 0, y: 0 }, facing: 'south' }),
     unit({ id: 'e', side: 'enemy', at: { x: 0, y: 3 } }),
   ],
 ) {
@@ -84,7 +84,7 @@ describe('turn flow', () => {
 describe('attacks', () => {
   const adjacent = () =>
     start([
-      unit({ id: 'a', stats: { str: 6, skl: 6, agi: 20 }, at: { x: 1, y: 1 }, facing: 'south' }),
+      unit({ id: 'a', stats: { pow: 6, dex: 6, agl: 20 }, at: { x: 1, y: 1 }, facing: 'south' }),
       unit({ id: 'e', side: 'enemy', at: { x: 1, y: 2 }, facing: 'north' }),
     ]);
   const withAp = (s: BattleState, id: string, ap: number): BattleState => ({
@@ -103,8 +103,8 @@ describe('attacks', () => {
     // Slash: (24 + 6) × 0.8 = 24, halved to 12, minus armour 8
     expect(e.hp).toBe(80 - 4);
     expect(e).toMatchObject({ ap: 100, fp: 30 });
-    // Slash costs 30 AP and only 5 FP.
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 70, fp: 5, xp: 20 });
+    // Slash costs 20 AP and only 5 FP; XP 30 + 100 × 4/80 = 35.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 80, fp: 5, xp: 35 });
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
@@ -121,7 +121,7 @@ describe('attacks', () => {
     });
     const e = requireUnit(state, 'e');
     expect(e.ap).toBe(60);
-    expect(e.fp).toBe(30); // Slash costs 30 AP, paid as 30 FP when striking back
+    expect(e.fp).toBe(20); // Slash costs 20 AP, paid as 20 FP when striking back
     const ev = events[0];
     expect(ev?.type === 'attackResolved' && ev.retaliation?.attackerId).toBe('e');
   });
@@ -137,7 +137,7 @@ describe('attacks', () => {
       applyCommand(far, { type: 'attack', unitId: 'a', targetId: 'e', reaction: 'defend' }),
     ).toThrow(/range/);
     const friends = start([
-      unit({ id: 'a', stats: { str: 6, skl: 6, agi: 20 }, at: { x: 0, y: 0 } }),
+      unit({ id: 'a', stats: { pow: 6, dex: 6, agl: 20 }, at: { x: 0, y: 0 } }),
       unit({ id: 'b', at: { x: 0, y: 1 } }),
       unit({ id: 'e', side: 'enemy', at: { x: 3, y: 3 } }),
     ]);
@@ -157,18 +157,18 @@ describe('attacks', () => {
     });
     expect(state.outcome).toBe('victory');
     expect(events.map((e) => e.type)).toEqual(['attackResolved', 'unitDefeated', 'battleEnded']);
-    expect(requireUnit(state, 'a').xp).toBe(60); // KO blow at equal level
+    expect(requireUnit(state, 'a').xp).toBe(30 + 5 + 150); // hit + defeating blow, equal level
     expect(() => applyCommand(state, { type: 'endTurn', unitId: 'a' })).toThrow(/over/);
   });
 
   it('an attacker killed by a counter loses its turn', () => {
     let s = start([
-      unit({ id: 'a', stats: { str: 6, skl: 6, agi: 20 }, at: { x: 1, y: 1 } }),
-      unit({ id: 'b', stats: { str: 6, skl: 6, agi: 10 }, at: { x: 3, y: 3 } }),
+      unit({ id: 'a', stats: { pow: 6, dex: 6, agl: 20 }, at: { x: 1, y: 1 } }),
+      unit({ id: 'b', stats: { pow: 6, dex: 6, agl: 10 }, at: { x: 3, y: 3 } }),
       unit({
         id: 'e',
         side: 'enemy',
-        stats: { str: 6, skl: 30, agi: 0 },
+        stats: { pow: 6, dex: 30, agl: 0 },
         at: { x: 1, y: 2 },
         facing: 'north',
       }),
