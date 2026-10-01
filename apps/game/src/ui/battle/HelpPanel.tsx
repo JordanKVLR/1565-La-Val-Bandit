@@ -28,9 +28,9 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>Attributes</dt>
           <dd>
-            <b>BAS</b> +4 max HP per point · <b>POW</b> and <b>WEP</b> damage (+2 each per point) ·{' '}
-            <b>DEX</b> +2% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> −1.5
-            damage taken per point. Armaturas, weapons, charms and amulets add to them (max 32).
+            <b>BAS</b> +4 max HP per point · <b>POW</b> and <b>WEP</b> damage · <b>DEX</b> +2%
+            accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> −1.5 damage taken per
+            point. Armaturas, weapons, charms and amulets add to them (max 32).
           </dd>
           <dt>AP (blue)</dt>
           <dd>

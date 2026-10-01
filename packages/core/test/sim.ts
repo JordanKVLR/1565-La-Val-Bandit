@@ -32,7 +32,7 @@ export function simulate(
     for (const planned of planAiTurn(state, actor)) {
       let cmd: Command = planned;
       if (cmd.type === 'attack')
-        cmd = { ...cmd, reaction: chooseReaction(state, cmd.targetId, actor) };
+        cmd = { ...cmd, reaction: chooseReaction(state, cmd.targetId, actor, cmd.attackId) };
       state = applyCommand(state, cmd).state;
       commands++;
       assertInvariants(state);

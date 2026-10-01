@@ -134,7 +134,7 @@ export interface LoadoutSummary {
   readonly hp: number;
   readonly armour: number;
   readonly move: number;
-  /** Raw damage before the technique's power: (POW + WEP) × damagePerPoint. */
+  /** Raw damage before the technique's power: (POW + WEP) × damagePerPoint, rounded. */
   readonly damage: number;
   /** Hit-chance bonus from DEX. */
   readonly accuracy: number;
@@ -160,7 +160,7 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     hp: maxHpFor(entry.level, stats.bas, frame?.hp ?? 0, b),
     armour,
     move: frame?.move ?? 0,
-    damage: (stats.pow + stats.wep) * b.damagePerPoint,
+    damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint),
     accuracy: stats.dex * b.dexHitFactor,
     block: Math.round(armour + stats.def * b.defDamagePerPoint),
   };

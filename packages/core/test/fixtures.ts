@@ -77,11 +77,17 @@ export function unit(
   };
 }
 
+/**
+ * Rules tests run on a fixed reference balance (round numbers that are easy to check by hand),
+ * so retuning the shipped defaults doesn't rewrite every expected value.
+ */
+export const TEST_BALANCE = { ...DEFAULT_BALANCE, baseHit: 75, damagePerPoint: 2 };
+
 export function setup(over: Partial<BattleSetup> & Pick<BattleSetup, 'units'>): BattleSetup {
   return {
     map: makeMap(Array.from({ length: 8 }, () => 'pppppppp')),
     terrains: TERRAINS,
-    balance: DEFAULT_BALANCE,
+    balance: TEST_BALANCE,
     victory: [{ type: 'rout' }],
     seed: 1565,
     ...over,

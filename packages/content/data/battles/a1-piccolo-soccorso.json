@@ -100,8 +100,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 11,
-        "dex": 9,
+        "pow": 9,
+        "dex": 8,
         "agl": 7
       }
     },
@@ -117,8 +117,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 11,
-        "dex": 9,
+        "pow": 9,
+        "dex": 8,
         "agl": 7
       }
     },
@@ -134,8 +134,8 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 11,
-        "dex": 9,
+        "pow": 9,
+        "dex": 8,
         "agl": 7
       }
     },
@@ -151,7 +151,7 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 10,
+        "pow": 8,
         "dex": 10,
         "agl": 5
       }
@@ -168,7 +168,7 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 10,
+        "pow": 8,
         "dex": 9,
         "agl": 7
       }
