@@ -104,7 +104,7 @@ SCENES.push({
   name: 'montage',
   a: bar(83),
   b: bar(90),
-  tin: { type: 'cut', dur: 0, flash: 1, flashK: 4 },
+  tin: { type: 'cut', dur: 0, flash: 0.6, flashK: 8 },
   draw(c, t, lt, d) {
     fillBg(c);
     // one still per bar; the first bar is the headline card over the first still
@@ -128,11 +128,12 @@ SCENES.push({
     // lower third
     const [, name, sub] = BATTLES[n % BATTLES.length];
     const lk = ease.outCubic(prog(l, 0.15, 0.8));
-    const g = c.createLinearGradient(0, H - 280, 0, H);
+    const g = c.createLinearGradient(0, H - 380, 0, H);
     g.addColorStop(0, 'rgba(5,3,3,0)');
-    g.addColorStop(1, 'rgba(5,3,3,0.88)');
+    g.addColorStop(0.55, 'rgba(5,3,3,0.8)');
+    g.addColorStop(1, 'rgba(5,3,3,0.95)');
     c.fillStyle = g;
-    c.fillRect(0, H - 280, W, 280);
+    c.fillRect(0, H - 380, W, 380);
     c.save();
     c.translate(-(1 - lk) * 80, 0);
     c.globalAlpha *= lk;
@@ -145,14 +146,14 @@ SCENES.push({
     c.save();
     c.globalAlpha *= hk;
     c.fillStyle = 'rgba(5,3,3,0.75)';
-    rrect(c, 110, 90, 520, 120, 6);
+    rrect(c, 1290, 110, 520, 120, 6);
     c.fill();
     c.strokeStyle = C.gold;
     c.lineWidth = 2;
-    rrect(c, 110, 90, 520, 120, 6);
+    rrect(c, 1290, 110, 520, 120, 6);
     c.stroke();
-    text(c, '07 · THE CAMPAIGN', 140, 132, { size: 22, spacing: 8, color: C.gold, align: 'left' });
-    text(c, '24 BATTLES', 140, 190, { size: 58, weight: 900, spacing: 8, align: 'left' });
+    text(c, '07 · THE CAMPAIGN', 1320, 152, { size: 22, spacing: 8, color: C.gold, align: 'left' });
+    text(c, '24 BATTLES', 1320, 210, { size: 58, weight: 900, spacing: 8, align: 'left' });
     c.restore();
     // beat flashes
     flash(c, beatPulse(t, 12) * 0.07);
@@ -295,7 +296,7 @@ SCENES.push({
     const l = lt - idx * per;
     blurBg(c, ST(bgI[idx]), 1, 0.62, 1.1 + l * 0.004);
     c.save();
-    c.globalAlpha *= 0.55;
+    c.globalAlpha *= 0.32;
     sun(c, W / 2, 520, 300, { glow: 0.5, rays: 28, rot: lt * 0.05, color: '#6a1710', hot: '#8a2218' });
     c.restore();
     c.fillStyle = 'rgba(5,3,3,0.45)';
@@ -310,8 +311,8 @@ SCENES.push({
     c.globalAlpha *= clamp(k * 2);
     text(c, String(count), 0, 0, { size: 380, weight: 900, spacing: 6, color: C.parch, shadow: 'rgba(0,0,0,0.7)', shadowBlur: 40 });
     c.restore();
-    textReveal(c, label, W / 2, 700, prog(l, 0.2, 1.1), { size: 90, weight: 700, spacing: 24, color: C.goldLight, shadow: '#000', shadowBlur: 24 });
-    wordsReveal(c, sub, W / 2, 790, prog(l, 0.7, 1.7), { font: F.body, size: 48, weight: 'italic 500', color: C.goldLight });
+    textReveal(c, label, W / 2, 700, prog(l, 0.05, 0.7), { size: 90, weight: 700, spacing: 24, color: C.goldLight, shadow: '#000', shadowBlur: 24 });
+    wordsReveal(c, sub, W / 2, 790, prog(l, 0.3, 1.1), { font: F.body, size: 48, weight: 'italic 500', color: C.goldLight });
     flash(c, hit(t, bar(97) + idx * per, 8) * 0.22);
     // pips
     STATS.forEach((_, i) => {
@@ -394,9 +395,9 @@ SCENES.push({
   tin: { type: 'fade', dur: 1.6 },
   draw(c, t, lt, d) {
     fillBg(c, '#0b0607', '#030202');
-    blurBg(c, ST('battle-b9-fall-of-st-elmo'), 0.8, 0.7, 1.12 + lt * 0.003);
+    blurBg(c, ST('battle-b9-fall-of-st-elmo'), 0.9, 0.58, 1.12 + lt * 0.003);
     // low red sun glow that grows toward the reprise
-    const gk = ease.inQuad(prog(lt, 11, d));
+    const gk = ease.inQuad(prog(lt, 9.5, d));
     const hz = 880;
     sun(c, W / 2, lerp(hz + 190, hz - 70, gk), 170, { glow: 0.2 + gk * 1.0, clipY: hz });
     const sea2 = c.createLinearGradient(0, hz, 0, H);
@@ -411,7 +412,7 @@ SCENES.push({
     }
     c.fillStyle = 'rgba(255,150,100,0.3)';
     c.fillRect(0, hz, W, 1.5);
-    c.fillStyle = 'rgba(4,2,2,0.35)';
+    c.fillStyle = 'rgba(4,2,2,0.2)';
     c.fillRect(0, 0, W, H);
     const A = (a, b) => prog(lt, a, a + 1.4) * (1 - prog(lt, b - 0.8, b));
     // 1
@@ -474,8 +475,7 @@ SCENES.push({
       const th = H / 3;
       COLLAGE.forEach((name, i) => {
         const at = i * BEAT;
-        const k = ease.outBack(prog(lt, at, at + 0.32));
-        if (k <= 0) return;
+        const k = ease.outCubic(prog(lt, at, at + 0.3));
         const col = i % 4;
         const row = Math.floor(i / 4);
         const cx = col * tw + tw / 2;
@@ -484,7 +484,7 @@ SCENES.push({
         const toCx = lerp(cx, W / 2, ck);
         const toCy = lerp(cy, 540, ck);
         c.translate(toCx, toCy);
-        const s = k * (1 - ck * 0.95);
+        const s = (1 + 0.1 * (1 - k)) * (1 - ck * 0.95);
         c.scale(s, s);
         c.rotate(ck * 1.2 * (i % 2 ? 1 : -1));
         const im = img(ST(name));
@@ -497,6 +497,8 @@ SCENES.push({
           const sw = sh * (tw / th);
           c.drawImage(im, 960 - sw / 2, 0, sw, sh, -tw / 2, -th / 2, tw, th);
         }
+        c.fillStyle = `rgba(8,4,4,${0.78 * (1 - k)})`;
+        c.fillRect(-tw / 2, -th / 2, tw, th);
         c.fillStyle = `rgba(255,236,200,${0.5 * hit(t, bar(115) + at, 10)})`;
         c.fillRect(-tw / 2, -th / 2, tw, th);
         c.restore();
@@ -559,7 +561,7 @@ SCENES.push({
         text(c, 'jordankvlr.github.io/1565-La-Val-Bandit', W / 2, 850, { font: F.body, size: 46, weight: '600', color: C.parch, spacing: 1 });
         c.restore();
       }
-      text(c, 'Music: “Under the Red Sun”', W / 2, 1000, { font: F.body, size: 28, weight: 'italic 500', color: C.gold, alpha: prog(L, 4.6, 5.6) * 0.85 });
+      text(c, 'Music: “Under the Red Sun”', W / 2, 990, { font: F.body, size: 36, weight: 'italic 500', color: C.goldLight, alpha: prog(L, 4.6, 5.6) });
     }
     flash(c, hit(t, bar(118), 6) * 0.9);
   },

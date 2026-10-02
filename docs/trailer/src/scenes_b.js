@@ -219,9 +219,9 @@ SCENES.push({
     tag(c, '05 · THE BATTLE', 110, 150, ease.outCubic(prog(lt, 0.4, 1.4)));
 
     // ---- A: attack sequence
-    if (lt < P1 + 0.5) {
+    if (lt < P1) {
       const a = 0;
-      const out = 1 - prog(lt, P1 - 0.2, P1 + 0.4);
+      const out = 1 - prog(lt, P1 - 0.45, P1 - 0.05);
       c.save();
       c.globalAlpha *= out;
       const r = { x: 690, y: 215, w: 1130, h: 636 };
@@ -232,10 +232,10 @@ SCENES.push({
       c.restore();
     }
     // ---- B: reactions
-    if (lt >= P1 - 0.2 && lt < P2 + 0.5) {
+    if (lt >= P1 && lt < P2) {
       const l = lt - P1;
-      const inK = ease.outCubic(prog(l, -0.2, 0.7));
-      const out = 1 - prog(lt, P2 - 0.2, P2 + 0.4);
+      const inK = ease.outCubic(prog(l, 0.05, 0.6));
+      const out = 1 - prog(lt, P2 - 0.45, P2 - 0.05);
       c.save();
       c.globalAlpha *= inK * out;
       const r = { x: 110, y: 290, w: 880, h: 495 };
@@ -268,17 +268,17 @@ SCENES.push({
       });
     }
     // ---- C: facing
-    if (lt >= P2 - 0.2 && lt < P3 + 0.5) {
+    if (lt >= P2 && lt < P3) {
       const l = lt - P2;
-      const inK = ease.outCubic(prog(l, -0.1, 0.8));
-      const out = 1 - prog(lt, P3 - 0.2, P3 + 0.4);
+      const inK = ease.outCubic(prog(l, 0.05, 0.6));
+      const out = 1 - prog(lt, P3 - 0.45, P3 - 0.05);
       c.save();
       c.globalAlpha *= inK * out;
       headline(c, ['POSITION', 'DECIDES'], 110, 360, ease.outCubic(prog(l, 0.2, 1.4)), { size: 76 });
       body(c, 'Strike the flank or the back for bonus hit chance and damage.', 110, 560, prog(l, 1.2, 2.5), { size: 42, maxW: 540 });
       // diagram
-      const cx = 1300;
-      const cy = 560;
+      const cx = 1250;
+      const cy = 600;
       const R0 = 250;
       const arc = (a0, a1, col, label, sub, la, ly) => {
         c.beginPath();
@@ -323,8 +323,8 @@ SCENES.push({
       // sweeping attacker
       const sweep = prog(l, 2.0, 5.0);
       const ang = lerp(-Math.PI * 0.5, Math.PI * 0.5, ease.inOutCubic(sweep));
-      const ax = cx + Math.cos(ang) * (R0 + 60);
-      const ay = cy + Math.sin(ang) * (R0 + 60);
+      const ax = cx + Math.cos(ang) * (R0 + 125);
+      const ay = cy + Math.sin(ang) * (R0 + 125);
       if (sweep > 0) {
         c.save();
         c.translate(ax, ay);
@@ -346,21 +346,22 @@ SCENES.push({
         c.setLineDash([]);
         const where = ang < -0.4 ? 0 : ang < 0.7 ? 1 : 2;
         const msgs = [
-          ['FRONT', 'Every reaction available'],
+          ['FRONT', 'All reactions available'],
           ['SIDE', '+10% to hit'],
-          ['REAR', '+25% to hit · ×1.25 damage · only Avoid'],
+          ['REAR', '+25% hit, ×1.25 damage'],
         ];
         // side is east when attacker swept right
         const m = ang < -0.6 ? msgs[0] : ang < 0.55 ? msgs[1] : msgs[2];
-        text(c, m[0], 1640, 290, { size: 40, weight: 700, spacing: 6, align: 'left', color: C.parch });
-        text(c, m[1], 1640, 340, { font: F.body, size: 34, align: 'left', color: C.goldLight, weight: '500' });
+        text(c, m[0], 1830, 270, { size: 44, weight: 700, spacing: 6, align: 'right', color: C.parch });
+        text(c, m[1], 1830, 322, { font: F.body, size: 38, align: 'right', color: C.goldLight, weight: '500' });
+        if (m[0] === 'REAR') text(c, 'The defender can only Avoid', 1830, 366, { font: F.body, size: 32, align: 'right', color: '#ff9b8a', weight: 'italic 500' });
       }
       c.restore();
     }
     // ---- D: close-ups
-    if (lt >= P3 - 0.2) {
+    if (lt >= P3) {
       const l = lt - P3;
-      const inK = ease.outCubic(prog(l, -0.1, 0.7));
+      const inK = ease.outCubic(prog(l, 0.05, 0.6));
       c.save();
       c.globalAlpha *= inK;
       const r = { x: 690, y: 215, w: 1130, h: 636 };
@@ -391,16 +392,16 @@ SCENES.push({
     sceneBg(c, '#12090a', '#050203');
     tag(c, '06 · THE STORY', 110, 150, ease.outCubic(prog(lt, 0.4, 1.4)));
     headline(c, ['ONE SIEGE. THREE ROUTES.'], 110, 250, prog(lt, 0.3, 2.0), { size: 70, spacing: 6 });
-    body(c, 'Your choices at the fall of St Elmo decide the road ahead.', 110, 330, prog(lt, 7.4, 8.8), { size: 40, maxW: 700, color: C.parch });
+    body(c, 'Your choices at the fall of St Elmo decide the road ahead.', 110, 330, prog(lt, 5.8, 7.0), { size: 40, maxW: 700, color: C.parch });
     // trunk
     const trunkY = 560;
     const x0 = 160;
     const x1 = 640;
     const x2 = 940;
-    const k1 = ease.inOutCubic(prog(lt, 1.8, 3.4));
+    const k1 = ease.inOutCubic(prog(lt, 1.0, 2.4));
     const nodes = [
-      [x0, 'PROLOGUE', 'Sails at dawn', 1.8],
-      [x1, 'ST ELMO', 'The secret is revealed', 3.4],
+      [x0, 'PROLOGUE', 'Sails at dawn', 0.9],
+      [x1, 'ST ELMO', 'The secret is revealed', 2.4],
     ];
     c.save();
     c.strokeStyle = C.gold;
@@ -431,7 +432,7 @@ SCENES.push({
     const bk = ease.outCubic(prog(lt, 4.0, 5.0));
     // branches
     ROUTES.forEach((r, i) => {
-      const k = ease.inOutCubic(prog(lt, 4.2 + i * 0.7, 5.8 + i * 0.7));
+      const k = ease.inOutCubic(prog(lt, 3.0 + i * 0.6, 4.4 + i * 0.6));
       if (k <= 0) return;
       c.save();
       c.strokeStyle = r.col;
@@ -445,7 +446,7 @@ SCENES.push({
       c.stroke();
       c.setLineDash([]);
       c.restore();
-      const nk = ease.outBack(prog(lt, 5.4 + i * 0.7, 6.2 + i * 0.7));
+      const nk = ease.outBack(prog(lt, 4.0 + i * 0.6, 4.7 + i * 0.6));
       if (nk > 0) {
         c.save();
         c.translate(x2, r.y);
@@ -458,14 +459,14 @@ SCENES.push({
         c.strokeStyle = C.parch;
         c.stroke();
         c.restore();
-        const tk = prog(lt, 5.6 + i * 0.7, 6.6 + i * 0.7);
+        const tk = prog(lt, 4.2 + i * 0.6, 5.2 + i * 0.6);
         text(c, r.name, x2 + 54, r.y - 8, { size: 40, weight: 700, spacing: 8, align: 'left', alpha: tk, color: C.parch });
-        text(c, r.desc, x2 + 54, r.y + 34, { font: F.body, size: 32, align: 'left', alpha: tk, color: C.goldLight, weight: '500' });
-        text(c, 'ENDING — ' + r.end.toUpperCase(), x2 + 54, r.y + 74, { size: 22, spacing: 6, align: 'left', alpha: prog(lt, 9.0 + i * 0.5, 9.8 + i * 0.5), color: r.col });
+        text(c, r.desc, x2 + 54, r.y + 38, { font: F.body, size: 38, align: 'left', alpha: tk, color: C.goldLight, weight: '500' });
+        text(c, 'ENDING — ' + r.end.toUpperCase(), x2 + 54, r.y + 84, { size: 28, spacing: 6, align: 'left', alpha: prog(lt, 6.8 + i * 0.5, 7.6 + i * 0.5), color: '#ffffff', weight: 700 });
       }
     });
     // inset: choice dialogue
-    const ik = ease.outCubic(prog(lt, 7.6, 8.6));
+    const ik = ease.outCubic(prog(lt, 5.4, 6.4));
     if (ik > 0) {
       c.save();
       c.globalAlpha *= ik;
@@ -599,8 +600,8 @@ SCENES.push({
     const ch = CAST[idx];
     const prev = CAST[idx - 1];
     // backdrops crossfade
-    if (prev) blurBg(c, ST(prev.bg), 1 - ease.inOutSine(prog(l, 0, 0.8)), 0.55);
-    blurBg(c, ST(ch.bg), (idx === 0 ? ease.inOutSine(prog(lt, 0, 1.2)) : ease.inOutSine(prog(l, 0, 0.8))), 0.55);
+    if (prev) blurBg(c, ST(prev.bg), 1 - ease.inOutSine(prog(l, 0, 0.8)), 0.72);
+    blurBg(c, ST(ch.bg), (idx === 0 ? ease.inOutSine(prog(lt, 0, 1.2)) : ease.inOutSine(prog(l, 0, 0.8))), 0.72);
     const right = idx % 2 === 1;
     const pw = 520;
     const ph = 700;
@@ -615,8 +616,8 @@ SCENES.push({
     const tx = right ? 140 : 800;
     tag(c, 'THE CAST', tx, 250, ease.outCubic(prog(lt, 0.5, 1.5)));
     textReveal(c, ch.name, tx, 400, prog(l, 0.2, 1.2), { size: 104, weight: 900, spacing: 10, align: 'left' });
-    text(c, ch.title.toUpperCase(), tx, 462, { size: 30, spacing: 10, align: 'left', color: C.gold, alpha: prog(l, 0.7, 1.4) });
-    wordsReveal(c, ch.line, tx, 560, prog(l, 1.0, 2.3), { font: F.body, size: 56, weight: 'italic 500', align: 'left' });
+    text(c, ch.title.toUpperCase(), tx, 468, { size: 34, spacing: 9, align: 'left', color: C.goldLight, alpha: prog(l, 0.5, 1.1), shadow: '#000', shadowBlur: 14 });
+    wordsReveal(c, ch.line, tx, 570, prog(l, 0.8, 1.9), { font: F.body, size: 58, shadow: '#000', shadowBlur: 16, weight: 'italic 500', align: 'left' });
     // progress pips
     CAST.forEach((_, i) => {
       c.fillStyle = i === idx ? C.hot : 'rgba(216,179,106,0.4)';
@@ -627,7 +628,7 @@ SCENES.push({
     // 'and more' under last
     if (idx === CAST.length - 1) {
       const mk = prog(l, 1.9, 3.0);
-      text(c, 'WITH BALBI · DENIZ · LEYLA · AND THE INVENTOR SCALA', W / 2, 1010, { size: 24, spacing: 8, color: C.gold, alpha: mk });
+      text(c, 'WITH BALBI · DENIZ · LEYLA · AND THE INVENTOR SCALA', W / 2, 1010, { size: 30, spacing: 8, color: C.goldLight, alpha: mk, shadow: '#000', shadowBlur: 14 });
     }
     embers(c, lt, 26, 91, { speed: 18, alpha: 0.35 });
   },

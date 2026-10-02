@@ -232,12 +232,13 @@ SCENES.push({
     const la2 = ease.outCubic(prog(lt, 5.4, 6.2));
     lab(PLACES.elmo, 'FORT ST ELMO', 70, -80, la2);
     lab(PLACES.birgu, 'BIRGU', 120, 10, la2);
-    lab(PLACES.senglea, 'SENGLEA', -90, 80, la2, 'right');
+    lab(PLACES.senglea, 'SENGLEA', -60, 120, la2, 'right');
     // left panel
     c.save();
     const pg = c.createLinearGradient(0, 0, 820, 0);
-    pg.addColorStop(0, 'rgba(8,5,4,0.92)');
-    pg.addColorStop(0.8, 'rgba(8,5,4,0.7)');
+    pg.addColorStop(0, 'rgba(8,5,4,0.94)');
+    pg.addColorStop(0.45, 'rgba(8,5,4,0.8)');
+    pg.addColorStop(0.75, 'rgba(8,5,4,0.4)');
     pg.addColorStop(1, 'rgba(8,5,4,0)');
     c.fillStyle = pg;
     c.fillRect(0, 0, 840, H);
@@ -601,9 +602,9 @@ SCENES.push({
     // text column
     tag(c, '03 · THE HERO', 760, 250, ease.outCubic(prog(lt, 0.9, 1.9)));
     wordsReveal(c, 'A farmer’s son from Żejtun.', 760, 360, prog(lt, 1.4, 3.0), { font: F.body, size: 74, weight: 'italic 500', align: 'left' });
-    const o2 = 1 - prog(lt, 5.6, 6.1);
-    wordsReveal(c, 'Raised a peasant.', 760, 460, prog(lt, 3.3, 4.8), { font: F.body, size: 56, align: 'left', color: C.goldLight, alpha: o2 });
-    wordsReveal(c, 'Born of two worlds.', 760, 530, prog(lt, 4.3, 5.6), { font: F.body, size: 56, align: 'left', color: C.goldLight, alpha: o2 });
+    const o2 = 1;
+    wordsReveal(c, 'Raised a peasant.', 760, 460, prog(lt, 3.0, 4.0), { font: F.body, size: 56, align: 'left', color: C.goldLight, alpha: o2 });
+    wordsReveal(c, 'Born of two worlds.', 760, 530, prog(lt, 3.8, 4.9), { font: F.body, size: 56, align: 'left', color: C.goldLight, alpha: o2 });
     // medallion
     const mk = ease.outCubic(prog(lt, 4.5, 5.6));
     const join = ease.inOutCubic(prog(lt, 6.4, 7.4));

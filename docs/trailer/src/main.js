@@ -47,6 +47,22 @@ function drawAll(t) {
     applyTransition(ctx, s.tin, k);
     s.draw(ctx, t, lt, s.b - s.a);
     ctx.restore();
+    if (s.tin && (s.tin.type === 'cross' || s.tin.type === 'circle') && k < 1) {
+      ctx.save();
+      const e = ease.inOutCubic(k);
+      const r = lerp(10, 2300, e);
+      if (s.tin.type === 'cross') maltesePath(ctx, s.tin.cx ?? W / 2, s.tin.cy ?? H / 2, r);
+      else {
+        ctx.beginPath();
+        ctx.arc(s.tin.cx ?? W / 2, s.tin.cy ?? H / 2, r, 0, 6.28);
+      }
+      ctx.strokeStyle = `rgba(244,224,160,${0.9 * (1 - k)})`;
+      ctx.lineWidth = 8;
+      ctx.shadowColor = 'rgba(255,200,120,0.9)';
+      ctx.shadowBlur = 30;
+      ctx.stroke();
+      ctx.restore();
+    }
     // transition accents: flash on cut
     if (s.tin && s.tin.flash && lt >= 0) flash(ctx, hit(t, s.a, s.tin.flashK ?? 9) * s.tin.flash, s.tin.flashColor);
   }
