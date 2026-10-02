@@ -55,5 +55,7 @@ export function useSong(): Song {
   return { t, pulse, kick, bass, energy: data.energy[ei], heat: keyed(t, HEAT) };
 }
 
+export const beatTimes = beats;
+export const beatSeconds = beatLen;
 export const drumTimes = times0();
 function times0() { return drums.map((d) => ({ t: d[0], v: d[1] })); }

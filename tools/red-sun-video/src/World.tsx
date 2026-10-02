@@ -11,6 +11,7 @@ import { Ships } from "./parts/Ships";
 import { Embers, Smoke } from "./parts/Particles";
 import { Captions, MaltaCard } from "./parts/Text";
 import { drumTimes } from "./useSong";
+import { CannonFlash, Defenders, WallDetail } from "./parts/Rampart";
 
 /** Thin red line of light that becomes the horizon. */
 const HorizonLine: React.FC<{ t: number; w: number; y: number }> = ({ t, w, y }) => {
@@ -55,7 +56,10 @@ export const World: React.FC = () => {
           <Ships s={s} L={L} />
         </AbsoluteFill>
         <Smoke s={s} L={L} />
+        <Defenders s={s} L={L} />
         <NearWall s={s} L={L} />
+        <WallDetail s={s} L={L} />
+        <CannonFlash s={s} L={L} />
         <Embers s={s} L={L} density={0.25 + s.energy * 0.6} bursts={bursts} />
         <HorizonLine t={s.t} w={L.w} y={L.horizon} />
       </AbsoluteFill>

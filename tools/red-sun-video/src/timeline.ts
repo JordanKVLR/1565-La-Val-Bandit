@@ -37,8 +37,6 @@ export const CUES = {
   worldReveal: [2.0, 6.0] as [number, number], // line becomes sky + sea
   sunRiseStart: 3.0,
   sunRiseEnd: 13.0,
-  everyStoneName: [48.99, 52.74] as [number, number], // chorus 1 (names glow)
-  stillStanding: [63.75, 67.82] as [number, number], // arms + banners
   holdTheLine: [145.77, 160.85] as [number, number],
   titleSlam: 198.11, // final "Under the red sun" -> RED SUN
   armaturaIn: 202.5,
@@ -133,6 +131,20 @@ export const LYRICS: LyricLine[] = [
   { t: 198.11, text: "September wind is blowing home" },
   { t: 203.3, text: "And we're still here" },
   { t: 208.32, text: "Under the red sun", end: 213.5 },
+];
+
+/** Windows where stone names glow ("Every stone in these walls has a name"). */
+export const NAME_GLOWS: [number, number][] = [[48.99, 52.74], [103.48, 108.67], [168.11, 171.78]];
+/** Windows where defenders raise arms and banners ("Oh-oh-oh, we're still standing"). */
+export const ARMS_UP: [number, number][] = [[63.75, 69.3], [119.52, 127.66], [182.63, 198.11]];
+/** Cannon flashes light the walls in time with the beat. */
+export const FLASH_WINDOWS: [number, number][] = [[29.52, 41.33], [86.33, 97.66]];
+/** Cracks spreading over the limestone: [song seconds, amount 0..1]. They stay once opened. */
+export const CRACKS: [number, number][] = [[29.52, 0], [41, 1], [86.33, 0.6], [97, 1], [214.4, 1]];
+/** How many defenders stand on the ramparts, 0..1. */
+export const DEFENDERS: [number, number][] = [
+  [0, 0], [41.3, 0], [46, 0.4], [56, 0.75], [69, 0.5], [86, 0.5], [97.7, 0.8], [110, 1],
+  [127, 0.4], [145, 0.4], [160.9, 0.7], [168, 1], [198, 1], [205, 0.3], [214, 0],
 ];
 
 export const PALETTE = {

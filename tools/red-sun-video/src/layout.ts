@@ -11,7 +11,7 @@ export function useLayout() {
     /** base sun radius (before heat scaling) */
     sunR: tall ? w * 0.26 : h * 0.19,
     /** where the foreground bastion top edge sits */
-    wallTop: h * (tall ? 0.8 : 0.84),
+    wallTop: h * (tall ? 0.77 : 0.8),
     safeX: w * 0.06,
     safeY: h * 0.06,
     /** layer width used for parallax strips */
