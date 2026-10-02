@@ -1,0 +1,27 @@
+{
+  "name": "red-sun-video",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "analyse": "node scripts/analyse.mjs",
+    "render": "npm run render:wide && npm run render:tall",
+    "render:wide": "remotion render src/index.ts RedSunWide out/red-sun-1920x1080.mp4 --codec=h264",
+    "render:tall": "remotion render src/index.ts RedSunTall out/red-sun-1080x1920.mp4 --codec=h264",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/cinzel": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@remotion/cli": "^4.0.532",
+    "@remotion/media-utils": "^4.0.532",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "remotion": "^4.0.532"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}
