@@ -6,6 +6,6 @@ here="$(cd "$(dirname "$0")" && pwd)"
 build="${1:-$here/build}"
 out="${2:-$here/armatura-1565-trailer.mp4}"
 ffmpeg -v error -y -f concat -safe 0 -i "$build/segments.txt" -i "$here/under-the-red-sun.m4a" \
-  -map 0:v:0 -map 1:a:0 -c:v libx264 -preset slow -b:v 3200k -maxrate 5000k -bufsize 10000k \
+  -map 0:v:0 -map 1:a:0 -c:v libx264 -preset slow -b:v 2900k -maxrate 4800k -bufsize 9600k \
   -pix_fmt yuv420p -profile:v high -movflags +faststart -c:a aac -b:a 192k -shortest "$out"
 ffprobe -v error -show_entries format=duration,size -of default=nw=1 "$out"

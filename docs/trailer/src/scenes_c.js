@@ -22,7 +22,7 @@ const BATTLES = [
 const OBJECTIVES = ['ROUT THE ENEMY', 'DEFEAT THE LEADER', 'SURVIVE N ROUNDS', 'ESCAPE TO SAFETY'];
 SCENES.push({
   name: 'holdline',
-  a: bar(79),
+  a: 146.58,
   b: bar(83),
   tin: { type: 'fade', dur: 0.9 },
   draw(c, t, lt, d) {
@@ -60,7 +60,7 @@ SCENES.push({
       c.globalAlpha *= clamp(k * 2);
       text(c, w, 0, 0, { size: sizes[i], weight: 900, spacing: 10, color: C.parch, shadow: 'rgba(0,0,0,0.8)', shadowBlur: 30 });
       c.restore();
-      c.fillStyle = `rgba(255,236,200,${0.18 * hit(t, bar(79) + at, 9)})`;
+      c.fillStyle = `rgba(255,236,200,${0.18 * hit(t, t - lt + at, 9)})`;
       c.fillRect(0, 0, W, H);
     });
     // chips
@@ -244,32 +244,51 @@ SCENES.push({
   tin: { type: 'wipe', dur: 0.9, angle: 0.25, flash: 0.35, flashK: 8 },
   draw(c, t, lt, d) {
     sceneBg(c, '#0f0a0a', '#050303');
-    tag(c, '08 · BUILD YOUR ARMATURA', 110, 150, ease.outCubic(prog(lt, 0.3, 1.2)));
-    headline(c, ['PILOT.', 'FRAME.', 'GEAR.'], 110, 290, ease.outCubic(prog(lt, 0.2, 1.8)), { size: 96, lh: 104, spacing: 8 });
-    const items = [
-      ['Six attributes shape every pilot', 'Spend 3 points on every level-up.'],
-      ['46 techniques to learn', 'Unlocked by weapon, frame and stats.'],
-      ['Owned gear, not endless loot', 'Fit, swap and salvage Armaturas and weapons.'],
-    ];
-    items.forEach(([h1, h2], i) => {
-      const at = 2.2 + i * BAR * 1.15;
-      const k = prog(lt, at, at + 1.0);
-      if (k <= 0) return;
+    const SW = 6.6; // switch to the prep-screen footage
+    const out1 = 1 - prog(lt, SW - 0.5, SW);
+    if (out1 > 0) {
       c.save();
-      c.fillStyle = C.hot;
-      c.fillRect(110, 640 + i * 124 - 26, 5, 84 * ease.outCubic(k));
+      c.globalAlpha *= out1;
+      tag(c, '08 · BUILD YOUR ARMATURA', 110, 150, ease.outCubic(prog(lt, 0.3, 1.2)));
+      headline(c, ['PILOT.', 'FRAME.', 'GEAR.'], 110, 290, ease.outCubic(prog(lt, 0.2, 1.8)), { size: 96, lh: 104, spacing: 8 });
+      const items = [
+        ['Six attributes shape every pilot', 'Spend 3 points on every level-up.'],
+        ['46 techniques to learn', 'Unlocked by weapon, frame and stats.'],
+        ['Owned gear, not endless loot', 'Fit, swap and salvage Armaturas and weapons.'],
+      ];
+      items.forEach(([h1, h2], i) => {
+        const at = 1.6 + i * 1.5;
+        const k = prog(lt, at, at + 0.8);
+        if (k <= 0) return;
+        c.fillStyle = C.hot;
+        c.fillRect(110, 640 + i * 124 - 26, 5, 84 * ease.outCubic(k));
+        text(c, h1, 140, 640 + i * 124, { size: 34, weight: 700, spacing: 3, align: 'left', alpha: k });
+        text(c, h2, 140, 640 + i * 124 + 42, { font: F.body, size: 34, align: 'left', color: C.goldLight, alpha: k, weight: '500' });
+      });
+      const rk = ease.outCubic(prog(lt, 1.0, 3.6));
+      c.save();
+      c.globalAlpha *= prog(lt, 0.8, 1.6);
+      radar(c, 1330, 490, 260, rk, prog(lt, 3.4, 6.0));
       c.restore();
-      text(c, h1, 140, 640 + i * 124, { size: 34, weight: 700, spacing: 3, align: 'left', alpha: k });
-      text(c, h2, 140, 640 + i * 124 + 42, { font: F.body, size: 34, align: 'left', color: C.goldLight, alpha: k, weight: '500' });
-    });
-    // radar
-    const rk = ease.outCubic(prog(lt, 1.2, 4.2));
-    c.save();
-    c.globalAlpha *= prog(lt, 0.8, 1.6);
-    radar(c, 1330, 490, 260, rk, prog(lt, 4.6, 9.0));
-    c.restore();
-    text(c, 'NINU · STARTING STATS', 1330, 985, { size: 24, spacing: 10, color: C.gold, alpha: prog(lt, 2.0, 3.0) * (1 - prog(lt, 4.5, 5.0)) });
-    text(c, 'NINU · AFTER LEVEL-UPS', 1330, 985, { size: 24, spacing: 10, color: C.hot, alpha: prog(lt, 5.4, 6.4) });
+      text(c, 'NINU · STARTING STATS', 1330, 985, { size: 24, spacing: 10, color: C.gold, alpha: prog(lt, 1.8, 2.6) * (1 - prog(lt, 3.3, 3.8)) });
+      text(c, 'NINU · AFTER LEVEL-UPS', 1330, 985, { size: 24, spacing: 10, color: C.hot, alpha: prog(lt, 4.0, 4.8) });
+      c.restore();
+    }
+    if (lt >= SW) {
+      const l = lt - SW;
+      const inK = ease.outCubic(prog(l, 0.1, 0.8));
+      const R = { x: 690, y: 215, w: 1130, h: 636 };
+      const shop = l >= 3.2;
+      c.save();
+      c.globalAlpha *= inK;
+      shot(c, ST(shop ? 'prep-armoury-shop-screen' : 'prep-loadout-screen'), R.x, R.y, R.w, R.h,
+        shop ? [960, 330 + l * 4, 1.5] : [480, 150 + l * 4, 2.3]);
+      tag(c, '08 · BUILD YOUR ARMATURA', 110, 150, 1);
+      headline(c, ['GEAR UP', 'BETWEEN', 'BATTLES'], 110, 330, ease.outCubic(prog(l, 0.2, 1.4)), { size: 64, lh: 76, spacing: 5 });
+      body(c, 'Fit Armaturas, weapons and charms to your squad.', 110, 620, prog(l, 1.0, 2.2), { size: 40, maxW: 540 });
+      body(c, 'Then spend your scudi in the Armoury.', 110, 780, prog(l, 3.4, 4.6), { size: 40, maxW: 540, color: C.parch });
+      c.restore();
+    }
     embers(c, lt, 26, 101, { speed: 18, alpha: 0.4 });
   },
 });
@@ -286,7 +305,7 @@ const STATS = [
 SCENES.push({
   name: 'numbers',
   a: bar(97),
-  b: bar(104),
+  b: 192.96,
   tin: { type: 'cross', dur: 1.0 },
   draw(c, t, lt, d) {
     fillBg(c, '#140a0a', '#050202');
@@ -313,7 +332,7 @@ SCENES.push({
     c.restore();
     textReveal(c, label, W / 2, 700, prog(l, 0.05, 0.7), { size: 90, weight: 700, spacing: 24, color: C.goldLight, shadow: '#000', shadowBlur: 24 });
     wordsReveal(c, sub, W / 2, 790, prog(l, 0.3, 1.1), { font: F.body, size: 48, weight: 'italic 500', color: C.goldLight });
-    flash(c, hit(t, bar(97) + idx * per, 8) * 0.22);
+    flash(c, hit(t, t - lt + idx * per, 8) * 0.22);
     // pips
     STATS.forEach((_, i) => {
       c.fillStyle = i === idx ? C.hot : 'rgba(216,179,106,0.4)';
@@ -390,7 +409,7 @@ function iconTablet(c, x, y, s, col) {
 
 SCENES.push({
   name: 'outro',
-  a: bar(104),
+  a: 192.96,
   b: bar(115),
   tin: { type: 'fade', dur: 1.6 },
   draw(c, t, lt, d) {
@@ -399,7 +418,7 @@ SCENES.push({
     // low red sun glow that grows toward the reprise
     const gk = ease.inQuad(prog(lt, 9.5, d));
     const hz = 880;
-    sun(c, W / 2, lerp(hz + 190, hz - 70, gk), 170, { glow: 0.2 + gk * 1.0, clipY: hz });
+    sun(c, W / 2, lerp(hz + 190, hz - 30, gk), 170, { glow: 0.2 + gk * 1.0, clipY: hz });
     const sea2 = c.createLinearGradient(0, hz, 0, H);
     sea2.addColorStop(0, `rgba(60,16,12,${0.9})`);
     sea2.addColorStop(1, 'rgba(3,2,2,1)');
@@ -428,7 +447,7 @@ SCENES.push({
     // 3: platforms
     const a3 = prog(lt, 12.2, 13.2) * (1 - prog(lt, 18.8, 19.6));
     if (a3 > 0) {
-      text(c, 'BUILT FOR', W / 2, 380, { size: 26, spacing: 16, color: C.gold, alpha: a3 });
+      text(c, 'BUILT FOR', W / 2, 330, { size: 26, spacing: 16, color: C.gold, alpha: a3 });
       const icons = [
         [iconBrowser, 'BROWSER'],
         [iconPhone, 'PHONES'],
@@ -441,11 +460,11 @@ SCENES.push({
         const x = W / 2 + (i - 1.5) * 330;
         c.save();
         c.globalAlpha *= clamp(k);
-        fn(c, x, 520, 1.6 * k, C.goldLight);
-        text(c, label, x, 640, { size: 28, spacing: 10, color: C.parch });
+        fn(c, x, 470, 1.6 * k, C.goldLight);
+        text(c, label, x, 580, { size: 28, spacing: 10, color: C.parch });
         c.restore();
       });
-      wordsReveal(c, 'Landscape. Touch-first. Free to play.', W / 2, 800, prog(lt, 15.2, 17.0), { font: F.body, size: 56, weight: 'italic 500', alpha: 1 - prog(lt, 18.8, 19.6) });
+      wordsReveal(c, 'Landscape. Touch-first. Free to play.', W / 2, 700, prog(lt, 15.2, 17.0), { font: F.body, size: 56, weight: 'italic 500', alpha: 1 - prog(lt, 18.8, 19.6) });
     }
     embers(c, lt, 36, 111, { speed: 14, alpha: 0.45 });
   },

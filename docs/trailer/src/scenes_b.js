@@ -56,7 +56,7 @@ const HP_FRAME = { x: 690, y: 215, w: 1130, h: 636 };
 SCENES.push({
   name: 'howto',
   a: bar(25),
-  b: bar(36),
+  b: 66.7,
   tin: { type: 'slat', dur: 1.0, n: 12, dir: -1 },
   draw(c, t, lt, d) {
     sceneBg(c);
@@ -208,7 +208,7 @@ const REACTIONS = [
 ];
 SCENES.push({
   name: 'fight',
-  a: bar(36),
+  a: 66.7,
   b: bar(52),
   tin: { type: 'wipe', dur: 1.1, angle: 0.3 },
   draw(c, t, lt, d) {
@@ -368,7 +368,7 @@ SCENES.push({
       const alt = Math.floor(l / (BEAT * 4)) % 2;
       shot(c, ST(alt ? 'ui-cinematic-closeup-2' : 'ui-cinematic-closeup-1'), r.x, r.y, r.w, r.h, [960, 540, 1.0 + (l % (BEAT * 4)) * 0.03]);
       headline(c, ['EVERY BLOW', 'GETS A', 'CLOSE-UP'], 110, 340, ease.outCubic(prog(l, 0.2, 1.4)), { size: 70, lh: 80 });
-      body(c, 'Skip it, speed it up, or switch it off.', 110, 640, prog(l, 1.4, 2.5), { size: 40, color: C.parch, maxW: 540 });
+      body(c, 'Skip it, speed it up, or switch it off.', 110, 640, prog(l, 1.4, 2.5), { size: 36, color: C.parch, maxW: 590 });
       c.restore();
     }
     embers(c, lt, 24, 61, { speed: 16, alpha: 0.35 });
@@ -590,7 +590,7 @@ const CAST = [
 SCENES.push({
   name: 'cast',
   a: bar(69),
-  b: bar(79),
+  b: 146.58,
   tin: { type: 'fade', dur: 1.2 },
   draw(c, t, lt, d) {
     fillBg(c, '#0b0708', '#030203');
@@ -602,22 +602,30 @@ SCENES.push({
     // backdrops crossfade
     if (prev) blurBg(c, ST(prev.bg), 1 - ease.inOutSine(prog(l, 0, 0.8)), 0.72);
     blurBg(c, ST(ch.bg), (idx === 0 ? ease.inOutSine(prog(lt, 0, 1.2)) : ease.inOutSine(prog(l, 0, 0.8))), 0.72);
-    const right = idx % 2 === 1;
-    const pw = 520;
-    const ph = 700;
-    const px = right ? 1220 : 180;
-    const py = 190;
-    const k = ease.outCubic(prog(l, 0.05, 0.9));
-    c.save();
-    c.globalAlpha *= k;
-    c.translate((right ? 1 : -1) * (1 - k) * 120, 0);
-    archPortrait(c, ch.id, px, py, pw, ph);
-    c.restore();
-    const tx = right ? 140 : 800;
-    tag(c, 'THE CAST', tx, 250, ease.outCubic(prog(lt, 0.5, 1.5)));
-    textReveal(c, ch.name, tx, 400, prog(l, 0.2, 1.2), { size: 104, weight: 900, spacing: 10, align: 'left' });
-    text(c, ch.title.toUpperCase(), tx, 468, { size: 34, spacing: 9, align: 'left', color: C.goldLight, alpha: prog(l, 0.5, 1.1), shadow: '#000', shadowBlur: 14 });
-    wordsReveal(c, ch.line, tx, 570, prog(l, 0.8, 1.9), { font: F.body, size: 58, shadow: '#000', shadowBlur: 16, weight: 'italic 500', align: 'left' });
+    const drawCard = (ch, idx, l, alpha) => {
+      const right = idx % 2 === 1;
+      const pw = 520;
+      const ph = 700;
+      const px = right ? 1220 : 180;
+      const py = 190;
+      const k = ease.outCubic(prog(l, 0.05, 0.9));
+      c.save();
+      c.globalAlpha *= alpha;
+      c.save();
+      c.globalAlpha *= k;
+      c.translate((right ? 1 : -1) * (1 - k) * 120, 0);
+      archPortrait(c, ch.id, px, py, pw, ph);
+      c.restore();
+      const tx = right ? 140 : 800;
+      tag(c, 'THE CAST', tx, 250, ease.outCubic(prog(lt, 0.5, 1.5)));
+      textReveal(c, ch.name, tx, 400, prog(l, 0.2, 1.2), { size: 104, weight: 900, spacing: 10, align: 'left' });
+      text(c, ch.title.toUpperCase(), tx, 468, { size: 34, spacing: 9, align: 'left', color: C.goldLight, alpha: prog(l, 0.5, 1.1), shadow: '#000', shadowBlur: 14 });
+      wordsReveal(c, ch.line, tx, 570, prog(l, 0.8, 1.9), { font: F.body, size: 58, shadow: '#000', shadowBlur: 16, weight: 'italic 500', align: 'left' });
+      c.restore();
+    };
+    if (prev && l < 0.3) drawCard(prev, idx - 1, l + per, 1 - prog(l, 0, 0.3));
+    drawCard(ch, idx, l, 1);
+    const tx = idx % 2 === 1 ? 140 : 800;
     // progress pips
     CAST.forEach((_, i) => {
       c.fillStyle = i === idx ? C.hot : 'rgba(216,179,106,0.4)';

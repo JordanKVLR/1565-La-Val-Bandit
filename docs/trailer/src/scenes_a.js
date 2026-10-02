@@ -553,7 +553,7 @@ function medallionHalf(c, cx, cy, r, side, open, lt) {
 SCENES.push({
   name: 'ninu',
   a: bar(16),
-  b: bar(22),
+  b: 41.34,
   tin: { type: 'cross', dur: 1.3, flash: 0.5 },
   draw(c, t, lt) {
     c.fillStyle = '#0d0808';
@@ -674,9 +674,10 @@ SCENES.push({
 /* ====================================================================
    5. TITLE SLAM   bar 22 .. bar 25
    ==================================================================== */
+const DROP = 41.34; // measured chorus-1 downbeat (the drop lands a pickup after bar 22)
 SCENES.push({
   name: 'title',
-  a: bar(22),
+  a: DROP,
   b: bar(25),
   tin: { type: 'cut', dur: 0, flash: 1, flashK: 5, flashColor: '255,236,200' },
   draw(c, t, lt) {
@@ -727,6 +728,6 @@ SCENES.push({
     wordsReveal(c, 'Turn-based battles. Branching story. Clockwork war-harnesses.', W / 2, 840, prog(lt, 4.2, 5.4), {
       font: F.body, size: 44, weight: 'italic 500', color: C.parch,
     });
-    flash(c, hit(t, bar(22), 7) * 0.5);
+    flash(c, hit(t, DROP, 7) * 0.5);
   },
 });
