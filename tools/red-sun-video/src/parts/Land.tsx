@@ -7,7 +7,7 @@ import { goldMix } from "./Sky";
 
 type Kind = "hills" | "city" | "wall";
 
-function skyline(seed: number, width: number, minH: number, maxH: number, kind: Kind, extra?: { fortX: number }) {
+function skyline(seed: number, width: number, minH: number, maxH: number, kind: Kind, extra?: { fortX: number; out?: { fx: number } }) {
   const r = rng(seed);
   let d = `M0 0`;
   let x = 0;
@@ -46,7 +46,8 @@ function skyline(seed: number, width: number, minH: number, maxH: number, kind: 
   while (x < width) {
     const fort = extra && Math.abs(x - extra.fortX) < 60;
     if (fort) {
-      const fw = 380, fh = maxH * 1.15;
+      const fw = 520, fh = maxH * 1.6;
+      if (extra?.out) extra.out.fx = x;
       // angular bastion with slanted flanks
       d += ` L${x} ${-minH} L${x + 40} ${-fh * 0.55} L${x + 120} ${-fh * 0.55} L${x + 150} ${-fh} L${x + 230} ${-fh} L${x + 260} ${-fh * 0.55} L${x + fw - 40} ${-fh * 0.55} L${x + fw} ${-minH}`;
       x += fw + 20;
@@ -71,6 +72,12 @@ function skyline(seed: number, width: number, minH: number, maxH: number, kind: 
   return d + ` L${x} 0 Z`;
 }
 
+export const FORT_X = (W: number) => W * 0.43;
+/** Where Fort St Elmo landed in the city strip (set while the skyline is generated). */
+export const fortInfo = { fx: 0 };
+/** Screen position of the fort's centre-top. */
+export const fortScreen = (s: Song, L: Layout) => ({ x: fortInfo.fx + 260 + panOffset(s, L, 0.35), y: L.horizon + 8 - 70 * 1.6 });
+
 export type LandProps = { s: Song; L: Layout };
 
 export const panOffset = (s: Song, L: Layout, parallax: number) => -keyed(s.t, PAN) * L.stripW * parallax;
@@ -89,7 +96,7 @@ export const FarLand: React.FC<LandProps> = ({ s, L }) => {
   const g = goldMix(s.t);
   const W = L.stripW;
   const hills = useMemo(() => skyline(3, W, 14, 46, "hills"), [W]);
-  const city = useMemo(() => skyline(11, W, 14, 70, "city", { fortX: W * 0.62 }), [W]);
+  const city = useMemo(() => skyline(11, W, 14, 70, "city", { fortX: FORT_X(W), out: fortInfo }), [W]);
   const farFill = mix([58, 20, 26], [120, 70, 50], g);
   const midFill = mix([30, 12, 16], [78, 44, 30], g);
   return (

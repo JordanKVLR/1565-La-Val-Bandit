@@ -1,5 +1,5 @@
 import React from "react";
-import { PALETTE, CUES } from "../timeline";
+import { PALETTE, CUES, SUN_SCALE, DYN } from "../timeline";
 import { Layout } from "../layout";
 import { Song } from "../useSong";
 import { keyed, lerp, mix, prog } from "../lib";
@@ -31,14 +31,21 @@ export const Sky: React.FC<{ s: Song; L: Layout }> = ({ s, L }) => {
   );
 };
 
+export const sunGeom = (s: Song, L: Layout) => {
+  const rise = prog(s.t, CUES.sunRiseStart, CUES.sunRiseEnd);
+  const setting = prog(s.t, 205, 213);
+  const R = L.sunR * (0.78 + s.heat * 0.95) * keyed(s.t, SUN_SCALE);
+  return { R, cy: L.horizon + R * 1.15 - rise * R * 1.45 + setting * R * 1.6 };
+};
+
 /** The red sun disc. Pulses with the beat, grows and heats up with the song. */
 export const Sun: React.FC<{ s: Song; L: Layout }> = ({ s, L }) => {
   const g = goldMix(s.t);
-  const rise = prog(s.t, CUES.sunRiseStart, CUES.sunRiseEnd);
-  const setting = prog(s.t, 205, 213);
-  const R = L.sunR * (0.78 + s.heat * 0.95) * (1 + 0.028 * s.pulse + 0.03 * s.kick + 0.02 * s.bass);
-  const cy = L.horizon + R * 1.15 - rise * R * 1.45 + setting * R * 1.6;
-  const glowR = R * (2.6 + s.heat * 2.4 + s.kick * 0.5);
+  const dyn = keyed(s.t, DYN);
+  const geo = sunGeom(s, L);
+  const R = geo.R * (1 + (0.02 + 0.05 * dyn) * s.pulse + 0.05 * dyn * s.kick + 0.02 * s.bass);
+  const cy = geo.cy;
+  const glowR = R * (2.2 + s.heat * 1.6 + s.kick * 0.6);
   const core = mix([255, 214, 120], [255, 240, 190], g);
   const mid = mix([232, 86, 28], [255, 190, 80], g);
   const rim = mix([150, 18, 24], [235, 130, 40], g);
@@ -60,17 +67,10 @@ export const Sun: React.FC<{ s: Song; L: Layout }> = ({ s, L }) => {
       <circle cx={L.cx} cy={cy} r={glowR} fill="url(#sunGlow)" opacity={glowOp} style={{ mixBlendMode: "screen" }} />
       <circle cx={L.cx} cy={cy} r={R} fill="url(#sunDisc)" />
       {[0.86, 0.7, 0.52].map((k, i) => (
-        <circle key={i} cx={L.cx} cy={cy} r={R * k} fill="none" stroke={core} strokeOpacity={0.07 + 0.03 * s.pulse} strokeWidth={R * 0.012} />
+        <circle key={i} cx={L.cx} cy={cy} r={R * k} fill="none" stroke={core} strokeOpacity={0.07 + 0.05 * s.pulse} strokeWidth={R * 0.012} />
       ))}
     </svg>
   );
-};
-
-export const sunGeom = (s: Song, L: Layout) => {
-  const rise = prog(s.t, CUES.sunRiseStart, CUES.sunRiseEnd);
-  const setting = prog(s.t, 205, 213);
-  const R = L.sunR * (0.78 + s.heat * 0.95);
-  return { R, cy: L.horizon + R * 1.15 - rise * R * 1.45 + setting * R * 1.6 };
 };
 
 export const lerpN = lerp;

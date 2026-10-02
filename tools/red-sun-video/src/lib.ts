@@ -33,3 +33,5 @@ export function rng(seed: number) {
 }
 export const mix = (c1: [number, number, number], c2: [number, number, number], t: number) =>
   `rgb(${Math.round(lerp(c1[0], c2[0], t))},${Math.round(lerp(c1[1], c2[1], t))},${Math.round(lerp(c1[2], c2[2], t))})`;
+/** One arm of the 8-pointed Maltese cross (centre 0,0, radius 1). Rotate by 90 degrees four times. */
+export const MALTESE_ARM = "M-0.1 -0.1 L-0.26 -1 L0 -0.8 L0.26 -1 L0.1 -0.1 Z";

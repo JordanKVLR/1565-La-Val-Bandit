@@ -43,6 +43,7 @@ export const MaltaCard: React.FC<{ s: Song; L: Layout }> = ({ s, L }) => {
 /** Lyric captions: fade in word by word, bottom safe area, never over the sun. */
 export const Captions: React.FC<{ s: Song; L: Layout }> = ({ s, L }) => {
   if (!SHOW_LYRICS) return null;
+  if (s.t >= CUES.titleSlam && s.t < CUES.titleOut[1]) return null;
   let idx = -1;
   for (let i = 0; i < LYRICS.length; i++) if (LYRICS[i].t <= s.t) idx = i;
   if (idx < 0) return null;

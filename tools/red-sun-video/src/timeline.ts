@@ -38,23 +38,55 @@ export const CUES = {
   sunRiseStart: 3.0,
   sunRiseEnd: 13.0,
   holdTheLine: [145.77, 160.85] as [number, number],
-  titleSlam: 198.11, // final "Under the red sun" -> RED SUN
-  armaturaIn: 202.5,
-  fleetSinks: [198.11, 212] as [number, number],
+  titleSlam: 192.21, // final chorus "Under the red sun" -> RED SUN slams in
+  armaturaIn: 194.9,
+  titleOut: [199.5, 202.5] as [number, number],
+  fleetSinks: [199, 211] as [number, number],
   septemberDate: [204.5, 210.5] as [number, number],
 };
 
 /** How hot/big the sun is over time: [songSeconds, heat 0..1]. Eased between keys. */
 export const HEAT: [number, number][] = [
-  [0, 0.05], [13, 0.2], [29.5, 0.4], [41.3, 0.75], [69.3, 0.55],
-  [86.3, 0.7], [97.7, 0.85], [127.7, 0.45], [145.8, 0.6], [160.9, 1],
-  [198, 0.9], [214.4, 0.2],
+  [0, 0.05], [13, 0.2], [29.5, 0.4], [41.3, 0.75], [69.3, 0.5],
+  [86.3, 0.65], [97.7, 0.85], [127.7, 0.4], [145.8, 0.5], [149.1, 0.58], [152.8, 0.7], [155.8, 0.85],
+  [160.9, 1], [198, 0.9], [214.4, 0.2],
 ];
 
 /** Sails on the horizon: [songSeconds, count]. */
 export const FLEET: [number, number][] = [
   [13.56, 0], [17.6, 3], [21.5, 8], [25.8, 16], [29.5, 22], [100, 30], [214.4, 30],
 ];
+
+/** Sun size multiplier. Verse 2 hangs heavy; final chorus flares to nearly full screen. */
+export const SUN_SCALE: [number, number][] = [
+  [0, 1], [69.3, 1], [73, 1.3], [86, 1.35], [97.6, 1.05], [127, 1.05], [145, 1.15],
+  [160.8, 1.1], [161.5, 2.9], [165, 2.3], [192, 2.4], [198, 1.7], [205, 1.2], [214.4, 1],
+];
+/** Overall darkening 0..1 (verse 2, bridge). */
+export const DARK: [number, number][] = [
+  [0, 0], [69, 0], [72, 0.4], [85, 0.4], [86.5, 0.1], [127, 0.1], [129, 0.5], [145, 0.45], [152, 0.25], [160.8, 0], [214.4, 0],
+];
+/** "Dynamic" amount: how hard the camera, grade and sun punch on the beat. */
+export const DYN: [number, number][] = [
+  [0, 0], [12, 0.1], [29, 0.3], [41.3, 1], [69, 0.7], [72, 0.25], [86, 0.5], [97.7, 1.1], [127, 0.8], [128, 0.15],
+  [145.8, 0.6], [155, 1], [160.9, 1.4], [198, 0.5], [205, 0],
+];
+/** Torches and fires across the island: [song seconds, amount 0..1]. */
+export const TORCHES: [number, number][] = [
+  [0, 0], [69, 0], [76, 0.6], [86, 0.85], [97, 0.5], [127, 1], [214, 1],
+];
+/** Fort St Elmo fire/smoke. */
+export const FORT: [number, number][] = [[0, 0], [60, 0], [69.3, 1], [80, 0.7], [97, 0.4], [214.4, 0.25]];
+/** Water level dropping (exposed seabed). */
+export const WATER: [number, number][] = [[0, 0], [69.3, 0], [86, 0.7], [127, 0.85], [198, 0.85], [214.4, 0.85]];
+/** Maltese cross banners rising on the walls. */
+export const BANNERS: [number, number][] = [
+  [0, 0], [97.66, 0], [104, 1], [127, 1], [129, 0], [160.85, 0], [166, 1], [199, 1], [205, 0],
+];
+/** Gold light flooding the island: [song seconds, amount]. */
+export const FLOOD: [number, number][] = [[0, 0], [160.85, 0], [162, 0.45], [198, 0.3], [210, 0], [214.4, 0]];
+/** Bridge vignettes: when each figure steps in; `row` is when they join in a line for "Hold the line". */
+export const BRIDGE = { boy: 127.8, knight: 129.9, mother: 131.5, sailor: 133.1, row: 145.5, rowDone: 148.5, out: 160.85 };
 
 /** Smoke amount 0..1. */
 export const SMOKE: [number, number][] = [
