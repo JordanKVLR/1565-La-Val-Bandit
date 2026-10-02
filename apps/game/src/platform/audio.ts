@@ -1,11 +1,12 @@
 import { settings } from '../state/settings';
 import type { Mood, Theme } from './musicThemes';
 import { degreeToMidi, midiToHz, STRUM_STEPS, THEMES } from './musicThemes';
+import { CROSSFADE_S, restartsOnEntry, trackFor, TRACK_VOLUME } from './musicTracks';
 
 /**
- * Audio synthesised live with Web Audio so the game ships without any sound files: sound
- * effects plus a small sequencer playing Maltese-folk-style themes (see musicThemes.ts).
- * Final recordings can replace these behind the same `sfx()` / `music()` calls.
+ * Sound effects are synthesised live with Web Audio. Music is two recorded tracks (see
+ * musicTracks.ts), streamed and looped; the small Maltese-folk sequencer (musicThemes.ts) only
+ * plays if a track can't be loaded.
  */
 export type Sfx =
   'tap' | 'select' | 'move' | 'hit' | 'miss' | 'defend' | 'counter' | 'defeat' | 'victory' | 'loss';
@@ -16,6 +17,7 @@ let musicGain: GainNode | null = null;
 let sfxGain: GainNode | null = null;
 let reverb: ConvolverNode | null = null;
 let currentMood: Mood = 'none';
+let trackGain: GainNode | null = null;
 
 function audio(): AudioContext | null {
   if (ctx) return ctx;
@@ -29,6 +31,8 @@ function audio(): AudioContext | null {
     sfxGain = ctx.createGain();
     musicGain.connect(ctx.destination);
     sfxGain.connect(ctx.destination);
+    trackGain = ctx.createGain();
+    trackGain.connect(ctx.destination);
     // A short hall so the flute and guitar ring like they would in a stone courtyard.
     reverb = ctx.createConvolver();
     reverb.buffer = impulse(ctx, 1.8);
@@ -48,12 +52,15 @@ function applyVolumes(): void {
   const s = settings.get();
   if (musicGain) musicGain.gain.value = s.musicVolume * 0.18;
   if (sfxGain) sfxGain.gain.value = s.sfxVolume * 0.5;
+  if (trackGain) trackGain.gain.value = s.musicVolume * TRACK_VOLUME;
 }
 
 /** Browsers only allow sound after a user gesture; call this from the first tap. */
 export function unlockAudio(): void {
   const c = audio();
   if (c && c.state === 'suspended' && !document.hidden) void c.resume();
+  // A track asked for before the first tap was blocked by the browser: start it now.
+  if (active && active.el.paused && !document.hidden) playElement(active);
 }
 
 /**
@@ -63,9 +70,12 @@ export function unlockAudio(): void {
 function watchVisibility(): void {
   const pause = () => {
     if (ctx && ctx.state === 'running') void ctx.suspend();
+    for (const t of tracks.values()) t.el.pause();
   };
   const resume = () => {
-    if (!ctx || document.hidden || ctx.state !== 'suspended') return;
+    if (!ctx || document.hidden) return;
+    if (active) playElement(active);
+    if (ctx.state !== 'suspended') return;
     void ctx.resume().then(() => {
       if (seq) seq.nextStepTime = seq.nextNoteTime = ctx!.currentTime + 0.05;
     });
@@ -457,15 +467,85 @@ function schedule(): void {
   while (s.nextNoteTime < horizon) s.nextNoteTime += playNote(s, s.nextNoteTime);
 }
 
-/** Switches the music to a mood's theme (or silence). Safe to call before audio is unlocked. */
-export function music(mood: Mood): void {
-  if (mood === currentMood) return;
-  currentMood = mood;
-  if (seq) {
-    clearInterval(seq.timer);
-    stopDrone(seq.drone);
-    seq = null;
-  }
+// ── Recorded tracks ───────────────────────────────────────────
+
+interface Track {
+  readonly url: string;
+  readonly el: HTMLAudioElement;
+  readonly gain: GainNode;
+  failed: boolean;
+}
+
+const tracks = new Map<string, Track>();
+let active: Track | null = null;
+
+function trackOf(url: string): Track | null {
+  const c = audio();
+  if (!c || !trackGain) return null;
+  let t = tracks.get(url);
+  if (t) return t;
+  const el = new Audio();
+  el.loop = true;
+  el.preload = 'auto';
+  el.crossOrigin = 'anonymous';
+  el.src = url;
+  const gain = c.createGain();
+  gain.gain.value = 0;
+  // Routed through Web Audio so the fades and the volume slider also work on iOS.
+  c.createMediaElementSource(el).connect(gain).connect(trackGain);
+  const track: Track = { url, el, gain, failed: false };
+  el.addEventListener('error', () => {
+    track.failed = true;
+    // The file couldn't load (offline before it was ever cached): use the generated theme.
+    if (active === track) {
+      active = null;
+      startSequencer(currentMood);
+    }
+  });
+  tracks.set(url, track);
+  // Fetch the whole file once so the service worker caches it for offline play.
+  if (!url.startsWith('data:')) void fetch(url).catch(() => undefined);
+  t = track;
+  return t;
+}
+
+function playElement(t: Track): void {
+  if (document.hidden) return;
+  // Before the first tap this is refused; unlockAudio() tries again.
+  void t.el.play().catch(() => undefined);
+}
+
+function fadeTo(t: Track, value: number): void {
+  const c = ctx!;
+  const now = c.currentTime;
+  t.gain.gain.cancelScheduledValues(now);
+  t.gain.gain.setValueAtTime(t.gain.gain.value, now);
+  t.gain.gain.linearRampToValueAtTime(value, now + CROSSFADE_S);
+}
+
+function fadeOutActive(): void {
+  const old = active;
+  active = null;
+  if (!old) return;
+  fadeTo(old, 0);
+  // Paused (not reset) after the fade, so the piano can carry on from here later.
+  setTimeout(
+    () => {
+      if (active !== old) old.el.pause();
+    },
+    CROSSFADE_S * 1000 + 50,
+  );
+}
+
+function stopSequencer(): void {
+  if (!seq) return;
+  clearInterval(seq.timer);
+  stopDrone(seq.drone);
+  seq = null;
+}
+
+function startSequencer(mood: Mood): void {
+  stopSequencer();
   if (mood === 'none' || !audio()) return;
   const theme = THEMES[mood];
   const start = ctx!.currentTime + 0.1;
@@ -479,4 +559,33 @@ export function music(mood: Mood): void {
     drone: startDrone(theme),
     timer: setInterval(schedule, 50),
   };
+}
+
+/**
+ * Switches the music for a mood: the piano outside battle, the charge in battle, crossfading.
+ * Safe to call before audio is unlocked.
+ */
+export function music(mood: Mood): void {
+  if (mood === currentMood) return;
+  const previous = currentMood;
+  currentMood = mood;
+  const url = trackFor(mood);
+  const next = url ? trackOf(url) : null;
+  if (!next || next.failed) {
+    fadeOutActive();
+    startSequencer(mood);
+    return;
+  }
+  stopSequencer();
+  if (active === next) return;
+  fadeOutActive();
+  active = next;
+  if (restartsOnEntry(previous, mood)) next.el.currentTime = 0;
+  playElement(next);
+  fadeTo(next, 1);
+}
+
+/** The track playing now, if any (for tests and debugging). */
+export function currentTrack(): string | null {
+  return active?.url ?? null;
 }

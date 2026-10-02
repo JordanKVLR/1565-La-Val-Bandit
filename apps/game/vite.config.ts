@@ -20,7 +20,23 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
       // Precache the art too, so portraits and textures work offline once installed.
-      workbox: { globPatterns: ['**/*.{js,css,html,svg,png,webp,json,woff2}'] },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,json,woff2}'],
+        // Music is too big to precache: each track is cached the first time it plays, then
+        // served from the cache (with range requests, as audio players ask for).
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.endsWith('.mp3'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'music',
+              rangeRequests: true,
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 4 },
+            },
+          },
+        ],
+      },
       manifest: {
         name: 'Armatura 1565',
         short_name: 'Armatura',
