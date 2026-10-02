@@ -42,9 +42,8 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
     music(
       screen.kind === 'battle'
         ? battleMood(screen.setup)
-        : screen.kind === 'story' || screen.kind === 'prep'
-          ? 'story'
-          : 'none',
+        : // Gentle Piano carries on through story, preparation, results and the ending.
+          'story',
     );
   }, [screen, onTitle]);
 

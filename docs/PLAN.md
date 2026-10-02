@@ -329,8 +329,9 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
 - **UI:** a DOM overlay for crisp text, accessibility and i18n, styled with a 16th-century
   printed-page / illuminated look (blackletter headings, parchment panels).
   Portrait dialogue box at the bottom.
-- **Audio:** Howler.js; music layers (calm/tense/battle); SFX bus; volume sliders. Styled
-  on Mediterranean renaissance and Ottoman _mehter_ instrumentation (commission later).
+- **Audio:** two recorded, looping tracks: _Gentle Piano_ outside battle and _Thunderous
+  Charge_ in battle, crossfading, streamed then cached (ADR 0004). Sound effects are
+  synthesised; generated Maltese-folk themes are the fallback if a track can't load.
 - **Placeholders:** coloured prisms plus generated label sprites, silhouette portraits,
   CC0 SFX. All referenced by ID through `assets/manifest.json`.
 
