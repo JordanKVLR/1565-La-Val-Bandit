@@ -86,7 +86,8 @@
         "pow": 15,
         "dex": 13,
         "agl": 5
-      }
+      },
+      "portrait": "scala"
     },
     {
       "id": "proto-1",

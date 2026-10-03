@@ -2,6 +2,7 @@ import type { BalanceConfig, Coord, UnitState } from '@m1565/core';
 import { loadLibrary } from '@m1565/content';
 import type { FigureSpec } from '../../render/Armatura';
 import { figureSpec } from '../../render/Armatura';
+import { genericPortraitId } from '../../render/art';
 
 /**
  * Pieces of the classic tactical-RPG battle look: framed panels with AP/FP/HP bars labelled
@@ -17,6 +18,22 @@ export function frameName(unit: UnitState): string {
 }
 
 /** The armatura figure for the details sheet. */
+/**
+ * Whose portrait a unit shows: its own character's, the story figure it stands in for, or the
+ * soldier or janissary stand-in.
+ */
+export function portraitIdFor(
+  unit: Pick<UnitState, 'characterId' | 'frameId' | 'portrait'>,
+): string | null {
+  if (unit.characterId) return unit.characterId;
+  if (unit.portrait) return unit.portrait;
+  lib ??= loadLibrary();
+  const frame = lib.frames.get(unit.frameId);
+  return frame
+    ? genericPortraitId(lib.frameFactions.get(frame.id) ?? '', lib.frameModels.get(frame.id) ?? '')
+    : null;
+}
+
 export function unitFigure(unit: UnitState, accent: string): FigureSpec {
   lib ??= loadLibrary();
   return figureSpec(lib, unit, accent);

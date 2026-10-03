@@ -25,10 +25,23 @@ const js = read(/<script type="module" crossorigin src="\.\/([^"]+)"/).replaceAl
   '<\\/script',
 );
 const css = read(/<link rel="stylesheet" crossorigin href="\.\/([^"]+)"/);
+// No art folder next to a single page: embed the portraits as data: URLs instead.
+const artDir = resolve(root, 'public/art');
+const manifest = JSON.parse(readFileSync(resolve(artDir, 'manifest.json'), 'utf8'));
+const mime = (p) =>
+  p.endsWith('.webp') ? 'image/webp' : p.endsWith('.png') ? 'image/png' : 'image/jpeg';
+const portraits = Object.fromEntries(
+  Object.entries(manifest.portraits ?? {}).map(([id, p]) => [
+    id,
+    `data:${mime(p)};base64,${readFileSync(resolve(artDir, p)).toString('base64')}`,
+  ]),
+);
+const art = JSON.stringify({ portraits }).replaceAll('</', '<\\/');
 const page = `<title>Armatura 1565</title>
 <meta name="theme-color" content="#1b1410">
 <style>${css}</style>
 <div id="app"></div>
+<script>window.__M1565_ART__=${art}</script>
 <script type="module">${js}</script>
 `;
 writeFileSync(resolve(out, 'armatura-1565.html'), page);

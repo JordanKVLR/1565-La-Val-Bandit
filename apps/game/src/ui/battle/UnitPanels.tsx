@@ -6,7 +6,7 @@ import { TechniqueCard } from './TechniqueCard';
 import type { CostPreview } from './StatBars';
 import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
-import { frameName, gearName, unitFigure, VbBars } from './vb';
+import { frameName, gearName, portraitIdFor, unitFigure, VbBars } from './vb';
 
 import { SIDE_COLORS as SIDE_COLOR } from '../../render/palette';
 
@@ -30,7 +30,7 @@ export function UnitCard({
   return (
     <aside class={`vb-panel unit-card side-${unit.side}`} data-testid={testId}>
       <div class="uc-top">
-        <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
+        <Portrait name={unit.name} side={unit.side} castId={portraitIdFor(unit)} />
         <VbBars unit={unit} balance={state.balance} ap={preview?.ap ?? 0} fp={preview?.fp ?? 0} />
       </div>
       <div class="uc-head">
@@ -133,7 +133,7 @@ export function UnitDetails({
             <>
               <div class="vbd-top">
                 <div class="vbd-portrait">
-                  <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
+                  <Portrait name={unit.name} side={unit.side} castId={portraitIdFor(unit)} />
                   <VbBars unit={unit} balance={state.balance} />
                 </div>
                 <div class="vbd-attrs">

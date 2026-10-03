@@ -195,6 +195,8 @@ export const BattleUnitSchema = z
   .object({
     id,
     character: id.optional(),
+    /** Cast portrait for a generic unit that stands in for a story figure. */
+    portrait: id.optional(),
     name: z.string().min(1).optional(),
     stats: partialStats.optional(),
     side: z.enum(['player', 'enemy']),

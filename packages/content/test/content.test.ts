@@ -13,6 +13,7 @@ import {
   mapSources,
 } from '../src';
 import { createBattle, DEFAULT_BALANCE } from '@m1565/core';
+import castData from '../data/cast.json';
 
 describe('content', () => {
   const terrains = loadTerrains();
@@ -56,6 +57,15 @@ describe('battles', () => {
     expect(state.outcome).toBe('ongoing');
     // Every battle fields at least one named story character on the player's side.
     expect(state.units.some((u) => u.side === 'player' && u.characterId)).toBe(true);
+  });
+
+  it('gives stand-in portraits only to cast members', () => {
+    const cast = new Set(castData.map((c) => c.id));
+    for (const [id, src] of Object.entries(battleSources)) {
+      for (const u of (src as { units: Array<{ portrait?: string }> }).units) {
+        if (u.portrait) expect(cast.has(u.portrait), `${id}: ${u.portrait}`).toBe(true);
+      }
+    }
   });
 
   it('keeps the shipped balance in sync with the core defaults', () => {
