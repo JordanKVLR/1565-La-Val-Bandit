@@ -6,9 +6,10 @@ gameplay captures (`footage/`), then rendered frame by frame.
 
 | Path | What it is |
 | --- | --- |
-| `armatura-1565-trailer.mp4` | The finished video |
+| `armatura-1565-trailer.mp4` | The trailer |
+| `armatura-1565-intro.mp4` | The opening cinematic (story intro, ends at dawn on 18 May 1565); storyboard in `INTRO_STORYBOARD.md` |
 | `under-the-red-sun.m4a` | The soundtrack |
-| `src/` | Renderer: `engine.js` (helpers), `scenes_a/b/c.js` (13 scenes), `main.js` (timeline) |
+| `src/` | Renderer: `engine.js` (helpers), `scenes_a/b/c.js` (trailer), `intro/` (opening cinematic shots and art kit), `malta_geo.js` (coastlines traced from reference maps), `main.js` (timeline) |
 | `footage/stills`, `footage/portraits` | Gameplay screenshots and portraits used by the scenes |
 | `render.mjs` | Headless Chromium frame renderer (parallel workers piped into ffmpeg) |
 | `assemble.sh` | Joins the segments, adds the song, encodes the final MP4 |
@@ -22,7 +23,8 @@ MP4 clips in `footage/clips/` with `ffmpeg -i clip.mp4 -r 30 -q:v 4 footage/fram
 
 ```sh
 cd docs/trailer && ln -sfn ../../apps/game/node_modules node_modules
-node render.mjs --out build            # ~5 min on 4 cores
+node render.mjs --out build            # trailer, ~5 min on 4 cores
+node render.mjs --page intro.html --out build-intro   # opening cinematic
 ./assemble.sh build armatura-1565-trailer.mp4
 open src/index.html?t=41.5             # preview any single frame in a browser
 ```
