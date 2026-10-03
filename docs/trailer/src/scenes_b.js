@@ -13,7 +13,11 @@ function sceneBg(c, top = '#140c0b', bottom = '#060303') {
 function headline(c, lines, x, y, k, o = {}) {
   lines.forEach((ln, i) =>
     textReveal(c, ln, x, y + i * (o.lh ?? 86), clamp(k * 1.3 - i * 0.25), {
-      size: o.size ?? 72, weight: 700, spacing: o.spacing ?? 6, align: o.align ?? 'left', color: o.color ?? C.parch,
+      size: o.size ?? 72,
+      weight: 700,
+      spacing: o.spacing ?? 6,
+      align: o.align ?? 'left',
+      color: o.color ?? C.parch,
     }),
   );
 }
@@ -39,14 +43,24 @@ function body(c, str, x, y, k, o = {}) {
   const lines = o.maxW ? wrapLines(c, str, size, o.maxW) : [str];
   lines.forEach((ln, i) =>
     wordsReveal(c, ln, x, y + i * size * 1.2, clamp(k * 1.4 - i * 0.3), {
-      font: F.body, size, weight: '500', color: o.color ?? C.goldLight, align: o.align ?? 'left', alpha: o.alpha ?? 1,
+      font: F.body,
+      size,
+      weight: '500',
+      color: o.color ?? C.goldLight,
+      align: o.align ?? 'left',
+      alpha: o.alpha ?? 1,
     }),
   );
   return lines.length;
 }
 /* a scene-local step helper: returns {k (0..1 in), out (1..0 out), lt} for a step spanning [a,b] seconds */
 function step(lt, a, b, fin = 0.5, fout = 0.4) {
-  return { k: prog(lt, a, a + fin), out: 1 - prog(lt, b - fout, b), l: lt - a, on: lt >= a && lt < b };
+  return {
+    k: prog(lt, a, a + fin),
+    out: 1 - prog(lt, b - fout, b),
+    l: lt - a,
+    on: lt >= a && lt < b,
+  };
 }
 
 /* ====================================================================
@@ -80,7 +94,8 @@ SCENES.push({
 
     // ---- step 1: battlefield + turn order
     {
-      const a = 0, b = S1 + 0.4;
+      const a = 0,
+        b = S1 + 0.4;
       if (lt >= a && lt < b) {
         const sl = slide(a, S1);
         const l = lt - a;
@@ -90,22 +105,48 @@ SCENES.push({
         c.save();
         c.globalAlpha *= sl.a;
         const p1 = viewMap(view, r, 960, 40);
-        callout(c, p1[0], p1[1], r.x + 330, r.y - 70, 'TURN ORDER', prog(l, 1.4, 2.4), { size: 26 });
+        callout(c, p1[0], p1[1], r.x + 330, r.y - 70, 'TURN ORDER', prog(l, 1.4, 2.4), {
+          size: 26,
+        });
         const p2 = viewMap(view, r, 200, 100);
-        callout(c, p2[0], p2[1], r.x + 330, r.y + r.h + 55, 'MISSION OBJECTIVE', prog(l, 2.4, 3.4), { size: 26 });
+        callout(
+          c,
+          p2[0],
+          p2[1],
+          r.x + 330,
+          r.y + r.h + 55,
+          'MISSION OBJECTIVE',
+          prog(l, 2.4, 3.4),
+          { size: 26 },
+        );
         c.restore();
         const st = step(lt, a + 0.3, S1 - 0.2);
         c.save();
         c.translate(0, 0);
         headline(c, ['COMMAND', 'THE SQUAD'], 110, 360, st.k * st.out, { size: 76 });
-        body(c, 'Turn-based battles on 3D isometric battlefields.', 110, 560, prog(lt, 0.9, 2.0) * st.out, { size: 42, maxW: 540 });
-        body(c, 'Every unit is a pilot inside an Armatura.', 110, 700, prog(lt, 1.8, 2.9) * st.out, { size: 38, maxW: 540, color: C.parch });
+        body(
+          c,
+          'Turn-based battles on 3D isometric battlefields.',
+          110,
+          560,
+          prog(lt, 0.9, 2.0) * st.out,
+          { size: 42, maxW: 540 },
+        );
+        body(
+          c,
+          'Every unit is a pilot inside an Armatura.',
+          110,
+          700,
+          prog(lt, 1.8, 2.9) * st.out,
+          { size: 38, maxW: 540, color: C.parch },
+        );
         c.restore();
       }
     }
     // ---- step 2: move + AP cost
     {
-      const a = S1 - 0.4, b = S2 + 0.4;
+      const a = S1 - 0.4,
+        b = S2 + 0.4;
       if (lt >= a && lt < b) {
         const sl = slide(a, S2);
         const l = lt - a;
@@ -115,27 +156,76 @@ SCENES.push({
         c.save();
         c.globalAlpha *= sl.a;
         const p1 = viewMap(view, r, 1640, 1038);
-        callout(c, p1[0], p1[1], r.x + r.w - 380, r.y - 60, 'ACTION POINT COST', prog(l, 1.5, 2.5), { size: 26 });
+        callout(
+          c,
+          p1[0],
+          p1[1],
+          r.x + r.w - 380,
+          r.y - 60,
+          'ACTION POINT COST',
+          prog(l, 1.5, 2.5),
+          { size: 26 },
+        );
         const p2 = viewMap(view, r, 950, 340);
-        callout(c, p2[0], p2[1], r.x + 120, r.y + r.h + 55, 'TERRAIN & HEIGHT MATTER', prog(l, 2.6, 3.6), { size: 26 });
+        callout(
+          c,
+          p2[0],
+          p2[1],
+          r.x + 120,
+          r.y + r.h + 55,
+          'TERRAIN & HEIGHT MATTER',
+          prog(l, 2.6, 3.6),
+          { size: 26 },
+        );
         c.restore();
         const st = step(lt, a + 0.5, S2 - 0.2);
         headline(c, ['EVERY STEP', 'COSTS AP'], 110, 360, st.k * st.out, { size: 76 });
-        body(c, 'Roads are quick. Sand, rubble and climbs are not.', 110, 560, prog(lt, a + 1.3, a + 2.4) * st.out, { size: 42, maxW: 540 });
-        body(c, 'The route and its cost are previewed first.', 110, 700, prog(lt, a + 2.2, a + 3.3) * st.out, { size: 38, maxW: 540, color: C.parch });
+        body(
+          c,
+          'Roads are quick. Sand, rubble and climbs are not.',
+          110,
+          560,
+          prog(lt, a + 1.3, a + 2.4) * st.out,
+          { size: 42, maxW: 540 },
+        );
+        body(
+          c,
+          'The route and its cost are previewed first.',
+          110,
+          700,
+          prog(lt, a + 2.2, a + 3.3) * st.out,
+          { size: 38, maxW: 540, color: C.parch },
+        );
       }
     }
     // ---- step 3: rotate (clip)
     {
-      const a = S2 - 0.4, b = S3 + 0.4;
+      const a = S2 - 0.4,
+        b = S3 + 0.4;
       if (lt >= a && lt < b) {
         const sl = slide(a, S3);
         const l = lt - a;
         const r = { ...R, x: R.x + sl.dx };
-        shot(c, CLIP('camera-rotation', clamp(l - 0.2, 0, 7.2)), r.x, r.y, r.w, r.h, [960, 540, 1], { alpha: sl.a });
+        shot(
+          c,
+          CLIP('camera-rotation', clamp(l - 0.2, 0, 7.2)),
+          r.x,
+          r.y,
+          r.w,
+          r.h,
+          [960, 540, 1],
+          { alpha: sl.a },
+        );
         const st = step(lt, a + 0.5, S3 - 0.2);
         headline(c, ['ROTATE', 'THE WORLD'], 110, 360, st.k * st.out, { size: 76 });
-        body(c, 'Turn the camera in 90° steps to see around walls and ridges.', 110, 560, prog(lt, a + 1.3, a + 2.6) * st.out, { size: 42, maxW: 540 });
+        body(
+          c,
+          'Turn the camera in 90° steps to see around walls and ridges.',
+          110,
+          560,
+          prog(lt, a + 1.3, a + 2.6) * st.out,
+          { size: 42, maxW: 540 },
+        );
         // rotation glyph
         c.save();
         c.translate(1760, 215);
@@ -172,7 +262,12 @@ SCENES.push({
         const fill = ease.inOutSine(prog(l, 1.2, 4.2));
         c.save();
         c.globalAlpha *= prog(l, 0.9, 1.5);
-        text(c, 'FATIGUE POINTS', mx, my - 22, { size: 22, spacing: 8, color: C.gold, align: 'left' });
+        text(c, 'FATIGUE POINTS', mx, my - 22, {
+          size: 22,
+          spacing: 8,
+          color: C.gold,
+          align: 'left',
+        });
         c.fillStyle = 'rgba(255,255,255,0.1)';
         rrect(c, mx, my, mw, 28, 6);
         c.fill();
@@ -186,10 +281,25 @@ SCENES.push({
         c.moveTo(mx + mw / 2, my - 8);
         c.lineTo(mx + mw / 2, my + 36);
         c.stroke();
-        text(c, '50  TIRED  −10% hit & evade', mx + mw / 2, my + 72, { size: 24, spacing: 2, color: C.parch, align: 'center', alpha: prog(fill, 0.45, 0.55) });
-        text(c, '100  FAINTS', mx + mw, my + 112, { size: 24, spacing: 4, color: '#ff7b6a', align: 'right', alpha: prog(fill, 0.93, 1) });
+        text(c, '50  TIRED  −10% hit & evade', mx + mw / 2, my + 72, {
+          size: 24,
+          spacing: 2,
+          color: C.parch,
+          align: 'center',
+          alpha: prog(fill, 0.45, 0.55),
+        });
+        text(c, '100  FAINTS', mx + mw, my + 112, {
+          size: 24,
+          spacing: 4,
+          color: '#ff7b6a',
+          align: 'right',
+          alpha: prog(fill, 0.93, 1),
+        });
         c.restore();
-        body(c, 'Rest to recover. Plan your turns.', 110, 800, prog(l, 3.2, 4.3), { size: 40, maxW: 540 });
+        body(c, 'Rest to recover. Plan your turns.', 110, 800, prog(l, 3.2, 4.3), {
+          size: 40,
+          maxW: 540,
+        });
       }
     }
     embers(c, lt, 30, 51, { speed: 20, alpha: 0.4 });
@@ -226,9 +336,18 @@ SCENES.push({
       c.globalAlpha *= out;
       const r = { x: 690, y: 215, w: 1130, h: 636 };
       shot(c, CLIP('attack-sequence', clamp(lt - 0.2, 0, 11.9)), r.x, r.y, r.w, r.h, [960, 540, 1]);
-      headline(c, ['CHOOSE', 'YOUR BLOW'], 110, 360, ease.outCubic(prog(lt, 0.4, 1.6)), { size: 76 });
-      body(c, 'See hit chance and damage before you commit.', 110, 560, prog(lt, 1.2, 2.5), { size: 42, maxW: 540 });
-      body(c, 'Stronger attacks cost more AP and FP.', 110, 720, prog(lt, 3.6, 4.8), { size: 36, color: C.parch, maxW: 540 });
+      headline(c, ['CHOOSE', 'YOUR BLOW'], 110, 360, ease.outCubic(prog(lt, 0.4, 1.6)), {
+        size: 76,
+      });
+      body(c, 'See hit chance and damage before you commit.', 110, 560, prog(lt, 1.2, 2.5), {
+        size: 42,
+        maxW: 540,
+      });
+      body(c, 'Stronger attacks cost more AP and FP.', 110, 720, prog(lt, 3.6, 4.8), {
+        size: 36,
+        color: C.parch,
+        maxW: 540,
+      });
       c.restore();
     }
     // ---- B: reactions
@@ -240,10 +359,26 @@ SCENES.push({
       c.globalAlpha *= inK * out;
       const r = { x: 110, y: 290, w: 880, h: 495 };
       const useClip = l < 4.9;
-      shot(c, useClip ? CLIP('defender-reaction', l) : ST('ui-defender-reaction-menu'), r.x, r.y, r.w, r.h, [960, 540, 1]);
-      text(c, 'THE DEFENDER ANSWERS', 110, 240, { size: 46, weight: 700, spacing: 8, align: 'left' });
+      shot(
+        c,
+        useClip ? CLIP('defender-reaction', l) : ST('ui-defender-reaction-menu'),
+        r.x,
+        r.y,
+        r.w,
+        r.h,
+        [960, 540, 1],
+      );
+      text(c, 'THE DEFENDER ANSWERS', 110, 240, {
+        size: 46,
+        weight: 700,
+        spacing: 8,
+        align: 'left',
+      });
       body(c, 'Every attack is met with a choice.', 110, 850, prog(l, 0.4, 1.4), { size: 42 });
-      body(c, 'Reactions cost fatigue, not AP.', 110, 910, prog(l, 1.2, 2.2), { size: 42, color: C.parch });
+      body(c, 'Reactions cost fatigue, not AP.', 110, 910, prog(l, 1.2, 2.2), {
+        size: 42,
+        color: C.parch,
+      });
       c.restore();
       REACTIONS.forEach(([name, cost, desc, col], i) => {
         const k = ease.outBack(prog(l, 0.8 + i * BEAT * 2, 1.5 + i * BEAT * 2)) * out;
@@ -262,8 +397,20 @@ SCENES.push({
         rrect(c, x, y, 770, 116, 10);
         c.stroke();
         text(c, name, x + 34, y + 54, { size: 36, weight: 700, spacing: 5, align: 'left' });
-        text(c, desc, x + 34, y + 94, { font: F.body, size: 30, align: 'left', color: C.goldLight, weight: '500' });
-        text(c, cost, x + 740, y + 54, { size: 28, spacing: 3, align: 'right', color: col, weight: 700 });
+        text(c, desc, x + 34, y + 94, {
+          font: F.body,
+          size: 30,
+          align: 'left',
+          color: C.goldLight,
+          weight: '500',
+        });
+        text(c, cost, x + 740, y + 54, {
+          size: 28,
+          spacing: 3,
+          align: 'right',
+          color: col,
+          weight: 700,
+        });
         c.restore();
       });
     }
@@ -274,8 +421,17 @@ SCENES.push({
       const out = 1 - prog(lt, P3 - 0.45, P3 - 0.05);
       c.save();
       c.globalAlpha *= inK * out;
-      headline(c, ['POSITION', 'DECIDES'], 110, 360, ease.outCubic(prog(l, 0.2, 1.4)), { size: 76 });
-      body(c, 'Strike the flank or the back for bonus hit chance and damage.', 110, 560, prog(l, 1.2, 2.5), { size: 42, maxW: 540 });
+      headline(c, ['POSITION', 'DECIDES'], 110, 360, ease.outCubic(prog(l, 0.2, 1.4)), {
+        size: 76,
+      });
+      body(
+        c,
+        'Strike the flank or the back for bonus hit chance and damage.',
+        110,
+        560,
+        prog(l, 1.2, 2.5),
+        { size: 42, maxW: 540 },
+      );
       // diagram
       const cx = 1250;
       const cy = 600;
@@ -318,7 +474,12 @@ SCENES.push({
       c.fill();
       c.restore();
       text(c, 'FRONT', cx, cy - R0 - 24, { size: 28, spacing: 6, color: '#7fd4aa' });
-      text(c, 'SIDE', cx + R0 + 24, cy + 10, { size: 28, spacing: 6, color: '#f0bf55', align: 'left' });
+      text(c, 'SIDE', cx + R0 + 24, cy + 10, {
+        size: 28,
+        spacing: 6,
+        color: '#f0bf55',
+        align: 'left',
+      });
       text(c, 'REAR', cx, cy + R0 + 54, { size: 28, spacing: 6, color: '#ff7b6a' });
       // sweeping attacker
       const sweep = prog(l, 2.0, 5.0);
@@ -352,9 +513,28 @@ SCENES.push({
         ];
         // side is east when attacker swept right
         const m = ang < -0.6 ? msgs[0] : ang < 0.55 ? msgs[1] : msgs[2];
-        text(c, m[0], 1830, 270, { size: 44, weight: 700, spacing: 6, align: 'right', color: C.parch });
-        text(c, m[1], 1830, 322, { font: F.body, size: 38, align: 'right', color: C.goldLight, weight: '500' });
-        if (m[0] === 'REAR') text(c, 'The defender can only Avoid', 1830, 366, { font: F.body, size: 32, align: 'right', color: '#ff9b8a', weight: 'italic 500' });
+        text(c, m[0], 1830, 270, {
+          size: 44,
+          weight: 700,
+          spacing: 6,
+          align: 'right',
+          color: C.parch,
+        });
+        text(c, m[1], 1830, 322, {
+          font: F.body,
+          size: 38,
+          align: 'right',
+          color: C.goldLight,
+          weight: '500',
+        });
+        if (m[0] === 'REAR')
+          text(c, 'The defender can only Avoid', 1830, 366, {
+            font: F.body,
+            size: 32,
+            align: 'right',
+            color: '#ff9b8a',
+            weight: 'italic 500',
+          });
       }
       c.restore();
     }
@@ -366,9 +546,24 @@ SCENES.push({
       c.globalAlpha *= inK;
       const r = { x: 690, y: 215, w: 1130, h: 636 };
       const alt = Math.floor(l / (BEAT * 4)) % 2;
-      shot(c, ST(alt ? 'ui-cinematic-closeup-2' : 'ui-cinematic-closeup-1'), r.x, r.y, r.w, r.h, [960, 540, 1.0 + (l % (BEAT * 4)) * 0.03]);
-      headline(c, ['EVERY BLOW', 'GETS A', 'CLOSE-UP'], 110, 340, ease.outCubic(prog(l, 0.2, 1.4)), { size: 70, lh: 80 });
-      body(c, 'Skip it, speed it up, or switch it off.', 110, 640, prog(l, 1.4, 2.5), { size: 36, color: C.parch, maxW: 590 });
+      shot(c, ST(alt ? 'ui-cinematic-closeup-2' : 'ui-cinematic-closeup-1'), r.x, r.y, r.w, r.h, [
+        960,
+        540,
+        1.0 + (l % (BEAT * 4)) * 0.03,
+      ]);
+      headline(
+        c,
+        ['EVERY BLOW', 'GETS A', 'CLOSE-UP'],
+        110,
+        340,
+        ease.outCubic(prog(l, 0.2, 1.4)),
+        { size: 70, lh: 80 },
+      );
+      body(c, 'Skip it, speed it up, or switch it off.', 110, 640, prog(l, 1.4, 2.5), {
+        size: 36,
+        color: C.parch,
+        maxW: 590,
+      });
       c.restore();
     }
     embers(c, lt, 24, 61, { speed: 16, alpha: 0.35 });
@@ -379,9 +574,27 @@ SCENES.push({
    8a. THE STORY: three routes   bar 52 .. bar 60 (chorus 2)
    ==================================================================== */
 const ROUTES = [
-  { name: 'THE CROSS', col: '#d9462f', desc: 'Embrace the knightly blood. Defend Birgu.', end: 'Victory Day', y: 330 },
-  { name: 'THE ISLAND', col: '#4f8fd0', desc: 'Reject both thrones. Fight with Mdina and the militia.', end: 'Son of Malta', y: 560 },
-  { name: 'THE CRESCENT', col: '#2fb0b8', desc: 'Cross the harbour. Play the Ottoman side.', end: 'Two Halves', y: 790 },
+  {
+    name: 'THE CROSS',
+    col: '#d9462f',
+    desc: 'Embrace the knightly blood. Defend Birgu.',
+    end: 'Victory Day',
+    y: 330,
+  },
+  {
+    name: 'THE ISLAND',
+    col: '#4f8fd0',
+    desc: 'Reject both thrones. Fight with Mdina and the militia.',
+    end: 'Son of Malta',
+    y: 560,
+  },
+  {
+    name: 'THE CRESCENT',
+    col: '#2fb0b8',
+    desc: 'Cross the harbour. Play the Ottoman side.',
+    end: 'Two Halves',
+    y: 790,
+  },
 ];
 SCENES.push({
   name: 'routes',
@@ -391,8 +604,18 @@ SCENES.push({
   draw(c, t, lt) {
     sceneBg(c, '#12090a', '#050203');
     tag(c, '06 · THE STORY', 110, 150, ease.outCubic(prog(lt, 0.4, 1.4)));
-    headline(c, ['ONE SIEGE. THREE ROUTES.'], 110, 250, prog(lt, 0.3, 2.0), { size: 70, spacing: 6 });
-    body(c, 'Your choices at the fall of St Elmo decide the road ahead.', 110, 330, prog(lt, 5.8, 7.0), { size: 40, maxW: 700, color: C.parch });
+    headline(c, ['ONE SIEGE. THREE ROUTES.'], 110, 250, prog(lt, 0.3, 2.0), {
+      size: 70,
+      spacing: 6,
+    });
+    body(
+      c,
+      'Your choices at the fall of St Elmo decide the road ahead.',
+      110,
+      330,
+      prog(lt, 5.8, 7.0),
+      { size: 40, maxW: 700, color: C.parch },
+    );
     // trunk
     const trunkY = 560;
     const x0 = 160;
@@ -426,7 +649,13 @@ SCENES.push({
       c.stroke();
       c.restore();
       text(c, n, x, trunkY + 66, { size: 24, spacing: 6, color: C.gold, alpha: k });
-      text(c, s, x, trunkY + 100, { font: F.body, size: 28, color: C.parch, alpha: k, weight: 'italic 500' });
+      text(c, s, x, trunkY + 100, {
+        font: F.body,
+        size: 28,
+        color: C.parch,
+        alpha: k,
+        weight: 'italic 500',
+      });
     });
     // choice burst
     const bk = ease.outCubic(prog(lt, 4.0, 5.0));
@@ -460,9 +689,30 @@ SCENES.push({
         c.stroke();
         c.restore();
         const tk = prog(lt, 4.2 + i * 0.6, 5.2 + i * 0.6);
-        text(c, r.name, x2 + 54, r.y - 8, { size: 40, weight: 700, spacing: 8, align: 'left', alpha: tk, color: C.parch });
-        text(c, r.desc, x2 + 54, r.y + 38, { font: F.body, size: 38, align: 'left', alpha: tk, color: C.goldLight, weight: '500' });
-        text(c, 'ENDING — ' + r.end.toUpperCase(), x2 + 54, r.y + 84, { size: 28, spacing: 6, align: 'left', alpha: prog(lt, 6.8 + i * 0.5, 7.6 + i * 0.5), color: '#ffffff', weight: 700 });
+        text(c, r.name, x2 + 54, r.y - 8, {
+          size: 40,
+          weight: 700,
+          spacing: 8,
+          align: 'left',
+          alpha: tk,
+          color: C.parch,
+        });
+        text(c, r.desc, x2 + 54, r.y + 38, {
+          font: F.body,
+          size: 38,
+          align: 'left',
+          alpha: tk,
+          color: C.goldLight,
+          weight: '500',
+        });
+        text(c, 'ENDING — ' + r.end.toUpperCase(), x2 + 54, r.y + 84, {
+          size: 28,
+          spacing: 6,
+          align: 'left',
+          alpha: prog(lt, 6.8 + i * 0.5, 7.6 + i * 0.5),
+          color: '#ffffff',
+          weight: 700,
+        });
       }
     });
     // inset: choice dialogue
@@ -536,10 +786,30 @@ SCENES.push({
     c.fillRect(0, 0, W, H);
     // text
     const t1 = step(lt, 1.2, 7.0, 0.8, 0.5);
-    text(c, 'MALTA', 480, 300, { size: 46, weight: 700, spacing: 14, color: '#8fb8ee', alpha: t1.k * t1.out });
-    text(c, 'THE OTTOMANS', 1440, 300, { size: 46, weight: 700, spacing: 14, color: '#6fd6dc', alpha: t1.k * t1.out });
-    body(c, 'The Order and the militia', 480, 680, prog(lt, 1.8, 3.0) * t1.out, { size: 44, align: 'center', color: C.parch });
-    body(c, 'The armada and the corsairs', 1440, 680, prog(lt, 2.2, 3.4) * t1.out, { size: 44, align: 'center', color: C.parch });
+    text(c, 'MALTA', 480, 300, {
+      size: 46,
+      weight: 700,
+      spacing: 14,
+      color: '#8fb8ee',
+      alpha: t1.k * t1.out,
+    });
+    text(c, 'THE OTTOMANS', 1440, 300, {
+      size: 46,
+      weight: 700,
+      spacing: 14,
+      color: '#6fd6dc',
+      alpha: t1.k * t1.out,
+    });
+    body(c, 'The Order and the militia', 480, 680, prog(lt, 1.8, 3.0) * t1.out, {
+      size: 44,
+      align: 'center',
+      color: C.parch,
+    });
+    body(c, 'The armada and the corsairs', 1440, 680, prog(lt, 2.2, 3.4) * t1.out, {
+      size: 44,
+      align: 'center',
+      color: C.parch,
+    });
     // headline
     const hk = prog(lt, 3.6, 5.2);
     const ho = 1 - prog(lt, 9.2, 9.8);
@@ -547,8 +817,20 @@ SCENES.push({
     c.fillStyle = `rgba(5,3,3,${0.62 * hk * ho})`;
     c.fillRect(0, 380, W, 220);
     c.restore();
-    textReveal(c, 'PLAY BOTH SIDES OF THE SIEGE', W / 2, 510, hk, { size: 80, weight: 700, spacing: 8, alpha: ho });
-    wordsReveal(c, 'Heroism and cost on both sides, with a playable Ottoman route.', W / 2, 575, prog(lt, 5.4, 6.9), { font: F.body, size: 42, weight: 'italic 500', color: C.goldLight, alpha: ho });
+    textReveal(c, 'PLAY BOTH SIDES OF THE SIEGE', W / 2, 510, hk, {
+      size: 80,
+      weight: 700,
+      spacing: 8,
+      alpha: ho,
+    });
+    wordsReveal(
+      c,
+      'Heroism and cost on both sides, with a playable Ottoman route.',
+      W / 2,
+      575,
+      prog(lt, 5.4, 6.9),
+      { font: F.body, size: 42, weight: 'italic 500', color: C.goldLight, alpha: ho },
+    );
     // medallion closes
     const mk = prog(lt, 9.6, 10.6);
     if (mk > 0) {
@@ -570,8 +852,18 @@ SCENES.push({
         c.fillStyle = g;
         c.fillRect(0, 0, W, H);
       }
-      textReveal(c, 'TWO BROTHERS. TWO SIDES.', W / 2, 770, prog(lt, 10.4, 12.0), { size: 60, weight: 700, spacing: 10, alpha: mk });
-      wordsReveal(c, 'One broken medallion.', W / 2, 850, prog(lt, 12.0, 13.4), { font: F.body, size: 56, weight: 'italic 500', color: C.goldLight });
+      textReveal(c, 'TWO BROTHERS. TWO SIDES.', W / 2, 770, prog(lt, 10.4, 12.0), {
+        size: 60,
+        weight: 700,
+        spacing: 10,
+        alpha: mk,
+      });
+      wordsReveal(c, 'One broken medallion.', W / 2, 850, prog(lt, 12.0, 13.4), {
+        font: F.body,
+        size: 56,
+        weight: 'italic 500',
+        color: C.goldLight,
+      });
     }
     embers(c, lt, 26, 81, { speed: 18, alpha: 0.4 });
   },
@@ -581,11 +873,41 @@ SCENES.push({
    9. THE CAST   bar 69 .. bar 79  (bridge)
    ==================================================================== */
 const CAST = [
-  { id: 'ninu', name: 'NINU', title: 'Militiaman of Żejtun', line: 'A farmer’s son with a secret.', bg: 'battle-b1-marsaxlokk' },
-  { id: 'luis', name: 'FRA LUIS', title: 'Knight of Aragon', line: 'A reluctant mentor with orders of his own.', bg: 'battle-a3-castile-breach' },
-  { id: 'kateri', name: 'KATERI', title: 'Armatura mechanic', line: 'Clockmaker’s daughter. Keeps the machines alive.', bg: 'battle-a5-scala-engine' },
-  { id: 'pawlu', name: 'PAWLU', title: 'Farmer, former galley slave', line: 'He knows the truth, and swore silence.', bg: 'battle-b3-sciberras' },
-  { id: 'valette', name: 'LA VALETTE', title: 'Grand Master of the Order', line: 'He has watched from afar for twenty years.', bg: 'battle-b9-fall-of-st-elmo' },
+  {
+    id: 'ninu',
+    name: 'NINU',
+    title: 'Militiaman of Żejtun',
+    line: 'A farmer’s son with a secret.',
+    bg: 'battle-b1-marsaxlokk',
+  },
+  {
+    id: 'luis',
+    name: 'FRA LUIS',
+    title: 'Knight of Aragon',
+    line: 'A reluctant mentor with orders of his own.',
+    bg: 'battle-a3-castile-breach',
+  },
+  {
+    id: 'kateri',
+    name: 'KATERI',
+    title: 'Armatura mechanic',
+    line: 'Clockmaker’s daughter. Keeps the machines alive.',
+    bg: 'battle-a5-scala-engine',
+  },
+  {
+    id: 'pawlu',
+    name: 'PAWLU',
+    title: 'Farmer, former galley slave',
+    line: 'He knows the truth, and swore silence.',
+    bg: 'battle-b3-sciberras',
+  },
+  {
+    id: 'valette',
+    name: 'LA VALETTE',
+    title: 'Grand Master of the Order',
+    line: 'He has watched from afar for twenty years.',
+    bg: 'battle-b9-fall-of-st-elmo',
+  },
 ];
 SCENES.push({
   name: 'cast',
@@ -601,7 +923,12 @@ SCENES.push({
     const prev = CAST[idx - 1];
     // backdrops crossfade
     if (prev) blurBg(c, ST(prev.bg), 1 - ease.inOutSine(prog(l, 0, 0.8)), 0.72);
-    blurBg(c, ST(ch.bg), (idx === 0 ? ease.inOutSine(prog(lt, 0, 1.2)) : ease.inOutSine(prog(l, 0, 0.8))), 0.72);
+    blurBg(
+      c,
+      ST(ch.bg),
+      idx === 0 ? ease.inOutSine(prog(lt, 0, 1.2)) : ease.inOutSine(prog(l, 0, 0.8)),
+      0.72,
+    );
     const drawCard = (ch, idx, l, alpha) => {
       const right = idx % 2 === 1;
       const pw = 520;
@@ -618,9 +945,29 @@ SCENES.push({
       c.restore();
       const tx = right ? 140 : 800;
       tag(c, 'THE CAST', tx, 250, ease.outCubic(prog(lt, 0.5, 1.5)));
-      textReveal(c, ch.name, tx, 400, prog(l, 0.2, 1.2), { size: 104, weight: 900, spacing: 10, align: 'left' });
-      text(c, ch.title.toUpperCase(), tx, 468, { size: 34, spacing: 9, align: 'left', color: C.goldLight, alpha: prog(l, 0.5, 1.1), shadow: '#000', shadowBlur: 14 });
-      wordsReveal(c, ch.line, tx, 570, prog(l, 0.8, 1.9), { font: F.body, size: 58, shadow: '#000', shadowBlur: 16, weight: 'italic 500', align: 'left' });
+      textReveal(c, ch.name, tx, 400, prog(l, 0.2, 1.2), {
+        size: 104,
+        weight: 900,
+        spacing: 10,
+        align: 'left',
+      });
+      text(c, ch.title.toUpperCase(), tx, 468, {
+        size: 34,
+        spacing: 9,
+        align: 'left',
+        color: C.goldLight,
+        alpha: prog(l, 0.5, 1.1),
+        shadow: '#000',
+        shadowBlur: 14,
+      });
+      wordsReveal(c, ch.line, tx, 570, prog(l, 0.8, 1.9), {
+        font: F.body,
+        size: 58,
+        shadow: '#000',
+        shadowBlur: 16,
+        weight: 'italic 500',
+        align: 'left',
+      });
       c.restore();
     };
     if (prev && l < 0.3) drawCard(prev, idx - 1, l + per, 1 - prog(l, 0, 0.3));
@@ -636,7 +983,14 @@ SCENES.push({
     // 'and more' under last
     if (idx === CAST.length - 1) {
       const mk = prog(l, 1.9, 3.0);
-      text(c, 'WITH BALBI · DENIZ · LEYLA · AND THE INVENTOR SCALA', W / 2, 1010, { size: 30, spacing: 8, color: C.goldLight, alpha: mk, shadow: '#000', shadowBlur: 14 });
+      text(c, 'WITH BALBI · DENIZ · LEYLA · AND THE INVENTOR SCALA', W / 2, 1010, {
+        size: 30,
+        spacing: 8,
+        color: C.goldLight,
+        alpha: mk,
+        shadow: '#000',
+        shadowBlur: 14,
+      });
     }
     embers(c, lt, 26, 91, { speed: 18, alpha: 0.35 });
   },

@@ -23,9 +23,27 @@ function drawArmatura(c, x0, y0, S, lt) {
   };
   // legs
   [-1, 1].forEach((s) => {
-    poly([[s * 22, -300], [s * 82, -300], [s * 76, -170], [s * 30, -170]]);
-    poly([[s * 30, -170], [s * 76, -170], [s * 70, -20], [s * 38, -20]]);
-    poly([[s * 28, -20], [s * 84, -20], [s * 100, 0], [s * 20, 0]], 'rgba(216,179,106,0.35)');
+    poly([
+      [s * 22, -300],
+      [s * 82, -300],
+      [s * 76, -170],
+      [s * 30, -170],
+    ]);
+    poly([
+      [s * 30, -170],
+      [s * 76, -170],
+      [s * 70, -20],
+      [s * 38, -20],
+    ]);
+    poly(
+      [
+        [s * 28, -20],
+        [s * 84, -20],
+        [s * 100, 0],
+        [s * 20, 0],
+      ],
+      'rgba(216,179,106,0.35)',
+    );
     c.beginPath();
     c.arc(s * 53, -170, 20, 0, 6.28);
     c.fillStyle = C.ink;
@@ -38,10 +56,31 @@ function drawArmatura(c, x0, y0, S, lt) {
     st(5);
   });
   // hips
-  poly([[-90, -330], [90, -330], [80, -290], [-80, -290]], 'rgba(216,179,106,0.3)');
+  poly(
+    [
+      [-90, -330],
+      [90, -330],
+      [80, -290],
+      [-80, -290],
+    ],
+    'rgba(216,179,106,0.3)',
+  );
   // torso
-  poly([[-100, -470], [100, -470], [74, -330], [-74, -330]]);
-  poly([[-70, -466], [70, -466], [52, -360], [-52, -360]], 'rgba(15,47,40,0.8)');
+  poly([
+    [-100, -470],
+    [100, -470],
+    [74, -330],
+    [-74, -330],
+  ]);
+  poly(
+    [
+      [-70, -466],
+      [70, -466],
+      [52, -360],
+      [-52, -360],
+    ],
+    'rgba(15,47,40,0.8)',
+  );
   // core dial with gear
   c.beginPath();
   c.arc(0, -415, 44, 0, 6.28);
@@ -59,8 +98,18 @@ function drawArmatura(c, x0, y0, S, lt) {
     c.fill();
     st();
     // arm
-    poly([[s * 98, -440], [s * 140, -440], [s * 150, -330], [s * 108, -330]]);
-    poly([[s * 108, -330], [s * 150, -330], [s * 156, -230], [s * 112, -230]]);
+    poly([
+      [s * 98, -440],
+      [s * 140, -440],
+      [s * 150, -330],
+      [s * 108, -330],
+    ]);
+    poly([
+      [s * 108, -330],
+      [s * 150, -330],
+      [s * 156, -230],
+      [s * 112, -230],
+    ]);
     c.beginPath();
     c.arc(s * 134, -230, 20, 0, 6.28);
     c.fillStyle = C.ink;
@@ -198,7 +247,11 @@ function sceneBg(c, top = '#140c0b', bottom = '#060303') {
 function headline(c, lines, x, y, k, o = {}) {
   lines.forEach((ln, i) =>
     textReveal(c, ln, x, y + i * (o.lh ?? 86), clamp(k * 1.3 - i * 0.25), {
-      size: o.size ?? 72, weight: 700, spacing: o.spacing ?? 6, align: o.align ?? 'left', color: o.color ?? C.parch,
+      size: o.size ?? 72,
+      weight: 700,
+      spacing: o.spacing ?? 6,
+      align: o.align ?? 'left',
+      color: o.color ?? C.parch,
     }),
   );
 }
@@ -224,15 +277,33 @@ function body(c, str, x, y, k, o = {}) {
   const lines = o.maxW ? wrapLines(c, str, size, o.maxW) : [str];
   lines.forEach((ln, i) =>
     wordsReveal(c, ln, x, y + i * size * 1.2, clamp(k * 1.4 - i * 0.3), {
-      font: F.body, size, weight: '500', color: o.color ?? C.goldLight, align: o.align ?? 'left', alpha: o.alpha ?? 1,
+      font: F.body,
+      size,
+      weight: '500',
+      color: o.color ?? C.goldLight,
+      align: o.align ?? 'left',
+      alpha: o.alpha ?? 1,
     }),
   );
   return lines.length;
 }
 /* a scene-local step helper: returns {k (0..1 in), out (1..0 out), lt} for a step spanning [a,b] seconds */
 function step(lt, a, b, fin = 0.5, fout = 0.4) {
-  return { k: prog(lt, a, a + fin), out: 1 - prog(lt, b - fout, b), l: lt - a, on: lt >= a && lt < b };
+  return {
+    k: prog(lt, a, a + fin),
+    out: 1 - prog(lt, b - fout, b),
+    l: lt - a,
+    on: lt >= a && lt < b,
+  };
 }
 
-
-Object.assign(window, { drawArmatura, humanFigure, medallionHalf, sceneBg, headline, wrapLines, body, step });
+Object.assign(window, {
+  drawArmatura,
+  humanFigure,
+  medallionHalf,
+  sceneBg,
+  headline,
+  wrapLines,
+  body,
+  step,
+});

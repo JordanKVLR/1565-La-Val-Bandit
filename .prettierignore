@@ -10,3 +10,7 @@ apps/game/android
 apps/game/ios
 apps/desktop/release
 apps/game/src/ui/maltese.generated.css
+apps/game/public/intro
+docs/trailer/src/malta_geo.js
+docs/trailer/footage
+docs/trailer/build*

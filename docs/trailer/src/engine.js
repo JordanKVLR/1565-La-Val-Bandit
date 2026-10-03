@@ -39,7 +39,13 @@ const ease = {
   outExpo: (k) => (k >= 1 ? 1 : 1 - Math.pow(2, -10 * k)),
   inExpo: (k) => (k <= 0 ? 0 : Math.pow(2, 10 * k - 10)),
   inOutExpo: (k) =>
-    k <= 0 ? 0 : k >= 1 ? 1 : k < 0.5 ? Math.pow(2, 20 * k - 10) / 2 : (2 - Math.pow(2, -20 * k + 10)) / 2,
+    k <= 0
+      ? 0
+      : k >= 1
+        ? 1
+        : k < 0.5
+          ? Math.pow(2, 20 * k - 10) / 2
+          : (2 - Math.pow(2, -20 * k + 10)) / 2,
   outBack: (k) => {
     const c1 = 1.70158;
     const c3 = c1 + 1;
@@ -52,9 +58,9 @@ const ease = {
   },
 };
 const bar = (k) => OFFSET + k * BAR;
-const beatPhase = (t) => (((t - OFFSET) / BEAT) % 1 + 1) % 1; // 0 at each beat
+const beatPhase = (t) => ((((t - OFFSET) / BEAT) % 1) + 1) % 1; // 0 at each beat
 const beatPulse = (t, k = 5) => Math.exp(-beatPhase(t) * k);
-const barPulse = (t, k = 3) => Math.exp(-((((t - OFFSET) / BAR) % 1 + 1) % 1) * BAR * k * 0.35);
+const barPulse = (t, k = 3) => Math.exp(-(((((t - OFFSET) / BAR) % 1) + 1) % 1) * BAR * k * 0.35);
 /* a hit at time h decays after it */
 const hit = (t, h, k = 6) => (t < h ? 0 : Math.exp(-(t - h) * k));
 
@@ -120,7 +126,15 @@ function measure(ctx, str, font, size, spacing = 0) {
 
 /* Static text. align: left | center | right */
 function text(ctx, str, x, y, o = {}) {
-  const { font = F.title, size = 48, color = C.parch, align = 'center', spacing = 0, alpha = 1, weight = '' } = o;
+  const {
+    font = F.title,
+    size = 48,
+    color = C.parch,
+    align = 'center',
+    spacing = 0,
+    alpha = 1,
+    weight = '',
+  } = o;
   if (alpha <= 0.002) return;
   ctx.save();
   ctx.globalAlpha *= alpha;
@@ -148,7 +162,15 @@ function text(ctx, str, x, y, o = {}) {
 
 /* Per-letter staggered reveal. k: 0..1 progress of the whole reveal. */
 function textReveal(ctx, str, x, y, k, o = {}) {
-  const { font = F.title, size = 48, color = C.parch, align = 'center', spacing = 0, rise = 0.5, weight = '' } = o;
+  const {
+    font = F.title,
+    size = 48,
+    color = C.parch,
+    align = 'center',
+    spacing = 0,
+    rise = 0.5,
+    weight = '',
+  } = o;
   if (k <= 0) return;
   ctx.save();
   ctx.font = `${weight ? weight + ' ' : ''}${size}px ${font}`;
@@ -178,7 +200,15 @@ function textReveal(ctx, str, x, y, k, o = {}) {
 
 /* Word-by-word reveal for sentences (soft rise + fade). */
 function wordsReveal(ctx, str, x, y, k, o = {}) {
-  const { font = F.body, size = 56, color = C.parch, align = 'center', spacing = 0, weight = '', stagger = 0.6 } = o;
+  const {
+    font = F.body,
+    size = 56,
+    color = C.parch,
+    align = 'center',
+    spacing = 0,
+    weight = '',
+    stagger = 0.6,
+  } = o;
   if (k <= 0) return;
   ctx.save();
   ctx.font = `${weight ? weight + ' ' : ''}${size}px ${font}`;
@@ -397,7 +427,7 @@ function embers(ctx, t, n = 70, seed = 7, o = {}) {
     const k = ((t + r() * life) % life) / life;
     const x = x0 + Math.sin(t * 0.7 + ph) * 30 + k * 40;
     const y = y0 - ((t * sp) % (H + 80)) + 40;
-    const yy = ((y % (H + 80)) + (H + 80)) % (H + 80) - 40;
+    const yy = (((y % (H + 80)) + (H + 80)) % (H + 80)) - 40;
     const a = Math.sin(k * Math.PI) * alpha * (0.5 + 0.5 * Math.sin(t * 3 + ph));
     ctx.fillStyle = `rgba(${color},${a})`;
     ctx.beginPath();
@@ -661,7 +691,12 @@ function harbourQuad(ctx, box, inset = 10) {
   const W2 = HARBOUR_IMG.w - inset;
   const H2 = HARBOUR_IMG.h - inset;
   ctx.beginPath();
-  [[inset, inset], [W2, inset], [W2, H2], [inset, H2]].forEach(([x, y], i) => {
+  [
+    [inset, inset],
+    [W2, inset],
+    [W2, H2],
+    [inset, H2],
+  ].forEach(([x, y], i) => {
     const [px, py] = MAPS.hpx(x, y, box);
     if (i) ctx.lineTo(px, py);
     else ctx.moveTo(px, py);
@@ -734,7 +769,12 @@ function drawMalta(ctx, box, o = {}) {
     ctx.rect(-W * 4, -H * 4, W * 12, H * 12);
     const W2 = HARBOUR_IMG.w - 10;
     const H2 = HARBOUR_IMG.h - 10;
-    [[10, 10], [W2, 10], [W2, H2], [10, H2]].forEach(([x, y], i) => {
+    [
+      [10, 10],
+      [W2, 10],
+      [W2, H2],
+      [10, H2],
+    ].forEach(([x, y], i) => {
       const [px, py] = MAPS.hpx(x, y, box);
       if (i) ctx.lineTo(px, py);
       else ctx.moveTo(px, py);
@@ -761,17 +801,64 @@ function drawMalta(ctx, box, o = {}) {
 }
 
 Object.assign(window, {
-  W, H, BPM, BEAT, BAR, OFFSET, DURATION, C, clamp, lerp, prog, ease, bar, beatPhase, beatPulse, barPulse, hit,
-  rng, img, pending, trimCache, text, textReveal, wordsReveal, rrect, maltese, maltesePath, gear, sun, vignette,
-  fillBg, embers, frame, shot, callout, tag, flash, crossClip, circleClip, slatClip, wipeClip, MAPS,
-  maltaPath, drawMalta, harbourLandPath, harbourCoastPath, harbourQuad, F, measure, setFont,
+  W,
+  H,
+  BPM,
+  BEAT,
+  BAR,
+  OFFSET,
+  DURATION,
+  C,
+  clamp,
+  lerp,
+  prog,
+  ease,
+  bar,
+  beatPhase,
+  beatPulse,
+  barPulse,
+  hit,
+  rng,
+  img,
+  pending,
+  trimCache,
+  text,
+  textReveal,
+  wordsReveal,
+  rrect,
+  maltese,
+  maltesePath,
+  gear,
+  sun,
+  vignette,
+  fillBg,
+  embers,
+  frame,
+  shot,
+  callout,
+  tag,
+  flash,
+  crossClip,
+  circleClip,
+  slatClip,
+  wipeClip,
+  MAPS,
+  maltaPath,
+  drawMalta,
+  harbourLandPath,
+  harbourCoastPath,
+  harbourQuad,
+  F,
+  measure,
+  setFont,
 });
 
 /* ---------- scene registry + footage paths ---------- */
 window.SCENES = [];
 window.ST = (n) => `../footage/stills/${n}.jpg`;
-window.PORT = (n) => `../footage/portraits/${n}.webp`;
-window.CLIP = (name, sec, fps = 30) => `../footage/frames/${name}/${String(Math.max(1, Math.floor(sec * fps) + 1)).padStart(4, '0')}.jpg`;
+window.PORT = (n) => `${window.PORTRAIT_BASE ?? '../footage/portraits/'}${n}.webp`;
+window.CLIP = (name, sec, fps = 30) =>
+  `../footage/frames/${name}/${String(Math.max(1, Math.floor(sec * fps) + 1)).padStart(4, '0')}.jpg`;
 
 /* map a source-pixel point (in a 1920x1080 screenshot) to canvas px for a shot() call */
 window.viewMap = (view, rect, px, py, sw = 1920, sh = 1080) => {
@@ -800,7 +887,7 @@ window.blurBg = (c, src, alpha = 1, dim = 0.55, zoom = 1.08) => {
   c.globalAlpha *= alpha;
   c.imageSmoothingEnabled = true;
   c.imageSmoothingQuality = 'high';
-  c.drawImage(_blur, -W * (zoom - 1) / 2, -H * (zoom - 1) / 2, W * zoom, H * zoom);
+  c.drawImage(_blur, (-W * (zoom - 1)) / 2, (-H * (zoom - 1)) / 2, W * zoom, H * zoom);
   c.fillStyle = `rgba(8,5,5,${dim})`;
   c.fillRect(0, 0, W, H);
   c.restore();
@@ -821,7 +908,14 @@ window.archPortrait = (c, name, x, y, w, h, o = {}) => {
   c.fillRect(x, y, w, h);
   const pi = img(PORT(name));
   const zz = o.zoom ?? 1;
-  if (pi) c.drawImage(pi, x - 10 - (w * (zz - 1)) / 2, y + h * 0.1 - (w * (zz - 1)) / 2, (w + 20) * zz, (w + 20) * zz);
+  if (pi)
+    c.drawImage(
+      pi,
+      x - 10 - (w * (zz - 1)) / 2,
+      y + h * 0.1 - (w * (zz - 1)) / 2,
+      (w + 20) * zz,
+      (w + 20) * zz,
+    );
   const sh = c.createLinearGradient(0, y + h - 220, 0, y + h);
   sh.addColorStop(0, 'rgba(10,6,6,0)');
   sh.addColorStop(1, 'rgba(10,6,6,0.92)');

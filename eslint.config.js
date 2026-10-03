@@ -16,6 +16,10 @@ export default tseslint.config(
       'apps/desktop/dist/**',
       'apps/game/test-results/**',
       'apps/game/playwright-report/**',
+      'apps/game/public/intro/**',
+      'docs/trailer/src/malta_geo.js',
+      'docs/trailer/build*/**',
+      'docs/trailer/footage/**',
     ],
   },
   js.configs.recommended,
@@ -36,6 +40,17 @@ export default tseslint.config(
         'error',
         { patterns: ['three', 'preact', 'preact/*', '@m1565/game*'] },
       ],
+    },
+  },
+  {
+    // The cinematic renderer is plain browser scripts that share globals (no modules), so it
+    // can be opened straight from disk and embedded unbundled in the game.
+    files: ['docs/trailer/src/**/*.js'],
+    languageOptions: { sourceType: 'script' },
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 );

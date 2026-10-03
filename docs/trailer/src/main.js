@@ -3,6 +3,10 @@
 
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d', { alpha: false });
+// the game embeds this page and may lower the backing resolution on small or slow devices
+const SCALE = window.INTRO_SCALE ?? 1;
+canvas.width = Math.round(W * SCALE);
+canvas.height = Math.round(H * SCALE);
 
 // scenes register themselves in SCENES (see scenes_*.js), ordered by start time
 SCENES.sort((a, b) => a.a - b.a);
@@ -35,7 +39,7 @@ function applyTransition(c, tin, k) {
 }
 
 function drawAll(t) {
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
   ctx.globalAlpha = 1;
   ctx.fillStyle = '#000';
   ctx.fillRect(0, 0, W, H);
@@ -64,7 +68,8 @@ function drawAll(t) {
       ctx.restore();
     }
     // transition accents: flash on cut
-    if (s.tin && s.tin.flash && lt >= 0) flash(ctx, hit(t, s.a, s.tin.flashK ?? 9) * s.tin.flash, s.tin.flashColor);
+    if (s.tin && s.tin.flash && lt >= 0)
+      flash(ctx, hit(t, s.a, s.tin.flashK ?? 9) * s.tin.flash, s.tin.flashColor);
   }
   // global grade
   ctx.save();

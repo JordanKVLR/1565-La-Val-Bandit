@@ -8,9 +8,10 @@ import { SettingsPanel } from './SettingsPanel';
 interface Props {
   onNew: () => void;
   onLoad: (slot: SlotId) => void;
+  onWatchIntro: () => void;
 }
 
-export function TitleScreen({ onNew, onLoad }: Props) {
+export function TitleScreen({ onNew, onLoad, onWatchIntro }: Props) {
   const [panel, setPanel] = useState<'none' | 'load' | 'settings'>('none');
   const auto = readSave<CampaignSave>('auto');
   return (
@@ -37,7 +38,9 @@ export function TitleScreen({ onNew, onLoad }: Props) {
       </div>
       <p class="build-note">Prototype build · placeholder art</p>
 
-      {panel === 'settings' && <SettingsPanel onClose={() => setPanel('none')} />}
+      {panel === 'settings' && (
+        <SettingsPanel onClose={() => setPanel('none')} onWatchIntro={onWatchIntro} />
+      )}
       {panel === 'load' && (
         <div class="modal" role="dialog" aria-label="Load game">
           <div class="modal-box">

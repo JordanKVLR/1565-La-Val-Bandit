@@ -6,7 +6,11 @@
    ==================================================================== */
 const T7 = 96.7;
 function drawKnights(c, t, lt) {
-  gradSky(c, 0, 720, [[0, '#080c18'], [0.6, '#233049'], [1, '#6a7a98']]);
+  gradSky(c, 0, 720, [
+    [0, '#080c18'],
+    [0.6, '#233049'],
+    [1, '#6a7a98'],
+  ]);
   const mg = c.createRadialGradient(300, 170, 8, 300, 170, 200);
   mg.addColorStop(0, 'rgba(235,240,255,0.5)');
   mg.addColorStop(1, 'rgba(235,240,255,0)');
@@ -23,20 +27,43 @@ function drawKnights(c, t, lt) {
     const k = ease.outCubic(prog(lt, 1.0 + i * BEAT * 2, 1.9 + i * BEAT * 2));
     if (k <= 0) continue;
     const row = i % 3;
-    armSil(c, 150 + i * 170 + row * 50, 1010 + row * 30 - (1 - k) * 60, 0.62 + row * 0.12, '#04060d', '#f2c860', 1, t);
+    armSil(
+      c,
+      150 + i * 170 + row * 50,
+      1010 + row * 30 - (1 - k) * 60,
+      0.62 + row * 0.12,
+      '#04060d',
+      '#f2c860',
+      1,
+      t,
+    );
   }
 }
 function drawOttomans(c, t, lt) {
-  gradSky(c, 0, 720, [[0, '#04100f'], [0.6, '#0e3a38'], [1, '#2f8480']]);
+  gradSky(c, 0, 720, [
+    [0, '#04100f'],
+    [0.6, '#0e3a38'],
+    [1, '#2f8480'],
+  ]);
   crescent(c, 1620, 170, 38, '#f2e8c8');
   c.fillStyle = '#031210';
   c.fillRect(0, 720, W, 360);
-  for (let i = 0; i < 7; i++) tent(c, 1060 + i * 130, 780 + (i % 2) * 30, 1.3, '#031412', i % 2 ? '#2fb0b8' : '#d9462f', t);
+  for (let i = 0; i < 7; i++)
+    tent(c, 1060 + i * 130, 780 + (i % 2) * 30, 1.3, '#031412', i % 2 ? '#2fb0b8' : '#d9462f', t);
   for (let i = 0; i < 6; i++) {
     const k = ease.outCubic(prog(lt, 1.0 + i * BEAT * 2, 1.9 + i * BEAT * 2));
     if (k <= 0) continue;
     const row = i % 3;
-    armSil(c, 1770 - i * 170 - row * 50, 1010 + row * 30 - (1 - k) * 60, 0.62 + row * 0.12, '#021110', '#7fe6ec', -1, t);
+    armSil(
+      c,
+      1770 - i * 170 - row * 50,
+      1010 + row * 30 - (1 - k) * 60,
+      0.62 + row * 0.12,
+      '#021110',
+      '#7fe6ec',
+      -1,
+      t,
+    );
   }
 }
 SCENES.push({
@@ -94,23 +121,58 @@ SCENES.push({
       }
       c.restore();
       embers(c, lt, 36, 61, { speed: 40, alpha: 0.7 });
-      text(c, 'MALTESE FORTS', 380, 120, { size: 26, spacing: 12, color: '#9fb6e8', alpha: ease.outCubic(prog(lt, 1, 2)) * 0.9 });
-      text(c, 'OTTOMAN CAMP', 1540, 120, { size: 26, spacing: 12, color: '#82e2e8', alpha: ease.outCubic(prog(lt, 1, 2)) * 0.9 });
+      text(c, 'MALTESE FORTS', 380, 120, {
+        size: 26,
+        spacing: 12,
+        color: '#9fb6e8',
+        alpha: ease.outCubic(prog(lt, 1, 2)) * 0.9,
+      });
+      text(c, 'OTTOMAN CAMP', 1540, 120, {
+        size: 26,
+        spacing: 12,
+        color: '#82e2e8',
+        alpha: ease.outCubic(prog(lt, 1, 2)) * 0.9,
+      });
       // the soldiers of each side, then the faces the story follows
       const a1 = prog(lt, 1.4, 2.3) * (1 - prog(lt, 7.0, 7.6));
-      portraitCard(c, 'soldier', 330, 150, 380, 500, a1, { name: 'A SOLDIER OF THE ORDER', nameSize: 28, dir: -1 });
-      portraitCard(c, 'janissary', 1210, 150, 380, 500, a1, { name: 'A JANISSARY', nameSize: 28, dir: 1 });
+      portraitCard(c, 'soldier', 330, 150, 380, 500, a1, {
+        name: 'A SOLDIER OF THE ORDER',
+        nameSize: 28,
+        dir: -1,
+      });
+      portraitCard(c, 'janissary', 1210, 150, 380, 500, a1, {
+        name: 'A JANISSARY',
+        nameSize: 28,
+        dir: 1,
+      });
       const a2 = prog(lt, 7.8, 8.8);
-      portraitCard(c, 'ninu', 330, 150, 380, 500, a2, { name: 'NINU', title: 'Militiaman of Żejtun', nameSize: 30, dir: -1 });
-      portraitCard(c, 'deniz', 1110, 150, 380, 500, a2, { name: 'A NAVIGATOR OF THE FLEET', nameSize: 22, dir: 1 });
-      portraitCard(c, 'yusuf', 1610, 330, 240, 320, prog(lt, 9.0, 10.0), { name: 'YUSUF REIS', title: 'Corsair captain', nameSize: 22, dir: 1 });
+      portraitCard(c, 'ninu', 330, 150, 380, 500, a2, {
+        name: 'NINU',
+        title: 'Militiaman of Żejtun',
+        nameSize: 30,
+        dir: -1,
+      });
+      portraitCard(c, 'deniz', 1110, 150, 380, 500, a2, {
+        name: 'A NAVIGATOR OF THE FLEET',
+        nameSize: 22,
+        dir: 1,
+      });
+      portraitCard(c, 'yusuf', 1610, 330, 240, 320, prog(lt, 9.0, 10.0), {
+        name: 'YUSUF REIS',
+        title: 'Corsair captain',
+        nameSize: 22,
+        dir: 1,
+      });
       capBack(c, ease.outCubic(prog(lt, 2, 3)), 300);
       cap(c, lt, 2.4, 7.6, ['Two armies.'], { size: 74 });
       cap(c, lt, 8.2, 14.8, ['Two sides of one harbour.'], { size: 70 });
     } else {
       const l2 = lt - 15.2;
       const hz = 640;
-      gradSky(c, 0, hz, [[0, '#04050a'], [1, '#14182a']]);
+      gradSky(c, 0, hz, [
+        [0, '#04050a'],
+        [1, '#14182a'],
+      ]);
       const rs = rng(77);
       for (let i = 0; i < 100; i++) {
         c.fillStyle = `rgba(255,240,220,${0.15 + rs() * 0.5})`;
@@ -135,7 +197,7 @@ SCENES.push({
       fortress(c, 250, hz - 40, 0.9, '#050609', t, '#b8321f');
       for (let i = 0; i < 4; i++) tent(c, 1560 + i * 90, hz - 30, 0.9, '#040608', '#2fb0b8', t);
       for (let i = 0; i < 12; i++) {
-        const lx = (i < 6 ? 60 + i * 80 : 1420 + (i - 6) * 80);
+        const lx = i < 6 ? 60 + i * 80 : 1420 + (i - 6) * 80;
         c.fillStyle = `rgba(255,170,80,${0.55 + 0.35 * Math.sin(t * 7 + i)})`;
         c.fillRect(lx, hz - 40 - (i % 3) * 20, 5, 7);
       }
@@ -176,7 +238,9 @@ SCENES.push({
       c.fillRect(lx - 70, hz + 20, 70, 340);
       c.fillRect(rx, hz + 20, 70, 340);
       capBack(c, ease.outCubic(prog(l2, 3.5, 4.5)), 340);
-      cap(c, l2, 4.0, 11.8, ['And two halves of something', 'that was never meant to be broken.'], { size: 62 });
+      cap(c, l2, 4.0, 11.8, ['And two halves of something', 'that was never meant to be broken.'], {
+        size: 62,
+      });
       c.fillStyle = `rgba(0,0,0,${prog(l2, 14, 16.4)})`;
       c.fillRect(0, 0, W, H);
     }
@@ -228,10 +292,18 @@ function vigChapel(c, t, l) {
     flame(c, cx, cy, 0.22, t, i, { glow: 0.5 });
   }
   // kneeling figures
-  for (let i = 0; i < 6; i++) cloaked(c, 320 + i * 250, 1010, 1.25 - (i % 2) * 0.1, '#030202', { hood: true, lean: 0.12, rim: 'rgba(255,190,110,0.7)' });
+  for (let i = 0; i < 6; i++)
+    cloaked(c, 320 + i * 250, 1010, 1.25 - (i % 2) * 0.1, '#030202', {
+      hood: true,
+      lean: 0.12,
+      rim: 'rgba(255,190,110,0.7)',
+    });
 }
 function vigNet(c, t, l) {
-  gradSky(c, 0, 640, [[0, '#04060e'], [1, '#1a2540']]);
+  gradSky(c, 0, 640, [
+    [0, '#04060e'],
+    [1, '#1a2540'],
+  ]);
   nightStars(c, t, 120, 5, 520);
   const mg = c.createRadialGradient(1420, 190, 8, 1420, 190, 260);
   mg.addColorStop(0, 'rgba(240,244,255,0.6)');
@@ -257,7 +329,10 @@ function vigNet(c, t, l) {
   c.closePath();
   c.fill();
   cloaked(c, 700, 750, 1.5, '#03040a', { hood: false, arm: 1, rim: 'rgba(200,215,255,0.6)' });
-  portraitCard(c, 'villager-man', 1180, 130, 330, 430, prog(l, 0.3, 1.2), { name: 'A FARMHAND', nameSize: 24 });
+  portraitCard(c, 'villager-man', 1180, 130, 330, 430, prog(l, 0.3, 1.2), {
+    name: 'A FARMHAND',
+    nameSize: 24,
+  });
   // net hanging in the foreground, swaying
   c.strokeStyle = 'rgba(200,190,160,0.5)';
   c.lineWidth = 1.5;
@@ -311,7 +386,10 @@ function vigHome(c, t, l) {
   c.fillStyle = '#d8cfb8';
   c.fillRect(740, 770, 12, 32);
   flame(c, 746, 770, 0.3, t, 3, { glow: 0.9 });
-  portraitCard(c, 'villager', 1300, 140, 330, 430, prog(l, 0.3, 1.2), { name: 'A MOTHER OF BIRGU', nameSize: 24 });
+  portraitCard(c, 'villager', 1300, 140, 330, 430, prog(l, 0.3, 1.2), {
+    name: 'A MOTHER OF BIRGU',
+    nameSize: 24,
+  });
 }
 function vigChildren(c, t, l) {
   fillBg(c, '#06070d', '#020204');
@@ -336,7 +414,10 @@ function vigChildren(c, t, l) {
   nightStars(c, t, 20, 4, 380);
   // two sleeping children under blankets, breathing
   const br = Math.sin(t * 1.4) * 4;
-  [[520, 1], [980, 0.9]].forEach(([x, s], i) => {
+  [
+    [520, 1],
+    [980, 0.9],
+  ].forEach(([x, s], i) => {
     c.fillStyle = i ? '#1c2540' : '#2a1d2e';
     c.beginPath();
     c.moveTo(x - 220 * s, 930);
@@ -377,12 +458,22 @@ SCENES.push({
     drawV(NIGHT[idx], l, idx === 0 ? 1 : ease.outCubic(prog(l, 0, 0.6)));
     embers(c, lt, 30, 71, { speed: 20, alpha: 0.35 });
     // line of text under each vignette
-    const lines = ['Fifteen hundred and sixty-five.', 'Candles in every chapel.', 'Nets mended for the last time.', 'Children asleep, and no one else.'];
+    const lines = [
+      'Fifteen hundred and sixty-five.',
+      'Candles in every chapel.',
+      'Nets mended for the last time.',
+      'Children asleep, and no one else.',
+    ];
     // darker final fade into the holding line
     const fk = prog(lt, 13.8, 15.4);
     c.fillStyle = `rgba(0,0,0,${0.85 * fk})`;
     c.fillRect(0, 0, W, H);
-    textReveal(c, 'HOLD THE LINE', W / 2, H / 2 + 30, prog(lt, 14.2, 16.8), { size: 130, weight: 900, spacing: 22, shadow: '#000' });
+    textReveal(c, 'HOLD THE LINE', W / 2, H / 2 + 30, prog(lt, 14.2, 16.8), {
+      size: 130,
+      weight: 900,
+      spacing: 22,
+      shadow: '#000',
+    });
   },
 });
 
@@ -397,7 +488,11 @@ SCENES.push({
   draw(c, t, lt, d) {
     const hz = 640;
     const dawn = ease.inOutSine(prog(lt, 0, 7.6));
-    gradSky(c, 0, hz, [[0, `rgb(${6 + 20 * dawn},${4 + 10 * dawn},${10 + 16 * dawn})`], [0.7, `rgb(${22 + 90 * dawn},${10 + 30 * dawn},${18 + 24 * dawn})`], [1, `rgb(${40 + 190 * dawn},${18 + 80 * dawn},${22 + 40 * dawn})`]]);
+    gradSky(c, 0, hz, [
+      [0, `rgb(${6 + 20 * dawn},${4 + 10 * dawn},${10 + 16 * dawn})`],
+      [0.7, `rgb(${22 + 90 * dawn},${10 + 30 * dawn},${18 + 24 * dawn})`],
+      [1, `rgb(${40 + 190 * dawn},${18 + 80 * dawn},${22 + 40 * dawn})`],
+    ]);
     // thin dawn line
     const gl = c.createLinearGradient(0, hz - 90, 0, hz);
     gl.addColorStop(0, 'rgba(255,150,90,0)');
@@ -427,7 +522,15 @@ SCENES.push({
     }
     // heartbeat pulse on the beat as the drums build
     flash(c, beatPulse(t, 9) * 0.05 * prog(lt, 1, 7));
-    text(c, '18 MAY 1565', W / 2, 330, { size: 120, weight: 700, spacing: 30, color: C.parch, alpha: ease.outCubic(prog(lt, 3.0, 4.6)) * (1 - prog(lt, 6.8, 7.6)), shadow: 'rgba(0,0,0,0.8)', shadowBlur: 30 });
+    text(c, '18 MAY 1565', W / 2, 330, {
+      size: 120,
+      weight: 700,
+      spacing: 30,
+      color: C.parch,
+      alpha: ease.outCubic(prog(lt, 3.0, 4.6)) * (1 - prog(lt, 6.8, 7.6)),
+      shadow: 'rgba(0,0,0,0.8)',
+      shadowBlur: 30,
+    });
   },
 });
 
@@ -447,9 +550,16 @@ function subBeaconMap(c, t, l) {
     c.lineWidth = 1.2;
     c.stroke();
   }
-  drawMalta(c, BMAP, { land: '#10141f', sea: '#06080f', coast: 'rgba(216,179,106,0.75)', coastW: 2.5 });
+  drawMalta(c, BMAP, {
+    land: '#10141f',
+    sea: '#06080f',
+    coast: 'rgba(216,179,106,0.75)',
+    coastW: 2.5,
+  });
   // chain of fire
-  const pts = BEACON_SITES.map((p) => (p === 'birgu' ? MAPS.hplace('birgu', BMAP) : MAPS.place(p, BMAP)));
+  const pts = BEACON_SITES.map((p) =>
+    p === 'birgu' ? MAPS.hplace('birgu', BMAP) : MAPS.place(p, BMAP),
+  );
   for (let i = 0; i < pts.length; i++) {
     const k = prog(l, 0.4 + i * 0.85, 1.4 + i * 0.85);
     if (i > 0) {
@@ -470,7 +580,11 @@ function subBeaconMap(c, t, l) {
   }
 }
 function subBells(c, t, l) {
-  gradSky(c, 0, 700, [[0, '#101a38'], [0.6, '#6a4a5a'], [1, '#f0a070']]);
+  gradSky(c, 0, 700, [
+    [0, '#101a38'],
+    [0.6, '#6a4a5a'],
+    [1, '#f0a070'],
+  ]);
   sun(c, 560, 640, 110, { glow: 0.9, clipY: 700 });
   c.fillStyle = '#05060c';
   c.fillRect(0, 700, W, 380);
@@ -514,9 +628,16 @@ function subBells(c, t, l) {
   }
 }
 function subMilitia(c, t, l) {
-  gradSky(c, 0, 760, [[0, '#1a1030'], [0.5, '#a04a46'], [1, '#f6b070']]);
+  gradSky(c, 0, 760, [
+    [0, '#1a1030'],
+    [0.5, '#a04a46'],
+    [1, '#f6b070'],
+  ]);
   sun(c, 1500, 640, 120, { glow: 1, clipY: 760 });
-  [['#2a1626', 760, 0.003], ['#160b16', 860, 0.004]].forEach(([col, y, f], i) => {
+  [
+    ['#2a1626', 760, 0.003],
+    ['#160b16', 860, 0.004],
+  ].forEach(([col, y, f], i) => {
     c.fillStyle = col;
     c.beginPath();
     c.moveTo(0, y);
@@ -536,7 +657,15 @@ function subMilitia(c, t, l) {
     c.fillStyle = '#07040a';
     c.fillRect(x + 20 * s, y - 220 * s, 3, 170 * s);
   }
-  smoke(c, W * 0.5, 960, t, { n: 16, w: 1800, h: 120, col: '60,40,40', alpha: 0.25, seed: 4, drift: 200 });
+  smoke(c, W * 0.5, 960, t, {
+    n: 16,
+    w: 1800,
+    h: 120,
+    col: '60,40,40',
+    alpha: 0.25,
+    seed: 4,
+    drift: 200,
+  });
 }
 function subWake(c, t, l) {
   fillBg(c, '#0a0608', '#020102');
@@ -560,13 +689,21 @@ function subWake(c, t, l) {
       g.addColorStop(1, 'rgba(255,120,40,0)');
       c.fillStyle = g;
       c.fillRect(x - 220, 1000 - 440 * s, 440, 440);
-      gear(c, x, 1000 - 240 * s, 22 * s, 8, t * (i % 2 ? 2 : -2), { stroke: '#ffd890', lw: 2, spokes: 3 });
+      gear(c, x, 1000 - 240 * s, 22 * s, 8, t * (i % 2 ? 2 : -2), {
+        stroke: '#ffd890',
+        lw: 2,
+        spokes: 3,
+      });
     }
   }
   embers(c, l, 50, 33, { speed: 50, alpha: 0.8 });
 }
 function subHillRun(c, t, l) {
-  gradSky(c, 0, 760, [[0, '#120b25'], [0.5, '#7a3548'], [1, '#e89060']]);
+  gradSky(c, 0, 760, [
+    [0, '#120b25'],
+    [0.5, '#7a3548'],
+    [1, '#e89060'],
+  ]);
   sun(c, 460, 700, 130, { glow: 1, clipY: 760 });
   waterLines(c, 760, t, '255,190,140', 0.18, { n: 12 });
   c.fillStyle = '#10080e';
@@ -584,12 +721,23 @@ function subHillRun(c, t, l) {
   const py = 878 - u * 450 + Math.sin(u * 3) * 0;
   // path approximated on the curve: sample the same quad curve
   const qx = (a, b, c2, tt) => (1 - tt) * (1 - tt) * a + 2 * (1 - tt) * tt * b + tt * tt * c2;
-  const seg = u < 0.5 ? [0, 880, 600, 820, 1000, 600, u * 2] : [1000, 600, 1400, 360, 1920, 440, (u - 0.5) * 2];
+  const seg =
+    u < 0.5
+      ? [0, 880, 600, 820, 1000, 600, u * 2]
+      : [1000, 600, 1400, 360, 1920, 440, (u - 0.5) * 2];
   const rx = qx(seg[0], seg[2], seg[4], seg[6]);
   const ry = qx(seg[1], seg[3], seg[5], seg[6]);
   cloaked(c, rx, ry + 6, 0.8, '#050205', { hood: false, lean: -0.25, arm: 1 });
   beacon(c, 1720, 440, ease.outCubic(prog(l, 0.1, 1.5)), t, { s: 1.4 });
-  smoke(c, 1720, 420, t, { n: 10, w: 40, h: 500, col: '40,26,26', alpha: 0.3, seed: 6, drift: 120 });
+  smoke(c, 1720, 420, t, {
+    n: 10,
+    w: 40,
+    h: 500,
+    col: '40,26,26',
+    alpha: 0.3,
+    seed: 6,
+    drift: 120,
+  });
 }
 const BEAC = [
   [subBeaconMap, 0, 7.4],
@@ -643,7 +791,11 @@ SCENES.push({
     c.scale(push, push);
     c.translate(-1080, -640);
     const dawn = ease.inOutSine(prog(lt, 0, d));
-    gradSky(c, -100, 760, [[0, '#1c1230'], [0.45, '#9a4a52'], [1, '#f8b878']]);
+    gradSky(c, -100, 760, [
+      [0, '#1c1230'],
+      [0.45, '#9a4a52'],
+      [1, '#f8b878'],
+    ]);
     sun(c, 1340, 700 - dawn * 70, 150, { glow: 0.8 + dawn * 0.4, clipY: 760 });
     // clouds
     for (let i = 0; i < 6; i++) {
@@ -657,9 +809,20 @@ SCENES.push({
     c.fillRect(-100, 760, W + 200, 400);
     waterLines(c, 760, t, '255,210,160', 0.2, { n: 12 });
     // distant sails on the horizon
-    for (let i = 0; i < 10; i++) sailSmall(c, 900 + i * 85, 764, 0.6 + (i % 3) * 0.15, '#1a0c14', ease.outCubic(prog(lt, 4 + i * 0.5, 6 + i * 0.5)));
+    for (let i = 0; i < 10; i++)
+      sailSmall(
+        c,
+        900 + i * 85,
+        764,
+        0.6 + (i % 3) * 0.15,
+        '#1a0c14',
+        ease.outCubic(prog(lt, 4 + i * 0.5, 6 + i * 0.5)),
+      );
     // hills
-    [['#2a1426', 820, 0.0035, 0], ['#1b0d1a', 900, 0.004, 1.5]].forEach(([col, y, f, ph]) => {
+    [
+      ['#2a1426', 820, 0.0035, 0],
+      ['#1b0d1a', 900, 0.004, 1.5],
+    ].forEach(([col, y, f, ph]) => {
       c.fillStyle = col;
       c.beginPath();
       c.moveTo(-100, y);
@@ -696,7 +859,13 @@ SCENES.push({
     cloaked(c, 1110, 772, 1.0, '#07030a', { hood: true, lean: 0.03 });
     c.restore();
     embers(c, lt, 26, 17, { speed: 14, color: '255,210,160', alpha: 0.5 });
-    text(c, 'ŻEJTUN  ·  18 MAY 1565', 110, H - 90, { size: 26, spacing: 14, color: C.goldLight, align: 'left', alpha: ease.outCubic(prog(lt, 4, 6)) * (1 - prog(lt, 17, 19)) });
+    text(c, 'ŻEJTUN  ·  18 MAY 1565', 110, H - 90, {
+      size: 26,
+      spacing: 14,
+      color: C.goldLight,
+      align: 'left',
+      alpha: ease.outCubic(prog(lt, 4, 6)) * (1 - prog(lt, 17, 19)),
+    });
   },
 });
 
@@ -712,7 +881,12 @@ SCENES.push({
     fillBg(c, '#1b0a0a', '#050203');
     const pulse = beatPulse(t, 6);
     const rk = ease.outExpo(prog(lt, 0, 1.8));
-    sun(c, W / 2, 470, 360 * (0.5 + 0.5 * rk) + pulse * 10, { glow: 1.15, rays: 36, rot: lt * 0.05, bands: 7 });
+    sun(c, W / 2, 470, 360 * (0.5 + 0.5 * rk) + pulse * 10, {
+      glow: 1.15,
+      rays: 36,
+      rot: lt * 0.05,
+      bands: 7,
+    });
     for (let i = 0; i < 3; i++) {
       const k = prog(lt, i * 0.14, 1.4 + i * 0.14);
       if (k <= 0 || k >= 1) continue;
@@ -740,10 +914,28 @@ SCENES.push({
     const sc = 1 + (1 - tk) * 0.45;
     c.scale(sc, sc);
     c.globalAlpha *= clamp(tk * 2);
-    text(c, 'ARMATURA', 0, 0, { size: 224, weight: 900, spacing: 18 * tk + 6, shadow: 'rgba(0,0,0,0.8)', shadowBlur: 40 });
+    text(c, 'ARMATURA', 0, 0, {
+      size: 224,
+      weight: 900,
+      spacing: 18 * tk + 6,
+      shadow: 'rgba(0,0,0,0.8)',
+      shadowBlur: 40,
+    });
     c.restore();
-    text(c, '1565', W / 2, 620, { size: 118, weight: 700, spacing: 46, color: C.gold, alpha: ease.outCubic(prog(lt, 0.7, 1.5)), shadow: 'rgba(0,0,0,0.8)' });
-    text(c, 'THE GREAT SIEGE OF MALTA', W / 2, 710, { size: 38, spacing: 16, color: C.parch, alpha: ease.outCubic(prog(lt, 1.4, 2.2)) });
+    text(c, '1565', W / 2, 620, {
+      size: 118,
+      weight: 700,
+      spacing: 46,
+      color: C.gold,
+      alpha: ease.outCubic(prog(lt, 0.7, 1.5)),
+      shadow: 'rgba(0,0,0,0.8)',
+    });
+    text(c, 'THE GREAT SIEGE OF MALTA', W / 2, 710, {
+      size: 38,
+      spacing: 16,
+      color: C.parch,
+      alpha: ease.outCubic(prog(lt, 1.4, 2.2)),
+    });
     // the sun fills the screen, handing off to the game
     const out = ease.inQuad(prog(lt, 10.4, 12.8));
     if (out > 0) {

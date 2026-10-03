@@ -8,7 +8,9 @@ import path from 'path';
 import fs from 'fs';
 
 const args = Object.fromEntries(
-  process.argv.slice(2).reduce((a, v, i, arr) => (v.startsWith('--') ? [...a, [v.slice(2), arr[i + 1]]] : a), []),
+  process.argv
+    .slice(2)
+    .reduce((a, v, i, arr) => (v.startsWith('--') ? [...a, [v.slice(2), arr[i + 1]]] : a), []),
 );
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fps = parseInt(args.fps ?? '30', 10);
@@ -32,11 +34,35 @@ async function worker(w) {
   const seg = path.join(out, `seg_${String(w).padStart(2, '0')}.mp4`);
   const ff = spawn(
     'ffmpeg',
-    ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', String(fps), '-c:v', 'mjpeg', '-i', '-',
-      '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '12', '-pix_fmt', 'yuv420p', '-r', String(fps), seg],
+    [
+      '-v',
+      'error',
+      '-y',
+      '-f',
+      'image2pipe',
+      '-framerate',
+      String(fps),
+      '-c:v',
+      'mjpeg',
+      '-i',
+      '-',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'veryfast',
+      '-crf',
+      '12',
+      '-pix_fmt',
+      'yuv420p',
+      '-r',
+      String(fps),
+      seg,
+    ],
     { stdio: ['pipe', 'inherit', 'inherit'] },
   );
-  const browser = await chromium.launch({ args: ['--allow-file-access-from-files', '--disable-web-security'] });
+  const browser = await chromium.launch({
+    args: ['--allow-file-access-from-files', '--disable-web-security'],
+  });
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
   page.on('pageerror', (e) => console.error('PAGEERR', e.message));
   await page.goto(url);
@@ -48,7 +74,9 @@ async function worker(w) {
     done++;
     if (done % 100 === 0) {
       const el = (Date.now() - t0) / 1000;
-      console.log(`${done}/${end - start} frames, ${(done / el).toFixed(1)} fps, eta ${(((end - start - done) / (done / el)) / 60).toFixed(1)} min`);
+      console.log(
+        `${done}/${end - start} frames, ${(done / el).toFixed(1)} fps, eta ${((end - start - done) / (done / el) / 60).toFixed(1)} min`,
+      );
     }
   }
   ff.stdin.end();
@@ -57,6 +85,8 @@ async function worker(w) {
   return seg;
 }
 
-const segs = (await Promise.all(Array.from({ length: workers }, (_, w) => worker(w)))).filter(Boolean);
+const segs = (await Promise.all(Array.from({ length: workers }, (_, w) => worker(w)))).filter(
+  Boolean,
+);
 fs.writeFileSync(path.join(out, 'segments.txt'), segs.map((s) => `file '${s}'`).join('\n') + '\n');
 console.log('done', segs.length, 'segments in', ((Date.now() - t0) / 1000).toFixed(0), 's');

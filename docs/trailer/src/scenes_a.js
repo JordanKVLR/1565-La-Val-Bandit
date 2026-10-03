@@ -61,7 +61,8 @@ SCENES.push({
     for (let i = 0; i < 90; i++) {
       const x = r() * W;
       const y = r() * hz * 0.8;
-      const a = (0.2 + 0.5 * r()) * (0.6 + 0.4 * Math.sin(lt * 1.5 + i)) * (1 - prog(lt, 4, 11) * 0.8);
+      const a =
+        (0.2 + 0.5 * r()) * (0.6 + 0.4 * Math.sin(lt * 1.5 + i)) * (1 - prog(lt, 4, 11) * 0.8);
       c.fillStyle = `rgba(255,230,200,${a})`;
       c.fillRect(x, y, 1.6, 1.6);
     }
@@ -92,11 +93,18 @@ SCENES.push({
     // text
     const fadeA = 1 - prog(lt, 6.1, 6.6);
     text(c, 'MAY 18, 1565', W / 2, 190, {
-      size: 30, spacing: 14, color: C.gold, alpha: ease.outCubic(prog(lt, 1.2, 2.4)) * fadeA,
+      size: 30,
+      spacing: 14,
+      color: C.gold,
+      alpha: ease.outCubic(prog(lt, 1.2, 2.4)) * fadeA,
     });
     if (fadeA > 0)
       textReveal(c, 'MALTA', W / 2, 340, prog(lt, 2.6, 5.0), {
-        size: 168, weight: 700, spacing: 46, color: C.parch, shadow: 'rgba(0,0,0,0.6)',
+        size: 168,
+        weight: 700,
+        spacing: 46,
+        color: C.parch,
+        shadow: 'rgba(0,0,0,0.6)',
       });
     c.save();
     c.globalAlpha *= fadeA;
@@ -104,11 +112,20 @@ SCENES.push({
     const s2 = prog(lt, 6.7, 8.4) * (1 - prog(lt, 9.4, 9.8));
     if (s2 > 0)
       wordsReveal(c, 'An Ottoman armada rises over the horizon.', W / 2, 250, prog(lt, 6.7, 8.6), {
-        font: F.body, size: 72, color: C.parch, alpha: 1 - prog(lt, 9.4, 9.8), weight: 'italic 500', shadow: 'rgba(0,0,0,0.7)',
+        font: F.body,
+        size: 72,
+        color: C.parch,
+        alpha: 1 - prog(lt, 9.4, 9.8),
+        weight: 'italic 500',
+        shadow: 'rgba(0,0,0,0.7)',
       });
     if (lt > 9.9) {
       textReveal(c, 'THE GREAT SIEGE BEGINS', W / 2, 250, prog(lt, 9.9, 11.6), {
-        size: 70, weight: 700, spacing: 14, color: C.parch, shadow: 'rgba(0,0,0,0.7)',
+        size: 70,
+        weight: 700,
+        spacing: 14,
+        color: C.parch,
+        shadow: 'rgba(0,0,0,0.7)',
       });
     }
     // fade in from black
@@ -181,10 +198,15 @@ SCENES.push({
         c.strokeStyle = C.red;
         c.lineWidth = 6 / z;
         c.setLineDash([22 / z, 14 / z]);
-        c.lineDashOffset = -lt * 60 / z;
+        c.lineDashOffset = (-lt * 60) / z;
         c.beginPath();
         c.moveTo(lerp(sx, mx[0] + 12, 0), lerp(sy, mx[1] + 14 + i * 4, 0));
-        c.quadraticCurveTo(lerp(sx, mx[0], 0.5), lerp(sy, mx[1], 0.45) + 30, lerp(sx, mx[0] + 12, la), lerp(sy, mx[1] + 14 + i * 4, la));
+        c.quadraticCurveTo(
+          lerp(sx, mx[0], 0.5),
+          lerp(sy, mx[1], 0.45) + 30,
+          lerp(sx, mx[0] + 12, la),
+          lerp(sy, mx[1] + 14 + i * 4, la),
+        );
         c.stroke();
       }
       c.setLineDash([]);
@@ -195,7 +217,7 @@ SCENES.push({
       const [px, py] = MAPS.hplace(p, MAP_BOX);
       c.save();
       c.translate(px, py);
-      c.scale(kz / z * 1.2, kz / z * 1.2);
+      c.scale((kz / z) * 1.2, (kz / z) * 1.2);
       c.rotate(Math.PI / 4);
       c.fillStyle = C.ink;
       c.fillRect(-9, -9, 18, 18);
@@ -224,11 +246,31 @@ SCENES.push({
       c.stroke();
       c.restore();
       text(c, str, sp[0] + dx + (al === 'left' ? 10 : -10), sp[1] + dy + 8, {
-        size: 28, spacing: 4, color: C.goldLight, align: al, alpha: a, shadow: '#000', shadowBlur: 10,
+        size: 28,
+        spacing: 4,
+        color: C.goldLight,
+        align: al,
+        alpha: a,
+        shadow: '#000',
+        shadowBlur: 10,
       });
     };
-    lab(MAPS.place('marsaxlokk', MAP_BOX), 'MARSAXLOKK', -90, 70, ease.outCubic(prog(lt, 2.6, 3.4)) * (1 - zk), 'right');
-    lab(MAPS.place('mdina', MAP_BOX), 'MDINA', -50, -60, ease.outCubic(prog(lt, 2.8, 3.6)) * (1 - zk), 'right');
+    lab(
+      MAPS.place('marsaxlokk', MAP_BOX),
+      'MARSAXLOKK',
+      -90,
+      70,
+      ease.outCubic(prog(lt, 2.6, 3.4)) * (1 - zk),
+      'right',
+    );
+    lab(
+      MAPS.place('mdina', MAP_BOX),
+      'MDINA',
+      -50,
+      -60,
+      ease.outCubic(prog(lt, 2.8, 3.6)) * (1 - zk),
+      'right',
+    );
     const la2 = ease.outCubic(prog(lt, 5.4, 6.2));
     lab(MAPS.hplace('stElmo', MAP_BOX), 'FORT ST ELMO', 90, -80, la2);
     lab(MAPS.hplace('birgu', MAP_BOX), 'BIRGU', 130, 30, la2);
@@ -253,9 +295,22 @@ SCENES.push({
       const kk = prog(lt, a, a + 1.2);
       const out = 1 - prog(lt, b - 0.4, b);
       if (kk <= 0 || out <= 0) return;
-      const lines = s.length > 24 ? (() => { const i = s.indexOf(' ', Math.floor(s.length / 2) - 4); return [s.slice(0, i), s.slice(i + 1)]; })() : [s];
+      const lines =
+        s.length > 24
+          ? (() => {
+              const i = s.indexOf(' ', Math.floor(s.length / 2) - 4);
+              return [s.slice(0, i), s.slice(i + 1)];
+            })()
+          : [s];
       lines.forEach((ln, i) =>
-        wordsReveal(c, ln, 120, 370 + i * 78, kk, { font: F.body, size: 66, weight: 'italic 500', align: 'left', alpha: out, color: C.parch }),
+        wordsReveal(c, ln, 120, 370 + i * 78, kk, {
+          font: F.body,
+          size: 66,
+          weight: 'italic 500',
+          align: 'left',
+          alpha: out,
+          color: C.parch,
+        }),
       );
     });
     c.save();
@@ -290,9 +345,27 @@ function drawArmatura(c, x0, y0, S, lt) {
   };
   // legs
   [-1, 1].forEach((s) => {
-    poly([[s * 22, -300], [s * 82, -300], [s * 76, -170], [s * 30, -170]]);
-    poly([[s * 30, -170], [s * 76, -170], [s * 70, -20], [s * 38, -20]]);
-    poly([[s * 28, -20], [s * 84, -20], [s * 100, 0], [s * 20, 0]], 'rgba(216,179,106,0.35)');
+    poly([
+      [s * 22, -300],
+      [s * 82, -300],
+      [s * 76, -170],
+      [s * 30, -170],
+    ]);
+    poly([
+      [s * 30, -170],
+      [s * 76, -170],
+      [s * 70, -20],
+      [s * 38, -20],
+    ]);
+    poly(
+      [
+        [s * 28, -20],
+        [s * 84, -20],
+        [s * 100, 0],
+        [s * 20, 0],
+      ],
+      'rgba(216,179,106,0.35)',
+    );
     c.beginPath();
     c.arc(s * 53, -170, 20, 0, 6.28);
     c.fillStyle = C.ink;
@@ -305,10 +378,31 @@ function drawArmatura(c, x0, y0, S, lt) {
     st(5);
   });
   // hips
-  poly([[-90, -330], [90, -330], [80, -290], [-80, -290]], 'rgba(216,179,106,0.3)');
+  poly(
+    [
+      [-90, -330],
+      [90, -330],
+      [80, -290],
+      [-80, -290],
+    ],
+    'rgba(216,179,106,0.3)',
+  );
   // torso
-  poly([[-100, -470], [100, -470], [74, -330], [-74, -330]]);
-  poly([[-70, -466], [70, -466], [52, -360], [-52, -360]], 'rgba(15,47,40,0.8)');
+  poly([
+    [-100, -470],
+    [100, -470],
+    [74, -330],
+    [-74, -330],
+  ]);
+  poly(
+    [
+      [-70, -466],
+      [70, -466],
+      [52, -360],
+      [-52, -360],
+    ],
+    'rgba(15,47,40,0.8)',
+  );
   // core dial with gear
   c.beginPath();
   c.arc(0, -415, 44, 0, 6.28);
@@ -326,8 +420,18 @@ function drawArmatura(c, x0, y0, S, lt) {
     c.fill();
     st();
     // arm
-    poly([[s * 98, -440], [s * 140, -440], [s * 150, -330], [s * 108, -330]]);
-    poly([[s * 108, -330], [s * 150, -330], [s * 156, -230], [s * 112, -230]]);
+    poly([
+      [s * 98, -440],
+      [s * 140, -440],
+      [s * 150, -330],
+      [s * 108, -330],
+    ]);
+    poly([
+      [s * 108, -330],
+      [s * 150, -330],
+      [s * 156, -230],
+      [s * 112, -230],
+    ]);
     c.beginPath();
     c.arc(s * 134, -230, 20, 0, 6.28);
     c.fillStyle = C.ink;
@@ -449,7 +553,11 @@ SCENES.push({
     // big background gears
     const gp = beatPulse(t, 4) * 0.05;
     gear(c, 1620, 220, 260, 22, lt * 0.15, { stroke: 'rgba(216,179,106,0.22)', lw: 2, spokes: 6 });
-    gear(c, 1330, 830, 170, 16, -lt * 0.21 + 0.2, { stroke: 'rgba(216,179,106,0.2)', lw: 2, spokes: 5 });
+    gear(c, 1330, 830, 170, 16, -lt * 0.21 + 0.2, {
+      stroke: 'rgba(216,179,106,0.2)',
+      lw: 2,
+      spokes: 5,
+    });
     gear(c, 1840, 760, 120, 12, lt * 0.28, { stroke: 'rgba(216,179,106,0.18)', lw: 2, spokes: 4 });
     // figure
     const x0 = 1230;
@@ -495,20 +603,71 @@ SCENES.push({
       c.moveTo(x0 - 300, topY);
       c.lineTo(x0 - 270, topY);
       c.stroke();
-      text(c, '3–4 m', x0 - 285, topY - 18, { size: 34, color: C.hot, align: 'center', spacing: 4 });
+      text(c, '3–4 m', x0 - 285, topY - 18, {
+        size: 34,
+        color: C.hot,
+        align: 'center',
+        spacing: 4,
+      });
       text(c, 'PILOT', x0 - 400, y0 + 44, { size: 20, spacing: 6, color: C.parch, alpha: 0.9 });
       c.restore();
     }
     // callouts on the machine
-    callout(c, x0, y0 - 415 * S, x0 + 270, 400, 'SPRING-WOUND CORE', ease.outCubic(prog(lt, 5.2, 6.2)), { size: 26 });
-    callout(c, x0 - 22, y0 - 500 * S, x0 + 250, 215, 'WINDING KEY', ease.outCubic(prog(lt, 5.8, 6.8)), { size: 26 });
+    callout(
+      c,
+      x0,
+      y0 - 415 * S,
+      x0 + 270,
+      400,
+      'SPRING-WOUND CORE',
+      ease.outCubic(prog(lt, 5.2, 6.2)),
+      { size: 26 },
+    );
+    callout(
+      c,
+      x0 - 22,
+      y0 - 500 * S,
+      x0 + 250,
+      215,
+      'WINDING KEY',
+      ease.outCubic(prog(lt, 5.8, 6.8)),
+      { size: 26 },
+    );
     // text
     tag(c, '02 · THE TWIST', 120, 215, ease.outCubic(prog(lt, 0.9, 1.9)));
-    wordsReveal(c, 'In this 1565,', 120, 330, prog(lt, 1.0, 2.2), { font: F.body, size: 66, weight: 'italic 500', align: 'left' });
-    wordsReveal(c, 'war is fought by machines.', 120, 410, prog(lt, 1.5, 3.0), { font: F.body, size: 66, weight: 'italic 500', align: 'left' });
-    textReveal(c, 'ARMATURA', 120, 600, prog(lt, 3.2, 4.8), { size: 112, weight: 900, spacing: 10, align: 'left', color: C.parch });
-    wordsReveal(c, 'Clockwork war-harnesses, piloted from within.', 120, 680, prog(lt, 4.6, 6.0), { font: F.body, size: 42, align: 'left', weight: '500', color: C.goldLight });
-    wordsReveal(c, 'Invented c. 1550. Sold to both sides.', 120, 740, prog(lt, 5.6, 7.0), { font: F.body, size: 42, align: 'left', weight: '500', color: C.goldLight });
+    wordsReveal(c, 'In this 1565,', 120, 330, prog(lt, 1.0, 2.2), {
+      font: F.body,
+      size: 66,
+      weight: 'italic 500',
+      align: 'left',
+    });
+    wordsReveal(c, 'war is fought by machines.', 120, 410, prog(lt, 1.5, 3.0), {
+      font: F.body,
+      size: 66,
+      weight: 'italic 500',
+      align: 'left',
+    });
+    textReveal(c, 'ARMATURA', 120, 600, prog(lt, 3.2, 4.8), {
+      size: 112,
+      weight: 900,
+      spacing: 10,
+      align: 'left',
+      color: C.parch,
+    });
+    wordsReveal(c, 'Clockwork war-harnesses, piloted from within.', 120, 680, prog(lt, 4.6, 6.0), {
+      font: F.body,
+      size: 42,
+      align: 'left',
+      weight: '500',
+      color: C.goldLight,
+    });
+    wordsReveal(c, 'Invented c. 1550. Sold to both sides.', 120, 740, prog(lt, 5.6, 7.0), {
+      font: F.body,
+      size: 42,
+      align: 'left',
+      weight: '500',
+      color: C.goldLight,
+    });
     embers(c, lt, 30, 21, { speed: 18, color: '244,224,160', alpha: 0.4 });
   },
 });
@@ -564,7 +723,7 @@ SCENES.push({
       c.save();
       c.globalAlpha = 0.28;
       const z = 1.1 + lt * 0.01;
-      c.drawImage(im, 0, 0, 1920, 1080, -W * (z - 1) / 2, -H * (z - 1) / 2, W * z, H * z);
+      c.drawImage(im, 0, 0, 1920, 1080, (-W * (z - 1)) / 2, (-H * (z - 1)) / 2, W * z, H * z);
       c.restore();
       c.fillStyle = 'rgba(10,6,6,0.55)';
       c.fillRect(0, 0, W, H);
@@ -572,7 +731,10 @@ SCENES.push({
     const riser = bar(20) - bar(16); // 7.43s
     // portrait in arch
     const pk = ease.outCubic(prog(lt, 0.5, 1.7));
-    const px = 120, py = 190, pw = 520, ph = 640;
+    const px = 120,
+      py = 190,
+      pw = 520,
+      ph = 640;
     c.save();
     c.globalAlpha *= pk;
     c.translate(0, (1 - pk) * 40);
@@ -601,10 +763,27 @@ SCENES.push({
     text(c, 'NINU', px + pw / 2, py + ph - 30, { size: 56, weight: 700, spacing: 18, alpha: pk });
     // text column
     tag(c, '03 · THE HERO', 760, 250, ease.outCubic(prog(lt, 0.9, 1.9)));
-    wordsReveal(c, 'A farmer’s son from Żejtun.', 760, 360, prog(lt, 1.4, 3.0), { font: F.body, size: 74, weight: 'italic 500', align: 'left' });
+    wordsReveal(c, 'A farmer’s son from Żejtun.', 760, 360, prog(lt, 1.4, 3.0), {
+      font: F.body,
+      size: 74,
+      weight: 'italic 500',
+      align: 'left',
+    });
     const o2 = 1;
-    wordsReveal(c, 'Raised a peasant.', 760, 460, prog(lt, 3.0, 4.0), { font: F.body, size: 56, align: 'left', color: C.goldLight, alpha: o2 });
-    wordsReveal(c, 'Born of two worlds.', 760, 530, prog(lt, 3.8, 4.9), { font: F.body, size: 56, align: 'left', color: C.goldLight, alpha: o2 });
+    wordsReveal(c, 'Raised a peasant.', 760, 460, prog(lt, 3.0, 4.0), {
+      font: F.body,
+      size: 56,
+      align: 'left',
+      color: C.goldLight,
+      alpha: o2,
+    });
+    wordsReveal(c, 'Born of two worlds.', 760, 530, prog(lt, 3.8, 4.9), {
+      font: F.body,
+      size: 56,
+      align: 'left',
+      color: C.goldLight,
+      alpha: o2,
+    });
     // medallion
     const mk = ease.outCubic(prog(lt, 4.5, 5.6));
     const join = ease.inOutCubic(prog(lt, 6.4, 7.4));
@@ -622,16 +801,33 @@ SCENES.push({
         c.fillStyle = gl;
         c.fillRect(900, 300, 960, 800);
       }
-      text(c, 'THE BROKEN MEDALLION', 1370, 960, { size: 24, spacing: 10, color: C.gold, alpha: mk * 0.9 });
+      text(c, 'THE BROKEN MEDALLION', 1370, 960, {
+        size: 24,
+        spacing: 10,
+        color: C.gold,
+        alpha: mk * 0.9,
+      });
     }
     // RISER: flash cuts on each beat for the last 4 bars of this scene (bars 20..22)
     const rl = lt - riser;
     if (rl > 0) {
       const names = [
-        'battle-b1-marsaxlokk', 'battle-a3-castile-breach', 'ui-combat-forecast', 'battle-b7-st-elmo-ravelin',
-        'battle-i2-mdina-walls', 'ui-cinematic-closeup-1', 'battle-c2-marsamxett-galleys', 'battle-a5-scala-engine',
-        'battle-b9-fall-of-st-elmo', 'ui-defender-reaction-menu', 'battle-c4-corradino-heights', 'battle-i5-naxxar-ridge',
-        'battle-b4-night-crossing', 'ui-camera-rotated-90', 'battle-b3-sciberras', 'battle-b5-tigne',
+        'battle-b1-marsaxlokk',
+        'battle-a3-castile-breach',
+        'ui-combat-forecast',
+        'battle-b7-st-elmo-ravelin',
+        'battle-i2-mdina-walls',
+        'ui-cinematic-closeup-1',
+        'battle-c2-marsamxett-galleys',
+        'battle-a5-scala-engine',
+        'battle-b9-fall-of-st-elmo',
+        'ui-defender-reaction-menu',
+        'battle-c4-corradino-heights',
+        'battle-i5-naxxar-ridge',
+        'battle-b4-night-crossing',
+        'ui-camera-rotated-90',
+        'battle-b3-sciberras',
+        'battle-b5-tigne',
       ];
       // beats accelerate: first 6 shots on beats, then on half beats
       const beats = rl / BEAT;
@@ -666,7 +862,13 @@ SCENES.push({
       c.fillRect(0, 0, W, H * 0.5 * closeK);
       c.fillRect(0, H - H * 0.5 * closeK, W, H * 0.5 * closeK);
       // counter ticks
-      text(c, String(idx + 1).padStart(2, '0'), W - 120, H - 80, { size: 40, spacing: 6, color: C.gold, align: 'right', alpha: 0.8 });
+      text(c, String(idx + 1).padStart(2, '0'), W - 120, H - 80, {
+        size: 40,
+        spacing: 6,
+        color: C.gold,
+        align: 'right',
+        alpha: 0.8,
+      });
     }
   },
 });
@@ -684,7 +886,12 @@ SCENES.push({
     fillBg(c, '#1b0a0a', '#050203');
     const pulse = beatPulse(t, 6);
     const rk = ease.outExpo(prog(lt, 0, 1.6));
-    sun(c, W / 2, 470, 360 * (0.55 + 0.45 * rk) + pulse * 10, { glow: 1.1, rays: 36, rot: lt * 0.06, bands: 7 });
+    sun(c, W / 2, 470, 360 * (0.55 + 0.45 * rk) + pulse * 10, {
+      glow: 1.1,
+      rays: 36,
+      rot: lt * 0.06,
+      bands: 7,
+    });
     // shockwave rings
     for (let i = 0; i < 3; i++) {
       const k = prog(lt, i * 0.14, 1.4 + i * 0.14);
@@ -716,18 +923,54 @@ SCENES.push({
     const sc = 1 + (1 - tk) * 0.5;
     c.scale(sc, sc);
     c.globalAlpha *= clamp(tk * 2);
-    text(c, 'ARMATURA', 0, 0, { size: 232, weight: 900, spacing: 20 * tk + 6, color: C.parch, shadow: 'rgba(0,0,0,0.8)', shadowBlur: 40 });
+    text(c, 'ARMATURA', 0, 0, {
+      size: 232,
+      weight: 900,
+      spacing: 20 * tk + 6,
+      color: C.parch,
+      shadow: 'rgba(0,0,0,0.8)',
+      shadowBlur: 40,
+    });
     c.restore();
     const yk = ease.outCubic(prog(lt, 0.7, 1.5));
-    text(c, '1565', W / 2, 650, { size: 124, weight: 700, spacing: 48, color: C.gold, alpha: yk, shadow: 'rgba(0,0,0,0.8)' });
+    text(c, '1565', W / 2, 650, {
+      size: 124,
+      weight: 700,
+      spacing: 48,
+      color: C.gold,
+      alpha: yk,
+      shadow: 'rgba(0,0,0,0.8)',
+    });
     // sub lines
     const s1 = ease.outCubic(prog(lt, 1.3, 2.1)) * (1 - prog(lt, 3.0, 3.4));
-    text(c, 'THE GREAT SIEGE OF MALTA', W / 2, 760, { font: F.title, size: 40, spacing: 16, color: C.parch, alpha: s1 });
-    const s2 = ease.outCubic(prog(lt, 3.5, 4.4));
-    text(c, 'A STORY-DRIVEN TACTICAL RPG', W / 2, 760, { font: F.title, size: 40, spacing: 16, color: C.goldLight, alpha: s2 });
-    wordsReveal(c, 'Turn-based battles. Branching story. Clockwork war-harnesses.', W / 2, 840, prog(lt, 4.2, 5.4), {
-      font: F.body, size: 44, weight: 'italic 500', color: C.parch,
+    text(c, 'THE GREAT SIEGE OF MALTA', W / 2, 760, {
+      font: F.title,
+      size: 40,
+      spacing: 16,
+      color: C.parch,
+      alpha: s1,
     });
+    const s2 = ease.outCubic(prog(lt, 3.5, 4.4));
+    text(c, 'A STORY-DRIVEN TACTICAL RPG', W / 2, 760, {
+      font: F.title,
+      size: 40,
+      spacing: 16,
+      color: C.goldLight,
+      alpha: s2,
+    });
+    wordsReveal(
+      c,
+      'Turn-based battles. Branching story. Clockwork war-harnesses.',
+      W / 2,
+      840,
+      prog(lt, 4.2, 5.4),
+      {
+        font: F.body,
+        size: 44,
+        weight: 'italic 500',
+        color: C.parch,
+      },
+    );
     flash(c, hit(t, DROP, 7) * 0.5);
   },
 });

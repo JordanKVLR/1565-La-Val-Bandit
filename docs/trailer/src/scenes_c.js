@@ -34,7 +34,12 @@ SCENES.push({
     c.save();
     c.translate(Math.sin(lt * 61) * shake, Math.cos(lt * 53) * shake);
     // objective header
-    text(c, 'EVERY BATTLE HAS ITS OWN OBJECTIVE', W / 2, 250, { size: 28, spacing: 12, color: C.gold, alpha: ease.outCubic(prog(lt, 0.4, 1.4)) });
+    text(c, 'EVERY BATTLE HAS ITS OWN OBJECTIVE', W / 2, 250, {
+      size: 28,
+      spacing: 12,
+      color: C.gold,
+      alpha: ease.outCubic(prog(lt, 0.4, 1.4)),
+    });
     // HOLD THE LINE, one word per beat
     const words = ['HOLD', 'THE', 'LINE'];
     const sizes = [168, 110, 168];
@@ -58,7 +63,14 @@ SCENES.push({
       const sc = 1 + (1 - k) * 0.35;
       c.scale(sc, sc);
       c.globalAlpha *= clamp(k * 2);
-      text(c, w, 0, 0, { size: sizes[i], weight: 900, spacing: 10, color: C.parch, shadow: 'rgba(0,0,0,0.8)', shadowBlur: 30 });
+      text(c, w, 0, 0, {
+        size: sizes[i],
+        weight: 900,
+        spacing: 10,
+        color: C.parch,
+        shadow: 'rgba(0,0,0,0.8)',
+        shadowBlur: 30,
+      });
       c.restore();
       c.fillStyle = `rgba(255,236,200,${0.18 * hit(t, t - lt + at, 9)})`;
       c.fillRect(0, 0, W, H);
@@ -118,7 +130,7 @@ SCENES.push({
       c.save();
       const inK = ease.outExpo(prog(local, 0, 0.35));
       c.translate(dir * (1 - inK) * W * 0.5, 0);
-      c.drawImage(im, -W * (z - 1) / 2 - local * 14 * dir, -H * (z - 1) / 2, W * z, H * z);
+      c.drawImage(im, (-W * (z - 1)) / 2 - local * 14 * dir, (-H * (z - 1)) / 2, W * z, H * z);
       c.restore();
     };
     if (n > 0 && l < 0.4) drawStill(n - 1, BAR + l, n % 2 ? -1 : 1);
@@ -137,9 +149,28 @@ SCENES.push({
     c.save();
     c.translate(-(1 - lk) * 80, 0);
     c.globalAlpha *= lk;
-    text(c, 'BATTLE ' + String(n + 1).padStart(2, '0'), 110, H - 140, { size: 24, spacing: 12, color: C.hot, align: 'left', weight: 700 });
-    text(c, name, 110, H - 80, { size: 64, weight: 700, spacing: 8, align: 'left', shadow: '#000', shadowBlur: 16 });
-    text(c, sub, 110, H - 36, { font: F.body, size: 34, align: 'left', color: C.goldLight, weight: 'italic 500' });
+    text(c, 'BATTLE ' + String(n + 1).padStart(2, '0'), 110, H - 140, {
+      size: 24,
+      spacing: 12,
+      color: C.hot,
+      align: 'left',
+      weight: 700,
+    });
+    text(c, name, 110, H - 80, {
+      size: 64,
+      weight: 700,
+      spacing: 8,
+      align: 'left',
+      shadow: '#000',
+      shadowBlur: 16,
+    });
+    text(c, sub, 110, H - 36, {
+      font: F.body,
+      size: 34,
+      align: 'left',
+      color: C.goldLight,
+      weight: 'italic 500',
+    });
     c.restore();
     // header counter
     const hk = ease.outCubic(prog(lt, 0.2, 1.0));
@@ -232,8 +263,19 @@ function radar(c, cx, cy, R, k, k2) {
     c.fillStyle = C.goldLight;
     c.fill();
     const [lx, ly] = pt(i, 1.2);
-    text(c, ATTRS[i][0], lx, ly + 8, { size: 34, weight: 700, spacing: 6, color: C.parch, alpha: kk });
-    text(c, String(Math.round(val(i))), lx, ly + 44, { size: 28, color: C.hot, alpha: kk, weight: 700 });
+    text(c, ATTRS[i][0], lx, ly + 8, {
+      size: 34,
+      weight: 700,
+      spacing: 6,
+      color: C.parch,
+      alpha: kk,
+    });
+    text(c, String(Math.round(val(i))), lx, ly + 44, {
+      size: 28,
+      color: C.hot,
+      alpha: kk,
+      weight: 700,
+    });
   });
 }
 
@@ -250,7 +292,11 @@ SCENES.push({
       c.save();
       c.globalAlpha *= out1;
       tag(c, '08 · BUILD YOUR ARMATURA', 110, 150, ease.outCubic(prog(lt, 0.3, 1.2)));
-      headline(c, ['PILOT.', 'FRAME.', 'GEAR.'], 110, 290, ease.outCubic(prog(lt, 0.2, 1.8)), { size: 96, lh: 104, spacing: 8 });
+      headline(c, ['PILOT.', 'FRAME.', 'GEAR.'], 110, 290, ease.outCubic(prog(lt, 0.2, 1.8)), {
+        size: 96,
+        lh: 104,
+        spacing: 8,
+      });
       const items = [
         ['Six attributes shape every pilot', 'Spend 3 points on every level-up.'],
         ['46 techniques to learn', 'Unlocked by weapon, frame and stats.'],
@@ -262,16 +308,39 @@ SCENES.push({
         if (k <= 0) return;
         c.fillStyle = C.hot;
         c.fillRect(110, 640 + i * 124 - 26, 5, 84 * ease.outCubic(k));
-        text(c, h1, 140, 640 + i * 124, { size: 34, weight: 700, spacing: 3, align: 'left', alpha: k });
-        text(c, h2, 140, 640 + i * 124 + 42, { font: F.body, size: 34, align: 'left', color: C.goldLight, alpha: k, weight: '500' });
+        text(c, h1, 140, 640 + i * 124, {
+          size: 34,
+          weight: 700,
+          spacing: 3,
+          align: 'left',
+          alpha: k,
+        });
+        text(c, h2, 140, 640 + i * 124 + 42, {
+          font: F.body,
+          size: 34,
+          align: 'left',
+          color: C.goldLight,
+          alpha: k,
+          weight: '500',
+        });
       });
       const rk = ease.outCubic(prog(lt, 1.0, 3.6));
       c.save();
       c.globalAlpha *= prog(lt, 0.8, 1.6);
       radar(c, 1330, 490, 260, rk, prog(lt, 3.4, 6.0));
       c.restore();
-      text(c, 'NINU · STARTING STATS', 1330, 985, { size: 24, spacing: 10, color: C.gold, alpha: prog(lt, 1.8, 2.6) * (1 - prog(lt, 3.3, 3.8)) });
-      text(c, 'NINU · AFTER LEVEL-UPS', 1330, 985, { size: 24, spacing: 10, color: C.hot, alpha: prog(lt, 4.0, 4.8) });
+      text(c, 'NINU · STARTING STATS', 1330, 985, {
+        size: 24,
+        spacing: 10,
+        color: C.gold,
+        alpha: prog(lt, 1.8, 2.6) * (1 - prog(lt, 3.3, 3.8)),
+      });
+      text(c, 'NINU · AFTER LEVEL-UPS', 1330, 985, {
+        size: 24,
+        spacing: 10,
+        color: C.hot,
+        alpha: prog(lt, 4.0, 4.8),
+      });
       c.restore();
     }
     if (lt >= SW) {
@@ -281,12 +350,30 @@ SCENES.push({
       const shop = l >= 3.2;
       c.save();
       c.globalAlpha *= inK;
-      shot(c, ST(shop ? 'prep-armoury-shop-screen' : 'prep-loadout-screen'), R.x, R.y, R.w, R.h,
-        shop ? [960, 330 + l * 4, 1.5] : [480, 150 + l * 4, 2.3]);
+      shot(
+        c,
+        ST(shop ? 'prep-armoury-shop-screen' : 'prep-loadout-screen'),
+        R.x,
+        R.y,
+        R.w,
+        R.h,
+        shop ? [960, 330 + l * 4, 1.5] : [480, 150 + l * 4, 2.3],
+      );
       tag(c, '08 · BUILD YOUR ARMATURA', 110, 150, 1);
-      headline(c, ['GEAR UP', 'BETWEEN', 'BATTLES'], 110, 330, ease.outCubic(prog(l, 0.2, 1.4)), { size: 64, lh: 76, spacing: 5 });
-      body(c, 'Fit Armaturas, weapons and charms to your squad.', 110, 620, prog(l, 1.0, 2.2), { size: 40, maxW: 540 });
-      body(c, 'Then spend your scudi in the Armoury.', 110, 780, prog(l, 3.4, 4.6), { size: 40, maxW: 540, color: C.parch });
+      headline(c, ['GEAR UP', 'BETWEEN', 'BATTLES'], 110, 330, ease.outCubic(prog(l, 0.2, 1.4)), {
+        size: 64,
+        lh: 76,
+        spacing: 5,
+      });
+      body(c, 'Fit Armaturas, weapons and charms to your squad.', 110, 620, prog(l, 1.0, 2.2), {
+        size: 40,
+        maxW: 540,
+      });
+      body(c, 'Then spend your scudi in the Armoury.', 110, 780, prog(l, 3.4, 4.6), {
+        size: 40,
+        maxW: 540,
+        color: C.parch,
+      });
       c.restore();
     }
     embers(c, lt, 26, 101, { speed: 18, alpha: 0.4 });
@@ -309,14 +396,25 @@ SCENES.push({
   tin: { type: 'cross', dur: 1.0 },
   draw(c, t, lt, d) {
     fillBg(c, '#140a0a', '#050202');
-    const bgI = ['battle-b5-tigne', 'battle-i5-naxxar-ridge', 'battle-c2-marsamxett-galleys', 'battle-a5-scala-engine'];
+    const bgI = [
+      'battle-b5-tigne',
+      'battle-i5-naxxar-ridge',
+      'battle-c2-marsamxett-galleys',
+      'battle-a5-scala-engine',
+    ];
     const per = d / 4;
     const idx = Math.min(3, Math.floor(lt / per));
     const l = lt - idx * per;
     blurBg(c, ST(bgI[idx]), 1, 0.62, 1.1 + l * 0.004);
     c.save();
     c.globalAlpha *= 0.32;
-    sun(c, W / 2, 520, 300, { glow: 0.5, rays: 28, rot: lt * 0.05, color: '#6a1710', hot: '#8a2218' });
+    sun(c, W / 2, 520, 300, {
+      glow: 0.5,
+      rays: 28,
+      rot: lt * 0.05,
+      color: '#6a1710',
+      hot: '#8a2218',
+    });
     c.restore();
     c.fillStyle = 'rgba(5,3,3,0.45)';
     c.fillRect(0, 0, W, H);
@@ -328,10 +426,29 @@ SCENES.push({
     const sc = 1 + (1 - k) * 0.4;
     c.scale(sc, sc);
     c.globalAlpha *= clamp(k * 2);
-    text(c, String(count), 0, 0, { size: 380, weight: 900, spacing: 6, color: C.parch, shadow: 'rgba(0,0,0,0.7)', shadowBlur: 40 });
+    text(c, String(count), 0, 0, {
+      size: 380,
+      weight: 900,
+      spacing: 6,
+      color: C.parch,
+      shadow: 'rgba(0,0,0,0.7)',
+      shadowBlur: 40,
+    });
     c.restore();
-    textReveal(c, label, W / 2, 700, prog(l, 0.05, 0.7), { size: 90, weight: 700, spacing: 24, color: C.goldLight, shadow: '#000', shadowBlur: 24 });
-    wordsReveal(c, sub, W / 2, 790, prog(l, 0.3, 1.1), { font: F.body, size: 48, weight: 'italic 500', color: C.goldLight });
+    textReveal(c, label, W / 2, 700, prog(l, 0.05, 0.7), {
+      size: 90,
+      weight: 700,
+      spacing: 24,
+      color: C.goldLight,
+      shadow: '#000',
+      shadowBlur: 24,
+    });
+    wordsReveal(c, sub, W / 2, 790, prog(l, 0.3, 1.1), {
+      font: F.body,
+      size: 48,
+      weight: 'italic 500',
+      color: C.goldLight,
+    });
     flash(c, hit(t, t - lt + idx * per, 8) * 0.22);
     // pips
     STATS.forEach((_, i) => {
@@ -435,14 +552,43 @@ SCENES.push({
     c.fillRect(0, 0, W, H);
     const A = (a, b) => prog(lt, a, a + 1.4) * (1 - prog(lt, b - 0.8, b));
     // 1
-    wordsReveal(c, 'Heroism and cost,', W / 2, 470, prog(lt, 1.0, 3.2), { font: F.body, size: 104, weight: 'italic 500', alpha: 1 - prog(lt, 5.4, 6.2) });
-    wordsReveal(c, 'on both sides.', W / 2, 580, prog(lt, 2.4, 4.4), { font: F.body, size: 104, weight: 'italic 500', alpha: 1 - prog(lt, 5.4, 6.2) });
+    wordsReveal(c, 'Heroism and cost,', W / 2, 470, prog(lt, 1.0, 3.2), {
+      font: F.body,
+      size: 104,
+      weight: 'italic 500',
+      alpha: 1 - prog(lt, 5.4, 6.2),
+    });
+    wordsReveal(c, 'on both sides.', W / 2, 580, prog(lt, 2.4, 4.4), {
+      font: F.body,
+      size: 104,
+      weight: 'italic 500',
+      alpha: 1 - prog(lt, 5.4, 6.2),
+    });
     // 2
     const a2 = prog(lt, 6.6, 7.6) * (1 - prog(lt, 11.0, 11.8));
     if (a2 > 0) {
-      text(c, 'ARMATURA 1565', W / 2, 400, { size: 60, weight: 700, spacing: 20, color: C.gold, alpha: a2 });
-      wordsReveal(c, 'An original tactical RPG of the Great Siege of Malta,', W / 2, 500, prog(lt, 7.0, 9.0), { font: F.body, size: 56, weight: '500', alpha: 1 - prog(lt, 11.0, 11.8) });
-      wordsReveal(c, 'where clockwork machines changed the war.', W / 2, 575, prog(lt, 8.0, 10.0), { font: F.body, size: 56, weight: '500', color: C.goldLight, alpha: 1 - prog(lt, 11.0, 11.8) });
+      text(c, 'ARMATURA 1565', W / 2, 400, {
+        size: 60,
+        weight: 700,
+        spacing: 20,
+        color: C.gold,
+        alpha: a2,
+      });
+      wordsReveal(
+        c,
+        'An original tactical RPG of the Great Siege of Malta,',
+        W / 2,
+        500,
+        prog(lt, 7.0, 9.0),
+        { font: F.body, size: 56, weight: '500', alpha: 1 - prog(lt, 11.0, 11.8) },
+      );
+      wordsReveal(c, 'where clockwork machines changed the war.', W / 2, 575, prog(lt, 8.0, 10.0), {
+        font: F.body,
+        size: 56,
+        weight: '500',
+        color: C.goldLight,
+        alpha: 1 - prog(lt, 11.0, 11.8),
+      });
     }
     // 3: platforms
     const a3 = prog(lt, 12.2, 13.2) * (1 - prog(lt, 18.8, 19.6));
@@ -455,7 +601,8 @@ SCENES.push({
         [iconDeck, 'STEAM DECK'],
       ];
       icons.forEach(([fn, label], i) => {
-        const k = ease.outBack(prog(lt, 12.8 + i * 0.5, 13.6 + i * 0.5)) * (1 - prog(lt, 18.8, 19.6));
+        const k =
+          ease.outBack(prog(lt, 12.8 + i * 0.5, 13.6 + i * 0.5)) * (1 - prog(lt, 18.8, 19.6));
         if (k <= 0) return;
         const x = W / 2 + (i - 1.5) * 330;
         c.save();
@@ -464,7 +611,12 @@ SCENES.push({
         text(c, label, x, 580, { size: 28, spacing: 10, color: C.parch });
         c.restore();
       });
-      wordsReveal(c, 'Landscape. Touch-first. Free to play.', W / 2, 700, prog(lt, 15.2, 17.0), { font: F.body, size: 56, weight: 'italic 500', alpha: 1 - prog(lt, 18.8, 19.6) });
+      wordsReveal(c, 'Landscape. Touch-first. Free to play.', W / 2, 700, prog(lt, 15.2, 17.0), {
+        font: F.body,
+        size: 56,
+        weight: 'italic 500',
+        alpha: 1 - prog(lt, 18.8, 19.6),
+      });
     }
     embers(c, lt, 36, 111, { speed: 14, alpha: 0.45 });
   },
@@ -474,9 +626,18 @@ SCENES.push({
    13. FINALE   bar 115 .. end
    ==================================================================== */
 const COLLAGE = [
-  'battle-a1-piccolo-soccorso', 'battle-b1-marsaxlokk', 'ui-combat-forecast', 'battle-i2-mdina-walls',
-  'story-line-05', 'battle-c2-marsamxett-galleys', 'ui-cinematic-closeup-1', 'battle-a3-castile-breach',
-  'battle-b7-st-elmo-ravelin', 'battle-c4-corradino-heights', 'ui-defender-reaction-menu', 'battle-i5-naxxar-ripple',
+  'battle-a1-piccolo-soccorso',
+  'battle-b1-marsaxlokk',
+  'ui-combat-forecast',
+  'battle-i2-mdina-walls',
+  'story-line-05',
+  'battle-c2-marsamxett-galleys',
+  'ui-cinematic-closeup-1',
+  'battle-a3-castile-breach',
+  'battle-b7-st-elmo-ravelin',
+  'battle-c4-corradino-heights',
+  'ui-defender-reaction-menu',
+  'battle-i5-naxxar-ripple',
 ];
 COLLAGE[11] = 'battle-i5-naxxar-ridge';
 SCENES.push({
@@ -532,7 +693,12 @@ SCENES.push({
     if (L > -0.05) {
       const sk = ease.outExpo(clamp(L / 1.4));
       const pulse = beatPulse(t, 6);
-      sun(c, W / 2, 440, 330 * (0.4 + 0.6 * sk) + pulse * 8, { glow: 1.15, rays: 36, rot: L * 0.05, bands: 7 });
+      sun(c, W / 2, 440, 330 * (0.4 + 0.6 * sk) + pulse * 8, {
+        glow: 1.15,
+        rays: 36,
+        rot: L * 0.05,
+        bands: 7,
+      });
       for (let i = 0; i < 3; i++) {
         const k = prog(L, i * 0.14, 1.4 + i * 0.14);
         if (k <= 0 || k >= 1) continue;
@@ -560,10 +726,28 @@ SCENES.push({
       const sc = 1 + (1 - tk) * 0.4;
       c.scale(sc, sc);
       c.globalAlpha *= clamp(tk * 2);
-      text(c, 'ARMATURA', 0, 0, { size: 208, weight: 900, spacing: 18 * tk + 6, shadow: 'rgba(0,0,0,0.8)', shadowBlur: 40 });
+      text(c, 'ARMATURA', 0, 0, {
+        size: 208,
+        weight: 900,
+        spacing: 18 * tk + 6,
+        shadow: 'rgba(0,0,0,0.8)',
+        shadowBlur: 40,
+      });
       c.restore();
-      text(c, '1565', W / 2, 580, { size: 112, weight: 700, spacing: 44, color: C.gold, alpha: ease.outCubic(prog(L, 0.6, 1.4)), shadow: 'rgba(0,0,0,0.8)' });
-      text(c, 'THE GREAT SIEGE OF MALTA', W / 2, 660, { size: 36, spacing: 16, color: C.parch, alpha: ease.outCubic(prog(L, 1.2, 2.0)) });
+      text(c, '1565', W / 2, 580, {
+        size: 112,
+        weight: 700,
+        spacing: 44,
+        color: C.gold,
+        alpha: ease.outCubic(prog(L, 0.6, 1.4)),
+        shadow: 'rgba(0,0,0,0.8)',
+      });
+      text(c, 'THE GREAT SIEGE OF MALTA', W / 2, 660, {
+        size: 36,
+        spacing: 16,
+        color: C.parch,
+        alpha: ease.outCubic(prog(L, 1.2, 2.0)),
+      });
       // call to action
       const ck2 = prog(L, 3.2, 4.2);
       if (ck2 > 0) {
@@ -576,11 +760,28 @@ SCENES.push({
         c.lineWidth = 2.5;
         rrect(c, W / 2 - 460, 730, 920, 150, 10);
         c.stroke();
-        text(c, 'PLAY NOW IN YOUR BROWSER', W / 2, 790, { size: 38, weight: 700, spacing: 10, color: C.hot });
-        text(c, 'jordankvlr.github.io/1565-La-Val-Bandit', W / 2, 850, { font: F.body, size: 46, weight: '600', color: C.parch, spacing: 1 });
+        text(c, 'PLAY NOW IN YOUR BROWSER', W / 2, 790, {
+          size: 38,
+          weight: 700,
+          spacing: 10,
+          color: C.hot,
+        });
+        text(c, 'jordankvlr.github.io/1565-La-Val-Bandit', W / 2, 850, {
+          font: F.body,
+          size: 46,
+          weight: '600',
+          color: C.parch,
+          spacing: 1,
+        });
         c.restore();
       }
-      text(c, 'Music: “Under the Red Sun”', W / 2, 990, { font: F.body, size: 36, weight: 'italic 500', color: C.goldLight, alpha: prog(L, 4.6, 5.6) });
+      text(c, 'Music: “Under the Red Sun”', W / 2, 990, {
+        font: F.body,
+        size: 36,
+        weight: 'italic 500',
+        color: C.goldLight,
+        alpha: prog(L, 4.6, 5.6),
+      });
     }
     flash(c, hit(t, bar(118), 6) * 0.9);
   },
