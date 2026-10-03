@@ -424,15 +424,8 @@ SCENES.push({
 /* ====================================================================
    10. BEACONS   154.29 .. 193.28
    ==================================================================== */
-const BMAP = { x: 760, y: 70, w: 1000, h: 960 };
-const BEACON_SITES = [
-  [14.543, 35.842], // Marsaxlokk
-  [14.533, 35.857], // Zejtun
-  [14.5235, 35.887], // Birgu
-  [14.446, 35.916], // Naxxar
-  [14.4025, 35.886], // Mdina
-  [14.37, 35.955], // Mellieha
-];
+const BMAP = { x: 760, y: 60, w: 1000, view: [250, 200, 500, 480] };
+const BEACON_SITES = ['marsaxlokk', 'zejtun', 'birgu', 'naxxar', 'mdina', 'mellieha'];
 function subBeaconMap(c, t, l) {
   fillBg(c, '#06080f', '#020204');
   nightStars(c, t, 90, 6, H);
@@ -444,14 +437,9 @@ function subBeaconMap(c, t, l) {
     c.lineWidth = 1.2;
     c.stroke();
   }
-  maltaPath(c, BMAP, 1);
-  c.fillStyle = '#10141f';
-  c.fill();
-  c.strokeStyle = 'rgba(216,179,106,0.7)';
-  c.lineWidth = 2.5;
-  c.stroke();
+  drawMalta(c, BMAP, { land: '#10141f', sea: '#06080f', coast: 'rgba(216,179,106,0.75)', coastW: 2.5 });
   // chain of fire
-  const pts = BEACON_SITES.map(([lo, la]) => MAPS.project(lo, la, BMAP));
+  const pts = BEACON_SITES.map((p) => (p === 'birgu' ? MAPS.hplace('birgu', BMAP) : MAPS.place(p, BMAP)));
   for (let i = 0; i < pts.length; i++) {
     const k = prog(l, 0.4 + i * 0.85, 1.4 + i * 0.85);
     if (i > 0) {

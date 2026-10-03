@@ -595,90 +595,176 @@ function wipeClip(ctx, k, angle = 0.25) {
   ctx.clip();
 }
 
-/* Malta outline (lon, lat), clockwise from the north-west, harbour inlets included */
-const MALTA = [
-  [14.33, 35.985],
-  [14.352, 35.992],
-  [14.372, 35.98],
-  [14.388, 35.968],
-  [14.4, 35.955],
-  [14.402, 35.945],
-  [14.412, 35.94],
-  [14.425, 35.955],
-  [14.436, 35.948],
-  [14.44, 35.938],
-  [14.455, 35.935],
-  [14.475, 35.925],
-  [14.492, 35.918],
-  [14.505, 35.912],
-  [14.497, 35.905],
-  [14.484, 35.905],
-  [14.488, 35.897],
-  [14.5, 35.895],
-  [14.512, 35.9],
-  [14.522, 35.9],
-  [14.52, 35.892],
-  [14.507, 35.885],
-  [14.503, 35.878],
-  [14.515, 35.876],
-  [14.523, 35.882],
-  [14.535, 35.884],
-  [14.54, 35.892],
-  [14.556, 35.89],
-  [14.566, 35.872],
-  [14.572, 35.858],
-  [14.558, 35.846],
-  [14.548, 35.838],
-  [14.562, 35.828],
-  [14.552, 35.82],
-  [14.53, 35.822],
-  [14.512, 35.815],
-  [14.49, 35.812],
-  [14.465, 35.818],
-  [14.445, 35.82],
-  [14.425, 35.822],
-  [14.4, 35.832],
-  [14.375, 35.848],
-  [14.355, 35.87],
-  [14.338, 35.9],
-  [14.335, 35.93],
-  [14.325, 35.95],
-];
+/* ---------- Malta map (coastlines traced from reference maps, see malta_geo.js) ----------
+   A map box is { x, y, w, h?, view?: [vx, vy, vw, vh] } in island-map px; h follows the view aspect. */
 const MAPS = {
-  // lon/lat -> canvas box. box: x,y,w,h
-  project(lon, lat, box) {
-    const lon0 = 14.32;
-    const lon1 = 14.58;
-    const lat0 = 36.0;
-    const lat1 = 35.8;
-    return [
-      box.x + ((lon - lon0) / (lon1 - lon0)) * box.w,
-      box.y + ((lat - lat0) / (lat1 - lat0)) * box.h,
-    ];
+  view(box) {
+    return box.view || [0, 0, MALTA_IMG.w, MALTA_IMG.h];
+  },
+  /* island-map px -> canvas */
+  px(x, y, box) {
+    const [vx, vy, vw, vh] = MAPS.view(box);
+    const h = box.h ?? (box.w * vh) / vw;
+    return [box.x + ((x - vx) / vw) * box.w, box.y + ((y - vy) / vh) * h];
+  },
+  /* harbour-map px -> island-map px */
+  hb(x, y) {
+    const { a, b, tx, ty } = HARBOUR_XF;
+    return [a * x - b * y + tx, b * x + a * y + ty];
+  },
+  /* harbour-map px -> canvas */
+  hpx(x, y, box) {
+    return MAPS.px(...MAPS.hb(x, y), box);
+  },
+  place(name, box) {
+    return MAPS.px(...MALTA_PX[name], box);
+  },
+  hplace(name, box) {
+    return MAPS.hpx(...HARBOUR_PX[name], box);
   },
 };
-function maltaPath(ctx, box, scale = 1) {
-  const pts = MALTA.map(([lo, la]) => MAPS.project(lo, la, box));
-  const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
-  const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
-  const q = pts.map(([x, y]) => [cx + (x - cx) * scale, cy + (y - cy) * scale]);
-  const n = q.length;
-  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-  ctx.beginPath();
-  const m0 = mid(q[n - 1], q[0]);
-  ctx.moveTo(m0[0], m0[1]);
-  for (let i = 0; i < n; i++) {
-    const m = mid(q[i], q[(i + 1) % n]);
-    ctx.quadraticCurveTo(q[i][0], q[i][1], m[0], m[1]);
+function polyCentroid(p) {
+  let sx = 0;
+  let sy = 0;
+  const n = p.length / 2;
+  for (let i = 0; i < p.length; i += 2) {
+    sx += p[i];
+    sy += p[i + 1];
   }
+  return [sx / n, sy / n];
+}
+/* island outlines (Malta, Gozo, Comino); scale grows/shrinks each island about its own centre (contour rings) */
+function maltaPath(ctx, box, scale = 1) {
+  ctx.beginPath();
+  MALTA_IMG.polys.forEach((p) => {
+    if (scale !== 1) {
+      // contour rings only around the real islands, not tiny islets like Manoel or the St Angelo rock
+      let x0 = 1e9;
+      let x1 = -1e9;
+      for (let i = 0; i < p.length; i += 2) {
+        x0 = Math.min(x0, p[i]);
+        x1 = Math.max(x1, p[i]);
+      }
+      if (x1 - x0 < 25) return;
+    }
+    const [cx, cy] = polyCentroid(p);
+    for (let i = 0; i < p.length; i += 2) {
+      const [x, y] = MAPS.px(cx + (p[i] - cx) * scale, cy + (p[i + 1] - cy) * scale, box);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+  });
+}
+/* the harbour-map frame as a quad in canvas px (inset to hide the reference map's edges) */
+function harbourQuad(ctx, box, inset = 10) {
+  const W2 = HARBOUR_IMG.w - inset;
+  const H2 = HARBOUR_IMG.h - inset;
+  ctx.beginPath();
+  [[inset, inset], [W2, inset], [W2, H2], [inset, H2]].forEach(([x, y], i) => {
+    const [px, py] = MAPS.hpx(x, y, box);
+    if (i) ctx.lineTo(px, py);
+    else ctx.moveTo(px, py);
+  });
   ctx.closePath();
+}
+function harbourLandPath(ctx, box) {
+  ctx.beginPath();
+  HARBOUR_IMG.polys.forEach((p) => {
+    for (let i = 0; i < p.length; i += 2) {
+      const [x, y] = MAPS.hpx(p[i], p[i + 1], box);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+  });
+}
+/* coast of the detailed harbour, skipping the segments that run along the reference map's frame */
+function harbourCoastPath(ctx, box) {
+  const onEdge = (x, y) => x <= 1 || y <= 1 || x >= HARBOUR_IMG.w - 1 || y >= HARBOUR_IMG.h - 1;
+  ctx.beginPath();
+  HARBOUR_IMG.polys.forEach((p) => {
+    const n = p.length / 2;
+    let pen = false;
+    for (let k = 0; k <= n; k++) {
+      const i = (k % n) * 2;
+      const j = ((k + n - 1) % n) * 2;
+      const [x, y] = MAPS.hpx(p[i], p[i + 1], box);
+      const edge = k > 0 && onEdge(p[i], p[i + 1]) && onEdge(p[j], p[j + 1]);
+      if (!pen || edge) {
+        ctx.moveTo(x, y);
+        pen = true;
+      } else ctx.lineTo(x, y);
+    }
+  });
+}
+/* Draws the islands (the traced outline already includes the detailed Grand Harbour; detail > 0 re-patches it).
+   o: { land, sea, coast, coastW, detail (0..1 strength of the harbour patch) } */
+function drawMalta(ctx, box, o = {}) {
+  const { land = '#35271b', sea = '#100b09', coast = C.gold, coastW = 3, detail = 0, z = 1 } = o;
+  ctx.save();
+  maltaPath(ctx, box, 1);
+  ctx.fillStyle = land;
+  ctx.fill();
+  if (detail > 0) {
+    ctx.save();
+    harbourQuad(ctx, box);
+    ctx.clip();
+    ctx.globalAlpha *= detail;
+    ctx.fillStyle = sea;
+    ctx.fillRect(-W, -H, W * 4, H * 4);
+    ctx.fillStyle = land;
+    // each traced polygon on its own, even-odd (the big outline doubles back along the map frame)
+    HARBOUR_IMG.polys.forEach((p) => {
+      ctx.beginPath();
+      for (let i = 0; i < p.length; i += 2) {
+        const [x, y] = MAPS.hpx(p[i], p[i + 1], box);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill('evenodd');
+    });
+    ctx.restore();
+  }
+  // coast: island outline outside the harbour patch, detailed coast inside it
+  ctx.save();
+  if (detail > 0) {
+    ctx.beginPath();
+    ctx.rect(-W * 4, -H * 4, W * 12, H * 12);
+    const W2 = HARBOUR_IMG.w - 10;
+    const H2 = HARBOUR_IMG.h - 10;
+    [[10, 10], [W2, 10], [W2, H2], [10, H2]].forEach(([x, y], i) => {
+      const [px, py] = MAPS.hpx(x, y, box);
+      if (i) ctx.lineTo(px, py);
+      else ctx.moveTo(px, py);
+    });
+    ctx.closePath();
+    ctx.clip('evenodd');
+  }
+  maltaPath(ctx, box, 1);
+  ctx.strokeStyle = coast;
+  ctx.lineWidth = coastW / z;
+  ctx.stroke();
+  ctx.restore();
+  if (detail > 0) {
+    ctx.save();
+    harbourQuad(ctx, box);
+    ctx.clip();
+    harbourCoastPath(ctx, box);
+    ctx.strokeStyle = coast;
+    ctx.lineWidth = (coastW * 0.8) / z;
+    ctx.stroke();
+    ctx.restore();
+  }
+  ctx.restore();
 }
 
 Object.assign(window, {
   W, H, BPM, BEAT, BAR, OFFSET, DURATION, C, clamp, lerp, prog, ease, bar, beatPhase, beatPulse, barPulse, hit,
   rng, img, pending, trimCache, text, textReveal, wordsReveal, rrect, maltese, maltesePath, gear, sun, vignette,
-  fillBg, embers, frame, shot, callout, tag, flash, crossClip, circleClip, slatClip, wipeClip, MALTA, MAPS,
-  maltaPath, F, measure, setFont,
+  fillBg, embers, frame, shot, callout, tag, flash, crossClip, circleClip, slatClip, wipeClip, MAPS,
+  maltaPath, drawMalta, harbourLandPath, harbourCoastPath, harbourQuad, F, measure, setFont,
 });
 
 /* ---------- scene registry + footage paths ---------- */

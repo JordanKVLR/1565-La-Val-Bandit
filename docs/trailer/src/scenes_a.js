@@ -120,14 +120,7 @@ SCENES.push({
 /* ====================================================================
    2. THE SIEGE MAP   bar 7 .. bar 12
    ==================================================================== */
-const MAP_BOX = { x: 860, y: 120, w: 880, h: 840 };
-const PLACES = {
-  marsaxlokk: [14.543, 35.842],
-  elmo: [14.5185, 35.8975],
-  birgu: [14.5235, 35.8875],
-  senglea: [14.5165, 35.8845],
-  mdina: [14.4025, 35.886],
-};
+const MAP_BOX = { x: 900, y: 80, w: 960, view: [250, 210, 500, 470] };
 SCENES.push({
   name: 'map',
   a: bar(7),
@@ -136,9 +129,9 @@ SCENES.push({
   draw(c, t, lt) {
     c.fillStyle = '#100b09';
     c.fillRect(0, 0, W, H);
-    const hp = MAPS.project(...PLACES.birgu, MAP_BOX);
+    const hp = MAPS.place('harbour', MAP_BOX);
     const zk = ease.inOutCubic(prog(lt, 3.5, 5.6));
-    const z = lerp(1, 2.7, zk);
+    const z = lerp(1, 6, zk);
     const T = { x: 1300, y: 540 };
     const tx = (T.x - hp[0] * z) * zk;
     const ty = (T.y - hp[1] * z) * zk;
@@ -154,25 +147,32 @@ SCENES.push({
       c.lineWidth = 1.4 / z;
       c.stroke();
     }
-    // land
+    // land (harbour detail patched in)
+    c.save();
+    c.globalAlpha *= ease.outCubic(prog(lt, 1.6, 3));
+    drawMalta(c, MAP_BOX, { land: '#46342a', sea: '#100b09', coast: C.gold, coastW: 3.2, z });
+    c.restore();
+    c.save();
     maltaPath(c, MAP_BOX, 1);
-    c.fillStyle = `rgba(52,38,26,${ease.outCubic(prog(lt, 1.6, 3))})`;
-    c.fill();
+    c.clip();
     for (let i = 1; i < 7; i++) {
       maltaPath(c, MAP_BOX, 1 - i * 0.075);
-      c.strokeStyle = `rgba(216,179,106,${0.18 * ease.outCubic(prog(lt, 2 + i * 0.1, 3.4 + i * 0.1))})`;
+      c.strokeStyle = `rgba(216,179,106,${0.14 * ease.outCubic(prog(lt, 2 + i * 0.1, 3.4 + i * 0.1)) * (1 - zk)})`;
       c.lineWidth = 1.2 / z;
       c.stroke();
     }
-    maltaPath(c, MAP_BOX, 1);
-    c.strokeStyle = C.gold;
-    c.lineWidth = 3.2 / z;
-    c.setLineDash([4000, 4000]);
-    c.lineDashOffset = 4000 * (1 - ease.inOutCubic(prog(lt, 0.4, 2.6)));
-    c.stroke();
-    c.setLineDash([]);
+    c.restore();
+    if (lt < 3.2) {
+      maltaPath(c, MAP_BOX, 1);
+      c.strokeStyle = C.gold;
+      c.lineWidth = 3.2 / z;
+      c.setLineDash([4000, 4000]);
+      c.lineDashOffset = 4000 * (1 - ease.inOutCubic(prog(lt, 0.4, 2.6)));
+      c.stroke();
+      c.setLineDash([]);
+    }
     // Ottoman landing arrows
-    const mx = MAPS.project(...PLACES.marsaxlokk, MAP_BOX);
+    const mx = MAPS.place('marsaxlokk', MAP_BOX);
     const la = ease.outCubic(prog(lt, 1.5, 3.0));
     if (la > 0) {
       for (let i = 0; i < 4; i++) {
@@ -191,8 +191,8 @@ SCENES.push({
     }
     // fort markers
     const kz = ease.outBack(prog(lt, 4.8, 5.8));
-    [PLACES.elmo, PLACES.birgu, PLACES.senglea].forEach((p, i) => {
-      const [px, py] = MAPS.project(...p, MAP_BOX);
+    ['stElmo', 'birgu', 'senglea'].forEach((p, i) => {
+      const [px, py] = MAPS.hplace(p, MAP_BOX);
       c.save();
       c.translate(px, py);
       c.scale(kz / z * 1.2, kz / z * 1.2);
@@ -212,7 +212,7 @@ SCENES.push({
     c.restore();
     // labels (screen space)
     const lab = (p, str, dx, dy, a, al = 'left') => {
-      const sp = toScr(MAPS.project(...p, MAP_BOX));
+      const sp = toScr(p);
       if (a <= 0) return;
       c.save();
       c.strokeStyle = C.gold;
@@ -227,12 +227,12 @@ SCENES.push({
         size: 28, spacing: 4, color: C.goldLight, align: al, alpha: a, shadow: '#000', shadowBlur: 10,
       });
     };
-    lab(PLACES.marsaxlokk, 'MARSAXLOKK', -90, 70, ease.outCubic(prog(lt, 2.6, 3.4)) * (1 - zk), 'right');
-    lab(PLACES.mdina, 'MDINA', -50, -60, ease.outCubic(prog(lt, 2.8, 3.6)) * (1 - zk), 'right');
+    lab(MAPS.place('marsaxlokk', MAP_BOX), 'MARSAXLOKK', -90, 70, ease.outCubic(prog(lt, 2.6, 3.4)) * (1 - zk), 'right');
+    lab(MAPS.place('mdina', MAP_BOX), 'MDINA', -50, -60, ease.outCubic(prog(lt, 2.8, 3.6)) * (1 - zk), 'right');
     const la2 = ease.outCubic(prog(lt, 5.4, 6.2));
-    lab(PLACES.elmo, 'FORT ST ELMO', 70, -80, la2);
-    lab(PLACES.birgu, 'BIRGU', 120, 10, la2);
-    lab(PLACES.senglea, 'SENGLEA', -60, 120, la2, 'right');
+    lab(MAPS.hplace('stElmo', MAP_BOX), 'FORT ST ELMO', 90, -80, la2);
+    lab(MAPS.hplace('birgu', MAP_BOX), 'BIRGU', 130, 30, la2);
+    lab(MAPS.hplace('senglea', MAP_BOX), 'SENGLEA', -90, 110, la2, 'right');
     // left panel
     c.save();
     const pg = c.createLinearGradient(0, 0, 820, 0);

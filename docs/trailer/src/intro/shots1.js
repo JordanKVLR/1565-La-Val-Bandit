@@ -106,7 +106,7 @@ SCENES.push({
 /* ====================================================================
    2. A ROCK IN THE SEA   13.2 .. 29.88
    ==================================================================== */
-const IMAP = { x: 940, y: 110, w: 900, h: 860 };
+const IMAP = { x: 880, y: 90, w: 960, view: [20, 20, 735, 680] };
 SCENES.push({
   name: 'rock',
   a: 13.2,
@@ -120,65 +120,92 @@ SCENES.push({
     gl.addColorStop(1, 'rgba(90,40,20,0)');
     c.fillStyle = gl;
     c.fillRect(0, 0, W, H);
+    // camera: the whole archipelago, then a push into the Grand Harbour as the forts rise
+    const zk = ease.inOutCubic(prog(lt, 9.6, 12.2));
+    const z = lerp(1, 7, zk);
+    const hp = MAPS.place('harbour', IMAP);
+    const T = { x: 1340, y: 560 };
+    const tx = (T.x - hp[0] * z) * zk;
+    const ty = (T.y - hp[1] * z) * zk;
+    const toScr = (p) => [p[0] * z + tx, p[1] * z + ty];
+    c.save();
+    c.translate(tx, ty);
+    c.scale(z, z);
     // sea contours
     for (let i = 0; i < 10; i++) {
       const s = 1.05 + i * 0.05 + Math.sin(lt * 0.8 + i) * 0.004;
       maltaPath(c, IMAP, s);
-      c.strokeStyle = `rgba(216,179,106,${0.18 * (1 - i / 11) * ease.outCubic(prog(lt, 3.5, 6))})`;
-      c.lineWidth = 1.3;
+      c.strokeStyle = `rgba(216,179,106,${0.18 * (1 - i / 11) * ease.outCubic(prog(lt, 3.5, 6)) * (1 - zk * 0.7)})`;
+      c.lineWidth = 1.3 / z;
       c.stroke();
     }
-    // the island rises from the sea
+    // the islands rise from the sea
     const rise = ease.outCubic(prog(lt, 3.8, 7.5));
     c.save();
     c.globalAlpha *= rise;
-    c.translate(0, (1 - rise) * 40);
+    c.translate(0, ((1 - rise) * 40) / z);
+    drawMalta(c, IMAP, { land: '#4a3726', sea: '#110b09', coast: C.gold, coastW: 3, z });
+    c.save();
     maltaPath(c, IMAP, 1);
-    c.fillStyle = '#35271b';
-    c.fill();
+    c.clip();
     for (let i = 1; i < 7; i++) {
       maltaPath(c, IMAP, 1 - i * 0.075);
-      c.strokeStyle = 'rgba(216,179,106,0.2)';
-      c.lineWidth = 1.2;
+      c.strokeStyle = `rgba(216,179,106,${0.18 * (1 - zk)})`;
+      c.lineWidth = 1.2 / z;
       c.stroke();
     }
-    maltaPath(c, IMAP, 1);
-    c.strokeStyle = C.gold;
-    c.lineWidth = 3;
-    c.stroke();
     c.restore();
-    // harbour forts appear
+    c.restore();
+    // harbour forts appear on the real peninsulas
     const forts = [
-      [[14.5185, 35.8975], 'ST ELMO'],
-      [[14.5235, 35.8875], 'BIRGU'],
-      [[14.5165, 35.8845], 'SENGLEA'],
+      ['stElmo', 'FORT ST ELMO', [150, -120, 'left']],
+      ['stAngelo', 'FORT ST ANGELO', [170, -40, 'left']],
+      ['birgu', 'BIRGU', [190, 60, 'left']],
+      ['senglea', 'SENGLEA', [70, 190, 'left']],
     ];
-    forts.forEach(([p, name], i) => {
-      const k = ease.outBack(prog(lt, 9 + i * 0.6, 10 + i * 0.6));
+    const fpts = forts.map(([p]) => MAPS.hplace(p, IMAP));
+    forts.forEach(([, , ], i) => {
+      const k = ease.outBack(prog(lt, 11.4 + i * 0.45, 12.2 + i * 0.45));
       if (k <= 0) return;
-      const [px, py] = MAPS.project(p[0], p[1], IMAP);
+      const [px, py] = fpts[i];
       c.save();
       c.translate(px, py);
-      c.scale(k, k);
+      c.scale(k / z, k / z);
       c.rotate(Math.PI / 4);
       c.fillStyle = C.ink;
-      c.fillRect(-9, -9, 18, 18);
+      c.fillRect(-11, -11, 22, 22);
       c.strokeStyle = C.gold;
       c.lineWidth = 3;
-      c.strokeRect(-9, -9, 18, 18);
+      c.strokeRect(-11, -11, 22, 22);
       c.restore();
-      if (k > 0.5) {
-        const off = [[90, -70, 'left'], [110, 4, 'left'], [-90, 74, 'right']][i];
-        c.strokeStyle = C.gold;
-        c.lineWidth = 1.5;
-        c.globalAlpha *= prog(lt, 9.4 + i * 0.6, 10.4 + i * 0.6);
-        c.beginPath();
-        c.moveTo(px, py);
-        c.lineTo(px + off[0], py + off[1]);
-        c.stroke();
-        text(c, name, px + off[0] + (off[2] === 'left' ? 10 : -10), py + off[1] + 8, { size: 24, spacing: 6, color: C.goldLight, align: off[2] });
-      }
     });
+    c.restore();
+    // island names at the wide view
+    const iw = ease.outCubic(prog(lt, 6.0, 7.2)) * (1 - zk);
+    if (iw > 0) {
+      [['GOZO', [165, 120]], ['COMINO', [372, 196]], ['MALTA', [520, 470]]].forEach(([n, p]) => {
+        const [x, y] = MAPS.px(p[0], p[1], IMAP);
+        text(c, n, x, y, { size: n === 'MALTA' ? 34 : 24, spacing: 12, color: C.goldLight, alpha: iw * 0.85, shadow: '#000', shadowBlur: 10 });
+      });
+    }
+    // fort labels (screen space)
+    forts.forEach(([, name, off], i) => {
+      const a = prog(lt, 11.7 + i * 0.45, 12.6 + i * 0.45);
+      if (a <= 0) return;
+      const [sx, sy] = toScr(fpts[i]);
+      c.save();
+      c.globalAlpha *= a;
+      c.strokeStyle = C.gold;
+      c.lineWidth = 1.5;
+      c.beginPath();
+      c.moveTo(sx, sy);
+      c.lineTo(sx + off[0], sy + off[1]);
+      c.stroke();
+      c.restore();
+      text(c, name, sx + off[0] + (off[2] === 'left' ? 10 : -10), sy + off[1] + 8, { size: 26, spacing: 6, color: C.goldLight, align: off[2], alpha: a, shadow: '#000', shadowBlur: 10 });
+    });
+    text(c, 'THE GRAND HARBOUR', 1500, 930, { size: 30, spacing: 12, color: C.gold, alpha: prog(lt, 11.0, 12.0), shadow: '#000' });
+    text(c, 'fortified by the Knights, 1530–1565', 1500, 976, { font: F.body, size: 34, weight: 'italic 500', color: C.parch, alpha: prog(lt, 11.5, 12.5), shadow: '#000' });
     // falcon crossing the sky
     const fk = prog(lt, 0.2, 9.5);
     if (fk > 0 && fk < 1) {
@@ -196,7 +223,7 @@ SCENES.push({
     L('one falcon a year.', 710, 9.8, 16.4, 66);
     // falcon icon next to rent
     const ik = ease.outCubic(prog(lt, 11.5, 12.6));
-    if (ik > 0) falcon(c, 590 + Math.sin(lt * 0.9) * 8, 690 - 6 * Math.sin(lt * 1.4), 1.1, lt * 0.5, C.goldLight);
+    if (ik > 0) falcon(c, 640 + Math.sin(lt * 0.9) * 8, 690 - 6 * Math.sin(lt * 1.4), 1.1, lt * 0.5, C.goldLight);
     sceneFade(c, lt, 0.01);
   },
 });
