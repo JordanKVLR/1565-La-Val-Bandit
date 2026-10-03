@@ -19,6 +19,7 @@ import {
   activeUnit,
   applyCommand,
   attackInRange,
+  attackRange,
   reactionChoices,
   attackBackOptions,
   chooseReaction,
@@ -69,6 +70,9 @@ export interface CloseUpSide {
 export interface CloseUpStrike {
   readonly result: StrikeResult;
   readonly style: AttackStyle;
+  /** Power and reach of the technique, so the duel can animate it to match. */
+  readonly power: number;
+  readonly reach: number;
   readonly bark: string;
   readonly reply: string;
   /** Set when this strike levelled the striker up. */
@@ -799,9 +803,25 @@ export class BattleController {
     // Player units sit on the left, as in a duel viewed from the defenders' side.
     const [left, right] = a.side === 'player' ? [a, d] : [d, a];
     const repelled = ev.counter?.success === true;
+    const used = (unit: UnitState, attack: Attack | undefined) => ({
+      power: attack?.power ?? 1,
+      reach: attack ? attackRange(attack, unit.weapon).max : 1,
+    });
+    const main = used(
+      a,
+      a.attacks.find((x) => x.id === ev.attackId),
+    );
+    // A reflected Counter replays the attacker's own blow; a strike back uses the chosen technique.
+    const backMove = repelled
+      ? main
+      : used(
+          d,
+          d.attacks.find((x) => x.name === ev.retaliationName),
+        );
     const strikes: CloseUpStrike[] = ev.strikes.map((result, i) => ({
       result,
       style: ev.style,
+      ...main,
       bark: i === 0 ? pickLine(this.barks(a).attack) : '',
       reply: repelled
         ? pickLine(this.barks(d).counter)
@@ -815,6 +835,7 @@ export class BattleController {
         strikes.push({
           result: r,
           style: ev.retaliationStyle ?? 'slash',
+          ...backMove,
           bark: repelled || i > 0 ? '' : pickLine(this.barks(d).counter),
           reply: pickLine(
             r.defeated ? this.barks(a).defeated : r.hit ? this.barks(a).hurt : this.barks(a).avoid,
