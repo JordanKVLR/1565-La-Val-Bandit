@@ -77,22 +77,22 @@
       "level": 6,
       "frame": "cavaliere",
       "weapon": "arming-sword",
-      "at": [11, 5],
+      "at": [6, 5],
       "facing": "west",
       "name": "Relief Captain",
       "stats": {
         "pow": 7,
         "dex": 7,
         "agl": 5,
-        "def": 8,
-        "bas": 10
+        "def": 10,
+        "bas": 12
       }
     },
     {
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 5,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [6, 0],
@@ -100,7 +100,7 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 9,
+        "pow": 6,
         "dex": 8,
         "agl": 7
       }
@@ -109,7 +109,7 @@
       "id": "sipahi-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 5,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [9, 1],
@@ -117,7 +117,7 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 9,
+        "pow": 6,
         "dex": 8,
         "agl": 7
       }
@@ -126,7 +126,7 @@
       "id": "sipahi-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 5,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [7, 9],
@@ -134,7 +134,7 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 9,
+        "pow": 6,
         "dex": 8,
         "agl": 7
       }
@@ -151,7 +151,7 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 8,
+        "pow": 7,
         "dex": 10,
         "agl": 5
       }
@@ -168,7 +168,7 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 8,
+        "pow": 7,
         "dex": 9,
         "agl": 7
       }

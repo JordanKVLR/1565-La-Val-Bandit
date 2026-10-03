@@ -170,9 +170,15 @@ export class GameSession {
       state,
       this.state.veterans,
     );
-    // Scudi for every enemy brought down (more for veterans), plus a purse for the victory.
+    // Scudi: a purse for the victory, more for every enemy brought down (and for veterans), and
+    // a bonus if nobody on the player's side fell.
+    const b = this.lib.balance;
     const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
-    const reward = 50 + fallen.reduce((n, u) => n + 20 + 5 * u.level, 0);
+    const noLosses = !state.units.some((u) => u.side === 'player' && u.defeated);
+    const reward =
+      b.rewardVictory +
+      fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
+      (noLosses ? b.rewardNoLosses : 0);
     const firstWin = !this.state.completedBattles.includes(screen.battleId);
     const completedBattles = firstWin
       ? [...this.state.completedBattles, screen.battleId]
@@ -245,6 +251,32 @@ export class GameSession {
   private applyHoldings(h: Holdings): void {
     this.patch({ roster: h.roster, stores: h.stores, scudi: h.scudi });
     this.autosave();
+  }
+
+  /**
+   * `?armoury` (testing and design): a small company part-way through Act I, standing in the
+   * Armoury with a purse to spend.
+   */
+  openArmouryDemo(): void {
+    const roster = [
+      { ...newRosterEntry(this.lib, 'ninu'), level: 6, statPoints: 2 },
+      { ...newRosterEntry(this.lib, 'kateri'), level: 5 },
+      { ...newRosterEntry(this.lib, 'luis'), level: 6 },
+      { ...newRosterEntry(this.lib, 'deniz'), level: 5 },
+    ];
+    this.patch({
+      roster,
+      scudi: 1500,
+      stores: { 'weapon:pike': 1, 'charm:charm-pow-1': 1, 'frame:moschetta': 1, 'frame:levend': 1 },
+      completedBattles: [
+        'b1-marsaxlokk',
+        'b2-marsa-wells',
+        'b3-sciberras',
+        'b4-night-crossing',
+        'b5-tigne',
+      ],
+    });
+    this.show({ kind: 'prep' });
   }
 
   /** Keeps a mid-battle snapshot so Continue resumes exactly where the player left off. */

@@ -25,7 +25,7 @@ export interface Attack {
   readonly maxRange?: number;
   /** Number of separate strikes (each rolls to hit). */
   readonly hits?: number;
-  /** Fraction (0–1) of the target's armour ignored. */
+  /** Fraction (0–1) of the target's DEF ignored. */
   readonly pierce?: number;
   /** Fatigue added to the target on each hit. */
   readonly fatigue?: number;
@@ -53,13 +53,35 @@ function starters(weapon: Weapon): Starter[] {
   switch (weapon.type) {
     case 'blade':
       return [
-        { id: BASIC_ATTACK_ID, name: 'Slash', style: 'slash', power: 0.8, ...melee },
-        { id: 'thrust', name: 'Thrust', style: 'thrust', power: 1, ...melee },
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Slash',
+          style: 'slash',
+          power: 0.8,
+          ...melee,
+          description:
+            'A quick diagonal cut. Lighter than a thrust but hard to dodge: cheap and accurate.',
+        },
+        {
+          id: 'thrust',
+          name: 'Thrust',
+          style: 'thrust',
+          power: 1,
+          ...melee,
+          description: 'A lunge with the point. Full weight behind it, at normal accuracy.',
+        },
       ];
     case 'polearm':
       // Polearms can't slash; Long Thrust uses their reach instead.
       return [
-        { id: BASIC_ATTACK_ID, name: 'Thrust', style: 'thrust', power: 1, ...melee },
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Thrust',
+          style: 'thrust',
+          power: 1,
+          ...melee,
+          description: 'Both hands drive the spear home at an adjacent foe.',
+        },
         {
           id: 'long-thrust',
           name: 'Long Thrust',
@@ -69,23 +91,70 @@ function starters(weapon: Weapon): Starter[] {
           apCost: 35,
           minRange: 1,
           maxRange: 2,
+          description:
+            'A deep lunge that reaches an enemy two tiles away. The reach costs accuracy.',
         },
       ];
     case 'blunt':
       return [
-        { id: BASIC_ATTACK_ID, name: 'Bash', style: 'bash', power: 0.8, ...melee },
-        { id: 'smash', name: 'Smash', style: 'overhead', power: 1, ...melee },
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Bash',
+          style: 'bash',
+          power: 0.8,
+          ...melee,
+          description: 'A punch with the shield rim: light, quick and accurate.',
+        },
+        {
+          id: 'smash',
+          name: 'Smash',
+          style: 'overhead',
+          power: 1,
+          ...melee,
+          description: 'The mace comes down overhead with full force.',
+        },
       ];
     case 'firearm':
       // Range is the gunner's advantage; up close they can only club with the stock.
       return [
-        { id: BASIC_ATTACK_ID, name: 'Fire', style: 'shot', power: 1, apCost: weapon.apCost },
-        { id: 'stock-strike', name: 'Stock Strike', style: 'bash', power: 0.5, ...melee },
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Fire',
+          style: 'shot',
+          power: 1,
+          apCost: weapon.apCost,
+          description:
+            'Aim and fire at range. Reloading and the smoke make every shot tiring (extra FP).',
+        },
+        // Swung like a club, the butt hits about as hard as a sword's slash.
+        {
+          id: 'stock-strike',
+          name: 'Stock Strike',
+          style: 'bash',
+          power: 0.8,
+          ...melee,
+          description:
+            'Reverse the gun and club an adjacent foe with the butt, hard as a sword cut.',
+        },
       ];
     case 'explosive':
       return [
-        { id: BASIC_ATTACK_ID, name: 'Throw', style: 'throw', power: 1, apCost: weapon.apCost },
-        { id: 'shove', name: 'Shove', style: 'bash', power: 0.5, ...melee },
+        {
+          id: BASIC_ATTACK_ID,
+          name: 'Throw',
+          style: 'throw',
+          power: 1,
+          apCost: weapon.apCost,
+          description: 'Light the fuse and lob a grenade over the line. Tiring (extra FP).',
+        },
+        {
+          id: 'shove',
+          name: 'Shove',
+          style: 'bash',
+          power: 0.5,
+          ...melee,
+          description: 'A desperate push to make room. Weak, but better than nothing up close.',
+        },
       ];
   }
 }
@@ -93,7 +162,7 @@ function starters(weapon: Weapon): Starter[] {
 /** The two attacks every pilot has from the start with this weapon (no requirements). */
 export function starterAttacks(weapon: Weapon): Attack[] {
   return starters(weapon).map((a) => ({
-    ...techniqueCost(a.power, a.hits ?? 1, DEFAULT_BALANCE),
+    ...techniqueCost(a.power, a.hits ?? 1, DEFAULT_BALANCE, a.style),
     ...a,
     requires: {},
   }));

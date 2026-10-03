@@ -2,7 +2,7 @@ import type { BattleState, UnitState } from '@m1565/core';
 import { attackFpCost, attackRange, unlockedAttacks } from '@m1565/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { UnitViewer } from '../../render/UnitViewer';
-import { attackStats, attackTags } from './attackText';
+import { TechniqueCard } from './TechniqueCard';
 import type { CostPreview } from './StatBars';
 import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
@@ -159,8 +159,8 @@ export function UnitDetails({
                 <dd>{unit.level}</dd>
                 <dt>Exp. To Next</dt>
                 <dd>{unit.side === 'player' ? state.balance.xpPerLevel - unit.xp : '---'}</dd>
-                <dt>Armour</dt>
-                <dd>{unit.arm}</dd>
+                <dt>Blocks</dt>
+                <dd>{Math.round(unit.def * state.balance.defDamagePerPoint)} dmg</dd>
                 <dt>Move</dt>
                 <dd>{unit.mov}</dd>
                 <dt>Range</dt>
@@ -171,19 +171,16 @@ export function UnitDetails({
             <div class="ud-techniques">
               <h2 class="vb-name vbd-name">{unit.name}: Techniques</h2>
               {unit.side === 'player' ? (
-                <ul>
+                <div class="tech-list">
                   {techniques.map((a) => (
-                    <li key={a.id}>
-                      <b>{a.name}</b>{' '}
-                      <small>
-                        {[
-                          attackStats(a, unit.weapon, attackFpCost(state, unit, a)),
-                          ...attackTags(a),
-                        ].join(' · ')}
-                      </small>
-                    </li>
+                    <TechniqueCard
+                      key={a.id}
+                      attack={a}
+                      weapon={unit.weapon}
+                      fpCost={attackFpCost(state, unit, a)}
+                    />
                   ))}
-                </ul>
+                </div>
               ) : (
                 <p>An enemy's techniques are only revealed in battle.</p>
               )}

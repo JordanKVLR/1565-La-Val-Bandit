@@ -32,7 +32,7 @@ export interface BalanceConfig {
   readonly aglEvadeFactor: number;
   /** Raw damage = (POW + WEP) × this × attack power × situational multipliers. */
   readonly damagePerPoint: number;
-  /** Damage blocked per point of DEF (on top of the armatura's armour). */
+  /** Damage blocked per point of DEF (armaturas have no armour of their own). */
   readonly defDamagePerPoint: number;
   readonly heightHitPerStep: number;
   readonly heightDamagePerStep: number;
@@ -80,6 +80,15 @@ export interface BalanceConfig {
   readonly techApMin: number;
   readonly techFpBase: number;
   readonly techFpPerPower: number;
+  /** Extra FP for ranged attacks (shots, volleys, throws): the price of reach. */
+  readonly rangedFpSurcharge: number;
+  /** Scudi for a victory: a purse, plus per enemy defeated (more for veterans), plus a bonus if no one on your side fell. */
+  readonly rewardVictory: number;
+  readonly rewardPerEnemy: number;
+  readonly rewardPerEnemyLevel: number;
+  readonly rewardNoLosses: number;
+  /** The Armoury asks for a second tap before spending more than this share of the purse. */
+  readonly armouryConfirmFraction: number;
   readonly techFpMin: number;
   readonly techAccPerPower: number;
   readonly techAccMax: number;
@@ -142,7 +151,13 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   techApPerPower: 50,
   techApMin: 20,
   techFpBase: 5,
-  techFpPerPower: 15,
+  techFpPerPower: 45,
+  rangedFpSurcharge: 20,
+  rewardVictory: 150,
+  rewardPerEnemy: 60,
+  rewardPerEnemyLevel: 15,
+  rewardNoLosses: 100,
+  armouryConfirmFraction: 0.5,
   techFpMin: 5,
   techAccPerPower: 60,
   techAccMax: 20,
@@ -154,17 +169,25 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   counterFailMult: 1.25,
 };
 
-/** AP, FP and accuracy a technique of this total power costs under the shared formula. */
+/** Attack styles that strike from range (guns and grenades): they pay extra FP. */
+export const RANGED_STYLES: ReadonlySet<string> = new Set(['shot', 'volley', 'throw']);
+
+/**
+ * AP, FP and accuracy a technique of this total power costs under the shared formula. Ranged
+ * styles also pay `rangedFpSurcharge` FP.
+ */
 export function techniqueCost(
   power: number,
   hits: number,
   b: BalanceConfig,
+  style?: string,
 ): { apCost: number; fpCost: number; accuracy: number } {
   const p = power * hits - 1;
   const round5 = (v: number) => Math.round(v / 5) * 5;
+  const ranged = style !== undefined && RANGED_STYLES.has(style) ? b.rangedFpSurcharge : 0;
   return {
     apCost: Math.max(b.techApMin, round5(b.techApBase + b.techApPerPower * p)),
-    fpCost: Math.max(b.techFpMin, Math.round(b.techFpBase + b.techFpPerPower * p)),
+    fpCost: Math.max(b.techFpMin, Math.round(b.techFpBase + b.techFpPerPower * p)) + ranged,
     accuracy: Math.min(b.techAccMax, Math.round(-b.techAccPerPower * p)) || 0,
   };
 }

@@ -5,12 +5,16 @@
     "faction": "order",
     "class": "medium",
     "hp": 65,
-    "armour": 10,
     "move": 4,
     "bonus": {
-      "def": 1
+      "bas": 3,
+      "def": 4,
+      "wep": 3,
+      "agl": 1,
+      "dex": 1
     },
-    "model": "knight"
+    "model": "knight",
+    "description": "The standard knightly armatura of the Order, balanced in armour and mobility. Its sturdy plates give a small boost to defence."
   },
   {
     "id": "bastiun",
@@ -18,13 +22,15 @@
     "faction": "order",
     "class": "heavy",
     "hp": 75,
-    "armour": 15,
     "move": 3,
     "bonus": {
-      "def": 3,
+      "bas": 5,
+      "def": 7,
+      "wep": 3,
       "agl": -3
     },
-    "model": "knight"
+    "model": "knight",
+    "description": "A massive armatura built to hold the bastions, slow but hard to break. Its heavy plates add defence at the cost of agility."
   },
   {
     "id": "lanza",
@@ -32,12 +38,16 @@
     "faction": "order",
     "class": "medium",
     "hp": 60,
-    "armour": 9,
     "move": 4,
     "bonus": {
-      "wep": 1
+      "bas": 3,
+      "def": 3,
+      "wep": 4,
+      "agl": 1,
+      "dex": 1
     },
-    "model": "knight"
+    "model": "knight",
+    "description": "A knight's armatura built around the weapon, its arms reinforced for heavy strikes. Adds weapon skill."
   },
   {
     "id": "kaptan",
@@ -45,14 +55,17 @@
     "faction": "order",
     "class": "medium",
     "hp": 63,
-    "armour": 10,
     "move": 4,
     "bonus": {
+      "bas": 3,
+      "def": 3,
+      "wep": 3,
       "pow": 1,
       "dex": 1,
       "agl": 1
     },
-    "model": "knight"
+    "model": "knight",
+    "description": "A commander's armatura with refined mechanisms that improve power, dexterity and agility in equal measure."
   },
   {
     "id": "haddiem",
@@ -60,13 +73,16 @@
     "faction": "militia",
     "class": "light",
     "hp": 53,
-    "armour": 6,
     "move": 5,
     "bonus": {
-      "bas": 1,
-      "agl": 2
+      "bas": 2,
+      "def": 1,
+      "wep": 2,
+      "agl": 3,
+      "dex": 2
     },
-    "model": "militia"
+    "model": "militia",
+    "description": "A light militia armatura made in Maltese workshops, quick on its feet and resistant to strain."
   },
   {
     "id": "moschetta",
@@ -74,13 +90,16 @@
     "faction": "militia",
     "class": "light",
     "hp": 48,
-    "armour": 5,
     "move": 4,
     "bonus": {
-      "dex": 1,
-      "agl": 2
+      "bas": 1,
+      "def": 1,
+      "wep": 2,
+      "agl": 2,
+      "dex": 4
     },
-    "model": "gunner"
+    "model": "gunner",
+    "description": "A light armatura for militia arquebusiers, built to steady the aim and move fast between positions."
   },
   {
     "id": "artigjan",
@@ -88,13 +107,16 @@
     "faction": "militia",
     "class": "light",
     "hp": 50,
-    "armour": 6,
     "move": 4,
     "bonus": {
-      "def": 1,
-      "agl": 1
+      "bas": 3,
+      "def": 2,
+      "wep": 2,
+      "agl": 2,
+      "dex": 1
     },
-    "model": "militia"
+    "model": "militia",
+    "description": "A light militia harness reinforced by Maltese craftsmen, sturdy and nimble for its class."
   },
   {
     "id": "yeniceri",
@@ -102,14 +124,16 @@
     "faction": "ottoman",
     "class": "medium",
     "hp": 63,
-    "armour": 9,
     "move": 4,
     "bonus": {
-      "dex": 1,
-      "wep": 1,
+      "bas": 3,
+      "def": 3,
+      "wep": 3,
+      "dex": 2,
       "agl": 1
     },
-    "model": "janissary"
+    "model": "janissary",
+    "description": "The janissary armatura, disciplined and versatile, improving aim, weapon skill and agility."
   },
   {
     "id": "sipahi",
@@ -117,13 +141,16 @@
     "faction": "ottoman",
     "class": "light",
     "hp": 54,
-    "armour": 7,
     "move": 6,
     "bonus": {
-      "wep": 1,
-      "agl": 3
+      "bas": 1,
+      "def": 1,
+      "wep": 3,
+      "agl": 4,
+      "dex": 1
     },
-    "model": "sipahi"
+    "model": "sipahi",
+    "description": "A swift cavalry armatura of the Ottoman provinces, the fastest on the field."
   },
   {
     "id": "humbaraci",
@@ -131,13 +158,17 @@
     "faction": "ottoman",
     "class": "medium",
     "hp": 57,
-    "armour": 8,
     "move": 3,
     "bonus": {
-      "pow": 1,
+      "bas": 3,
+      "def": 3,
+      "wep": 3,
+      "pow": 2,
+      "dex": 2,
       "agl": -1
     },
-    "model": "janissary"
+    "model": "janissary",
+    "description": "A heavy-set armatura for the bombardiers, slow but strong enough to hurl bombs far."
   },
   {
     "id": "levend",
@@ -145,13 +176,16 @@
     "faction": "corsair",
     "class": "light",
     "hp": 51,
-    "armour": 5,
     "move": 5,
     "bonus": {
-      "dex": 1,
-      "agl": 4
+      "bas": 1,
+      "def": 1,
+      "wep": 2,
+      "agl": 4,
+      "dex": 2
     },
-    "model": "corsair"
+    "model": "corsair",
+    "description": "The light armatura of the Barbary corsairs, extremely agile and suited to boarding fights."
   },
   {
     "id": "reis",
@@ -159,13 +193,16 @@
     "faction": "corsair",
     "class": "medium",
     "hp": 62,
-    "armour": 8,
     "move": 4,
     "bonus": {
+      "bas": 3,
+      "def": 2,
+      "wep": 3,
       "pow": 1,
-      "agl": 2
+      "agl": 3
     },
-    "model": "corsair"
+    "model": "corsair",
+    "description": "A corsair captain's armatura, strong and quick, built for leading boarding parties."
   },
   {
     "id": "prototipo",
@@ -173,12 +210,16 @@
     "faction": "scala",
     "class": "medium",
     "hp": 75,
-    "armour": 11,
     "move": 4,
     "bonus": {
-      "pow": 2
+      "bas": 4,
+      "def": 4,
+      "wep": 4,
+      "pow": 2,
+      "agl": -1
     },
-    "model": "machine"
+    "model": "machine",
+    "description": "Scala's experimental armatura, a steam-driven machine of unusual power."
   },
   {
     "id": "barge",
@@ -186,12 +227,15 @@
     "faction": "militia",
     "class": "heavy",
     "hp": 53,
-    "armour": 6,
     "move": 1,
     "bonus": {
+      "bas": 4,
+      "def": 5,
+      "wep": 1,
       "agl": -4
     },
-    "model": "barge"
+    "model": "barge",
+    "description": "A supply barge armoured for the siege, barely mobile and vulnerable."
   },
   {
     "id": "siege-tower",
@@ -199,13 +243,15 @@
     "faction": "scala",
     "class": "heavy",
     "hp": 105,
-    "armour": 14,
     "move": 1,
     "bonus": {
-      "def": 2,
+      "bas": 6,
+      "def": 7,
+      "wep": 3,
       "agl": -6
     },
-    "model": "tower"
+    "model": "tower",
+    "description": "Scala's armoured siege tower, slow and immensely tough, bristling with guns."
   },
   {
     "id": "colossus",
@@ -213,13 +259,15 @@
     "faction": "scala",
     "class": "heavy",
     "hp": 113,
-    "armour": 13,
     "move": 3,
     "bonus": {
+      "bas": 6,
+      "def": 6,
+      "wep": 5,
       "pow": 2,
-      "def": 2,
-      "agl": -2
+      "agl": -3
     },
-    "model": "machine"
+    "model": "machine",
+    "description": "Scala's masterpiece, a towering steam giant of immense power and armour."
   }
 ]
