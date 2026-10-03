@@ -23,6 +23,39 @@ function cap(c, lt, a, b, lines, o = {}) {
     });
   });
 }
+/* arch portrait with name + title underneath. k: 0..1 entrance */
+function portraitCard(c, id, x, y, w, h, k, o = {}) {
+  if (k <= 0) return;
+  const { name = '', title = '', dir = 0, nameSize = Math.max(26, w * 0.085), shadow = 0 } = o;
+  const kk = ease.outCubic(clamp(k));
+  c.save();
+  c.globalAlpha *= kk;
+  c.translate(dir * (1 - kk) * 90, (1 - kk) * (dir ? 0 : 40));
+  archPortrait(c, id, x, y, w, h);
+  if (shadow > 0) {
+    // keep the face in darkness: only the hands and what they hold catch the light
+    c.save();
+    c.beginPath();
+    c.moveTo(x, y + h);
+    c.lineTo(x, y + w / 2);
+    c.arc(x + w / 2, y + w / 2, w / 2, Math.PI, 0);
+    c.lineTo(x + w, y + h);
+    c.closePath();
+    c.clip();
+    const cx = x + w / 2;
+    const cy = y + h * 0.72;
+    const g = c.createRadialGradient(cx, cy, w * 0.08, cx, cy, w * 0.55);
+    g.addColorStop(0, 'rgba(4,3,6,0)');
+    g.addColorStop(0.5, `rgba(4,3,6,${0.75 * shadow})`);
+    g.addColorStop(1, `rgba(4,3,6,${0.97 * shadow})`);
+    c.fillStyle = g;
+    c.fillRect(x, y, w, h);
+    c.restore();
+  }
+  if (name) text(c, name, x + w / 2, y + h + nameSize * 1.4, { size: nameSize, weight: 700, spacing: nameSize * 0.2, shadow: '#000', shadowBlur: 12 });
+  if (title) text(c, title.toUpperCase(), x + w / 2, y + h + nameSize * 1.4 + nameSize * 0.95, { size: nameSize * 0.6, spacing: nameSize * 0.22, color: C.goldLight, shadow: '#000', shadowBlur: 10 });
+  c.restore();
+}
 function sceneFade(c, lt, inDur = 1.2) {
   if (lt < inDur) {
     c.fillStyle = `rgba(0,0,0,${1 - lt / inDur})`;
@@ -309,6 +342,9 @@ SCENES.push({
       c.filter = 'none';
     }
     floorLine(c, x0, y0);
+    // the inventor
+    const sk = prog(lt, 0.6, 1.6) * (1 - prog(lt, 6.8, 7.5));
+    portraitCard(c, 'scala', 130, 120, 380, 500, sk, { name: 'VITTORIO SCALA', title: 'Genoese engineer', dir: -1, nameSize: 34 });
     capBack(c, ease.outCubic(prog(lt, 1, 2)), 300);
     cap(c, lt, 1.2, 5.8, ['In this history,', 'an inventor builds machines of war.'], { size: 60 });
     cap(c, lt, 6.6, 11.2, ['He sells them to both sides.'], { size: 66 });
@@ -446,8 +482,28 @@ SCENES.push({
       capBack(c, ease.outCubic(prog(lt, 1.5, 2.5)), 300);
       cap(c, lt, 2.0, 6.6, ['Suleiman the Magnificent', 'sends his fleet.'], { size: 62 });
       cap(c, lt, 7.2, 11.4, ['The greatest empire of its age', 'sets sail for a rock.'], { size: 58 });
-    } else {
+    } else if (lt < 17.2) {
+      // the Sultan's commanders
       const l2 = lt - 11.6;
+      gradSky(c, 0, H, [[0, '#03100f'], [0.6, '#0b2a2a'], [1, '#04100f']]);
+      const hz = 860;
+      c.fillStyle = '#020807';
+      c.fillRect(0, hz, W, H - hz);
+      waterLines(c, hz, lt, '120,220,220', 0.12, { n: 14 });
+      for (let i = 0; i < 26; i++) sailSmall(c, 60 + i * 72 + Math.sin(i * 3) * 20, hz + 6 + (i % 3) * 10, 1.2 + (i % 3) * 0.3, '#010605', 0.9);
+      const cards = [
+        ['mustafa', 'MUSTAFA PASHA', 'Commander of the army'],
+        ['piali', 'PIALI PASHA', 'Admiral of the fleet'],
+        ['turgut', 'TURGUT REIS', 'Admiral and corsair'],
+      ];
+      cards.forEach(([id, n, tt], i) => {
+        const k = prog(l2, 0.3 + i * BEAT * 2, 1.1 + i * BEAT * 2) * (1 - prog(l2, 5.0, 5.6));
+        portraitCard(c, id, 300 + i * 480, 110, 360, 470, k, { name: n, title: tt, nameSize: 32 });
+      });
+      capBack(c, ease.outCubic(prog(l2, 0.6, 1.4)) * (1 - prog(l2, 5.0, 5.6)), 280);
+      cap(c, l2, 0.8, 5.5, ['The Sultan’s commanders sail for Malta.'], { size: 58 });
+    } else {
+      const l2 = lt - 17.2;
       gradSky(c, 0, 780, [[0, '#0a1030'], [0.55, '#2c2850'], [1, '#6a4a66']]);
       const rs = rng(21);
       for (let i = 0; i < 120; i++) {
@@ -516,12 +572,15 @@ SCENES.push({
       c.save();
       c.globalAlpha *= pk;
       c.translate((1 - pk) * -120, 0);
-      archPortrait(c, 'valette', 150, 120, 440, 600);
+      archPortrait(c, 'valette', 150, 80, 440, 560);
       c.restore();
-      text(c, 'JEAN DE VALETTE', 370, 790, { size: 38, weight: 700, spacing: 8, alpha: pk, shadow: '#000' });
-      text(c, 'GRAND MASTER OF THE ORDER', 370, 836, { size: 22, spacing: 8, color: C.goldLight, alpha: pk, shadow: '#000' });
-      cap(c, l2, 2.2, 7.2, ['A Grand Master of seventy', 'sends for every man', 'who can hold a pike.'], { size: 56, x: 880, y: 330, align: 'center', lh: 70 });
-      cap(c, l2, 7.8, 13.4, ['The bells of Malta begin to ring.'], { size: 56, x: 880, y: 330, align: 'center' });
+      text(c, 'JEAN DE VALETTE', 370, 702, { size: 38, weight: 700, spacing: 8, alpha: pk, shadow: '#000' });
+      text(c, 'GRAND MASTER OF THE ORDER', 370, 746, { size: 22, spacing: 8, color: C.goldLight, alpha: pk, shadow: '#000' });
+      capBack(c, ease.outCubic(prog(l2, 0.4, 1.2)), 300);
+      cap(c, l2, 0.8, 4.4, ['A Grand Master of seventy sends for', 'every man who can hold a pike.'], { size: 54, lh: 68 });
+      // Fra Luis joins him
+      portraitCard(c, 'luis', 690, 290, 300, 380, prog(l2, 3.6, 4.6), { name: 'FRA LUIS', title: 'Knight of Aragon', dir: 1, nameSize: 28 });
+      cap(c, l2, 4.5, 8.1, ['Among his knights, one with orders', 'he cannot speak.'], { size: 54, lh: 68 });
     }
   },
 });
@@ -532,7 +591,6 @@ SCENES.push({
 const PEOPLE = [
   { id: 'pawlu', name: 'PAWLU', title: 'FARMER', line: ['A farmer', 'who remembers the galleys.'], bg: 'field' },
   { id: 'kateri', name: 'KATERI', title: 'MECHANIC', line: ['A clockmaker’s daughter', 'who keeps the machines alive.'], bg: 'forge' },
-  { id: 'luis', name: 'FRA LUIS', title: 'KNIGHT OF ARAGON', line: ['A knight', 'with orders he cannot speak.'], bg: 'bastion' },
   { id: 'ninu', name: 'NINU', title: 'MILITIAMAN OF ŻEJTUN', line: ['A boy', 'who wants to prove himself.'], bg: 'hill' },
 ];
 function bgField(c, t, lt) {
@@ -617,7 +675,27 @@ SCENES.push({
   b: 85.8,
   tin: { type: 'wipe', dur: 1.0, angle: 0.25 },
   draw(c, t, lt, d) {
-    const per = d / PEOPLE.length;
+    const ENS = 12.9; // after three portraits, the militia together
+    if (lt >= ENS) {
+      const l = lt - ENS;
+      bgBastion(c, t, l);
+      c.fillStyle = 'rgba(5,3,3,0.5)';
+      c.fillRect(0, 0, W, H);
+      const crew = [
+        ['ganni', 'ĠANNI', 'Militiaman'],
+        ['rozi', 'ROŻI', 'Arquebusier'],
+        ['balbi', 'BALBI', 'Chronicler'],
+        ['anastagi', 'ANASTAGI', 'Mdina cavalry'],
+      ];
+      crew.forEach(([id, n, tt], i) => {
+        portraitCard(c, id, 150 + i * 420, 150, 360, 470, prog(l, 0.1 + i * BEAT, 0.9 + i * BEAT), { name: n, title: tt, nameSize: 30 });
+      });
+      capBack(c, ease.outCubic(prog(l, 0.6, 1.4)), 260);
+      cap(c, l, 1.2, 6.1, ['Militiamen, chroniclers and the cavalry of Mdina.'], { size: 54 });
+      embers(c, lt, 30, 51, { speed: 20, alpha: 0.4 });
+      return;
+    }
+    const per = ENS / PEOPLE.length;
     const idx = Math.min(PEOPLE.length - 1, Math.floor(lt / per));
     const l = lt - idx * per;
     const p = PEOPLE[idx];
@@ -716,6 +794,8 @@ SCENES.push({
     }
     rain(c, lt, { n: 260, alpha: 0.4, angle: 0.18, len: 40 });
     text(c, '1542', 130, 190, { size: 120, weight: 700, spacing: 30, color: C.gold, align: 'left', alpha: ease.outCubic(prog(lt, 0.6, 2)) * (1 - prog(lt, 5.4, 6.4)), shadow: '#000' });
+    // a woman we do not see: only her hands and what they hold
+    portraitCard(c, 'leyla', 1380, 130, 360, 470, prog(lt, 7.0, 8.2), { shadow: 1 });
     capBack(c, ease.outCubic(prog(lt, 6.4, 7.4)), 300);
     cap(c, lt, 6.8, 10.6, ['Some secrets are older', 'than the siege.'], { size: 66 });
   },

@@ -96,6 +96,14 @@ SCENES.push({
       embers(c, lt, 36, 61, { speed: 40, alpha: 0.7 });
       text(c, 'MALTESE FORTS', 380, 120, { size: 26, spacing: 12, color: '#9fb6e8', alpha: ease.outCubic(prog(lt, 1, 2)) * 0.9 });
       text(c, 'OTTOMAN CAMP', 1540, 120, { size: 26, spacing: 12, color: '#82e2e8', alpha: ease.outCubic(prog(lt, 1, 2)) * 0.9 });
+      // the soldiers of each side, then the faces the story follows
+      const a1 = prog(lt, 1.4, 2.3) * (1 - prog(lt, 7.0, 7.6));
+      portraitCard(c, 'soldier', 330, 150, 380, 500, a1, { name: 'A SOLDIER OF THE ORDER', nameSize: 28, dir: -1 });
+      portraitCard(c, 'janissary', 1210, 150, 380, 500, a1, { name: 'A JANISSARY', nameSize: 28, dir: 1 });
+      const a2 = prog(lt, 7.8, 8.8);
+      portraitCard(c, 'ninu', 330, 150, 380, 500, a2, { name: 'NINU', title: 'Militiaman of Żejtun', nameSize: 30, dir: -1 });
+      portraitCard(c, 'deniz', 1110, 150, 380, 500, a2, { name: 'A NAVIGATOR OF THE FLEET', nameSize: 22, dir: 1 });
+      portraitCard(c, 'yusuf', 1610, 330, 240, 320, prog(lt, 9.0, 10.0), { name: 'YUSUF REIS', title: 'Corsair captain', nameSize: 22, dir: 1 });
       capBack(c, ease.outCubic(prog(lt, 2, 3)), 300);
       cap(c, lt, 2.4, 7.6, ['Two armies.'], { size: 74 });
       cap(c, lt, 8.2, 14.8, ['Two sides of one harbour.'], { size: 70 });
@@ -249,6 +257,7 @@ function vigNet(c, t, l) {
   c.closePath();
   c.fill();
   cloaked(c, 700, 750, 1.5, '#03040a', { hood: false, arm: 1, rim: 'rgba(200,215,255,0.6)' });
+  portraitCard(c, 'villager-man', 1180, 130, 330, 430, prog(l, 0.3, 1.2), { name: 'A FARMHAND', nameSize: 24 });
   // net hanging in the foreground, swaying
   c.strokeStyle = 'rgba(200,190,160,0.5)';
   c.lineWidth = 1.5;
@@ -302,6 +311,7 @@ function vigHome(c, t, l) {
   c.fillStyle = '#d8cfb8';
   c.fillRect(740, 770, 12, 32);
   flame(c, 746, 770, 0.3, t, 3, { glow: 0.9 });
+  portraitCard(c, 'villager', 1300, 140, 330, 430, prog(l, 0.3, 1.2), { name: 'A MOTHER OF BIRGU', nameSize: 24 });
 }
 function vigChildren(c, t, l) {
   fillBg(c, '#06070d', '#020204');
