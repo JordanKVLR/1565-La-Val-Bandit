@@ -14,10 +14,16 @@ import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
 import type { Holdings, ItemKind, Stores } from './inventory';
-import { addItem, buy, equip, release, sell } from './inventory';
+import { addItem, buy, equip, release, sell, swap } from './inventory';
 import { migrateCampaign } from './migrate';
-import { applyBattleResults, newRosterEntry, raiseRosterStat } from './progression';
-import type { CampaignSave, ChapterInfo, RosterEntry, StageState } from './types';
+import { applyBattleResults, newRosterEntry, raiseRosterStat, withProgress } from './progression';
+import type {
+  CampaignSave,
+  ChapterInfo,
+  CharacterProgress,
+  RosterEntry,
+  StageState,
+} from './types';
 import { CAMPAIGN_SAVE_VERSION } from './types';
 
 export type Screen =
@@ -48,6 +54,8 @@ export interface SessionView {
   readonly scudi: number;
   /** Spare items: armaturas, weapons, charms and amulets nobody has fitted. */
   readonly stores: Stores;
+  /** Progress of named allies who haven't joined the company yet. */
+  readonly veterans: Readonly<Record<string, CharacterProgress>>;
   readonly completedBattles: readonly string[];
 }
 
@@ -78,6 +86,7 @@ export class GameSession {
       roster: (save?.roster ?? []).map((r) => normalizeEntry(lib, r)),
       scudi: save?.scudi ?? 0,
       stores: save?.stores ?? {},
+      veterans: save?.veterans ?? {},
       completedBattles: save?.completedBattles ?? [],
     });
     if (save) {
@@ -155,10 +164,21 @@ export class GameSession {
       this.show({ kind: 'title' });
       return;
     }
-    const { roster, lines } = applyBattleResults(this.lib, this.state.roster, state);
-    // Scudi for every enemy brought down (more for veterans), plus a purse for the victory.
+    const { roster, veterans, lines } = applyBattleResults(
+      this.lib,
+      this.state.roster,
+      state,
+      this.state.veterans,
+    );
+    // Scudi: a purse for the victory, more for every enemy brought down (and for veterans), and
+    // a bonus if nobody on the player's side fell.
+    const b = this.lib.balance;
     const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
-    const reward = 50 + fallen.reduce((n, u) => n + 20 + 5 * u.level, 0);
+    const noLosses = !state.units.some((u) => u.side === 'player' && u.defeated);
+    const reward =
+      b.rewardVictory +
+      fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
+      (noLosses ? b.rewardNoLosses : 0);
     const firstWin = !this.state.completedBattles.includes(screen.battleId);
     const completedBattles = firstWin
       ? [...this.state.completedBattles, screen.battleId]
@@ -170,7 +190,13 @@ export class GameSession {
     const salvaged = salvage.map(
       (id) => `Salvaged armatura: ${this.lib.frames.get(id)?.name ?? id}`,
     );
-    this.patch({ roster, stores, scudi: this.state.scudi + reward, completedBattles });
+    this.patch({
+      roster,
+      veterans,
+      stores,
+      scudi: this.state.scudi + reward,
+      completedBattles,
+    });
     this.runner.setVar('last_battle', screen.battleId);
     unlockAchievement(BATTLE_ACHIEVEMENTS[screen.battleId]);
     this.show({
@@ -204,6 +230,11 @@ export class GameSession {
     this.applyHoldings(equip(this.lib, this.holdings(), characterId, kind, id));
   }
 
+  /** Takes the item another pilot has in this slot; they get this pilot's in exchange. */
+  swapItem(toId: string, fromId: string, kind: ItemKind): void {
+    this.applyHoldings(swap(this.lib, this.holdings(), toId, fromId, kind));
+  }
+
   buyItem(item: ShopItem): void {
     this.applyHoldings(buy(this.lib, this.holdings(), item));
   }
@@ -220,6 +251,32 @@ export class GameSession {
   private applyHoldings(h: Holdings): void {
     this.patch({ roster: h.roster, stores: h.stores, scudi: h.scudi });
     this.autosave();
+  }
+
+  /**
+   * `?armoury` (testing and design): a small company part-way through Act I, standing in the
+   * Armoury with a purse to spend.
+   */
+  openArmouryDemo(): void {
+    const roster = [
+      { ...newRosterEntry(this.lib, 'ninu'), level: 6, statPoints: 2 },
+      { ...newRosterEntry(this.lib, 'kateri'), level: 5 },
+      { ...newRosterEntry(this.lib, 'luis'), level: 6 },
+      { ...newRosterEntry(this.lib, 'deniz'), level: 5 },
+    ];
+    this.patch({
+      roster,
+      scudi: 1500,
+      stores: { 'weapon:pike': 1, 'charm:charm-pow-1': 1, 'frame:moschetta': 1, 'frame:levend': 1 },
+      completedBattles: [
+        'b1-marsaxlokk',
+        'b2-marsa-wells',
+        'b3-sciberras',
+        'b4-night-crossing',
+        'b5-tigne',
+      ],
+    });
+    this.show({ kind: 'prep' });
   }
 
   /** Keeps a mid-battle snapshot so Continue resumes exactly where the player left off. */
@@ -278,9 +335,15 @@ export class GameSession {
       case 'join': {
         const [id, frame, weapon] = args;
         if (!id || this.state.roster.some((r) => r.characterId === id)) return false;
-        const entry = newRosterEntry(this.lib, id, frame, weapon);
-        // New pilots arrive with their own armatura and weapon fitted.
-        this.patch({ roster: [...this.state.roster, entry] });
+        // New pilots arrive with their own armatura and weapon fitted, and keep any level and
+        // XP they earned fighting alongside the company before joining.
+        const entry = withProgress(
+          newRosterEntry(this.lib, id, frame, weapon),
+          this.state.veterans[id],
+        );
+        const veterans = { ...this.state.veterans };
+        delete veterans[id];
+        this.patch({ roster: [...this.state.roster, entry], veterans });
         return false;
       }
       case 'leave': {
@@ -325,7 +388,7 @@ export class GameSession {
     } catch {
       initial = undefined;
     }
-    const setup = loadBattle(id, this.lib, this.state.roster);
+    const setup = loadBattle(id, this.lib, this.state.roster, this.state.veterans);
     this.battleCounter += 1;
     this.show({
       kind: 'battle',
@@ -357,6 +420,7 @@ export class GameSession {
       roster: s.roster,
       scudi: s.scudi,
       stores: s.stores,
+      veterans: s.veterans,
       completedBattles: s.completedBattles,
       stage: s.stage,
       chapter: s.chapter,

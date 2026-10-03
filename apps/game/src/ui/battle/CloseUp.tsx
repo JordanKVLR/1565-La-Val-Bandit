@@ -59,6 +59,8 @@ export function CloseUp({ data, onDone }: Props) {
         await stage.playStrike({
           attacker: atkSide,
           style: s.style,
+          power: s.power,
+          reach: s.reach,
           hit: s.result.hit,
           defeated: s.result.defeated,
           reaction: s.result.attackerId === firstAttacker ? data.reaction : 'none',

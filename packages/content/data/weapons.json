@@ -7,10 +7,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 4,
-      "dex": 1
+      "wep": 6,
+      "dex": 2
     },
-    "price": 275
+    "price": 380,
+    "tier": "common",
+    "description": "The plain one-handed sword of the European knight, made in their thousands at Passau and Solingen. Reliable in the hand and easily repaired."
   },
   {
     "id": "bastard-sword",
@@ -20,9 +22,11 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 7
+      "wep": 11
     },
-    "price": 365
+    "price": 500,
+    "tier": "common",
+    "description": "A long hand-and-a-half blade, many of them brought to Malta from the Order's commanderies in France and Provence."
   },
   {
     "id": "mace-shield",
@@ -32,9 +36,11 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 5
+      "wep": 8
     },
-    "price": 275
+    "price": 380,
+    "tier": "common",
+    "description": "A flanged mace with a round steel shield, as carried by the Order's galley soldiers in boarding fights."
   },
   {
     "id": "pike",
@@ -44,9 +50,11 @@
     "minRange": 1,
     "maxRange": 2,
     "bonus": {
-      "wep": 5
+      "wep": 8
     },
-    "price": 275
+    "price": 380,
+    "tier": "common",
+    "description": "A long ash shaft with a steel head, the backbone of the Spanish tercios. Kept in the Birgu armoury by the hundred."
   },
   {
     "id": "arquebus",
@@ -56,9 +64,11 @@
     "minRange": 2,
     "maxRange": 4,
     "bonus": {
-      "wep": 5
+      "wep": 8
     },
-    "price": 275
+    "price": 380,
+    "tier": "common",
+    "description": "A matchlock arquebus, mostly from Spanish and Sicilian workshops. Slow to load but deadly behind a parapet."
   },
   {
     "id": "boat-hook",
@@ -68,10 +78,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 2,
-      "dex": 2
+      "wep": 3,
+      "dex": 3
     },
-    "price": 230
+    "price": 300,
+    "tier": "common",
+    "description": "A harbour hook used to pull boats to the quays of Birgu and Senglea, here pressed into service as a weapon."
   },
   {
     "id": "kilij",
@@ -81,10 +93,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 5,
-      "dex": 2
+      "wep": 8,
+      "dex": 3
     },
-    "price": 365
+    "price": 500,
+    "tier": "common",
+    "description": "The curved Ottoman sabre, its broad tip shaped for drawing cuts. Forged in Istanbul and Bursa."
   },
   {
     "id": "tufek",
@@ -94,9 +108,11 @@
     "minRange": 2,
     "maxRange": 4,
     "bonus": {
-      "wep": 6
+      "wep": 9
     },
-    "price": 320
+    "price": 420,
+    "tier": "common",
+    "description": "The Ottoman matchlock musket, long-barrelled and well balanced, the pride of the janissary ortas."
   },
   {
     "id": "sipahi-lance",
@@ -106,9 +122,11 @@
     "minRange": 1,
     "maxRange": 2,
     "bonus": {
-      "wep": 6
+      "wep": 9
     },
-    "price": 320
+    "price": 420,
+    "tier": "common",
+    "description": "A light cavalry lance with a pennant, carried by the timar-holding horsemen of the provinces."
   },
   {
     "id": "grenado",
@@ -118,9 +136,11 @@
     "minRange": 2,
     "maxRange": 3,
     "bonus": {
-      "wep": 6
+      "wep": 9
     },
-    "price": 320
+    "price": 420,
+    "tier": "common",
+    "description": "A sling for throwing clay and iron bombs, the tool of the Ottoman bombardiers."
   },
   {
     "id": "cutlass",
@@ -130,10 +150,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 3,
-      "dex": 2
+      "wep": 5,
+      "dex": 3
     },
-    "price": 275
+    "price": 380,
+    "tier": "common",
+    "description": "A short, heavy sailor's blade from a North African workshop, ideal in a crowded galley."
   },
   {
     "id": "swivel-gun",
@@ -143,9 +165,11 @@
     "minRange": 1,
     "maxRange": 3,
     "bonus": {
-      "wep": 1
+      "wep": 2
     },
-    "price": 95
+    "price": 140,
+    "tier": "common",
+    "description": "A small breech-loading gun normally mounted on a galley's rail, here bolted onto an armatura."
   },
   {
     "id": "ram-arm",
@@ -155,9 +179,11 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "wep": 8
+      "wep": 9
     },
-    "price": 410
+    "price": 540,
+    "tier": "common",
+    "description": "A battering-ram arm built into Scala's machines, its iron head driven by steam."
   },
   {
     "id": "colossus-cannon",
@@ -167,9 +193,11 @@
     "minRange": 1,
     "maxRange": 3,
     "bonus": {
-      "wep": 9
+      "wep": 10
     },
-    "price": 455
+    "price": 620,
+    "tier": "common",
+    "description": "A giant cannon cast for Scala's Colossus, too heavy for any ordinary harness."
   },
   {
     "id": "tower-guns",
@@ -179,9 +207,11 @@
     "minRange": 2,
     "maxRange": 4,
     "bonus": {
-      "wep": 5
+      "wep": 8
     },
-    "price": 275
+    "price": 380,
+    "tier": "common",
+    "description": "A row of light guns mounted on the siege tower's upper platform."
   },
   {
     "id": "falchion",
@@ -191,10 +221,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "pow": 1,
-      "wep": 6
+      "pow": 2,
+      "wep": 9
     },
-    "price": 365
+    "price": 500,
+    "tier": "fine",
+    "description": "A broad single-edged cutting blade, heavy at the tip, favoured by knights and sergeants of the Order alike."
   },
   {
     "id": "war-hammer",
@@ -204,10 +236,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "pow": 2,
-      "wep": 7
+      "pow": 3,
+      "wep": 11
     },
-    "price": 455
+    "price": 620,
+    "tier": "fine",
+    "description": "A Milanese horseman's hammer with a spike opposite, made to burst plate armour."
   },
   {
     "id": "partisan",
@@ -217,10 +251,12 @@
     "minRange": 1,
     "maxRange": 2,
     "bonus": {
-      "dex": 1,
-      "wep": 8
+      "dex": 2,
+      "wep": 12
     },
-    "price": 455
+    "price": 620,
+    "tier": "fine",
+    "description": "A broad-bladed spear of Italian design, carried by officers and bodyguards of the Grand Master."
   },
   {
     "id": "wheellock",
@@ -230,10 +266,12 @@
     "minRange": 2,
     "maxRange": 4,
     "bonus": {
-      "dex": 2,
-      "wep": 6
+      "dex": 3,
+      "wep": 9
     },
-    "price": 410
+    "price": 540,
+    "tier": "fine",
+    "description": "A German wheellock musket, its clockwork lock firing without a lit match. Expensive and highly prized."
   },
   {
     "id": "yatagan",
@@ -243,10 +281,12 @@
     "minRange": 1,
     "maxRange": 1,
     "bonus": {
-      "agl": 1,
-      "wep": 6
+      "agl": 2,
+      "wep": 9
     },
-    "price": 365
+    "price": 500,
+    "tier": "fine",
+    "description": "The forward-curved Ottoman short sword, favoured by janissaries for close fighting."
   },
   {
     "id": "long-tufek",
@@ -256,9 +296,282 @@
     "minRange": 2,
     "maxRange": 5,
     "bonus": {
-      "dex": 1,
-      "wep": 7
+      "dex": 2,
+      "wep": 11
     },
-    "price": 410
+    "price": 580,
+    "tier": "fine",
+    "description": "An extra-long tüfek built for marksmen, accurate at ranges no ordinary musket can match."
+  },
+  {
+    "id": "milanese-spada",
+    "name": "Milanese Spada",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 9,
+      "dex": 2
+    },
+    "tier": "fine",
+    "description": "Forged in the Milanese workshops of the Missaglia tradition and bought by a Provençal knight before sailing to Malta. Its temper holds an edge through a whole day's fighting.",
+    "price": 500
+  },
+  {
+    "id": "toledo-espada",
+    "name": "Toledo Espada",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 12,
+      "dex": 3
+    },
+    "tier": "masterwork",
+    "description": "A Toledo blade quenched in the waters of the Tagus and sent to the Order as a gift from the Viceroy of Sicily. Light, flexible and almost impossible to break.",
+    "price": 660
+  },
+  {
+    "id": "venetian-corsesca",
+    "name": "Venetian Corsesca",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "bonus": {
+      "wep": 9,
+      "dex": 2
+    },
+    "tier": "fine",
+    "description": "A three-pronged spear from the Venetian Arsenal, its side blades made to catch and turn an enemy's weapon. Bought from a galley captain at Birgu.",
+    "price": 500
+  },
+  {
+    "id": "nuremberg-halberd",
+    "name": "Nuremberg Halberd",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "bonus": {
+      "wep": 12,
+      "pow": 2,
+      "def": 1
+    },
+    "tier": "masterwork",
+    "description": "An etched and gilded halberd from a Nuremberg master smith, made for the guard of a German commandery. It combines axe, spike and hook in perfect balance.",
+    "price": 660
+  },
+  {
+    "id": "brescian-arquebus",
+    "name": "Brescian Arquebus",
+    "type": "firearm",
+    "apCost": 35,
+    "minRange": 2,
+    "maxRange": 4,
+    "bonus": {
+      "wep": 9,
+      "dex": 2
+    },
+    "tier": "fine",
+    "description": "Gardone in Val Trompia, near Brescia, bored its barrels straighter than any other town. This arquebus throws its ball true at long range.",
+    "price": 500
+  },
+  {
+    "id": "augsburg-petronel",
+    "name": "Augsburg Petronel",
+    "type": "firearm",
+    "apCost": 40,
+    "minRange": 2,
+    "maxRange": 5,
+    "bonus": {
+      "wep": 11,
+      "dex": 4
+    },
+    "tier": "masterwork",
+    "description": "A wheellock petronel from Augsburg with an ivory-inlaid stock and a clockwork lock that never misfires. A treasure that only a Grand Cross could afford.",
+    "price": 660
+  },
+  {
+    "id": "birgu-flanged-mace",
+    "name": "Birgu Flanged Mace",
+    "type": "blunt",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 9,
+      "def": 2
+    },
+    "tier": "fine",
+    "description": "Forged at a Maltese workshop below Fort St Angelo from Sicilian iron. Its seven flanges cut through mail and dent plate.",
+    "price": 500
+  },
+  {
+    "id": "milanese-horsemans-hammer",
+    "name": "Milanese Horseman's Hammer",
+    "type": "blunt",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 12,
+      "pow": 3
+    },
+    "tier": "masterwork",
+    "description": "A hammer from the Negroli workshop in Milan, its head etched with saints and its spike tempered to punch through plate. A favourite of knights who fought at Tunis.",
+    "price": 660
+  },
+  {
+    "id": "bursa-yatagan",
+    "name": "Bursa Yatağan",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 9,
+      "agl": 2
+    },
+    "tier": "fine",
+    "description": "A yatağan forged in Bursa with a bone grip and a forward-curving blade. Its smith marked it with a crescent stamp.",
+    "price": 500
+  },
+  {
+    "id": "damascene-kilij",
+    "name": "Damascene Kilij",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 12,
+      "dex": 3
+    },
+    "tier": "masterwork",
+    "description": "A kilij of watered steel from Damascus, its blade showing patterns like flowing water and inlaid in gold with verses. Worthy of an ağa.",
+    "price": 660
+  },
+  {
+    "id": "akinci-mizrak",
+    "name": "Akıncı Mızrak",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "bonus": {
+      "wep": 9,
+      "agl": 2
+    },
+    "tier": "fine",
+    "description": "A long raiding lance of the frontier cavalry, its head forged in Edirne. Light and fast in the hands of a skilled rider.",
+    "price": 500
+  },
+  {
+    "id": "silahdar-teber",
+    "name": "Silahdar's Teber",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "bonus": {
+      "wep": 12,
+      "pow": 3
+    },
+    "tier": "masterwork",
+    "description": "A long-hafted axe from the palace workshops of Istanbul, carried by the Sultan's weapon-bearers. Its crescent blade is inlaid in silver.",
+    "price": 660
+  },
+  {
+    "id": "edirne-tufek",
+    "name": "Edirne Tüfek",
+    "type": "firearm",
+    "apCost": 35,
+    "minRange": 2,
+    "maxRange": 4,
+    "bonus": {
+      "wep": 9,
+      "dex": 2
+    },
+    "tier": "fine",
+    "description": "A tüfek from the Edirne gunsmiths, with a heavy damascened barrel and coral-inlaid stock. More reliable than standard issue.",
+    "price": 500
+  },
+  {
+    "id": "istanbul-long-tufek",
+    "name": "Istanbul Long Tüfek",
+    "type": "firearm",
+    "apCost": 40,
+    "minRange": 2,
+    "maxRange": 5,
+    "bonus": {
+      "wep": 11,
+      "dex": 4
+    },
+    "tier": "masterwork",
+    "description": "A long-barrelled tüfek from the imperial arsenal at Istanbul, bored true and fitted for a marksman: it reaches further than any common gun.",
+    "price": 660
+  },
+  {
+    "id": "humbara-pot",
+    "name": "Humbara Pot",
+    "type": "explosive",
+    "apCost": 40,
+    "minRange": 2,
+    "maxRange": 3,
+    "bonus": {
+      "wep": 9,
+      "pow": 2
+    },
+    "tier": "fine",
+    "description": "Glazed clay bombs packed with powder and naphtha by the humbaracı corps. They burst in a sheet of flame.",
+    "price": 500
+  },
+  {
+    "id": "tophane-bronze-humbara",
+    "name": "Tophane Bronze Humbara",
+    "type": "explosive",
+    "apCost": 40,
+    "minRange": 2,
+    "maxRange": 3,
+    "bonus": {
+      "wep": 12,
+      "pow": 3
+    },
+    "tier": "masterwork",
+    "description": "Bronze shells cast at the Tophane foundry of Istanbul alongside the great siege guns. They burst into deadly fragments.",
+    "price": 660
+  },
+  {
+    "id": "djerba-boarding-pike",
+    "name": "Djerba Boarding Pike",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "bonus": {
+      "wep": 11,
+      "agl": 4
+    },
+    "tier": "masterwork",
+    "description": "A hooked boarding pike taken from a Spanish galley at Djerba in 1560 and rehafted by Algerian corsairs. It drags men off decks and walls alike.",
+    "price": 660
+  },
+  {
+    "id": "silver-gurz",
+    "name": "Silver Gürz",
+    "type": "blunt",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 1,
+    "bonus": {
+      "wep": 12,
+      "def": 3
+    },
+    "tier": "masterwork",
+    "description": "A flanged mace of a pasha's guard, its steel head chased with silver. A badge of rank and a crushing weapon.",
+    "price": 660
   }
 ]

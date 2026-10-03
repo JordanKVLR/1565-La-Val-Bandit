@@ -1,6 +1,7 @@
 import { attackFpCost } from '@m1565/core';
 import type { BattleController } from '../../scenes/BattleController';
-import { attackStats, attackTags } from './attackText';
+import { attackStats } from './attackText';
+import { techniqueEffects } from './TechniqueCard';
 
 /** The active unit's learned techniques; locked ones stay hidden until unlocked. */
 export function AttackMenu({ ctl }: { ctl: BattleController }) {
@@ -35,8 +36,9 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
                 <span class="am-stats">
                   {attackStats(attack, unit.weapon, attackFpCost(ctl.state, unit, attack))}
                 </span>
-                {attackTags(attack).length > 0 && (
-                  <span class="am-tags">{attackTags(attack).join(' · ')}</span>
+                {attack.description && <span class="am-desc">{attack.description}</span>}
+                {techniqueEffects(attack).length > 0 && (
+                  <span class="am-tags">{techniqueEffects(attack).join(' · ')}</span>
                 )}
                 {reason && <span class="am-reason">{reason}</span>}
               </button>

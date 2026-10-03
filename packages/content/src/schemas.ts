@@ -77,6 +77,10 @@ export const WeaponSchema = z
     maxRange: z.number().int().min(1),
     /** Armoury price; items sell back for half. */
     price: z.number().int().positive(),
+    /** Quality tier: common stock, fine work, or a masterwork. */
+    tier: z.enum(['common', 'fine', 'masterwork']).default('common'),
+    /** Maker and history, shown in the Armoury. */
+    description: z.string().default(''),
   })
   .refine((w) => w.maxRange >= w.minRange, 'maxRange must be >= minRange');
 
@@ -102,9 +106,10 @@ export const FrameSchema = z.object({
   faction: z.enum(FACTIONS),
   class: z.enum(FRAME_CLASSES),
   hp: z.number().int().positive(),
-  armour: z.number().int().min(0),
   move: z.number().int().positive(),
+  /** Attribute package: heavy frames give BAS and DEF, light ones AGL and DEX. No armour. */
   bonus,
+  description: z.string().default(''),
   model: z.enum(ARMATURA_MODELS),
 });
 
@@ -176,6 +181,9 @@ export const AttackSchema = z
     fatigue: z.number().int().min(0).optional(),
     apDamage: z.number().int().min(0).optional(),
     noCounter: z.boolean().optional(),
+    /** Added to the formula's accuracy and AP (a slow, careful technique). */
+    accuracyBonus: z.number().int().optional(),
+    apBonus: z.number().int().min(0).optional(),
     requires: statReq,
     description: z.string(),
   })
@@ -187,6 +195,8 @@ export const BattleUnitSchema = z
   .object({
     id,
     character: id.optional(),
+    /** Cast portrait for a generic unit that stands in for a story figure. */
+    portrait: id.optional(),
     name: z.string().min(1).optional(),
     stats: partialStats.optional(),
     side: z.enum(['player', 'enemy']),
@@ -252,6 +262,20 @@ export const CastSchema = z.object({
   title: z.string(),
 });
 export type CastMember = z.infer<typeof CastSchema>;
+
+const barks = z.array(z.string().min(1)).min(1);
+/** The armourer who runs the Armoury for each side, and what they say. */
+export const ArmourerSchema = z.object({
+  name: z.string().min(1),
+  title: z.string(),
+  greetings: barks,
+  onBuy: barks,
+  onSell: barks,
+  onEquip: barks,
+  tooPoor: barks,
+});
+export const ArmourersSchema = z.object({ malta: ArmourerSchema, ottoman: ArmourerSchema });
+export type Armourer = z.infer<typeof ArmourerSchema>;
 
 /** Armoury stock: what is on sale (prices live with the items). Armaturas are never sold. */
 export const ShopItemSchema = z.object({

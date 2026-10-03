@@ -103,7 +103,8 @@
         "pow": 6,
         "dex": 6,
         "agl": 4
-      }
+      },
+      "portrait": "scala"
     }
   ]
 }

@@ -8,6 +8,8 @@ export interface UnitLook {
   readonly active: boolean;
   /** Story scenes show characters without combat HP bars. */
   readonly hideHp?: boolean;
+  /** Enemies get a diamond badge (players a round one), so side never depends on colour. */
+  readonly enemy?: boolean;
 }
 
 const W = 96;
@@ -38,9 +40,17 @@ export function drawUnit(sprite: Sprite, look: UnitLook): void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   ctx.clearRect(0, 0, W, H);
-  // Token
+  // Token: round for the player's side, a diamond for enemies.
   ctx.beginPath();
-  ctx.arc(W / 2, 40, 30, 0, Math.PI * 2);
+  if (look.enemy) {
+    ctx.moveTo(W / 2, 4);
+    ctx.lineTo(W / 2 + 36, 40);
+    ctx.lineTo(W / 2, 76);
+    ctx.lineTo(W / 2 - 36, 40);
+    ctx.closePath();
+  } else {
+    ctx.arc(W / 2, 40, 30, 0, Math.PI * 2);
+  }
   ctx.fillStyle = look.color;
   ctx.fill();
   ctx.lineWidth = look.active ? 6 : 4;

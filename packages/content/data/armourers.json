@@ -1,0 +1,74 @@
+{
+  "malta": {
+    "name": "Mastru Ġużepp Caruana",
+    "title": "Armourer of Birgu",
+    "greetings": [
+      "Merħba, sinjur. Mind the sparks.",
+      "Ah, back again. What needs mending?",
+      "Come in out of the sun. The forge is hot, but the stone is cool.",
+      "Every plate here was hammered in Birgu. Every one.",
+      "Merħba! You still have both arms? Good.",
+      "Say what you need. The Turk will not wait for us."
+    ],
+    "onBuy": [
+      "Grazzi, sinjur. Use it well.",
+      "A fine choice. It will serve you better than you deserve.",
+      "Done. Bring it back in one piece.",
+      "That steel came all the way from Milan. Remember that.",
+      "Grazzi. May it bring you home."
+    ],
+    "onSell": [
+      "I'll give you a fair price. Fairer than the Sicilians would.",
+      "I can melt this down for nails, at least.",
+      "Hm. It's seen better days, like the rest of us.",
+      "Grazzi. Someone else will find a use for it."
+    ],
+    "onEquip": [
+      "There. It sits well on you.",
+      "Tight in the joints, but it will loosen.",
+      "Now you look like a soldier.",
+      "Go on. Show the Turk what Maltese steel can do."
+    ],
+    "tooPoor": [
+      "Not enough, sinjur. Steel is not cheap.",
+      "Come back with more scudi.",
+      "I cannot give it away. Even in a siege."
+    ]
+  },
+  "ottoman": {
+    "name": "Hasan Usta",
+    "title": "Quartermaster of the Cebeci",
+    "greetings": [
+      "Hoş geldin, efendi. What does the Sultan's service require?",
+      "The armoury tents are open. Choose quickly.",
+      "Every blade here was counted at Istanbul.",
+      "Ah, efendi. The powder is dry, the steel is sharp.",
+      "Come. The guns of Marsa never sleep, nor do I.",
+      "Speak. The pasha does not wait."
+    ],
+    "onBuy": [
+      "A wise purchase, efendi.",
+      "It is yours. Use it for the Sultan.",
+      "Good steel for a good warrior.",
+      "Take it, and return victorious.",
+      "May it serve you as well as it served the last man."
+    ],
+    "onSell": [
+      "I will put it back in the stores.",
+      "Hm. A fair price for worn steel.",
+      "The corps will find another hand for it.",
+      "Done. Spend the akçe wisely."
+    ],
+    "onEquip": [
+      "It suits you, efendi.",
+      "Now you are ready for the walls.",
+      "A good fit. Go.",
+      "May your aim be true."
+    ],
+    "tooPoor": [
+      "Not enough akçe, efendi.",
+      "The treasury does not give credit.",
+      "Come back when your purse is heavier."
+    ]
+  }
+}

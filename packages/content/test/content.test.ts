@@ -13,6 +13,7 @@ import {
   mapSources,
 } from '../src';
 import { createBattle, DEFAULT_BALANCE } from '@m1565/core';
+import castData from '../data/cast.json';
 
 describe('content', () => {
   const terrains = loadTerrains();
@@ -56,6 +57,15 @@ describe('battles', () => {
     expect(state.outcome).toBe('ongoing');
     // Every battle fields at least one named story character on the player's side.
     expect(state.units.some((u) => u.side === 'player' && u.characterId)).toBe(true);
+  });
+
+  it('gives stand-in portraits only to cast members', () => {
+    const cast = new Set(castData.map((c) => c.id));
+    for (const [id, src] of Object.entries(battleSources)) {
+      for (const u of (src as { units: Array<{ portrait?: string }> }).units) {
+        if (u.portrait) expect(cast.has(u.portrait), `${id}: ${u.portrait}`).toBe(true);
+      }
+    }
   });
 
   it('keeps the shipped balance in sync with the core defaults', () => {
@@ -178,5 +188,60 @@ describe('attacks', () => {
     const ninu = setup.units.find((u) => u.id === 'ninu')!;
     expect(ninu.attacks?.every((a) => a.id.startsWith('militia-'))).toBe(true);
     expect(ninu.attacks?.some((a) => a.id === 'militia-hook-cut')).toBe(true);
+  });
+});
+
+describe('armaturas and weapon progression', () => {
+  const lib = loadLibrary();
+  const sum = (b: Record<string, number | undefined>) =>
+    Object.values(b).reduce<number>((n, v) => n + (v ?? 0), 0);
+
+  it('every armatura gives BAS, DEF and WEP, heavy ones more DEF and light ones more AGL/DEX', () => {
+    const player = [...lib.frames.values()].filter(
+      (f) => !['barge', 'siege-tower', 'colossus', 'prototipo'].includes(f.id),
+    );
+    for (const f of player) {
+      expect(f.bonus.bas ?? 0, f.id).toBeGreaterThan(0);
+      expect(f.bonus.def ?? 0, f.id).toBeGreaterThan(0);
+      expect(f.bonus.wep ?? 0, f.id).toBeGreaterThan(0);
+      // One budget per class: what heavy frames gain in DEF, light ones get in AGL and DEX.
+      expect(sum(f.bonus), f.id).toBeGreaterThanOrEqual(9);
+      expect(sum(f.bonus), f.id).toBeLessThanOrEqual(12);
+    }
+    const avg = (cls: string, k: 'def' | 'agl' | 'dex') => {
+      const fs = player.filter((f) => f.class === cls);
+      return fs.reduce((n, f) => n + (f.bonus[k] ?? 0), 0) / fs.length;
+    };
+    expect(avg('heavy', 'def')).toBeGreaterThan(avg('medium', 'def'));
+    expect(avg('medium', 'def')).toBeGreaterThan(avg('light', 'def'));
+    expect(avg('light', 'agl') + avg('light', 'dex')).toBeGreaterThan(
+      avg('heavy', 'agl') + avg('heavy', 'dex'),
+    );
+  });
+
+  it('every route unlocks fine and masterwork weapons for the Maltese and Ottoman pilots', () => {
+    const routes = {
+      cross: 'a3-castile-breach',
+      island: 'i3-marsa-raid',
+      crescent: 'c4-corradino-heights',
+    };
+    const weaponStock = () =>
+      lib.shop
+        .filter((s) => s.kind === 'weapon')
+        .map((s) => ({ ...s, w: lib.weapons.get(s.item)! }));
+    for (const [route, last] of Object.entries(routes)) {
+      const won = new Set([
+        ...Object.keys(battleSources).filter((b) => b.startsWith('b')),
+        ...Object.keys(battleSources).filter((b) => b[0] === last[0] && b <= last),
+      ]);
+      for (const side of ['malta', 'ottoman'] as const) {
+        const tiers = new Set(
+          weaponStock()
+            .filter((s) => s.allegiance === side && (s.after === null || won.has(s.after)))
+            .map((s) => s.w.tier),
+        );
+        expect([...tiers].sort(), `${route} ${side}`).toEqual(['common', 'fine', 'masterwork']);
+      }
+    }
   });
 });

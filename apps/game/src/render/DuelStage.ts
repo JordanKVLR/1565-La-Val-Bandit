@@ -1,9 +1,12 @@
 import type { AttackStyle, Reaction } from '@m1565/core';
 import {
   AmbientLight,
+  BufferGeometry,
   CircleGeometry,
   Color,
   DirectionalLight,
+  DoubleSide,
+  Float32BufferAttribute,
   Group,
   HemisphereLight,
   Mesh,
@@ -17,12 +20,18 @@ import {
 } from 'three';
 import type { FigureSpec, Pose } from './Armatura';
 import { ArmaturaFighter, guardFor, POSE_KEYS } from './Armatura';
+import type { Key } from './duelMoves';
+import { GAP, moveFor, reactionFor } from './duelMoves';
 
 export type DuelFighter = FigureSpec;
 
 export interface StrikePlay {
   readonly attacker: 'left' | 'right';
   readonly style: AttackStyle;
+  /** Technique power (1 = plain Thrust); scales the wind-up, knockback and shake. */
+  readonly power?: number;
+  /** Tiles the technique reaches (2 for Long Thrust: the fighters start further apart). */
+  readonly reach?: number;
   readonly hit: boolean;
   readonly defeated: boolean;
   /** The defender's reaction; 'none' for a blow struck back or reflected. */
@@ -31,201 +40,24 @@ export interface StrikePlay {
   readonly onImpact?: () => void;
 }
 
-type Key = { t: number; p: Partial<Pose> };
-
-const GAP = 3.2;
-const RANGED: ReadonlySet<AttackStyle> = new Set(['shot', 'volley', 'throw']);
-
-/** Attacker keyframes per style, relative to its guard pose. `impact` is the contact time (s). */
-function attackKeys(style: AttackStyle, reach: number): { keys: Key[]; impact: number } {
-  const adv = GAP - reach;
-  switch (style) {
-    case 'slash':
-      return {
-        impact: 0.55,
-        keys: [
-          { t: 0.35, p: { x: adv, sR: 2.6, eR: 0.4, wR: 1.2, lean: 0.1, hR: 0.6, kR: -0.5 } },
-          { t: 0.55, p: { x: adv, sR: 0.8, eR: 0.1, wR: 1.6, lean: -0.35 } },
-          { t: 0.8, p: { x: adv, sR: 0.2, eR: 0.3, wR: 1.9, lean: -0.25 } },
-          { t: 1.15, p: {} },
-        ],
-      };
-    case 'overhead':
-      return {
-        impact: 0.6,
-        keys: [
-          {
-            t: 0.35,
-            p: {
-              x: adv - 0.2,
-              y: 0.15,
-              sR: 3.0,
-              eR: 0.2,
-              wR: 0.15,
-              sL: 2.8,
-              eL: 0.3,
-              lean: 0.2,
-              hR: 0.7,
-              kR: -0.8,
-            },
-          },
-          {
-            t: 0.6,
-            p: { x: adv, y: 0, sR: 1.2, eR: 0, wR: 1.3, sL: 1.0, lean: -0.55, hR: 0.5, kR: -0.6 },
-          },
-          { t: 0.85, p: { x: adv, sR: 0.9, wR: 1.6, lean: -0.4 } },
-          { t: 1.2, p: {} },
-        ],
-      };
-    case 'thrust':
-    case 'charge': {
-      const run = style === 'charge' ? 0.5 : 0.35;
-      return {
-        impact: run + 0.15,
-        keys: [
-          {
-            t: run,
-            p: { x: adv - 0.3, sR: 0.6, eR: 1.9, wR: 1.2, lean: 0.05, hR: 0.7, kR: -0.9, hL: -0.5 },
-          },
-          {
-            t: run + 0.15,
-            p: {
-              x: adv + 0.15,
-              sR: 1.5,
-              eR: 0,
-              wR: 0.05,
-              sL: 1.2,
-              eL: 0.2,
-              lean: -0.45,
-              hR: 0.9,
-              kR: -0.3,
-              hL: -0.6,
-            },
-          },
-          { t: run + 0.45, p: { x: adv, sR: 1.2, eR: 0.3, wR: 0.3, lean: -0.2 } },
-          { t: run + 0.8, p: {} },
-        ],
-      };
-    }
-    case 'sweep':
-      return {
-        impact: 0.55,
-        keys: [
-          {
-            t: 0.35,
-            p: {
-              x: adv,
-              y: -0.18,
-              sR: 2.2,
-              eR: 0.3,
-              wR: 1.3,
-              lean: 0.1,
-              hR: 1.0,
-              kR: -1.4,
-              hL: -0.1,
-              kL: -1.0,
-            },
-          },
-          {
-            t: 0.55,
-            p: { x: adv, y: -0.22, sR: 0.5, eR: 0.1, wR: 2.0, lean: -0.5, hR: 1.0, kR: -1.4 },
-          },
-          { t: 0.8, p: { x: adv, y: -0.1, sR: 0.2, wR: 2.2, lean: -0.3 } },
-          { t: 1.15, p: {} },
-        ],
-      };
-    case 'bash':
-      return {
-        impact: 0.45,
-        keys: [
-          {
-            t: 0.3,
-            p: { x: adv - 0.3, sR: 1.2, eR: 1.4, sL: 1.2, eL: 1.4, lean: -0.1, hR: 0.6, kR: -0.8 },
-          },
-          {
-            t: 0.45,
-            p: { x: adv + 0.2, lean: -0.7, sR: 1.6, eR: 0.8, hR: 0.9, kR: -0.3, hL: -0.7 },
-          },
-          { t: 0.75, p: { x: adv, lean: -0.3 } },
-          { t: 1.1, p: {} },
-        ],
-      };
-    case 'shot':
-    case 'volley':
-      return {
-        impact: 0.55,
-        keys: [
-          { t: 0.3, p: { lean: -0.05, sR: 1.45, eR: 0.1, sL: 1.5, eL: 0.1 } },
-          { t: 0.45, p: {} },
-          { t: 0.5, p: { x: -0.12, lean: 0.25, sR: 1.75, sL: 1.8 } },
-          { t: 0.9, p: {} },
-        ],
-      };
-    case 'throw':
-      return {
-        impact: 0.85,
-        keys: [
-          { t: 0.3, p: { sR: -0.6, eR: 1.8, wR: 0.5, lean: 0.25, hR: -0.3, hL: 0.4 } },
-          { t: 0.45, p: { sR: 2.6, eR: 0.3, lean: -0.35, hR: 0.5, hL: -0.4 } },
-          { t: 0.65, p: { sR: 1.4, eR: 0.3, lean: -0.2 } },
-          { t: 1.05, p: {} },
-        ],
-      };
-  }
-}
-
-/** Defender keyframes from the moment of impact (times relative to impact). */
-function reactionKeys(play: StrikePlay): Key[] {
-  if (play.defeated) {
-    return [
-      { t: 0.12, p: { x: -0.3, lean: 0.5, sR: 2.2, sL: 2.0 } },
-      {
-        t: 0.6,
-        p: { x: -0.7, y: 0.1, fall: 1.45, lean: 0.3, sR: 2.8, sL: 2.6, hR: 0.8, hL: 0.6, kR: -0.2 },
-      },
-      { t: 1.0, p: { x: -0.75, y: 0.12, fall: 1.52 } },
-    ];
-  }
-  if (!play.hit && play.reaction === 'counter') {
-    // A successful Counter: catch the blow and shove it back.
-    return [
-      { t: 0.02, p: { x: 0.1, sR: 1.9, eR: 1.4, wR: 0.2, sL: 1.7, eL: 1.2, lean: -0.2 } },
-      { t: 0.25, p: { x: 0.25, sR: 1.2, eR: 0.2, wR: 1.2, lean: -0.45 } },
-      { t: 0.6, p: {} },
-    ];
-  }
-  if (play.hit && play.reaction === 'defend') {
-    return [
-      { t: 0.02, p: { x: -0.2, sR: 1.8, eR: 1.6, wR: 0.3, sL: 1.6, eL: 1.4, lean: 0.2 } },
-      { t: 0.35, p: { x: -0.25, lean: 0.1 } },
-      { t: 0.7, p: {} },
-    ];
-  }
-  if (play.hit) {
-    return [
-      { t: 0.1, p: { x: -0.35, lean: 0.55, sR: 1.3, sL: 1.1, hR: 0.5, kR: -0.8 } },
-      { t: 0.45, p: { x: -0.3, lean: 0.25 } },
-      { t: 0.8, p: {} },
-    ];
-  }
-  if (play.reaction === 'avoid') {
-    return [
-      { t: 0.12, p: { x: -0.7, y: 0.3, lean: 0.35, hR: 0.9, kR: -1.4, hL: 0.4, kL: -1.2 } },
-      { t: 0.35, p: { x: -0.8, y: 0 } },
-      { t: 0.8, p: {} },
-    ];
-  }
-  return [
-    { t: 0.1, p: { x: -0.1, lean: 0.25 } },
-    { t: 0.5, p: {} },
-  ];
-}
-
 const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const CAMERA_HOME = new Vector3(0, 1.35, 6.2);
+const LOOK = new Vector3(0, 0.95, 0);
+const TRAIL_SAMPLES = 10;
+
+interface Particle {
+  mesh: Mesh;
+  v: Vector3;
+  life: number;
+  decay: number;
+  grow: number;
+  gravity: number;
+}
 
 /**
- * The duel close-up: two armaturas on a small stage, animated per attack style and
- * per reaction. Only presentation; results come from the rules engine.
+ * The duel close-up: two armaturas on a small stage. Every weapon and attack style has its own
+ * animation (see duelMoves.ts), with weapon trails, sparks, dust, muzzle smoke and a camera that
+ * pushes in and shakes on impact. Only presentation; results come from the rules engine.
  */
 export class DuelStage {
   private readonly renderer: WebGLRenderer;
@@ -234,7 +66,10 @@ export class DuelStage {
   private readonly left: ArmaturaFighter;
   private readonly right: ArmaturaFighter;
   private readonly fx = new Group();
+  private readonly particles: Particle[] = [];
   private readonly resizeObserver: ResizeObserver;
+  private readonly calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  private home = CAMERA_HOME.clone();
   private disposed = false;
   private frame = 0;
 
@@ -287,42 +122,130 @@ export class DuelStage {
   /** Plays one strike (approach, blow, reaction, return). Resolves when both fighters settle. */
   async playStrike(play: StrikePlay): Promise<void> {
     const [atk, def] = play.attacker === 'left' ? [this.left, this.right] : [this.right, this.left];
-    const reach = atk.weaponType === 'polearm' ? 1.7 : 1.25;
-    const { keys, impact } = attackKeys(play.style, reach);
-    const ranged = RANGED.has(play.style);
+    const move = moveFor({
+      weapon: atk.weaponType,
+      style: play.style,
+      power: play.power ?? 1,
+      reach: play.reach ?? 1,
+    });
     const atkGuard = guardFor(atk.weaponType);
     const defGuard = def.pose.fall > 0.5 ? def.pose : guardFor(def.weaponType);
-    const defKeys = reactionKeys(play);
-    const defEnd = impact + (defKeys[defKeys.length - 1]?.t ?? 0);
-    const total = Math.max(keys[keys.length - 1]!.t, defEnd) + 0.1;
-    let impacted = false;
-    let projectile: Mesh | null = null;
-
-    await this.animate(total, (t) => {
-      atk.apply(sample(atkGuard, keys, t));
-      if (t >= impact) def.apply(sample(defGuard, defKeys, t - impact));
-      if (ranged && t >= impact - 0.35 && t < impact) {
-        projectile ??= this.spawnProjectile(play.style === 'throw');
-        const from = atk.muzzle.getWorldPosition(new Vector3());
-        const to = def.root.position.clone().add(new Vector3(0, play.hit ? 1.25 : 1.9, 0));
-        const k = (t - (impact - 0.35)) / 0.35;
-        projectile.position.lerpVectors(from, to, k);
-        if (play.style === 'throw') projectile.position.y += Math.sin(k * Math.PI) * 0.9;
-      }
-      if (!impacted && t >= impact) {
-        impacted = true;
-        if (projectile) this.fx.remove(projectile);
-        if (play.hit)
-          this.spark(
-            def.root.position
-              .clone()
-              .add(new Vector3(-0.2 * Math.sign(def.root.scale.x), 1.25, 0.2)),
-          );
-        play.onImpact?.();
-      }
+    const defKeys = reactionFor({
+      reaction: play.reaction,
+      hit: play.hit,
+      defeated: play.defeated,
+      weapon: def.weaponType,
+      attackStyle: play.style,
+      heavy: move.heavy,
     });
+    const atkEnd = move.keys[move.keys.length - 1]!.t;
+    const defEnd = move.impact + (defKeys[defKeys.length - 1]?.t ?? 0);
+    const total = Math.max(atkEnd, defEnd) + 0.1;
+    // Long Thrust, guns and throws: both fighters stand further apart for the exchange.
+    const sep = (t: number) => {
+      if (!move.standoff) return 0;
+      const ramp = Math.min(1, t / 0.2, (total - t) / 0.3);
+      return (-move.standoff / 2) * ease(Math.max(0, ramp));
+    };
+    const side = play.attacker === 'left' ? -1 : 1;
+    let impacted = false;
+    let released = false;
+    let projectile: Mesh | null = null;
+    const trail: { tip: Vector3; hand: Vector3 }[] = [];
+    const trailMesh = this.makeTrail();
+    const dustLeft = [...move.dust];
+    let shake = 0;
+
+    await this.animate(
+      total,
+      (t) => {
+        const a = sample(atkGuard, move.keys, t);
+        atk.apply({ ...a, x: a.x + sep(t) });
+        const d = t >= move.impact ? sample(defGuard, defKeys, t - move.impact) : defGuard;
+        def.apply({ ...d, x: d.x + sep(t) });
+
+        // Weapon trail through the swing.
+        if (move.trail && t >= move.trail[0] && t <= move.trail[1] + 0.12) {
+          if (t <= move.trail[1]) {
+            trail.push({
+              tip: atk.muzzle.getWorldPosition(new Vector3()),
+              hand: atk.hand.getWorldPosition(new Vector3()),
+            });
+            if (trail.length > TRAIL_SAMPLES) trail.shift();
+          } else trail.shift();
+          this.updateTrail(trailMesh, trail);
+        } else if (trail.length) {
+          trail.length = 0;
+          this.updateTrail(trailMesh, trail);
+        }
+
+        while (dustLeft.length && t >= dustLeft[0]!) {
+          dustLeft.shift();
+          this.dust(atk.root.position.clone().setY(0.02), move.heavy ? 10 : 6);
+        }
+
+        if (move.projectile && !released && t >= move.release) {
+          released = true;
+          const muzzle = atk.muzzle.getWorldPosition(new Vector3());
+          if (move.projectile === 'shot') this.muzzleFlash(muzzle, side);
+          projectile = this.spawnProjectile(move.projectile === 'bomb');
+        }
+        if (projectile && t < move.impact) {
+          const from = atk.muzzle.getWorldPosition(new Vector3());
+          const to = def.root.position.clone().add(new Vector3(0, play.hit ? 1.2 : 1.95, 0));
+          const k = Math.min(1, (t - move.release) / Math.max(0.01, move.impact - move.release));
+          projectile.position.lerpVectors(from, to, k);
+          if (move.projectile === 'bomb') projectile.position.y += Math.sin(k * Math.PI) * 1.1;
+        }
+
+        if (!impacted && t >= move.impact) {
+          impacted = true;
+          if (projectile) {
+            this.fx.remove(projectile);
+            projectile.geometry.dispose();
+            projectile = null;
+          }
+          const at = def.root.position.clone().add(new Vector3(-0.25 * side * -1, 1.2, 0.2));
+          if (move.projectile === 'bomb') this.explosion(def.root.position.clone().setY(0.4));
+          if (play.hit) {
+            this.spark(at, move.heavy ? 16 : 10);
+            shake = move.heavy || play.defeated ? 0.14 : 0.06;
+          } else if (play.reaction === 'counter' || play.reaction === 'defend') {
+            this.spark(def.hand.getWorldPosition(new Vector3()), 8);
+            shake = 0.04;
+          }
+          if (play.defeated) this.dust(def.root.position.clone().setY(0.02), 12);
+          play.onImpact?.();
+        }
+
+        // Camera: push in on the wind-up, shake on contact, ease back home.
+        if (!this.calm) {
+          const push =
+            t < move.impact
+              ? ease(Math.min(1, t / Math.max(0.01, move.impact)))
+              : 1 - ease(Math.min(1, (t - move.impact) / 0.6));
+          const target = this.home
+            .clone()
+            .add(new Vector3(side * 0.45 * push, -0.1 * push, -0.9 * push));
+          if (shake > 0.002) {
+            target.x += (Math.random() - 0.5) * shake;
+            target.y += (Math.random() - 0.5) * shake;
+            shake *= 0.86;
+          }
+          this.camera.position.copy(target);
+          this.camera.lookAt(LOOK.clone().add(new Vector3(side * 0.2 * push, 0, 0)));
+        }
+      },
+      // A defeating blow plays in slow motion for a moment.
+      (t) => (play.defeated && !this.calm && t > move.impact && t < move.impact + 0.45 ? 0.35 : 1),
+    );
+    this.fx.remove(trailMesh);
+    trailMesh.geometry.dispose();
+    (trailMesh.material as MeshBasicMaterial).dispose();
     if (!play.defeated) def.apply({ ...guardFor(def.weaponType) });
     atk.apply({ ...atkGuard });
+    this.camera.position.copy(this.home);
+    this.camera.lookAt(LOOK);
     this.render();
   }
 
@@ -332,18 +255,28 @@ export class DuelStage {
     this.resizeObserver.disconnect();
     this.left.dispose();
     this.right.dispose();
+    this.fx.traverse((o) => {
+      if (o instanceof Mesh) o.geometry.dispose();
+    });
     this.renderer.dispose();
   }
 
-  private animate(seconds: number, step: (t: number) => void): Promise<void> {
-    const duration = (seconds * 1000) / this.speed;
-    const start = performance.now();
+  /** Runs `step` each frame for `seconds` of animation time; `rate` can slow time down. */
+  private animate(
+    seconds: number,
+    step: (t: number) => void,
+    rate: (t: number) => number = () => 1,
+  ): Promise<void> {
+    let last = performance.now();
+    let t = 0;
     return new Promise((resolve) => {
       const tick = (now: number) => {
         if (this.disposed) return resolve();
-        const t = (Math.max(0, now - start) / duration) * seconds;
-        step(Math.min(t, seconds));
-        this.updateFx();
+        const dt = Math.min(0.05, Math.max(0, now - last) / 1000);
+        last = now;
+        t = Math.min(seconds, t + dt * this.speed * rate(t));
+        step(t);
+        this.updateFx(dt * this.speed);
         this.render();
         if (t >= seconds) resolve();
         else this.frame = requestAnimationFrame(tick);
@@ -352,38 +285,167 @@ export class DuelStage {
     });
   }
 
-  private spawnProjectile(big: boolean): Mesh {
+  private makeTrail(): Mesh {
+    const geo = new BufferGeometry();
     const m = new Mesh(
-      new SphereGeometry(big ? 0.1 : 0.05, 8, 6),
-      new MeshBasicMaterial({ color: big ? '#3a3a3a' : '#ffe9a8' }),
+      geo,
+      new MeshBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        side: DoubleSide,
+        depthWrite: false,
+      }),
     );
+    m.frustumCulled = false;
     this.fx.add(m);
     return m;
   }
 
-  private spark(at: Vector3): void {
-    for (let i = 0; i < 8; i++) {
-      const m = new Mesh(
-        new SphereGeometry(0.035, 5, 4),
-        new MeshBasicMaterial({ color: i % 2 ? '#fff4c2' : '#ffb347', transparent: true }),
+  /** A ribbon between the hand and the weapon tip over the last few frames, fading out. */
+  private updateTrail(mesh: Mesh, samples: readonly { tip: Vector3; hand: Vector3 }[]): void {
+    const pos: number[] = [];
+    const col: number[] = [];
+    const n = samples.length;
+    for (let i = 0; i < n - 1; i++) {
+      const a = samples[i]!;
+      const b = samples[i + 1]!;
+      const fa = (i / n) * 0.75;
+      const fb = ((i + 1) / n) * 0.75;
+      // Only the outer part of the blade leaves a streak.
+      const ma = a.hand.clone().lerp(a.tip, 0.35);
+      const mb = b.hand.clone().lerp(b.tip, 0.35);
+      for (const [p, f] of [
+        [ma, fa],
+        [a.tip, fa],
+        [b.tip, fb],
+        [ma, fa],
+        [b.tip, fb],
+        [mb, fb],
+      ] as const) {
+        pos.push(p.x, p.y, p.z);
+        col.push(1, 0.97, 0.85, f);
+      }
+    }
+    mesh.geometry.setAttribute('position', new Float32BufferAttribute(pos, 3));
+    mesh.geometry.setAttribute('color', new Float32BufferAttribute(col, 4));
+    mesh.geometry.computeBoundingSphere();
+  }
+
+  private spawnProjectile(bomb: boolean): Mesh {
+    const m = new Mesh(
+      new SphereGeometry(bomb ? 0.11 : 0.045, 8, 6),
+      new MeshBasicMaterial({ color: bomb ? '#2e2e2e' : '#fff1b0' }),
+    );
+    if (!bomb) m.scale.set(3, 1, 1);
+    this.fx.add(m);
+    return m;
+  }
+
+  private particle(
+    at: Vector3,
+    color: string,
+    size: number,
+    v: Vector3,
+    opts: { decay?: number; grow?: number; gravity?: number; opacity?: number } = {},
+  ): void {
+    const mesh = new Mesh(
+      new SphereGeometry(size, 6, 5),
+      new MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: opts.opacity ?? 1,
+        depthWrite: false,
+      }),
+    );
+    mesh.position.copy(at);
+    this.fx.add(mesh);
+    this.particles.push({
+      mesh,
+      v,
+      life: opts.opacity ?? 1,
+      decay: opts.decay ?? 2.2,
+      grow: opts.grow ?? 0,
+      gravity: opts.gravity ?? 3,
+    });
+  }
+
+  private spark(at: Vector3, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      this.particle(
+        at,
+        i % 2 ? '#fff4c2' : '#ffb347',
+        0.03,
+        new Vector3(Math.cos(a) * 2.2, 1 + (i % 3) * 0.6, Math.sin(a) * 1.4),
+        { decay: 2.6, gravity: 6 },
       );
-      m.position.copy(at);
-      m.userData.v = new Vector3(Math.cos(i) * 0.06, 0.03 + (i % 3) * 0.02, Math.sin(i * 2) * 0.05);
-      m.userData.life = 1;
-      this.fx.add(m);
     }
   }
 
-  private updateFx(): void {
-    for (const m of [...this.fx.children]) {
-      if (!(m instanceof Mesh) || !m.userData.v) continue;
-      m.position.add(m.userData.v as Vector3);
-      (m.userData.v as Vector3).y -= 0.004;
-      m.userData.life = (m.userData.life as number) - 0.05;
-      (m.material as MeshBasicMaterial).opacity = Math.max(0, m.userData.life as number);
-      if ((m.userData.life as number) <= 0) {
-        this.fx.remove(m);
-        m.geometry.dispose();
+  private dust(at: Vector3, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      this.particle(
+        at.clone().add(new Vector3(Math.cos(a) * 0.15, 0.02, Math.sin(a) * 0.15)),
+        '#b8a67a',
+        0.07,
+        new Vector3(Math.cos(a) * 0.7, 0.35, Math.sin(a) * 0.5),
+        { decay: 1.3, grow: 1.6, gravity: 0.3, opacity: 0.6 },
+      );
+    }
+  }
+
+  private muzzleFlash(at: Vector3, side: number): void {
+    this.particle(at, '#fff6c8', 0.16, new Vector3(-side * 1.5, 0, 0), {
+      decay: 7,
+      grow: 2,
+      gravity: 0,
+    });
+    this.particle(at, '#ff9b2f', 0.1, new Vector3(-side * 0.8, 0, 0), {
+      decay: 6,
+      grow: 1.5,
+      gravity: 0,
+    });
+    for (let i = 0; i < 6; i++) {
+      this.particle(
+        at,
+        '#cfcac0',
+        0.09,
+        new Vector3(-side * (0.4 + i * 0.12), 0.15 + i * 0.05, (i % 2 ? 1 : -1) * 0.1),
+        { decay: 0.6, grow: 1.8, gravity: -0.1, opacity: 0.55 },
+      );
+    }
+  }
+
+  private explosion(at: Vector3): void {
+    this.particle(at, '#ffd36b', 0.3, new Vector3(), { decay: 3, grow: 5, gravity: 0 });
+    this.particle(at, '#ff7a1a', 0.25, new Vector3(), { decay: 2.4, grow: 4, gravity: 0 });
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2;
+      this.particle(
+        at,
+        '#5a544c',
+        0.14,
+        new Vector3(Math.cos(a) * 0.8, 0.8 + (i % 3) * 0.3, Math.sin(a) * 0.5),
+        { decay: 0.7, grow: 1.5, gravity: 0.2, opacity: 0.7 },
+      );
+    }
+    this.spark(at, 14);
+  }
+
+  private updateFx(dt: number): void {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i]!;
+      p.mesh.position.addScaledVector(p.v, dt);
+      p.v.y -= p.gravity * dt;
+      p.life -= p.decay * dt;
+      if (p.grow) p.mesh.scale.multiplyScalar(1 + p.grow * dt);
+      (p.mesh.material as MeshBasicMaterial).opacity = Math.max(0, p.life);
+      if (p.life <= 0) {
+        this.fx.remove(p.mesh);
+        p.mesh.geometry.dispose();
+        (p.mesh.material as MeshBasicMaterial).dispose();
+        this.particles.splice(i, 1);
       }
     }
   }
@@ -394,7 +456,9 @@ export class DuelStage {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // Keep both fighters in frame on narrow screens.
-    this.camera.position.z = Math.max(6.2, 9.5 / this.camera.aspect);
+    this.home = CAMERA_HOME.clone().setZ(Math.max(6.2, 9.5 / this.camera.aspect));
+    this.camera.position.copy(this.home);
+    this.camera.lookAt(LOOK);
     this.camera.updateProjectionMatrix();
     this.render();
   }

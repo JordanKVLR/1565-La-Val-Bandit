@@ -57,9 +57,9 @@ describe('forecast', () => {
     // Thrust: hit = 75 + DEX 6×2 − AGL 6×2 = 75; attack back / no reaction +15 → 90; defend and a failed counter always hit
     expect(f.zone).toBe('front');
     expect(f.hitChance).toEqual({ defend: 100, avoid: 75, attackBack: 90, counter: 100, none: 90 });
-    // damage = (POW 6 + WEP 9) × 2 − 8 = 22; defend = round(30*0.5) - 8 = 7
-    // failed counter: 30 × 1.25 − 8 = 29.5 → 30
-    expect(f.damage).toEqual({ defend: 7, avoid: 22, attackBack: 22, counter: 30, none: 22 });
+    // damage = (POW 6 + WEP 9) × 2 = 30 (DEF 0, no armour); Defend halves it to 15;
+    // a failed counter takes 30 × 1.25 = 37.5 → 38
+    expect(f.damage).toEqual({ defend: 15, avoid: 30, attackBack: 30, counter: 38, none: 30 });
   });
 
   it('rewards rear attacks with hit and damage bonuses', () => {
@@ -67,7 +67,7 @@ describe('forecast', () => {
     const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
     expect(f.zone).toBe('rear');
     expect(f.hitChance.avoid).toBe(95);
-    expect(f.damage.avoid).toBe(Math.round(30 * 1.25) - 8);
+    expect(f.damage.avoid).toBe(Math.round(30 * 1.25));
   });
 
   it('rewards height and penalises attacking uphill', () => {
@@ -75,12 +75,12 @@ describe('forecast', () => {
     const fu = forecastAttack(up.state, up.a, up.t, up.a.pos, findAttack(up.a, 'thrust'));
     expect(fu.heightDiff).toBe(2);
     expect(fu.hitChance.avoid).toBe(85);
-    expect(fu.damage.avoid).toBe(Math.round(30 * 1.2) - 8);
+    expect(fu.damage.avoid).toBe(Math.round(30 * 1.2));
 
     const down = duel({ heights: ['00000', '00200', '00000'] });
     const fd = forecastAttack(down.state, down.a, down.t, down.a.pos, findAttack(down.a, 'thrust'));
     expect(fd.hitChance.avoid).toBe(65);
-    expect(fd.damage.avoid).toBe(22); // no damage penalty downhill
+    expect(fd.damage.avoid).toBe(30); // no damage penalty downhill
   });
 
   it('counts adjacent allies as assist, capped', () => {
@@ -125,16 +125,16 @@ describe('forecast', () => {
   it('forecasts the strike back and the counter gamble', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
-    // The defender strikes back with Slash: 80 + 20 = 100 → 95 (cap); (24 + 6) × 0.8 − 8 = 16
+    // The defender strikes back with Slash: 80 + 20 = 100 → 95 (cap); (24 + 6) × 0.8 = 24
     expect(f.retaliation).toEqual({
       attackId: 'basic',
       attackName: 'Slash',
       hits: 1,
       fpCost: 25,
       hitChance: 95,
-      damage: 16,
+      damage: 24,
     });
-    // equal INT: 10% base chance; reflects the Thrust's 22 × 1.25 = 27.5 → 28
-    expect(f.counter).toEqual({ chance: 10, reflect: 28 });
+    // equal DEX + AGL: 10% base chance; reflects the Thrust's 30 × 1.25 = 37.5 → 38
+    expect(f.counter).toEqual({ chance: 10, reflect: 38 });
   });
 });

@@ -9,7 +9,7 @@ import {
 import { useState } from 'preact/hooks';
 import { attackTags } from './attackText';
 import { Portrait } from './StatBars';
-import { AssistGrid, frameName, pad2, VbBars } from './vb';
+import { AssistGrid, frameName, pad2, portraitIdFor, VbBars } from './vb';
 
 /** Command names, as in the classic reaction menu. */
 const REACTION_LABEL: Record<Reaction, string> = {
@@ -66,7 +66,7 @@ function Side({
   return (
     <section class={`vb-panel vb-side fc-${unit.side}`}>
       <div class="vb-side-top">
-        <Portrait name={unit.name} side={unit.side} castId={unit.characterId} />
+        <Portrait name={unit.name} side={unit.side} castId={portraitIdFor(unit)} />
         <VbBars unit={unit} balance={state.balance} ap={ap ?? 0} fp={fp ?? 0} />
       </div>
       <div class="vb-rows">

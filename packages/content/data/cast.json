@@ -41,7 +41,13 @@
     "color": "#8a7a56",
     "title": "Arquebusier and chronicler"
   },
-  { "id": "ganni", "name": "Ġanni", "speaker": "ĠANNI", "color": "#4d6fa0", "title": "Militiaman" },
+  {
+    "id": "ganni",
+    "name": "Ġanni",
+    "speaker": "ĠANNI",
+    "color": "#4d6fa0",
+    "title": "Militiaman"
+  },
   {
     "id": "rozi",
     "name": "Rożi",
@@ -105,8 +111,27 @@
     "color": "#5c3a6e",
     "title": "Captain of the Mdina cavalry"
   },
-  { "id": "villager", "name": "Villager", "speaker": "VILLAGER", "color": "#7a6a4a", "title": "" },
-  { "id": "soldier", "name": "Soldier", "speaker": "SOLDIER", "color": "#5a5a6a", "title": "" },
+  {
+    "id": "villager",
+    "name": "Villager",
+    "speaker": "VILLAGER",
+    "color": "#7a6a4a",
+    "title": ""
+  },
+  {
+    "id": "villager-man",
+    "name": "Young farmhand",
+    "speaker": "FARMHAND",
+    "color": "#7a6a4a",
+    "title": ""
+  },
+  {
+    "id": "soldier",
+    "name": "Soldier",
+    "speaker": "SOLDIER",
+    "color": "#5a5a6a",
+    "title": ""
+  },
   {
     "id": "janissary",
     "name": "Janissary",

@@ -1,9 +1,9 @@
 import type { BattleState, Facing } from '@m1565/core';
-import type { RosterEntry } from '@m1565/content';
+import type { CharacterProgress, RosterEntry } from '@m1565/content';
 import type { Stores } from './inventory';
 import type { StoryStep } from '../story/StoryRunner';
 
-export type { RosterEntry };
+export type { CharacterProgress, RosterEntry };
 
 export interface StageActor {
   readonly x: number;
@@ -31,6 +31,8 @@ export interface CampaignSave {
   readonly scudi: number;
   /** Spare armaturas, weapons, charms and amulets ("kind:id" → count). */
   readonly stores: Stores;
+  /** Named allies who have fought for the player but not joined yet: their progress so far. */
+  readonly veterans?: Readonly<Record<string, CharacterProgress>>;
   readonly completedBattles: readonly string[];
   readonly stage: StageState;
   readonly chapter: ChapterInfo;

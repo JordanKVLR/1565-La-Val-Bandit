@@ -7,17 +7,27 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
         <dl>
           <dt>Your turn</dt>
           <dd>
-            Move, then Attack, then End Turn and pick a facing. Tap a blue tile to see the route and
-            its AP cost on your card, then tap it again to move. Undo takes back a move you haven't
-            followed with an attack.
+            Your unit is selected for you and its movement range is already showing: blue tiles
+            inside a white outline. Tap a tile to see the route and its AP cost, then tap it again
+            to move (with a mouse, hovering shows the route and one click moves). Enemies you can
+            strike are framed in yellow with a crosshair; tap one for the forecast. Attack range is
+            orange stripes inside a dashed edge. Undo takes back a move you haven't followed with an
+            attack. Turn on High-contrast map in Settings for bolder highlights.
+          </dd>
+          <dt>Keyboard and mouse</dt>
+          <dd>
+            M Move · A Attack · E End turn · U Undo · Enter or Space confirm · Esc or right-click go
+            back.
           </dd>
           <dt>Techniques</dt>
           <dd>
             Every pilot starts with two attacks for their weapon: blades Slash (accurate, lighter)
             and Thrust; polearms Thrust and Long Thrust (reaches 2 tiles, less accurate); maces Bash
-            and Smash; guns Fire (2–4 tiles) and a weak Stock Strike up close. Each faction adds its
-            own techniques, learned as your attributes grow. The stronger a technique, the more AP
-            and FP it costs and the less accurate it is.
+            and Smash; guns Fire (2–4 tiles) and a Stock Strike up close as strong as a Slash. Each
+            faction adds its own techniques, learned as your attributes grow. The stronger a
+            technique, the more AP and FP it costs and the less accurate it is: FP is 5 plus 45 for
+            every step of power above ×1.0, and anything fired or thrown costs 20 FP more. Open a
+            unit's techniques to read what each one does.
           </dd>
           <dt>XP and levels</dt>
           <dd>
@@ -47,13 +57,14 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>Reactions</dt>
           <dd>
-            When attacked you always choose. <b>Defend</b> (FP +30) halves the hit. <b>Avoid</b> (FP
-            +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique
-            you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25),
-            and only techniques that reach and keep you at or under 100 FP are offered. From the
-            front only, <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto
-            the attacker at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker
-            improves the odds. From behind you can only Avoid. <b>Do nothing</b> costs nothing.
+            When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your
+            DEF. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes
+            back with a technique you choose if you survive; it costs that technique's AP and FP,
+            all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP
+            are offered. From the front only, <b>Counter</b> (FP +20) is a gamble: if it works the
+            blow is repelled onto the attacker at 1.25×; if it fails you take 1.25×. Higher DEX +
+            AGL than the attacker improves the odds. From behind you can only Avoid.{' '}
+            <b>Do nothing</b> costs nothing.
           </dd>
           <dt>Position</dt>
           <dd>

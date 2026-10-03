@@ -352,8 +352,9 @@ export function damageFor(
   const b = state.balance;
   const mult =
     reaction === 'defend' ? b.defendDamageMult : reaction === 'counter' ? b.counterFailMult : 1;
-  const blocked = (target.arm + target.def * b.defDamagePerPoint) * (1 - n.pierce);
-  return Math.max(1, Math.round(n.baseDamage * mult - blocked));
+  // DEF blocks first; Defend then halves what gets through (so a defended blow is about half).
+  const blocked = target.def * b.defDamagePerPoint * (1 - n.pierce);
+  return Math.max(1, Math.round((n.baseDamage - blocked) * mult));
 }
 
 /**

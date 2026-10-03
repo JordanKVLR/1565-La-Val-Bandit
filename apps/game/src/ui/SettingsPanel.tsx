@@ -72,6 +72,14 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div class="setting">
+          <span>High-contrast map</span>
+          <OnOff
+            label="High-contrast map"
+            value={s.highContrast}
+            onChange={(v) => set({ highContrast: v })}
+          />
+        </div>
+        <div class="setting">
           <span>Duel close-ups</span>
           <div class="seg">
             <button

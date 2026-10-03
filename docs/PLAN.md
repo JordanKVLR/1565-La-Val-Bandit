@@ -53,9 +53,10 @@ Story scene (isometric diorama + portrait dialogue, choices)
 
 ### 2.2 Battle rules (initial numbers; the balance sim tunes them)
 
-**Stats per unit:** HP, AP (0–100), FP (0–100), ARM (armour), MOV (tiles), weapon, charm and
+**Stats per unit:** HP, AP (0–100), FP (0–100), MOV (tiles), weapon, charm and
 amulet, plus the six classic pilot attributes (each 0–32). Gear bonuses add on top of the pilot's
-own values, still capped at 32.
+own values, still capped at 32. Armaturas have **no armour value**: every armatura gives BAS, DEF
+and WEP (9–12 points in all), heavy ones leaning on DEF and BAS, light ones on AGL and DEX.
 
 | Attribute | Effect                                       |
 | --------- | -------------------------------------------- |
@@ -80,20 +81,20 @@ This section follows the classic Vanguard Bandits framework (see §1: mechanics,
   Rubble 16 · Shallows 20. Climbing costs +6 per height step. MOV caps tiles per turn.
 - Attacks cost AP and FP by power, and stronger attacks are less accurate (one formula for
   every technique, with p = power × hits − 1): **AP = 30 + 50p** (min 20, rounded to 5),
-  **FP = 5 + 15p** (min 5), **accuracy = −60p %** (max +20%).
+  **FP = 5 + 45p** (min 5; +20 for shot, volley and throw techniques), **accuracy = −60p %** (max +20%).
 - Reactions never cost AP; they cost FP (see below).
 - The unit card previews every cost before you commit: tapping a tile shows the route and the
   AP it will take (tap again to move), and picking a technique shows its AP and FP.
 
 **Starter attacks** (every pilot, no requirements; faction techniques come on top):
 
-| Weapon    | Attack 1                          | Attack 2                                      |
-| --------- | --------------------------------- | --------------------------------------------- |
-| Blade     | Slash ×0.8, +12%, 20 AP, 5 FP     | Thrust ×1.0, ±0, 30 AP, 5 FP                  |
-| Polearm   | Thrust ×1.0, ±0, 30 AP            | Long Thrust ×1.0, −20%, 35 AP, reach 1–2      |
-| Blunt     | Bash ×0.8, +12%, 20 AP            | Smash ×1.0, ±0, 30 AP                         |
-| Firearm   | Fire ×1.0, gun range, weapon's AP | Stock Strike ×0.5, +20%, 20 AP, adjacent only |
-| Explosive | Throw ×1.0, weapon range          | Shove ×0.5, +20%, 20 AP, adjacent only        |
+| Weapon    | Attack 1                                 | Attack 2                                            |
+| --------- | ---------------------------------------- | --------------------------------------------------- |
+| Blade     | Slash ×0.8, +12%, 20 AP, 5 FP            | Thrust ×1.0, ±0, 30 AP, 5 FP                        |
+| Polearm   | Thrust ×1.0, ±0, 30 AP                   | Long Thrust ×1.0, −20%, 35 AP, reach 1–2            |
+| Blunt     | Bash ×0.8, +12%, 20 AP                   | Smash ×1.0, ±0, 30 AP                               |
+| Firearm   | Fire ×1.0, gun range, weapon's AP, 25 FP | Stock Strike ×0.8, +12%, 20 AP, 5 FP, adjacent only |
+| Explosive | Throw ×1.0, weapon range, 25 FP          | Shove ×0.5, +20%, 20 AP, adjacent only              |
 
 **Fatigue Points (FP):**
 
@@ -126,7 +127,7 @@ Attackers turn to face their target, and a defender that survives turns to face 
 - Facing bonus: front 0, side +10, rear +25. Rear hits also deal ×1.25 damage.
 - **Assist:** +5% for each ally adjacent to the target and able to act, up to +15%.
 
-**Damage** = `max(1, (POW + WEP) × 1.6 × technique power × heightMult × facingMult × reactionMult − (ARM + DEF × 1.5) × (1 − pierce))`,
+**Damage** = `max(1, ((POW + WEP) × 1.6 × technique power × heightMult × facingMult − DEF × 1.5 × (1 − pierce)) × reactionMult)`: DEF comes off first, then Defend halves what is left,
 where heightMult is 1 + 0.1 per step above the target (max +0.3).
 
 **Terrain label** in the HUD corner uses the format `<height>H <avoid>% <name>`
@@ -192,8 +193,11 @@ skippable on tap.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.
 - **Armoury**, open between every battle: buys and sells weapons, charms and amulets for
-  _scudi_ (spares sell for half price). Armaturas are never sold. Battles pay 50 scudi plus
-  20 + 5 × level per enemy defeated.
+  _scudi_ (spares sell for half price). Armaturas are never sold. Battles pay 150 scudi plus
+  60 + 15 × level per enemy defeated, and 100 more for losing nobody. Every weapon type has
+  three tiers per side (common, fine, masterwork), unlocked as the story goes on along every
+  route. The screen is the armourer's workshop (ADR 0005): pilot rail, 3D armatura with its four
+  slots, a shelf of item cards, and a before → after comparison for every item.
 - **Affinity:** hidden relationship values changed by dialogue choices; they gate scenes, routes
   and ending variations.
 

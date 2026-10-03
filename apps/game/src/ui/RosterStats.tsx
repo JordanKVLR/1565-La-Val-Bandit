@@ -1,7 +1,7 @@
 import type { StatName } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 import { summarize } from '../campaign/inventory';
-import { ArmMovIcons, AttributeBars } from './battle/StatBars';
+import { AttributeBars, MovIcon } from './battle/StatBars';
 
 /**
  * A pilot's six attributes (with gear in brackets) and + buttons for unspent points, and
@@ -27,7 +27,7 @@ export function RosterStats({
   return (
     <div class="roster-stats">
       <div class="rs-head">
-        {frame && <ArmMovIcons arm={frame.armour} mov={frame.move} />}
+        {frame && <MovIcon mov={frame.move} />}
         {points > 0 && <b class="rs-points">{points} points to spend</b>}
       </div>
       <AttributeBars

@@ -217,10 +217,15 @@ function scoreAttack(
   else if (!kills && fpAfter + b.defendFpCost >= b.fpMax) score -= 6;
   if (f.retaliation) score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.7;
   if (f.counter) score -= (f.counter.chance / 100) * f.counter.reflect * 0.7;
-  const threats = enemies.filter(
-    (e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + maxReach(e),
-  ).length;
-  score -= threats * (profile === 'defensive' ? 10 : 2);
+  // Every other enemy that could reach this tile next turn is a risk, weighed by how hard it hits.
+  const danger = enemies
+    .filter((e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + maxReach(e))
+    .reduce(
+      (sum, e) =>
+        sum + Math.max(1, (e.pow + e.wep) * b.damagePerPoint - unit.def * b.defDamagePerPoint),
+      0,
+    );
+  score -= danger * (profile === 'defensive' ? 0.5 : 0.1);
   score -= moveCost * 0.05;
   return score;
 }

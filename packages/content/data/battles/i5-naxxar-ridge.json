@@ -83,12 +83,13 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "pow": 15,
+        "pow": 13,
         "dex": 13,
         "agl": 5,
         "def": 11,
         "bas": 12
-      }
+      },
+      "portrait": "scala"
     },
     {
       "id": "proto-1",
@@ -102,7 +103,7 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 14,
+        "pow": 12,
         "dex": 11,
         "agl": 5
       }
@@ -119,7 +120,7 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 14,
+        "pow": 12,
         "dex": 11,
         "agl": 5
       }

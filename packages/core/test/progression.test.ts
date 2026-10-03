@@ -241,8 +241,8 @@ describe('attacks', () => {
     expect(basic.reactions).toContain('attackBack');
     expect(f.reactions).not.toContain('attackBack');
     expect(f.reactions).not.toContain('counter');
-    // (POW 8 + WEP 9) × 2 × 1.5 = 51, armour 8 halved to 4 → 47
-    expect(f.damage.avoid).toBe(47);
+    // (POW 8 + WEP 9) × 2 × 1.5 = 51 (the target has no DEF to pierce)
+    expect(f.damage.avoid).toBe(51);
     const { state } = applyCommand(s, {
       type: 'attack',
       unitId: 'a',
@@ -267,5 +267,21 @@ describe('save compatibility', () => {
     const s = duel();
     expect(deserializeBattle(JSON.stringify(s))).toEqual(JSON.parse(JSON.stringify(s)));
     expect(s.saveVersion).toBe(SAVE_VERSION);
+  });
+});
+
+describe('portraits', () => {
+  it('carry a stand-in portrait through to the unit', () => {
+    const { state } = createBattle(
+      setup({
+        map: makeMap(['...']),
+        units: [
+          unit({ id: 'ganni', at: { x: 0, y: 0 }, portrait: 'ganni' }),
+          unit({ id: 'foe', at: { x: 2, y: 0 }, side: 'enemy' }),
+        ],
+      }),
+    );
+    expect(requireUnit(state, 'ganni').portrait).toBe('ganni');
+    expect(requireUnit(state, 'foe').portrait).toBeUndefined();
   });
 });

@@ -26,6 +26,10 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 export interface Pose {
   x: number;
   y: number;
+  /** Sideways step toward or away from the camera (a sidestep dodge). */
+  z: number;
+  /** Turn about the vertical axis (a spinning sweep). */
+  spin: number;
   lean: number;
   fall: number;
   sR: number;
@@ -42,6 +46,8 @@ export interface Pose {
 export const POSE_KEYS = [
   'x',
   'y',
+  'z',
+  'spin',
   'lean',
   'fall',
   'sR',
@@ -58,6 +64,8 @@ export const POSE_KEYS = [
 export const MELEE_GUARD: Pose = {
   x: 0,
   y: 0,
+  z: 0,
+  spin: 0,
   lean: -0.1,
   fall: 0,
   sR: 0.6,
@@ -80,8 +88,52 @@ export const RANGED_GUARD: Pose = {
   eL: 0.25,
 };
 
+/**
+ * Weapon angles: the weapon continues the forearm, so its direction is sR + eR + wR
+ * (0 = pointing down, π/2 = straight ahead, π = straight up).
+ */
+
+/** Spear or pike held level in both hands, point toward the enemy at hip height. */
+export const POLEARM_GUARD: Pose = {
+  ...MELEE_GUARD,
+  lean: -0.12,
+  sR: 0.45,
+  eR: 0.75,
+  wR: 0.35,
+  sL: 1.05,
+  eL: 0.35,
+  hR: 0.35,
+  kR: -0.35,
+  hL: -0.25,
+  kL: -0.2,
+};
+
+/** Shield raised in front, mace cocked over the shoulder. */
+export const SHIELD_GUARD: Pose = {
+  ...MELEE_GUARD,
+  sR: 2.0,
+  eR: 1.1,
+  wR: 0.4,
+  sL: 1.25,
+  eL: 0.75,
+};
+
+/** A grenade held low, ready to throw. */
+export const THROW_GUARD: Pose = { ...MELEE_GUARD, sR: 0.35, eR: 0.9, wR: 0.2 };
+
 export function guardFor(weapon: WeaponType): Pose {
-  return weapon === 'firearm' ? RANGED_GUARD : MELEE_GUARD;
+  switch (weapon) {
+    case 'firearm':
+      return RANGED_GUARD;
+    case 'polearm':
+      return POLEARM_GUARD;
+    case 'blunt':
+      return SHIELD_GUARD;
+    case 'explosive':
+      return THROW_GUARD;
+    default:
+      return MELEE_GUARD;
+  }
 }
 
 export interface FigureSpec {
@@ -303,6 +355,8 @@ export class ArmaturaFighter {
     this.pose = p;
     this.root.position.x = this.baseX + p.x * this.root.scale.x;
     this.root.position.y = p.y;
+    this.root.position.z = p.z;
+    this.root.rotation.y = p.spin;
     this.root.rotation.z = p.fall;
     this.spine.rotation.z = p.lean;
     this.shoulderR.rotation.z = p.sR;

@@ -12,6 +12,8 @@ import {
   sell,
   spares,
   summarize,
+  swap,
+  swapBlocked,
 } from './inventory';
 import { migrateCampaign } from './migrate';
 import { newRosterEntry } from './progression';
@@ -120,6 +122,36 @@ describe('inventory', () => {
     const stock = companyStock(lib, all, ['malta', 'ottoman']);
     const keys = stock.map((s) => `${s.kind}:${s.item}`);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+});
+
+describe('swapping gear between pilots', () => {
+  it('trades weapons both ways, so neither pilot is left without one', () => {
+    const h = swap(lib, start(), 'ninu', 'kateri', 'weapon');
+    const [ninu, kateri] = h.roster;
+    expect(ninu!.weapon).toBe(lib.characters.get('kateri')!.weapon);
+    expect(kateri!.weapon).toBe(lib.characters.get('ninu')!.weapon);
+    expect(h.stores).toEqual(start().stores);
+  });
+
+  it("moves a charm across, handing back the taker's own if they had one", () => {
+    let h = buy(lib, start(), {
+      item: 'charm-pow-1',
+      kind: 'charm',
+      allegiance: 'malta',
+      after: null,
+    });
+    h = equip(lib, h, 'kateri', 'charm', 'charm-pow-1');
+    h = swap(lib, h, 'ninu', 'kateri', 'charm');
+    expect(h.roster[0]!.charm).toBe('charm-pow-1');
+    expect(h.roster[1]!.charm).toBeNull();
+  });
+
+  it("refuses when either pilot can't use the other's armatura", () => {
+    const mixed = { ...start(), roster: [...start().roster, newRosterEntry(lib, 'deniz')] };
+    expect(swapBlocked(lib, mixed, 'ninu', 'deniz', 'frame')).toMatch(/Can't use/);
+    expect(() => swap(lib, mixed, 'ninu', 'deniz', 'frame')).toThrow();
+    expect(swapBlocked(lib, mixed, 'ninu', 'kateri', 'frame')).toBeUndefined();
   });
 });
 

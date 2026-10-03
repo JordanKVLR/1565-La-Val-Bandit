@@ -50,7 +50,6 @@ export const FRAME: Frame = {
   id: 'frame',
   name: 'Frame',
   hp: 48,
-  armour: 8,
   move: 4,
   bonus: {},
 };
@@ -81,7 +80,14 @@ export function unit(
  * Rules tests run on a fixed reference balance (round numbers that are easy to check by hand),
  * so retuning the shipped defaults doesn't rewrite every expected value.
  */
-export const TEST_BALANCE = { ...DEFAULT_BALANCE, baseHit: 75, damagePerPoint: 2 };
+export const TEST_BALANCE = {
+  ...DEFAULT_BALANCE,
+  baseHit: 75,
+  damagePerPoint: 2,
+  xpHitBase: 30,
+  xpDamageShare: 100,
+  xpDefeat: 150,
+};
 
 export function setup(over: Partial<BattleSetup> & Pick<BattleSetup, 'units'>): BattleSetup {
   return {
