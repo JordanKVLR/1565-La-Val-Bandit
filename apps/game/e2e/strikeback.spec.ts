@@ -49,7 +49,7 @@ test('attack back lets the player choose the technique to strike back with', asy
         .getByRole('button', { name: /Continue|Save points/ })
         .click(quick)
         .catch(() => undefined);
-    } else if (kind === 'command') {
+    } else if (kind === 'command' || kind === 'move') {
       // Walk the active unit toward the enemy so they meet head-on, then end the turn.
       await page.evaluate(() => {
         const { ctl } = window.__battle!;

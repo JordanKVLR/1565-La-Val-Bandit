@@ -27,6 +27,8 @@ import {
 import type { Sprite } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { applyTerrainArt } from './art';
+import type { HighlightKind } from './highlights';
+import { buildHighlights, disposeHighlights } from './highlights';
 import type { TerrainAtlas } from './terrainTextures';
 import { createTerrainAtlas } from './terrainTextures';
 import type { FigureSpec } from './Armatura';
@@ -50,16 +52,7 @@ export interface UnitVisual extends UnitLook {
   readonly figure?: FigureSpec;
 }
 
-export type HighlightKind = 'move' | 'path' | 'range' | 'target' | 'danger' | 'goal';
-
-const HIGHLIGHT_COLORS: Record<HighlightKind, { color: number; opacity: number }> = {
-  move: { color: 0x4aa3e0, opacity: 0.45 },
-  path: { color: 0xf5d77a, opacity: 0.6 },
-  range: { color: 0xe07a3a, opacity: 0.3 },
-  target: { color: 0xe0303a, opacity: 0.6 },
-  danger: { color: 0x9a3ae0, opacity: 0.25 },
-  goal: { color: 0xf5c542, opacity: 0.45 },
-};
+export type { HighlightKind };
 
 const FACING_ANGLE: Record<Facing, number> = {
   north: Math.PI,
@@ -132,6 +125,10 @@ export class BattleView {
   private readonly target = new Vector3();
   private readonly cursor: Mesh;
   private readonly highlightGroup = new Group();
+  private highContrast = false;
+  private highlightToken = 0;
+  private lastLayers: ReadonlyArray<{ kind: HighlightKind; tiles: readonly Coord[] }> = [];
+  private hovered: string | null = null;
   private readonly raycaster = new Raycaster();
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly resizeObserver: ResizeObserver;
@@ -150,6 +147,12 @@ export class BattleView {
     private readonly canvas: HTMLCanvasElement,
     private readonly map: BattleMap,
     private readonly onTileTap: (c: Coord) => void,
+    private readonly input: {
+      /** The tile under a mouse pointer (PC), or null when it leaves the map. */
+      readonly onHover?: (c: Coord | null) => void;
+      /** Right-click: back out of the current step. */
+      readonly onCancel?: () => void;
+    } = {},
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -183,6 +186,8 @@ export class BattleView {
     canvas.addEventListener('pointerup', this.onPointerUp);
     canvas.addEventListener('pointercancel', this.onPointerUp);
     canvas.addEventListener('wheel', this.onWheel, { passive: false });
+    canvas.addEventListener('contextmenu', this.onContextMenu);
+    canvas.addEventListener('pointerleave', this.onPointerLeave);
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
@@ -197,6 +202,8 @@ export class BattleView {
     this.canvas.removeEventListener('pointerup', this.onPointerUp);
     this.canvas.removeEventListener('pointercancel', this.onPointerUp);
     this.canvas.removeEventListener('wheel', this.onWheel);
+    this.canvas.removeEventListener('contextmenu', this.onContextMenu);
+    this.canvas.removeEventListener('pointerleave', this.onPointerLeave);
     this.scene.traverse((o) => {
       if (o instanceof Mesh || o instanceof LineSegments) o.geometry.dispose();
     });
@@ -315,21 +322,31 @@ export class BattleView {
   }
 
   setHighlights(layers: ReadonlyArray<{ kind: HighlightKind; tiles: readonly Coord[] }>): void {
-    for (const child of [...this.highlightGroup.children]) {
-      this.highlightGroup.remove(child);
-      if (child instanceof Mesh) child.geometry.dispose();
-    }
-    const geo = new PlaneGeometry(0.92, 0.92).rotateX(-Math.PI / 2);
-    for (const layer of layers) {
-      const { color, opacity } = HIGHLIGHT_COLORS[layer.kind];
-      const mat = new MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false });
-      for (const c of layer.tiles) {
-        const m = new Mesh(geo, mat);
-        m.position.copy(this.tileTop(c)).add(new Vector3(0, 0.005, 0));
-        this.highlightGroup.add(m);
-      }
+    this.lastLayers = layers;
+    disposeHighlights(this.highlightGroup);
+    this.highlightGroup.clear();
+    const { group, pulsing } = buildHighlights(layers, (c) => this.tileTop(c), this.highContrast);
+    for (const child of [...group.children]) this.highlightGroup.add(child);
+    // High contrast dims the map under highlights so they stand out.
+    const dim = this.highContrast && layers.some((l) => l.kind !== 'goal' && l.tiles.length);
+    (this.terrain?.material as MeshLambertMaterial | undefined)?.color.setScalar(dim ? 0.55 : 1);
+    const token = ++this.highlightToken;
+    if (pulsing.length && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.addTween((now) => {
+        if (token !== this.highlightToken || this.disposed) return true;
+        const k = 1 + 0.07 * Math.sin(now / 170);
+        for (const f of pulsing) f.scale.set(k, 1, k);
+        return false;
+      });
     }
     this.requestRender();
+  }
+
+  /** Bolder highlight patterns and outlines, and a dimmed map behind them. */
+  setHighContrast(on: boolean): void {
+    if (on === this.highContrast) return;
+    this.highContrast = on;
+    this.setHighlights(this.lastLayers);
   }
 
   select(c: Coord | undefined): void {
@@ -585,7 +602,18 @@ export class BattleView {
 
   private readonly onPointerMove = (e: PointerEvent): void => {
     const prev = this.pointers.get(e.pointerId);
-    if (!prev) return;
+    if (!prev) {
+      // A mouse moving with no button held: tell the controller which tile it's over.
+      if (e.pointerType === 'mouse' && this.input.onHover) {
+        const c = this.pick(e.clientX, e.clientY);
+        const key = c ? `${c.x},${c.y}` : null;
+        if (key !== this.hovered) {
+          this.hovered = key;
+          this.input.onHover(c ?? null);
+        }
+      }
+      return;
+    }
     this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (this.pointers.size === 2) {
       const d = this.currentPinchDistance();
@@ -603,12 +631,27 @@ export class BattleView {
 
   private readonly onPointerUp = (e: PointerEvent): void => {
     this.pointers.delete(e.pointerId);
+    if (e.type === 'pointerup' && e.button === 2) {
+      this.dragStart = undefined;
+      return;
+    }
     if (e.type === 'pointerup' && this.dragStart && !this.dragStart.moved) {
       const c = this.pick(e.clientX, e.clientY);
       if (c) this.onTileTap(c);
     }
     if (this.pointers.size === 0) this.dragStart = undefined;
     this.pinchDistance = 0;
+  };
+
+  private readonly onContextMenu = (e: MouseEvent): void => {
+    e.preventDefault();
+    this.input.onCancel?.();
+  };
+
+  private readonly onPointerLeave = (): void => {
+    if (this.hovered === null) return;
+    this.hovered = null;
+    this.input.onHover?.(null);
   };
 
   private readonly onWheel = (e: WheelEvent): void => {
@@ -628,6 +671,7 @@ function sameLook(a: UnitLook, b: UnitLook): boolean {
     a.color === b.color &&
     a.hp === b.hp &&
     a.maxHp === b.maxHp &&
-    a.active === b.active
+    a.active === b.active &&
+    a.enemy === b.enemy
   );
 }

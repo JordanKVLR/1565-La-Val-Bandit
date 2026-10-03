@@ -11,7 +11,8 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
   // Play through any enemy turns until one of the player's units is waiting for orders.
   for (let i = 0; i < 100; i++) {
     const kind = await page.evaluate(() => window.__battle?.ctl.mode.kind);
-    if (kind === 'command') break;
+    // A player's turn opens with the movement range already showing.
+    if (kind === 'command' || kind === 'move') break;
     if (kind === 'closeUp') await page.getByTestId('closeup').click();
     else if (kind === 'xp') await page.getByTestId('xp-continue').click();
     else if (kind === 'reaction') await page.getByTestId('react-go').click();
@@ -19,7 +20,9 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
       await page.getByRole('button', { name: /Continue|Save points/ }).click();
     else await page.waitForTimeout(200);
   }
-  await expect.poll(() => page.evaluate(() => window.__battle?.ctl.mode.kind)).toBe('command');
+  await expect
+    .poll(() => page.evaluate(() => window.__battle?.ctl.mode.kind))
+    .toMatch(/^(command|move)$/);
 
   // Put the active unit next to an enemy with full AP, then attack through the UI.
   await page.evaluate(() => {

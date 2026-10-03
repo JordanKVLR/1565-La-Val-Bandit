@@ -7,9 +7,17 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
         <dl>
           <dt>Your turn</dt>
           <dd>
-            Move, then Attack, then End Turn and pick a facing. Tap a blue tile to see the route and
-            its AP cost on your card, then tap it again to move. Undo takes back a move you haven't
-            followed with an attack.
+            Your unit is selected for you and its movement range is already showing: blue tiles
+            inside a white outline. Tap a tile to see the route and its AP cost, then tap it again
+            to move (with a mouse, hovering shows the route and one click moves). Enemies you can
+            strike are framed in yellow with a crosshair; tap one for the forecast. Attack range is
+            orange stripes inside a dashed edge. Undo takes back a move you haven't followed with an
+            attack. Turn on High-contrast map in Settings for bolder highlights.
+          </dd>
+          <dt>Keyboard and mouse</dt>
+          <dd>
+            M Move · A Attack · E End turn · U Undo · Enter or Space confirm · Esc or right-click go
+            back.
           </dd>
           <dt>Techniques</dt>
           <dd>

@@ -195,10 +195,14 @@ body,
   outline: 2px solid var(--gold);
 }
 .tq-player {
-  background: #2f5fa8;
+  background: #1f6fb5;
+  border-radius: 50%;
 }
+/* Enemies are diamonds as well as orange, so the side never depends on colour alone. */
 .tq-enemy {
-  background: #a8322f;
+  background: #d0700a;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
 /* Bottom-left stack: tapped unit's card above the terrain readout. Clear of the action menu. */
 .hud-bottom-left {
@@ -366,10 +370,10 @@ body,
   color: #f4ead2;
 }
 .portrait-player {
-  background: linear-gradient(135deg, #3d6fbd, #1d3a66);
+  background: linear-gradient(135deg, #2f80c8, #12406b);
 }
 .portrait-enemy {
-  background: linear-gradient(135deg, #bd4a3d, #661d1d);
+  background: linear-gradient(135deg, #e08a1e, #7a3c00);
 }
 .unit-bars {
   flex: 1;
@@ -2003,4 +2007,26 @@ input[type='range'] {
   color: var(--gold);
   font-size: 0.95rem;
   font-variant: small-caps;
+}
+
+/* Keyboard hints appear only with a mouse (PC / Steam Deck docked). */
+.key {
+  display: none;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-family: inherit;
+  font-size: 0.7em;
+  line-height: 1.5;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.75;
+}
+@media (hover: hover) and (pointer: fine) {
+  .key {
+    display: inline-block;
+  }
+}
+.btn.action.on {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
 }

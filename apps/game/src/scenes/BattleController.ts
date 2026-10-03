@@ -39,6 +39,7 @@ import type { BarkSet, Library } from '@m1565/content';
 import type { XpGain } from '../ui/battle/XpPanel';
 import type { FigureSpec } from '../render/Armatura';
 import { figureSpec } from '../render/Armatura';
+import { ARROW_COLORS, SIDE_COLORS } from '../render/palette';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
 import { sfx } from '../platform/audio';
 import { settings } from '../state/settings';
@@ -143,9 +144,6 @@ export interface BattleView {
   readonly notices: readonly { readonly id: number; readonly text: string }[];
 }
 
-const SIDE_COLORS = { player: '#2f5fa8', enemy: '#a8322f' } as const;
-const ARROW_COLORS = { player: '#9cc8ff', enemy: '#ffb0a8' } as const;
-
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const pickLine = (lines: readonly string[]) =>
   lines[Math.floor(Math.random() * lines.length)] ?? '';
@@ -217,7 +215,17 @@ export class BattleController {
         else this.previewMove(c, reach);
         return;
       }
-      this.toCommand();
+      // Tapping outside the range just inspects the tile; the range stays up.
+      if (mode.pending) this.patch({ mode: { kind: 'move', reach: mode.reach } });
+      this.showMoveRange(mode.reach);
+    } else if (mode.kind === 'command') {
+      // After moving, the main attack's targets are already marked: tapping one opens its forecast.
+      const target = unitAt(this.state, c);
+      const basic = this.basicOption();
+      if (target && basic && basic.targets.includes(target.id)) {
+        this.showForecast(basic.attack.id, target.id);
+        return;
+      }
     } else if (mode.kind === 'target' || mode.kind === 'forecast') {
       const target = unitAt(this.state, c);
       const targets =
@@ -237,29 +245,64 @@ export class BattleController {
     const unit = this.active();
     if (!unit || this.mode.kind !== 'command' || !this.canMove()) return;
     sfx('select');
+    this.enterMove();
+  }
+
+  /** PC: the mouse over a tile previews the route there (so one click then moves). */
+  hoverTile(c: Coord | null): void {
+    const mode = this.mode;
+    if (mode.kind !== 'move') return;
+    const reach = c ? mode.reach.get(coordKey(c)) : undefined;
+    if (c && reach && reach.path.length > 0) {
+      if (mode.pending && coordKey(mode.pending.to) === coordKey(c)) return;
+      this.previewMove(c, reach, false);
+    } else if (mode.pending) {
+      this.patch({ mode: { kind: 'move', reach: mode.reach } });
+      this.showMoveRange(mode.reach);
+    }
+  }
+
+  private enterMove(): void {
+    const unit = this.active();
+    if (!unit) return;
     const reach = reachableTiles(this.state, unit);
     this.patch({ mode: { kind: 'move', reach } });
+    this.showMoveRange(reach);
+  }
+
+  private showMoveRange(reach: ReadonlyMap<string, Reach>, path?: readonly Coord[]): void {
+    const unit = this.active();
+    if (!unit) return;
     this.highlight([
       {
         kind: 'move',
         tiles: [...reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
       },
+      // Enemies already in reach of the main attack, before moving at all.
+      ...(path ? [] : this.basicTargetLayer()),
+      ...(path ? [{ kind: 'path' as const, tiles: path }] : []),
     ]);
   }
 
-  private previewMove(to: Coord, reach: Reach): void {
+  /** The main attack, if it can be used now and has someone to hit. */
+  private basicOption(): AttackOption | undefined {
+    if (!this.canAttack()) return undefined;
+    return this.attackOptions().find((o) => o.unlocked && o.affordable && o.targets.length > 0);
+  }
+
+  private basicTargetLayer(): { kind: HighlightKind; tiles: Coord[] }[] {
+    const basic = this.basicOption();
+    return basic
+      ? [{ kind: 'target', tiles: basic.targets.map((id) => findUnit(this.state, id)!.pos) }]
+      : [];
+  }
+
+  private previewMove(to: Coord, reach: Reach, sound = true): void {
     if (this.mode.kind !== 'move') return;
-    const unit = this.active()!;
-    sfx('select');
+    if (sound) sfx('select');
     this.patch({ mode: { ...this.mode, pending: { to, cost: reach.cost } }, inspected: to });
     this.renderer?.select(to);
-    this.highlight([
-      {
-        kind: 'move',
-        tiles: [...this.mode.reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
-      },
-      { kind: 'path', tiles: reach.path },
-    ]);
+    this.showMoveRange(this.mode.reach, reach.path);
   }
 
   /** Moves to the tile picked in move mode. */
@@ -272,7 +315,11 @@ export class BattleController {
   /** Opens the list of techniques. */
   chooseAttack(): void {
     const unit = this.active();
-    if (!unit || !['command', 'target', 'forecast'].includes(this.mode.kind) || !this.canAttack())
+    if (
+      !unit ||
+      !['command', 'move', 'target', 'forecast'].includes(this.mode.kind) ||
+      !this.canAttack()
+    )
       return;
     sfx('select');
     this.patch({ mode: { kind: 'attackMenu' } });
@@ -318,7 +365,7 @@ export class BattleController {
   }
 
   chooseEndTurn(): void {
-    if (this.mode.kind !== 'command') return;
+    if (this.mode.kind !== 'command' && this.mode.kind !== 'move') return;
     this.patch({ mode: { kind: 'facing' } });
     this.highlight([]);
   }
@@ -330,9 +377,14 @@ export class BattleController {
 
   /** Back out of a sub-mode to the previous step. */
   cancel(): void {
-    const k = this.mode.kind;
+    const mode = this.mode;
+    const k = mode.kind;
     if (k === 'target' || k === 'forecast') this.chooseAttack();
-    else if (['move', 'attackMenu', 'facing'].includes(k)) this.toCommand();
+    else if (k === 'move' && mode.pending) {
+      this.patch({ mode: { kind: 'move', reach: mode.reach } });
+      this.showMoveRange(mode.reach);
+    } else if (k === 'move') this.toCommand();
+    else if (k === 'attackMenu' || k === 'facing') this.resumeTurn();
   }
 
   /** The player's answer to an enemy attack; with Attack back, the technique to strike with. */
@@ -482,9 +534,25 @@ export class BattleController {
     this.renderer?.select(target.pos);
   }
 
+  /** The command menu, with the main attack's reach and targets marked if it can strike. */
   private toCommand(): void {
     this.patch({ mode: { kind: 'command' } });
-    this.highlight([]);
+    const unit = this.active();
+    const basic = this.basicOption();
+    this.highlight(
+      unit && basic
+        ? [
+            { kind: 'range', tiles: this.rangeTiles(unit, basic.attack) },
+            ...this.basicTargetLayer(),
+          ]
+        : [],
+    );
+  }
+
+  /** Back to the player's turn: the movement range if the unit can still move, else the menu. */
+  private resumeTurn(): void {
+    if (this.canMove()) this.enterMove();
+    else this.toCommand();
   }
 
   /** Escape objectives stay highlighted under whatever else is shown. */
@@ -514,6 +582,7 @@ export class BattleController {
         hp: u.hp,
         maxHp: u.maxHp,
         active: u.id === activeId,
+        enemy: u.side === 'enemy',
         at: u.pos,
         facing: u.facing,
         figure: figureSpec(this.lib, u, SIDE_COLORS[u.side]),
@@ -540,7 +609,9 @@ export class BattleController {
       if (unit.fp >= state.balance.fpMax) {
         this.notify(`${unit.name} has fainted from fatigue and must rest this turn.`);
       }
-      this.patch({ mode: { kind: 'command' } });
+      // The active unit is selected for the player, its movement range already showing.
+      this.renderer?.select(unit.pos);
+      this.resumeTurn();
     } else {
       this.patch({ mode: { kind: 'busy' } });
       await this.runAiTurn(unit.id);
@@ -609,7 +680,7 @@ export class BattleController {
       this.state.turn?.unitId !== cmd.unitId ||
       this.state.outcome !== 'ongoing';
     if (turnOver) await this.beginTurn();
-    else this.toCommand();
+    else this.resumeTurn();
   }
 
   /** Applies a command and plays its events. Returns false if the rules rejected it. */
