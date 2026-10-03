@@ -19,7 +19,7 @@ const end = Math.min(total, parseInt(args.end ?? String(total), 10));
 const workers = parseInt(args.workers ?? '3', 10);
 const out = path.resolve(args.out ?? path.join(here, 'build'));
 fs.mkdirSync(out, { recursive: true });
-const url = pathToFileURL(path.join(here, 'src', 'index.html')).href;
+const url = pathToFileURL(path.join(here, 'src', args.page ?? 'index.html')).href;
 
 const per = Math.ceil((end - start) / workers);
 const t0 = Date.now();

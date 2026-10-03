@@ -569,7 +569,7 @@ function subHillRun(c, t, l) {
   c.closePath();
   c.fill();
   // a lone figure runs up the path toward the beacon on the summit
-  const u = ease.inOutSine(prog(l, 0.3, 8.2));
+  const u = 0.86 * ease.inOutSine(prog(l, 0.3, 8.2));
   const px = lerp(180, 1500, u);
   const py = 878 - u * 450 + Math.sin(u * 3) * 0;
   // path approximated on the curve: sample the same quad curve
