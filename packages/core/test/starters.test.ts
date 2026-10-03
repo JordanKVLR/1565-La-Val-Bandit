@@ -35,11 +35,18 @@ describe('starter attacks', () => {
     expect(long).toMatchObject({ minRange: 1, maxRange: 2 });
   });
 
-  it('gunners fire at range and have only a weak Stock Strike up close', () => {
+  it('gunners pay extra FP to fire at range, and club as hard as a slash up close', () => {
     const [fire, stock] = starterAttacks(GUN);
-    expect(fire).toMatchObject({ name: 'Fire', power: 1, apCost: GUN.apCost, fpCost: 5 });
+    // Ranged attacks cost 20 FP on top of the formula (5 for power 1).
+    expect(fire).toMatchObject({ name: 'Fire', power: 1, apCost: GUN.apCost, fpCost: 25 });
     expect(fire!.minRange).toBeUndefined(); // uses the gun's own 2–4 range
-    expect(stock).toMatchObject({ name: 'Stock Strike', power: 0.5, minRange: 1, maxRange: 1 });
+    const [slash] = starterAttacks(SWORD);
+    expect(stock).toMatchObject({ name: 'Stock Strike', power: 0.8, minRange: 1, maxRange: 1 });
+    expect(stock).toMatchObject({
+      apCost: slash!.apCost,
+      fpCost: slash!.fpCost,
+      accuracy: slash!.accuracy,
+    });
   });
 
   it('every weapon type has two requirement-free starters', () => {
@@ -61,11 +68,14 @@ describe('starter attacks', () => {
     const [slash, thrust] = starterAttacks(SWORD);
     expect(slash).toMatchObject({ apCost: 20, fpCost: 5, accuracy: 12 });
     expect(thrust).toMatchObject({ apCost: 30, fpCost: 5, accuracy: 0 });
+    // FP climbs steeply with power: 5 + 45 per power above 1.
     expect(techniqueCost(1.4, 1, DEFAULT_BALANCE)).toEqual({
       apCost: 50,
-      fpCost: 11,
+      fpCost: 23,
       accuracy: -24,
     });
+    expect(techniqueCost(1.8, 1, DEFAULT_BALANCE).fpCost).toBe(41);
+    expect(techniqueCost(1, 1, DEFAULT_BALANCE, 'shot').fpCost).toBe(25);
     expect(techniqueCost(0.7, 2, DEFAULT_BALANCE)).toEqual(techniqueCost(1.4, 1, DEFAULT_BALANCE));
   });
 });

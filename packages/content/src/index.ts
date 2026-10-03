@@ -12,6 +12,7 @@ import type {
   Weapon,
 } from '@m1565/core';
 import { getTile, techniqueCost, validateMap } from '@m1565/core';
+import armourerData from '../data/armourers.json';
 import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
@@ -23,6 +24,7 @@ import shopData from '../data/shop.json';
 import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
 import {
+  ArmourersSchema,
   AttackSchema,
   BalanceSchema,
   BarksSchema,
@@ -110,10 +112,17 @@ export function loadLibrary() {
     balance: BalanceSchema.parse(balanceData) as BalanceConfig,
     terrains: loadTerrains(),
     weapons: byId(
-      WeaponSchema.array().parse(weaponData) as (Weapon & { price: number })[],
+      WeaponSchema.array().parse(weaponData) as (Weapon & {
+        price: number;
+        tier: 'common' | 'fine' | 'masterwork';
+        description: string;
+      })[],
       'weapon',
     ),
-    frames: byId(FrameSchema.array().parse(frameData) as Frame[], 'frame'),
+    frames: byId(
+      FrameSchema.array().parse(frameData) as (Frame & { description: string })[],
+      'frame',
+    ),
     gear: byId(
       GearSchema.array().parse(gearData) as (Gear & { price: number; description: string })[],
       'gear',
@@ -132,6 +141,7 @@ export function loadLibrary() {
     barks: BarksSchema.parse(barkData),
     cast: byId(CastSchema.array().parse(castData), 'cast member'),
     shop: ShopItemSchema.array().parse(shopData),
+    armourers: ArmourersSchema.parse(armourerData),
     attacks: AttackSchema.array().parse(attackData),
   };
 }
@@ -175,12 +185,17 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
         (a.frameClasses.length === 0 || a.frameClasses.includes(frame.class)),
     )
     .map(
-      ({ faction: _f, weaponTypes: _w, frameClasses: _c, ...attack }) =>
-        ({
+      ({ faction: _f, weaponTypes: _w, frameClasses: _c, accuracyBonus, apBonus, ...attack }) => {
+        // Stronger techniques cost more AP and FP and are less accurate (one shared formula);
+        // ranged ones pay extra FP. A few careful techniques add accuracy for extra AP.
+        const cost = techniqueCost(attack.power, attack.hits ?? 1, lib.balance, attack.style);
+        return {
           ...attack,
-          // Stronger techniques cost more AP and FP and are less accurate (one shared formula).
-          ...techniqueCost(attack.power, attack.hits ?? 1, lib.balance),
-        }) as Attack,
+          ...cost,
+          accuracy: cost.accuracy + (accuracyBonus ?? 0),
+          apCost: cost.apCost + (apBonus ?? 0),
+        } as Attack;
+      },
     );
 }
 

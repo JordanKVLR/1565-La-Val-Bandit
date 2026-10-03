@@ -292,5 +292,233 @@
     "kind": "amulet",
     "allegiance": "malta",
     "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "milanese-spada",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "toledo-espada",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "a2-senglea-palisade"
+  },
+  {
+    "item": "toledo-espada",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "i2-mdina-walls"
+  },
+  {
+    "item": "toledo-espada",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "c3-pasha-tribunal"
+  },
+  {
+    "item": "venetian-corsesca",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "nuremberg-halberd",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "a2-senglea-palisade"
+  },
+  {
+    "item": "nuremberg-halberd",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "i2-mdina-walls"
+  },
+  {
+    "item": "nuremberg-halberd",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "c3-pasha-tribunal"
+  },
+  {
+    "item": "brescian-arquebus",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "augsburg-petronel",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "a2-senglea-palisade"
+  },
+  {
+    "item": "augsburg-petronel",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "i2-mdina-walls"
+  },
+  {
+    "item": "augsburg-petronel",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "c3-pasha-tribunal"
+  },
+  {
+    "item": "birgu-flanged-mace",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "milanese-horsemans-hammer",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "a2-senglea-palisade"
+  },
+  {
+    "item": "milanese-horsemans-hammer",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "i2-mdina-walls"
+  },
+  {
+    "item": "milanese-horsemans-hammer",
+    "kind": "weapon",
+    "allegiance": "malta",
+    "after": "c3-pasha-tribunal"
+  },
+  {
+    "item": "bursa-yatagan",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "b8-turgut-battery"
+  },
+  {
+    "item": "damascene-kilij",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "damascene-kilij",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "a3-castile-breach"
+  },
+  {
+    "item": "damascene-kilij",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "i3-marsa-raid"
+  },
+  {
+    "item": "akinci-mizrak",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "b8-turgut-battery"
+  },
+  {
+    "item": "silahdar-teber",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "silahdar-teber",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "a3-castile-breach"
+  },
+  {
+    "item": "silahdar-teber",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "i3-marsa-raid"
+  },
+  {
+    "item": "edirne-tufek",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "b8-turgut-battery"
+  },
+  {
+    "item": "istanbul-long-tufek",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "istanbul-long-tufek",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "a3-castile-breach"
+  },
+  {
+    "item": "istanbul-long-tufek",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "i3-marsa-raid"
+  },
+  {
+    "item": "humbara-pot",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "b8-turgut-battery"
+  },
+  {
+    "item": "tophane-bronze-humbara",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "tophane-bronze-humbara",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "a3-castile-breach"
+  },
+  {
+    "item": "tophane-bronze-humbara",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "i3-marsa-raid"
+  },
+  {
+    "item": "djerba-boarding-pike",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "djerba-boarding-pike",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "a3-castile-breach"
+  },
+  {
+    "item": "djerba-boarding-pike",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "i3-marsa-raid"
+  },
+  {
+    "item": "silver-gurz",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "silver-gurz",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "a3-castile-breach"
+  },
+  {
+    "item": "silver-gurz",
+    "kind": "weapon",
+    "allegiance": "ottoman",
+    "after": "i3-marsa-raid"
   }
 ]

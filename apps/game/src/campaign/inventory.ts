@@ -213,13 +213,12 @@ export function companyStock(
 export interface LoadoutSummary {
   readonly stats: PilotStats;
   readonly hp: number;
-  readonly armour: number;
   readonly move: number;
   /** Raw damage before the technique's power: (POW + WEP) × damagePerPoint, rounded. */
   readonly damage: number;
   /** Hit-chance bonus from DEX. */
   readonly accuracy: number;
-  /** Damage blocked per hit: armour + DEF × defDamagePerPoint. */
+  /** Damage blocked per hit: DEF × defDamagePerPoint (armaturas have no armour). */
   readonly block: number;
   /** Weapon type and reach, e.g. "firearm 2–4". */
   readonly reach: string;
@@ -239,7 +238,6 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     [frame?.bonus, weapon?.bonus, gear(entry.charm), gear(entry.amulet)],
     b.statMax,
   );
-  const armour = frame?.armour ?? 0;
   const range = weapon
     ? weapon.minRange === weapon.maxRange
       ? `${weapon.maxRange}`
@@ -254,11 +252,10 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
   return {
     stats,
     hp: maxHpFor(entry.level, stats.bas, frame?.hp ?? 0, b),
-    armour,
     move: frame?.move ?? 0,
     damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint),
     accuracy: stats.dex * b.dexHitFactor,
-    block: Math.round(armour + stats.def * b.defDamagePerPoint),
+    block: Math.round(stats.def * b.defDamagePerPoint),
     reach: weapon ? `${weapon.type} ${range}` : '',
     techniques,
   };

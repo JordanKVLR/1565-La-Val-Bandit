@@ -159,8 +159,8 @@ export function UnitDetails({
                 <dd>{unit.level}</dd>
                 <dt>Exp. To Next</dt>
                 <dd>{unit.side === 'player' ? state.balance.xpPerLevel - unit.xp : '---'}</dd>
-                <dt>Armour</dt>
-                <dd>{unit.arm}</dd>
+                <dt>Blocks</dt>
+                <dd>{Math.round(unit.def * state.balance.defDamagePerPoint)} dmg</dd>
                 <dt>Move</dt>
                 <dd>{unit.mov}</dd>
                 <dt>Range</dt>

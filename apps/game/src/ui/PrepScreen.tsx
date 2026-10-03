@@ -37,7 +37,7 @@ function describe(lib: Library, kind: ItemKind, id: string) {
     return {
       name: f?.name ?? id,
       bonus: f?.bonus ?? {},
-      detail: f ? `${f.class} · HP ${f.hp} · ARM ${f.armour} · MOV ${f.move}` : '',
+      detail: f ? `${f.class} · HP ${f.hp} · MOV ${f.move}` : '',
     };
   }
   if (kind === 'weapon') {
@@ -71,7 +71,6 @@ function Comparison({ before, after }: { before: LoadoutSummary; after: LoadoutS
     ['DMG', before.damage, after.damage],
     ['HIT', before.accuracy, after.accuracy],
     ['BLOCK', before.block, after.block],
-    ['ARM', before.armour, after.armour],
     ['MOV', before.move, after.move],
   ];
   const changed = rows.filter(([, a, b]) => a !== b);

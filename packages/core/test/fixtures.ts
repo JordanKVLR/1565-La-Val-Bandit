@@ -50,7 +50,6 @@ export const FRAME: Frame = {
   id: 'frame',
   name: 'Frame',
   hp: 48,
-  armour: 8,
   move: 4,
   bonus: {},
 };

@@ -159,10 +159,10 @@ export function StatIcon({ kind, value }: { kind: 'arm' | 'mov'; value: number }
   );
 }
 
-export function ArmMovIcons({ arm, mov }: { arm: number; mov: number }) {
+/** Movement (boot) icon with the number in it. Armaturas have no armour: DEF does the blocking. */
+export function MovIcon({ mov }: { mov: number }) {
   return (
     <span class="stat-icons">
-      <StatIcon kind="arm" value={arm} />
       <StatIcon kind="mov" value={mov} />
     </span>
   );

@@ -170,9 +170,15 @@ export class GameSession {
       state,
       this.state.veterans,
     );
-    // Scudi for every enemy brought down (more for veterans), plus a purse for the victory.
+    // Scudi: a purse for the victory, more for every enemy brought down (and for veterans), and
+    // a bonus if nobody on the player's side fell.
+    const b = this.lib.balance;
     const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
-    const reward = 50 + fallen.reduce((n, u) => n + 20 + 5 * u.level, 0);
+    const noLosses = !state.units.some((u) => u.side === 'player' && u.defeated);
+    const reward =
+      b.rewardVictory +
+      fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
+      (noLosses ? b.rewardNoLosses : 0);
     const firstWin = !this.state.completedBattles.includes(screen.battleId);
     const completedBattles = firstWin
       ? [...this.state.completedBattles, screen.battleId]

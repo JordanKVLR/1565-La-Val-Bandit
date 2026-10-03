@@ -100,15 +100,15 @@ describe('attacks', () => {
       reaction: 'defend',
     });
     const e = requireUnit(state, 'e');
-    // Slash: (24 + 6) × 0.8 = 24, halved to 12, minus armour 8
-    expect(e.hp).toBe(80 - 4);
+    // Slash: (24 + 6) × 0.8 = 24 (DEF 0), halved by Defend to 12
+    expect(e.hp).toBe(80 - 12);
     expect(e).toMatchObject({ ap: 100, fp: 30 });
-    // Slash costs 20 AP and only 5 FP; XP 30 + 100 × 4/80 = 35.
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 80, fp: 5, xp: 35 });
+    // Slash costs 20 AP and only 5 FP; XP 30 + 100 × 12/80 = 45.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 80, fp: 5, xp: 45 });
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
-      strikes: [{ hit: true, damage: 4 }],
+      strikes: [{ hit: true, damage: 12 }],
     });
   });
 
@@ -157,7 +157,7 @@ describe('attacks', () => {
     });
     expect(state.outcome).toBe('victory');
     expect(events.map((e) => e.type)).toEqual(['attackResolved', 'unitDefeated', 'battleEnded']);
-    expect(requireUnit(state, 'a').xp).toBe(30 + 5 + 150); // hit + defeating blow, equal level
+    expect(requireUnit(state, 'a').xp).toBe(30 + 15 + 150); // hit (12 of 80 HP) + defeating blow
     expect(() => applyCommand(state, { type: 'endTurn', unitId: 'a' })).toThrow(/over/);
   });
 

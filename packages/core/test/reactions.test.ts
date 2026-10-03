@@ -291,6 +291,14 @@ describe('attributes', () => {
     expect(dmg(plain) - dmg(tough)).toBe(6);
   });
 
+  it('Defend halves what gets past DEF, so a defended blow is half, never a token 1', () => {
+    const s = duel('north', { t: { def: 6 } });
+    const f = forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't'));
+    // Slash 24 raw − DEF 6 × 1.5 = 15 through; Defend halves it to 8 (7.5 rounded).
+    expect(f.damage.none).toBe(15);
+    expect(f.damage.defend).toBe(8);
+  });
+
   it('BAS adds 4 HP per point, and raising it mid-battle heals by the difference', () => {
     const s = duel('north', { a: { bas: 4 } });
     const a = requireUnit(s, 'a');

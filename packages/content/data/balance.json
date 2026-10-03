@@ -47,7 +47,7 @@
   "techApPerPower": 50,
   "techApMin": 20,
   "techFpBase": 5,
-  "techFpPerPower": 15,
+  "techFpPerPower": 45,
   "techFpMin": 5,
   "techAccPerPower": 60,
   "techAccMax": 20,
@@ -56,5 +56,10 @@
   "counterMinChance": 5,
   "counterMaxChance": 35,
   "counterReflectMult": 1.25,
-  "counterFailMult": 1.25
+  "counterFailMult": 1.25,
+  "rangedFpSurcharge": 20,
+  "rewardVictory": 150,
+  "rewardPerEnemy": 60,
+  "rewardPerEnemyLevel": 15,
+  "rewardNoLosses": 100
 }

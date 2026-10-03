@@ -50,7 +50,6 @@ export interface Frame {
   readonly class: FrameClass;
   /** HP the chassis adds on top of the pilot's own. */
   readonly hp: number;
-  readonly armour: number;
   /** Maximum tiles per move. */
   readonly move: number;
   readonly bonus: StatBonus;
@@ -123,7 +122,6 @@ export interface UnitState extends MutableStats {
   hp: number;
   ap: number;
   fp: number;
-  arm: number;
   mov: number;
   pos: Coord;
   facing: Facing;
@@ -177,7 +175,6 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     hp,
     ap: balance.apStart,
     fp: 0,
-    arm: spec.frame.armour,
     mov: spec.frame.move,
     pos: { ...spec.at },
     facing: spec.facing,

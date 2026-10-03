@@ -241,8 +241,8 @@ describe('attacks', () => {
     expect(basic.reactions).toContain('attackBack');
     expect(f.reactions).not.toContain('attackBack');
     expect(f.reactions).not.toContain('counter');
-    // (POW 8 + WEP 9) × 2 × 1.5 = 51, armour 8 halved to 4 → 47
-    expect(f.damage.avoid).toBe(47);
+    // (POW 8 + WEP 9) × 2 × 1.5 = 51 (the target has no DEF to pierce)
+    expect(f.damage.avoid).toBe(51);
     const { state } = applyCommand(s, {
       type: 'attack',
       unitId: 'a',
