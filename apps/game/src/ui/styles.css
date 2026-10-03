@@ -1998,3 +1998,9 @@ input[type='range'] {
     transition: none;
   }
 }
+.picker-sub {
+  margin: 4px 0 0;
+  color: var(--gold);
+  font-size: 0.95rem;
+  font-variant: small-caps;
+}

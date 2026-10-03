@@ -11,6 +11,7 @@ import {
   priceOf,
   spares,
   summarize,
+  swapBlocked,
 } from '../campaign/inventory';
 import { useStore } from '../state/store';
 import { bonusText, STAT_INFO } from './battle/statInfo';
@@ -136,14 +137,19 @@ function Picker({
   entry,
   kind,
   stores,
+  roster,
   onEquip,
+  onSwap,
   onClose,
 }: {
   lib: Library;
   entry: RosterEntry;
   kind: ItemKind;
   stores: Stores;
+  roster: readonly RosterEntry[];
   onEquip: (id: string | null) => void;
+  /** Take the item another pilot has in this slot (they get this pilot's in exchange). */
+  onSwap: (fromId: string) => void;
   onClose: () => void;
 }) {
   const current = equipped(entry, kind);
@@ -153,6 +159,10 @@ function Picker({
     ([id]) => id !== current && canUse(lib, entry, kind, id),
   );
   const withItem = (id: string | null) => summarize(lib, { ...entry, [kind]: id });
+  const holdings = { roster, stores, scudi: 0 };
+  const others = roster.filter(
+    (r) => r.characterId !== entry.characterId && equipped(r, kind) !== null,
+  );
   const name = lib.characters.get(entry.characterId)?.name ?? entry.characterId;
   const cur = current ? describe(lib, kind, current) : null;
   return (
@@ -177,7 +187,7 @@ function Picker({
           )}
         </div>
         <div class="picker-list">
-          {options.length === 0 && (
+          {options.length === 0 && others.length === 0 && (
             <p class="empty">
               {kind === 'frame'
                 ? 'No spare armaturas. New ones are won in the story or salvaged after victories.'
@@ -198,6 +208,36 @@ function Picker({
                 </div>
                 <button type="button" class="btn go" onClick={() => onEquip(id)}>
                   Equip
+                </button>
+              </div>
+            );
+          })}
+          {others.length > 0 && <h4 class="picker-sub">Fitted to other pilots</h4>}
+          {others.map((other) => {
+            const id = equipped(other, kind)!;
+            const d = describe(lib, kind, id);
+            const who = lib.characters.get(other.characterId)?.name ?? other.characterId;
+            const blocked = swapBlocked(lib, holdings, entry.characterId, other.characterId, kind);
+            const back = current ? describe(lib, kind, current).name : null;
+            return (
+              <div class="picker-item" key={`on-${other.characterId}`}>
+                <div class="pi-text">
+                  <strong>
+                    {d.name} <small>· on {who}</small>
+                  </strong>
+                  <Bonus bonus={d.bonus} />
+                  <small>
+                    {blocked ?? (back ? `${who} gets your ${back}` : `Taken from ${who}`)}
+                  </small>
+                  {!blocked && <Comparison before={before} after={withItem(id)} />}
+                </div>
+                <button
+                  type="button"
+                  class="btn"
+                  disabled={!!blocked}
+                  onClick={() => onSwap(other.characterId)}
+                >
+                  {back ? 'Swap' : 'Take'}
                 </button>
               </div>
             );
@@ -357,8 +397,13 @@ export function PrepScreen({ session, lib }: { session: GameSession; lib: Librar
           entry={pickingEntry}
           kind={picking.kind}
           stores={stores}
+          roster={roster}
           onEquip={(id) => {
             session.equipItem(picking.characterId, picking.kind, id);
+            setPicking(null);
+          }}
+          onSwap={(fromId) => {
+            session.swapItem(picking.characterId, fromId, picking.kind);
             setPicking(null);
           }}
           onClose={() => setPicking(null)}

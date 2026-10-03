@@ -14,7 +14,7 @@ import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
 import type { Holdings, ItemKind, Stores } from './inventory';
-import { addItem, buy, equip, release, sell } from './inventory';
+import { addItem, buy, equip, release, sell, swap } from './inventory';
 import { migrateCampaign } from './migrate';
 import { applyBattleResults, newRosterEntry, raiseRosterStat, withProgress } from './progression';
 import type {
@@ -222,6 +222,11 @@ export class GameSession {
   /** Fits a spare item to a pilot (or takes off a charm/amulet with null). */
   equipItem(characterId: string, kind: ItemKind, id: string | null): void {
     this.applyHoldings(equip(this.lib, this.holdings(), characterId, kind, id));
+  }
+
+  /** Takes the item another pilot has in this slot; they get this pilot's in exchange. */
+  swapItem(toId: string, fromId: string, kind: ItemKind): void {
+    this.applyHoldings(swap(this.lib, this.holdings(), toId, fromId, kind));
   }
 
   buyItem(item: ShopItem): void {

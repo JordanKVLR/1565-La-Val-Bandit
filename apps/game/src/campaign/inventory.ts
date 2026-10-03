@@ -109,6 +109,54 @@ export function release(lib: Library, h: Holdings, characterId: string): Holding
   return { ...h, stores, roster: h.roster.filter((r) => r.characterId !== characterId) };
 }
 
+/**
+ * Why `toId` can't take the item `fromId` has in this slot, or undefined if the swap works.
+ * Armaturas and weapons trade places (neither slot may be empty), so each pilot must be able to
+ * use the other's; charms and amulets simply move, swapping back if `toId` had one fitted.
+ */
+export function swapBlocked(
+  lib: Library,
+  h: Holdings,
+  toId: string,
+  fromId: string,
+  kind: ItemKind,
+): string | undefined {
+  const to = h.roster.find((r) => r.characterId === toId);
+  const from = h.roster.find((r) => r.characterId === fromId);
+  if (!to || !from || toId === fromId) return 'No one to swap with';
+  const item = equipped(from, kind);
+  if (!item) return 'Nothing fitted';
+  const theirs = lib.characters.get(fromId)?.name ?? fromId;
+  if (!canUse(lib, to, kind, item)) return "Can't use this armatura";
+  const mine = equipped(to, kind);
+  if (mine && !canUse(lib, from, kind, mine)) return `${theirs} can't use yours in exchange`;
+  return undefined;
+}
+
+/** Swaps the item in one slot between two pilots (see swapBlocked for the rules). */
+export function swap(
+  lib: Library,
+  h: Holdings,
+  toId: string,
+  fromId: string,
+  kind: ItemKind,
+): Holdings {
+  const reason = swapBlocked(lib, h, toId, fromId, kind);
+  if (reason) throw new Error(reason);
+  const to = h.roster.find((r) => r.characterId === toId)!;
+  const from = h.roster.find((r) => r.characterId === fromId)!;
+  const item = equipped(from, kind);
+  const mine = equipped(to, kind);
+  const roster = h.roster.map((r) =>
+    r.characterId === toId
+      ? { ...r, [SLOT[kind]]: item }
+      : r.characterId === fromId
+        ? { ...r, [SLOT[kind]]: mine }
+        : r,
+  );
+  return { ...h, roster };
+}
+
 /** Price of an item in the Armoury (armaturas have none: they are never sold or bought). */
 export function priceOf(lib: Library, kind: ItemKind, id: string): number | null {
   if (kind === 'weapon') return lib.weapons.get(id)?.price ?? null;
