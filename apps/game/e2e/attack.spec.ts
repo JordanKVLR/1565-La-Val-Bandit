@@ -13,6 +13,7 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
     const kind = await page.evaluate(() => window.__battle?.ctl.mode.kind);
     if (kind === 'command') break;
     if (kind === 'closeUp') await page.getByTestId('closeup').click();
+    else if (kind === 'xp') await page.getByTestId('xp-continue').click();
     else if (kind === 'reaction') await page.getByTestId('react-go').click();
     else if (kind === 'levelUp')
       await page.getByRole('button', { name: /Continue|Save points/ }).click();
@@ -55,6 +56,16 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
   const closeup = page.getByTestId('closeup');
   if (await closeup.isVisible()) await closeup.click({ timeout: 2000 }).catch(() => undefined);
   await expect(closeup).toBeHidden();
+  // A landed blow ends on the experience pop-up, which stays until tapped away.
+  const xp = page.getByTestId('xp-panel');
+  if (await xp.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await expect(xp).toContainText(/\+\d+ XP/);
+    await page.waitForTimeout(1500);
+    await expect(xp).toBeVisible();
+    await page.screenshot({ path: `test-results/xp-${test.info().project.name}.png` });
+    await page.getByTestId('xp-continue').click();
+    await expect(xp).toBeHidden();
+  }
 
   const log = await page.evaluate(() => window.__battle!.ctl.view.get().log.join('\n'));
   expect(log).toMatch(/uses .+ on /);

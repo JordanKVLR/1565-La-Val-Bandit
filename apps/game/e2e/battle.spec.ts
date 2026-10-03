@@ -8,6 +8,11 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
     await closeup.click();
     return true;
   }
+  const xp = page.getByTestId('xp-continue');
+  if (await xp.isVisible()) {
+    await xp.click();
+    return true;
+  }
   const levelUp = page.getByRole('dialog', { name: 'Level up' });
   if (await levelUp.isVisible()) {
     await levelUp.getByRole('button', { name: 'Raise POW' }).click();

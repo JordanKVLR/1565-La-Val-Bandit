@@ -34,6 +34,11 @@ test('attack back lets the player choose the technique to strike back with', asy
         .getByTestId('react-go')
         .click(quick)
         .catch(() => undefined);
+    } else if (kind === 'xp') {
+      await page
+        .getByTestId('xp-continue')
+        .click(quick)
+        .catch(() => undefined);
     } else if (kind === 'closeUp') {
       await page
         .getByTestId('closeup')

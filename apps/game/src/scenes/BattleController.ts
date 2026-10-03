@@ -36,6 +36,7 @@ import {
   unlockedAttacks,
 } from '@m1565/core';
 import type { BarkSet, Library } from '@m1565/content';
+import type { XpGain } from '../ui/battle/XpPanel';
 import type { FigureSpec } from '../render/Armatura';
 import { figureSpec } from '../render/Armatura';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
@@ -123,6 +124,7 @@ export type Mode =
       readonly choices: readonly ReactionChoice[];
     }
   | { readonly kind: 'closeUp'; readonly data: CloseUpData }
+  | { readonly kind: 'xp'; readonly gains: readonly XpGain[] }
   | { readonly kind: 'levelUp'; readonly unitId: string }
   | { readonly kind: 'ended'; readonly outcome: 'victory' | 'defeat' };
 
@@ -158,6 +160,7 @@ export class BattleController {
   private pendingReaction: ((answer: ReactionAnswer) => void) | undefined;
   private pendingCloseUp: (() => void) | undefined;
   private pendingLevelUp: (() => void) | undefined;
+  private pendingXp: (() => void) | undefined;
   private running = false;
   private disposed = false;
 
@@ -374,6 +377,13 @@ export class BattleController {
     } catch (e) {
       if (!(e instanceof CommandError)) throw e;
     }
+  }
+
+  /** Dismisses the experience pop-up. */
+  finishXp(): void {
+    const resolve = this.pendingXp;
+    this.pendingXp = undefined;
+    resolve?.();
   }
 
   finishLevelUp(): void {
@@ -618,6 +628,9 @@ export class BattleController {
     for (const ev of result.events) await this.play(ev, before, result.events);
     this.patch({ state: result.state });
     this.syncUnits();
+    // Experience earned in the exchange is shown until the player taps it away.
+    const gains = xpGains(before, result.state, result.events);
+    if (gains.length) await this.promptXp(gains);
     // Level-ups pause the battle so the player can spend their new stat points.
     for (const ev of result.events) {
       if (ev.type !== 'levelUp') continue;
@@ -625,6 +638,17 @@ export class BattleController {
       if (unit?.controller === 'human' && unit.statPoints > 0) await this.promptLevelUp(unit.id);
     }
     return true;
+  }
+
+  private promptXp(gains: readonly XpGain[]): Promise<void> {
+    const previous = this.mode;
+    this.patch({ mode: { kind: 'xp', gains } });
+    return new Promise((resolve) => {
+      this.pendingXp = () => {
+        this.patch({ mode: previous.kind === 'xp' ? { kind: 'busy' } : previous });
+        resolve();
+      };
+    });
   }
 
   private promptLevelUp(unitId: string): Promise<void> {
@@ -822,3 +846,39 @@ const REACTION_WORD: Record<Reaction, string> = {
   counter: 'failed counter',
   none: 'no reaction',
 };
+
+/** XP each player unit earned from the events of one command, with its bar before and after. */
+export function xpGains(
+  before: BattleState,
+  after: BattleState,
+  events: readonly BattleEvent[],
+): XpGain[] {
+  const earned = new Map<string, number>();
+  for (const ev of events) {
+    if (ev.type !== 'attackResolved') continue;
+    const strikes = [
+      ...ev.strikes,
+      ...(ev.retaliation ? [ev.retaliation] : []),
+      ...(ev.retaliationFollowUps ?? []),
+    ];
+    for (const s of strikes) {
+      if (s.xp > 0) earned.set(s.attackerId, (earned.get(s.attackerId) ?? 0) + s.xp);
+    }
+  }
+  const out: XpGain[] = [];
+  for (const [unitId, xp] of earned) {
+    const was = findUnit(before, unitId);
+    const now = findUnit(after, unitId);
+    if (!was || !now || now.side !== 'player') continue;
+    out.push({
+      unitId,
+      name: now.name,
+      xp,
+      levelBefore: was.level,
+      xpBefore: was.xp,
+      levelAfter: now.level,
+      xpAfter: now.xp,
+    });
+  }
+  return out;
+}

@@ -23,6 +23,7 @@ import type { CostPreview } from './battle/StatBars';
 import { UnitCard, UnitDetails } from './battle/UnitPanels';
 import { SettingsPanel } from './SettingsPanel';
 import { LevelUpPanel } from './battle/LevelUpPanel';
+import { XpPanel } from './battle/XpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
@@ -41,7 +42,16 @@ interface Props {
 type Panel = 'none' | 'menu' | 'log' | 'help' | 'settings' | 'unit';
 
 /** Modes where the player is mid-decision; the unit card would only get in the way. */
-const BUSY_MODES = ['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp', 'facing', 'ended'];
+const BUSY_MODES = [
+  'forecast',
+  'reaction',
+  'closeUp',
+  'attackMenu',
+  'xp',
+  'levelUp',
+  'facing',
+  'ended',
+];
 
 declare global {
   interface Window {
@@ -218,6 +228,13 @@ export function BattleScreen({
         <SubModeBar
           label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: tap a red enemy`}
           onCancel={() => ctl.cancel()}
+        />
+      )}
+      {mode.kind === 'xp' && (
+        <XpPanel
+          gains={mode.gains}
+          xpPerLevel={state.balance.xpPerLevel}
+          onDone={() => ctl.finishXp()}
         />
       )}
       {mode.kind === 'levelUp' && findUnit(state, mode.unitId) && (
