@@ -8,6 +8,11 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
     await closeup.click();
     return true;
   }
+  const xp = page.getByTestId('xp-continue');
+  if (await xp.isVisible()) {
+    await xp.click();
+    return true;
+  }
   const levelUp = page.getByRole('dialog', { name: 'Level up' });
   if (await levelUp.isVisible()) {
     await levelUp.getByRole('button', { name: 'Raise POW' }).click();
@@ -35,12 +40,13 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
       });
       if (pos) {
         const box = (await page.locator('canvas.battle-canvas').boundingBox())!;
-        // First tap previews the route: the AP bar shows the cost before anything moves.
-        await page.mouse.click(box.x + pos.x, box.y + pos.y);
+        // Hovering (or a first tap on touch) previews the route: the AP bar shows the cost
+        // before anything moves.
+        await page.mouse.move(box.x + pos.x, box.y + pos.y);
         await expect(page.getByTestId('active-card').locator('.vb-ap .changing')).toHaveText(
           /\d+→\d+/,
         );
-        // Second tap on the same tile moves.
+        // Clicking the previewed tile moves.
         await page.mouse.click(box.x + pos.x, box.y + pos.y);
         await expect(menu.getByRole('button', { name: 'Undo' })).toBeVisible();
       }

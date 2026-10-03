@@ -19,6 +19,7 @@ import {
   activeUnit,
   applyCommand,
   attackInRange,
+  attackRange,
   reactionChoices,
   attackBackOptions,
   chooseReaction,
@@ -36,8 +37,10 @@ import {
   unlockedAttacks,
 } from '@m1565/core';
 import type { BarkSet, Library } from '@m1565/content';
+import type { XpGain } from '../ui/battle/XpPanel';
 import type { FigureSpec } from '../render/Armatura';
 import { figureSpec } from '../render/Armatura';
+import { ARROW_COLORS, SIDE_COLORS } from '../render/palette';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
 import { sfx } from '../platform/audio';
 import { settings } from '../state/settings';
@@ -67,6 +70,9 @@ export interface CloseUpSide {
 export interface CloseUpStrike {
   readonly result: StrikeResult;
   readonly style: AttackStyle;
+  /** Power and reach of the technique, so the duel can animate it to match. */
+  readonly power: number;
+  readonly reach: number;
   readonly bark: string;
   readonly reply: string;
   /** Set when this strike levelled the striker up. */
@@ -123,6 +129,7 @@ export type Mode =
       readonly choices: readonly ReactionChoice[];
     }
   | { readonly kind: 'closeUp'; readonly data: CloseUpData }
+  | { readonly kind: 'xp'; readonly gains: readonly XpGain[] }
   | { readonly kind: 'levelUp'; readonly unitId: string }
   | { readonly kind: 'ended'; readonly outcome: 'victory' | 'defeat' };
 
@@ -141,9 +148,6 @@ export interface BattleView {
   readonly notices: readonly { readonly id: number; readonly text: string }[];
 }
 
-const SIDE_COLORS = { player: '#2f5fa8', enemy: '#a8322f' } as const;
-const ARROW_COLORS = { player: '#9cc8ff', enemy: '#ffb0a8' } as const;
-
 const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const pickLine = (lines: readonly string[]) =>
   lines[Math.floor(Math.random() * lines.length)] ?? '';
@@ -158,6 +162,7 @@ export class BattleController {
   private pendingReaction: ((answer: ReactionAnswer) => void) | undefined;
   private pendingCloseUp: (() => void) | undefined;
   private pendingLevelUp: (() => void) | undefined;
+  private pendingXp: (() => void) | undefined;
   private running = false;
   private disposed = false;
 
@@ -214,7 +219,17 @@ export class BattleController {
         else this.previewMove(c, reach);
         return;
       }
-      this.toCommand();
+      // Tapping outside the range just inspects the tile; the range stays up.
+      if (mode.pending) this.patch({ mode: { kind: 'move', reach: mode.reach } });
+      this.showMoveRange(mode.reach);
+    } else if (mode.kind === 'command') {
+      // After moving, the main attack's targets are already marked: tapping one opens its forecast.
+      const target = unitAt(this.state, c);
+      const basic = this.basicOption();
+      if (target && basic && basic.targets.includes(target.id)) {
+        this.showForecast(basic.attack.id, target.id);
+        return;
+      }
     } else if (mode.kind === 'target' || mode.kind === 'forecast') {
       const target = unitAt(this.state, c);
       const targets =
@@ -234,29 +249,64 @@ export class BattleController {
     const unit = this.active();
     if (!unit || this.mode.kind !== 'command' || !this.canMove()) return;
     sfx('select');
+    this.enterMove();
+  }
+
+  /** PC: the mouse over a tile previews the route there (so one click then moves). */
+  hoverTile(c: Coord | null): void {
+    const mode = this.mode;
+    if (mode.kind !== 'move') return;
+    const reach = c ? mode.reach.get(coordKey(c)) : undefined;
+    if (c && reach && reach.path.length > 0) {
+      if (mode.pending && coordKey(mode.pending.to) === coordKey(c)) return;
+      this.previewMove(c, reach, false);
+    } else if (mode.pending) {
+      this.patch({ mode: { kind: 'move', reach: mode.reach } });
+      this.showMoveRange(mode.reach);
+    }
+  }
+
+  private enterMove(): void {
+    const unit = this.active();
+    if (!unit) return;
     const reach = reachableTiles(this.state, unit);
     this.patch({ mode: { kind: 'move', reach } });
+    this.showMoveRange(reach);
+  }
+
+  private showMoveRange(reach: ReadonlyMap<string, Reach>, path?: readonly Coord[]): void {
+    const unit = this.active();
+    if (!unit) return;
     this.highlight([
       {
         kind: 'move',
         tiles: [...reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
       },
+      // Enemies already in reach of the main attack, before moving at all.
+      ...(path ? [] : this.basicTargetLayer()),
+      ...(path ? [{ kind: 'path' as const, tiles: path }] : []),
     ]);
   }
 
-  private previewMove(to: Coord, reach: Reach): void {
+  /** The main attack, if it can be used now and has someone to hit. */
+  private basicOption(): AttackOption | undefined {
+    if (!this.canAttack()) return undefined;
+    return this.attackOptions().find((o) => o.unlocked && o.affordable && o.targets.length > 0);
+  }
+
+  private basicTargetLayer(): { kind: HighlightKind; tiles: Coord[] }[] {
+    const basic = this.basicOption();
+    return basic
+      ? [{ kind: 'target', tiles: basic.targets.map((id) => findUnit(this.state, id)!.pos) }]
+      : [];
+  }
+
+  private previewMove(to: Coord, reach: Reach, sound = true): void {
     if (this.mode.kind !== 'move') return;
-    const unit = this.active()!;
-    sfx('select');
+    if (sound) sfx('select');
     this.patch({ mode: { ...this.mode, pending: { to, cost: reach.cost } }, inspected: to });
     this.renderer?.select(to);
-    this.highlight([
-      {
-        kind: 'move',
-        tiles: [...this.mode.reach.values()].map((r) => r.path[r.path.length - 1] ?? unit.pos),
-      },
-      { kind: 'path', tiles: reach.path },
-    ]);
+    this.showMoveRange(this.mode.reach, reach.path);
   }
 
   /** Moves to the tile picked in move mode. */
@@ -269,7 +319,11 @@ export class BattleController {
   /** Opens the list of techniques. */
   chooseAttack(): void {
     const unit = this.active();
-    if (!unit || !['command', 'target', 'forecast'].includes(this.mode.kind) || !this.canAttack())
+    if (
+      !unit ||
+      !['command', 'move', 'target', 'forecast'].includes(this.mode.kind) ||
+      !this.canAttack()
+    )
       return;
     sfx('select');
     this.patch({ mode: { kind: 'attackMenu' } });
@@ -315,7 +369,7 @@ export class BattleController {
   }
 
   chooseEndTurn(): void {
-    if (this.mode.kind !== 'command') return;
+    if (this.mode.kind !== 'command' && this.mode.kind !== 'move') return;
     this.patch({ mode: { kind: 'facing' } });
     this.highlight([]);
   }
@@ -327,9 +381,14 @@ export class BattleController {
 
   /** Back out of a sub-mode to the previous step. */
   cancel(): void {
-    const k = this.mode.kind;
+    const mode = this.mode;
+    const k = mode.kind;
     if (k === 'target' || k === 'forecast') this.chooseAttack();
-    else if (['move', 'attackMenu', 'facing'].includes(k)) this.toCommand();
+    else if (k === 'move' && mode.pending) {
+      this.patch({ mode: { kind: 'move', reach: mode.reach } });
+      this.showMoveRange(mode.reach);
+    } else if (k === 'move') this.toCommand();
+    else if (k === 'attackMenu' || k === 'facing') this.resumeTurn();
   }
 
   /** The player's answer to an enemy attack; with Attack back, the technique to strike with. */
@@ -374,6 +433,13 @@ export class BattleController {
     } catch (e) {
       if (!(e instanceof CommandError)) throw e;
     }
+  }
+
+  /** Dismisses the experience pop-up. */
+  finishXp(): void {
+    const resolve = this.pendingXp;
+    this.pendingXp = undefined;
+    resolve?.();
   }
 
   finishLevelUp(): void {
@@ -472,9 +538,25 @@ export class BattleController {
     this.renderer?.select(target.pos);
   }
 
+  /** The command menu, with the main attack's reach and targets marked if it can strike. */
   private toCommand(): void {
     this.patch({ mode: { kind: 'command' } });
-    this.highlight([]);
+    const unit = this.active();
+    const basic = this.basicOption();
+    this.highlight(
+      unit && basic
+        ? [
+            { kind: 'range', tiles: this.rangeTiles(unit, basic.attack) },
+            ...this.basicTargetLayer(),
+          ]
+        : [],
+    );
+  }
+
+  /** Back to the player's turn: the movement range if the unit can still move, else the menu. */
+  private resumeTurn(): void {
+    if (this.canMove()) this.enterMove();
+    else this.toCommand();
   }
 
   /** Escape objectives stay highlighted under whatever else is shown. */
@@ -504,6 +586,7 @@ export class BattleController {
         hp: u.hp,
         maxHp: u.maxHp,
         active: u.id === activeId,
+        enemy: u.side === 'enemy',
         at: u.pos,
         facing: u.facing,
         figure: figureSpec(this.lib, u, SIDE_COLORS[u.side]),
@@ -530,7 +613,9 @@ export class BattleController {
       if (unit.fp >= state.balance.fpMax) {
         this.notify(`${unit.name} has fainted from fatigue and must rest this turn.`);
       }
-      this.patch({ mode: { kind: 'command' } });
+      // The active unit is selected for the player, its movement range already showing.
+      this.renderer?.select(unit.pos);
+      this.resumeTurn();
     } else {
       this.patch({ mode: { kind: 'busy' } });
       await this.runAiTurn(unit.id);
@@ -599,7 +684,7 @@ export class BattleController {
       this.state.turn?.unitId !== cmd.unitId ||
       this.state.outcome !== 'ongoing';
     if (turnOver) await this.beginTurn();
-    else this.toCommand();
+    else this.resumeTurn();
   }
 
   /** Applies a command and plays its events. Returns false if the rules rejected it. */
@@ -618,6 +703,9 @@ export class BattleController {
     for (const ev of result.events) await this.play(ev, before, result.events);
     this.patch({ state: result.state });
     this.syncUnits();
+    // Experience earned in the exchange is shown until the player taps it away.
+    const gains = xpGains(before, result.state, result.events);
+    if (gains.length) await this.promptXp(gains);
     // Level-ups pause the battle so the player can spend their new stat points.
     for (const ev of result.events) {
       if (ev.type !== 'levelUp') continue;
@@ -625,6 +713,17 @@ export class BattleController {
       if (unit?.controller === 'human' && unit.statPoints > 0) await this.promptLevelUp(unit.id);
     }
     return true;
+  }
+
+  private promptXp(gains: readonly XpGain[]): Promise<void> {
+    const previous = this.mode;
+    this.patch({ mode: { kind: 'xp', gains } });
+    return new Promise((resolve) => {
+      this.pendingXp = () => {
+        this.patch({ mode: previous.kind === 'xp' ? { kind: 'busy' } : previous });
+        resolve();
+      };
+    });
   }
 
   private promptLevelUp(unitId: string): Promise<void> {
@@ -704,9 +803,25 @@ export class BattleController {
     // Player units sit on the left, as in a duel viewed from the defenders' side.
     const [left, right] = a.side === 'player' ? [a, d] : [d, a];
     const repelled = ev.counter?.success === true;
+    const used = (unit: UnitState, attack: Attack | undefined) => ({
+      power: attack?.power ?? 1,
+      reach: attack ? attackRange(attack, unit.weapon).max : 1,
+    });
+    const main = used(
+      a,
+      a.attacks.find((x) => x.id === ev.attackId),
+    );
+    // A reflected Counter replays the attacker's own blow; a strike back uses the chosen technique.
+    const backMove = repelled
+      ? main
+      : used(
+          d,
+          d.attacks.find((x) => x.name === ev.retaliationName),
+        );
     const strikes: CloseUpStrike[] = ev.strikes.map((result, i) => ({
       result,
       style: ev.style,
+      ...main,
       bark: i === 0 ? pickLine(this.barks(a).attack) : '',
       reply: repelled
         ? pickLine(this.barks(d).counter)
@@ -720,6 +835,7 @@ export class BattleController {
         strikes.push({
           result: r,
           style: ev.retaliationStyle ?? 'slash',
+          ...backMove,
           bark: repelled || i > 0 ? '' : pickLine(this.barks(d).counter),
           reply: pickLine(
             r.defeated ? this.barks(a).defeated : r.hit ? this.barks(a).hurt : this.barks(a).avoid,
@@ -822,3 +938,39 @@ const REACTION_WORD: Record<Reaction, string> = {
   counter: 'failed counter',
   none: 'no reaction',
 };
+
+/** XP each player unit earned from the events of one command, with its bar before and after. */
+export function xpGains(
+  before: BattleState,
+  after: BattleState,
+  events: readonly BattleEvent[],
+): XpGain[] {
+  const earned = new Map<string, number>();
+  for (const ev of events) {
+    if (ev.type !== 'attackResolved') continue;
+    const strikes = [
+      ...ev.strikes,
+      ...(ev.retaliation ? [ev.retaliation] : []),
+      ...(ev.retaliationFollowUps ?? []),
+    ];
+    for (const s of strikes) {
+      if (s.xp > 0) earned.set(s.attackerId, (earned.get(s.attackerId) ?? 0) + s.xp);
+    }
+  }
+  const out: XpGain[] = [];
+  for (const [unitId, xp] of earned) {
+    const was = findUnit(before, unitId);
+    const now = findUnit(after, unitId);
+    if (!was || !now || now.side !== 'player') continue;
+    out.push({
+      unitId,
+      name: now.name,
+      xp,
+      levelBefore: was.level,
+      xpBefore: was.xp,
+      levelAfter: now.level,
+      xpAfter: now.xp,
+    });
+  }
+  return out;
+}

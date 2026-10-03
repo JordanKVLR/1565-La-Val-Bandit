@@ -195,10 +195,14 @@ body,
   outline: 2px solid var(--gold);
 }
 .tq-player {
-  background: #2f5fa8;
+  background: #1f6fb5;
+  border-radius: 50%;
 }
+/* Enemies are diamonds as well as orange, so the side never depends on colour alone. */
 .tq-enemy {
-  background: #a8322f;
+  background: #d0700a;
+  border-radius: 0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
 /* Bottom-left stack: tapped unit's card above the terrain readout. Clear of the action menu. */
 .hud-bottom-left {
@@ -366,10 +370,10 @@ body,
   color: #f4ead2;
 }
 .portrait-player {
-  background: linear-gradient(135deg, #3d6fbd, #1d3a66);
+  background: linear-gradient(135deg, #2f80c8, #12406b);
 }
 .portrait-enemy {
-  background: linear-gradient(135deg, #bd4a3d, #661d1d);
+  background: linear-gradient(135deg, #e08a1e, #7a3c00);
 }
 .unit-bars {
   flex: 1;
@@ -1383,7 +1387,7 @@ input[type='range'] {
 .xp-track span {
   display: block;
   height: 100%;
-  background: #b98cf0;
+  background: #f0e2b6;
 }
 .xp-track.wide {
   width: 100%;
@@ -1957,4 +1961,72 @@ input[type='range'] {
 }
 .cmp .info {
   color: var(--parchment);
+}
+
+/* Experience pop-up after an exchange */
+.xp-panel {
+  width: min(460px, 100%);
+}
+.xp-gains {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.xp-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.xp-plus {
+  color: var(--gold);
+  font-size: 1.25rem;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+
+.xp-panel .xp-track {
+  height: 10px;
+}
+.xp-panel .xp-track span {
+  transition: width 0.9s ease-out;
+}
+.xp-level {
+  color: var(--gold);
+}
+@media (prefers-reduced-motion: reduce) {
+  .xp-panel .xp-track span {
+    transition: none;
+  }
+}
+.picker-sub {
+  margin: 4px 0 0;
+  color: var(--gold);
+  font-size: 0.95rem;
+  font-variant: small-caps;
+}
+
+/* Keyboard hints appear only with a mouse (PC / Steam Deck docked). */
+.key {
+  display: none;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-family: inherit;
+  font-size: 0.7em;
+  line-height: 1.5;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  opacity: 0.75;
+}
+@media (hover: hover) and (pointer: fine) {
+  .key {
+    display: inline-block;
+  }
+}
+.btn.action.on {
+  outline: 3px solid #fff;
+  outline-offset: -3px;
 }

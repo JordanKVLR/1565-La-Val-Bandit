@@ -8,7 +8,7 @@ import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
 import { frameName, gearName, unitFigure, VbBars } from './vb';
 
-const SIDE_COLOR = { player: '#3d6fbd', enemy: '#bd4a3d' } as const;
+import { SIDE_COLORS as SIDE_COLOR } from '../../render/palette';
 
 /**
  * Compact card for a unit (bottom-left, clear of the action menu): portrait, AP/FP/HP bars,

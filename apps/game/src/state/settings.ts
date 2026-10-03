@@ -9,6 +9,8 @@ export interface Settings {
   sfxVolume: number;
   /** Hide the browser's bars. Leaving full screen on purpose is done by switching this off. */
   fullscreen: boolean;
+  /** Bolder map highlights and outlines, with the map dimmed behind them. */
+  highContrast: boolean;
 }
 
 const KEY = 'armatura.settings.v1';
@@ -20,6 +22,7 @@ const DEFAULTS: Settings = {
   musicVolume: 0.6,
   sfxVolume: 0.8,
   fullscreen: true,
+  highContrast: false,
 };
 
 function load(): Settings {

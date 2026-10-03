@@ -22,7 +22,9 @@ import { HelpPanel } from './battle/HelpPanel';
 import type { CostPreview } from './battle/StatBars';
 import { UnitCard, UnitDetails } from './battle/UnitPanels';
 import { SettingsPanel } from './SettingsPanel';
+import { settings } from '../state/settings';
 import { LevelUpPanel } from './battle/LevelUpPanel';
+import { XpPanel } from './battle/XpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
@@ -41,7 +43,16 @@ interface Props {
 type Panel = 'none' | 'menu' | 'log' | 'help' | 'settings' | 'unit';
 
 /** Modes where the player is mid-decision; the unit card would only get in the way. */
-const BUSY_MODES = ['forecast', 'reaction', 'closeUp', 'attackMenu', 'levelUp', 'facing', 'ended'];
+const BUSY_MODES = [
+  'forecast',
+  'reaction',
+  'closeUp',
+  'attackMenu',
+  'xp',
+  'levelUp',
+  'facing',
+  'ended',
+];
 
 declare global {
   interface Window {
@@ -73,17 +84,64 @@ export function BattleScreen({
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const view = new BattleView(canvas, state.map, (c) => ctl.tapTile(c));
+    const view = new BattleView(canvas, state.map, (c) => ctl.tapTile(c), {
+      onHover: (c) => ctl.hoverTile(c),
+      onCancel: () => ctl.cancel(),
+    });
     viewRef.current = view;
+    view.setHighContrast(settings.get().highContrast);
+    const unsubscribe = settings.subscribe(() => view.setHighContrast(settings.get().highContrast));
     ctl.attach(view);
     window.__battle = { ctl, view };
     return () => {
+      unsubscribe();
       ctl.dispose();
       view.dispose();
       delete window.__battle;
     };
     // Runs once per controller: the map never changes mid-battle, and state flows through ctl.
   }, [ctl]);
+
+  // PC keyboard: M move · A attack · E end turn · U undo · Esc back · Enter/Space confirm.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if ((e.target as HTMLElement | null)?.closest('input, select, textarea')) return;
+      const m = ctl.mode;
+      if (e.key === 'Escape') {
+        if (panel !== 'none') close();
+        else ctl.cancel();
+        return;
+      }
+      if (panel !== 'none') return;
+      const confirm = e.key === 'Enter' || e.key === ' ';
+      if (confirm) e.preventDefault();
+      switch (e.key.toLowerCase()) {
+        case 'm':
+          ctl.chooseMove();
+          return;
+        case 'a':
+          ctl.chooseAttack();
+          return;
+        case 'e':
+          ctl.chooseEndTurn();
+          return;
+        case 'u':
+          ctl.undoMove();
+          return;
+      }
+      if (!confirm) return;
+      if (m.kind === 'move' && m.pending) ctl.confirmMove();
+      else if (m.kind === 'forecast') ctl.confirmAttack();
+      else if (m.kind === 'xp') ctl.finishXp();
+      else if (m.kind === 'closeUp') ctl.finishCloseUp();
+      else if (m.kind === 'levelUp') ctl.finishLevelUp();
+      else if (m.kind === 'reaction')
+        document.querySelector<HTMLButtonElement>('[data-testid="react-go"]')?.click();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [ctl, panel]);
 
   useEffect(() => {
     if (mode.kind === 'command' || mode.kind === 'ended') onStateChange?.(state);
@@ -201,23 +259,29 @@ export function BattleScreen({
         )}
       </div>
 
-      {mode.kind === 'command' && panel === 'none' && <ActionMenu ctl={ctl} />}
-      {mode.kind === 'move' && (
+      {(mode.kind === 'command' || mode.kind === 'move') && panel === 'none' && (
+        <ActionMenu ctl={ctl} moving={mode.kind === 'move'} />
+      )}
+      {mode.kind === 'move' && mode.pending && (
         <SubModeBar
-          label={
-            mode.pending
-              ? `AP −${mode.pending.cost} · tap again to move`
-              : 'Tap a blue tile to see the cost'
-          }
+          label={`AP −${mode.pending.cost} · tap again to move`}
           onCancel={() => ctl.cancel()}
-          {...(mode.pending ? { confirm: 'Move here', onConfirm: () => ctl.confirmMove() } : {})}
+          confirm="Move here"
+          onConfirm={() => ctl.confirmMove()}
         />
       )}
       {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
         <SubModeBar
-          label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: tap a red enemy`}
+          label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: tap a marked enemy`}
           onCancel={() => ctl.cancel()}
+        />
+      )}
+      {mode.kind === 'xp' && (
+        <XpPanel
+          gains={mode.gains}
+          xpPerLevel={state.balance.xpPerLevel}
+          onDone={() => ctl.finishXp()}
         />
       )}
       {mode.kind === 'levelUp' && findUnit(state, mode.unitId) && (
