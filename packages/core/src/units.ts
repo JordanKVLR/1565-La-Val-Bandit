@@ -68,6 +68,8 @@ export interface UnitSpec {
   readonly id: string;
   /** Named story character this unit is (for portraits, barks, persistence), if any. */
   readonly characterId?: string;
+  /** Cast portrait for a generic unit that stands in for a story figure. Cosmetic only. */
+  readonly portrait?: string;
   readonly name: string;
   readonly side: Side;
   readonly controller: Controller;
@@ -96,6 +98,8 @@ type MutableStats = { -readonly [K in keyof PilotStats]: PilotStats[K] };
 export interface UnitState extends MutableStats {
   id: string;
   characterId: string | null;
+  /** Cast portrait for a generic unit (see UnitSpec.portrait). */
+  portrait?: string;
   name: string;
   side: Side;
   controller: Controller;
@@ -154,6 +158,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
   return {
     id: spec.id,
     characterId: spec.characterId ?? null,
+    ...(spec.portrait ? { portrait: spec.portrait } : {}),
     name: spec.name,
     side: spec.side,
     controller: spec.controller,

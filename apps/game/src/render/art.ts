@@ -14,14 +14,31 @@ const EMPTY: ArtManifest = { portraits: {}, terrain: {}, terrainSides: {} };
 let manifest: Promise<ArtManifest> | null = null;
 let loaded: ArtManifest = EMPTY;
 
-const artUrl = (path: string) => `${import.meta.env.BASE_URL}art/${path}`;
+// The single-file build embeds its art (as data: URLs) because it has no folder to fetch from.
+const embedded = (globalThis as { __M1565_ART__?: Partial<ArtManifest> }).__M1565_ART__;
+if (embedded) loaded = { ...EMPTY, ...embedded };
+
+const artUrl = (path: string) =>
+  path.startsWith('data:') ? path : `${import.meta.env.BASE_URL}art/${path}`;
 
 export function loadArtManifest(): Promise<ArtManifest> {
+  if (embedded) return (manifest ??= Promise.resolve(loaded));
   manifest ??= fetch(artUrl('manifest.json'))
     .then((r) => (r.ok ? (r.json() as Promise<Partial<ArtManifest>>) : {}))
     .then((m) => (loaded = { ...EMPTY, ...m }))
     .catch(() => EMPTY);
   return manifest;
+}
+
+/**
+ * The stand-in portrait for a unit with no character of its own: Order and militia frames get
+ * the soldier, Ottoman and corsair frames the janissary, and machines none.
+ */
+export function genericPortraitId(faction: string, model: string): string | null {
+  if (model === 'machine' || model === 'barge' || model === 'tower') return null;
+  if (faction === 'order' || faction === 'militia') return 'soldier';
+  if (faction === 'ottoman' || faction === 'corsair') return 'janissary';
+  return null;
 }
 
 /** Portrait image URL for a cast member, if one has been provided. */

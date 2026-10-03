@@ -269,3 +269,19 @@ describe('save compatibility', () => {
     expect(s.saveVersion).toBe(SAVE_VERSION);
   });
 });
+
+describe('portraits', () => {
+  it('carry a stand-in portrait through to the unit', () => {
+    const { state } = createBattle(
+      setup({
+        map: makeMap(['...']),
+        units: [
+          unit({ id: 'ganni', at: { x: 0, y: 0 }, portrait: 'ganni' }),
+          unit({ id: 'foe', at: { x: 2, y: 0 }, side: 'enemy' }),
+        ],
+      }),
+    );
+    expect(requireUnit(state, 'ganni').portrait).toBe('ganni');
+    expect(requireUnit(state, 'foe').portrait).toBeUndefined();
+  });
+});

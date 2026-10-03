@@ -271,6 +271,7 @@ export function buildBattle(
     return {
       id: u.id,
       ...(u.character ? { characterId: u.character } : {}),
+      ...(u.portrait ? { portrait: u.portrait } : {}),
       name: u.name ?? character!.name,
       side: u.side,
       controller: u.controller,

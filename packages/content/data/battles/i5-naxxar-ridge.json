@@ -88,7 +88,8 @@
         "agl": 5,
         "def": 11,
         "bas": 12
-      }
+      },
+      "portrait": "scala"
     },
     {
       "id": "proto-1",
