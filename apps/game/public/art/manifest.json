@@ -18,7 +18,8 @@
     "villager": "portraits/villager.webp",
     "villager-man": "portraits/villager-man.webp",
     "soldier": "portraits/soldier.webp",
-    "janissary": "portraits/janissary.webp"
+    "janissary": "portraits/janissary.webp",
+    "balbi": "portraits/balbi.webp"
   },
   "terrain": {},
   "terrainSides": {}
