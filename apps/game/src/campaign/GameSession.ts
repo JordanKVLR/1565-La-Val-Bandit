@@ -253,6 +253,32 @@ export class GameSession {
     this.autosave();
   }
 
+  /**
+   * `?armoury` (testing and design): a small company part-way through Act I, standing in the
+   * Armoury with a purse to spend.
+   */
+  openArmouryDemo(): void {
+    const roster = [
+      { ...newRosterEntry(this.lib, 'ninu'), level: 6, statPoints: 2 },
+      { ...newRosterEntry(this.lib, 'kateri'), level: 5 },
+      { ...newRosterEntry(this.lib, 'luis'), level: 6 },
+      { ...newRosterEntry(this.lib, 'deniz'), level: 5 },
+    ];
+    this.patch({
+      roster,
+      scudi: 1500,
+      stores: { 'weapon:pike': 1, 'charm:charm-pow-1': 1, 'frame:moschetta': 1, 'frame:levend': 1 },
+      completedBattles: [
+        'b1-marsaxlokk',
+        'b2-marsa-wells',
+        'b3-sciberras',
+        'b4-night-crossing',
+        'b5-tigne',
+      ],
+    });
+    this.show({ kind: 'prep' });
+  }
+
   /** Keeps a mid-battle snapshot so Continue resumes exactly where the player left off. */
   saveBattleProgress(state: BattleState): void {
     const screen = this.state.screen;

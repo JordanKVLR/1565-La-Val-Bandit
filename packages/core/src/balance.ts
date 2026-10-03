@@ -87,6 +87,8 @@ export interface BalanceConfig {
   readonly rewardPerEnemy: number;
   readonly rewardPerEnemyLevel: number;
   readonly rewardNoLosses: number;
+  /** The Armoury asks for a second tap before spending more than this share of the purse. */
+  readonly armouryConfirmFraction: number;
   readonly techFpMin: number;
   readonly techAccPerPower: number;
   readonly techAccMax: number;
@@ -155,6 +157,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   rewardPerEnemy: 60,
   rewardPerEnemyLevel: 15,
   rewardNoLosses: 100,
+  armouryConfirmFraction: 0.5,
   techFpMin: 5,
   techAccPerPower: 60,
   techAccMax: 20,

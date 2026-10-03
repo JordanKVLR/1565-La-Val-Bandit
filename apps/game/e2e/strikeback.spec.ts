@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test('attack back lets the player choose the technique to strike back with', async ({ page }) => {
-  test.setTimeout(90_000);
+  // Several enemy rounds play out before a strike back comes up; slow on CI and in parallel.
+  test.setTimeout(150_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('./?battle=b1-marsaxlokk');
@@ -13,6 +14,15 @@ test('attack back lets the player choose the technique to strike back with', asy
   for (let i = 0; i < 150 && !picked; i++) {
     const kind = await page.evaluate(() => window.__battle?.ctl.mode.kind);
     if (kind === 'reaction') {
+      // Hits take a third of a pilot's HP now: top the company up so someone lives to answer.
+      await page.evaluate(() => {
+        const { ctl } = window.__battle!;
+        const s = ctl.state;
+        const units = s.units.map((u) =>
+          u.side === 'player' && !u.defeated ? { ...u, hp: u.maxHp } : u,
+        );
+        ctl.view.set({ ...ctl.view.get(), state: { ...s, units } });
+      });
       const attackBack = reactions.getByRole('button', { name: /^Attack/ });
       if (await attackBack.isEnabled()) {
         await attackBack.click();

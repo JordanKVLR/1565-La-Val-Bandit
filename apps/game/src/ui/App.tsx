@@ -7,10 +7,10 @@ import { enterFullscreenIfWanted, initFullscreen } from '../platform/fullscreen'
 import type { SlotId } from '../platform/storage';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
+import { ArmouryScreen } from './armoury/ArmouryScreen';
 import { BattleScreen } from './BattleScreen';
 import { EndScreen } from './EndScreen';
 import { GameMenu } from './GameMenu';
-import { PrepScreen } from './PrepScreen';
 import { ResultsScreen } from './ResultsScreen';
 import { RotateOverlay } from './RotateOverlay';
 import { StoryScreen } from './StoryScreen';
@@ -28,6 +28,15 @@ function debugBattleId(): string | null {
     return id && isBattleId(id) ? id : null;
   } catch {
     return null;
+  }
+}
+
+/** `?armoury` opens the Armoury with a demo company (for testing and design). */
+function debugArmoury(): boolean {
+  try {
+    return new URLSearchParams(location.search).has('armoury');
+  } catch {
+    return false;
   }
 }
 
@@ -64,7 +73,7 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
         />
       )}
       {screen.kind === 'results' && <ResultsScreen session={session} screen={screen} lib={lib} />}
-      {screen.kind === 'prep' && <PrepScreen session={session} lib={lib} />}
+      {screen.kind === 'prep' && <ArmouryScreen session={session} lib={lib} />}
       {screen.kind === 'end' && <EndScreen onTitle={onTitle} />}
       {menu && (
         <GameMenu
@@ -83,7 +92,12 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
 
 export function App() {
   const lib = useMemo(() => loadLibrary(), []);
-  const [session, setSession] = useState<GameSession | null>(null);
+  const [session, setSession] = useState<GameSession | null>(() => {
+    if (!debugArmoury()) return null;
+    const demo = new GameSession(lib);
+    demo.openArmouryDemo();
+    return demo;
+  });
   const [debugBattle, setDebugBattle] = useState(debugBattleId);
   const { textSize } = useStore(settings);
 
