@@ -2,6 +2,7 @@ import { inkPlugin } from '@m1565/content/vite-plugin-ink';
 import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { introPlugin } from './vite-plugin-intro';
 
 // BASE_PATH lets the same build serve from a sub-path (GitHub Pages: /<repo>/) or from root.
 // Single-file preview build (no service worker) for sharing as a claude.ai page.
@@ -14,6 +15,7 @@ export default defineConfig({
   base,
   plugins: [
     inkPlugin(),
+    introPlugin(),
     preact(),
     VitePWA({
       disable: singleFile || native,

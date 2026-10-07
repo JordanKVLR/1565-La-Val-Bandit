@@ -2105,3 +2105,49 @@ input[type='range'] {
   line-height: 1.25;
   opacity: 0.9;
 }
+
+/* Opening cinematic (IntroScreen) */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+}
+.intro-screen iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  pointer-events: none;
+}
+.intro-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: #c9b98f;
+  font-family: var(--font-display);
+  letter-spacing: 0.2em;
+}
+.intro-begin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+  color: #f2e2b4;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.intro-skip {
+  position: absolute;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
+  min-width: 88px;
+  min-height: 44px;
+  opacity: 0.8;
+}

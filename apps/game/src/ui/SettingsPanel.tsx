@@ -24,7 +24,14 @@ function OnOff({
   );
 }
 
-export function SettingsPanel({ onClose }: { onClose: () => void }) {
+export function SettingsPanel({
+  onClose,
+  onWatchIntro,
+}: {
+  onClose: () => void;
+  /** Offered on the title screen only: replays the opening cinematic. */
+  onWatchIntro?: () => void;
+}) {
   const s = useStore(settings);
   const set = (p: Partial<Settings>) => settings.set({ ...s, ...p });
   const offer = useStore(installOffer);
@@ -141,6 +148,14 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
             onInput={(e) => set({ sfxVolume: Number((e.target as HTMLInputElement).value) })}
           />
         </label>
+        {onWatchIntro && (
+          <div class="setting">
+            <span>Opening cinematic</span>
+            <button type="button" class="btn ghost" onClick={onWatchIntro}>
+              Watch intro
+            </button>
+          </div>
+        )}
         <button type="button" class="btn" onClick={onClose}>
           Done
         </button>

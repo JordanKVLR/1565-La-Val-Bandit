@@ -14,6 +14,7 @@ import { GameMenu } from './GameMenu';
 import { ResultsScreen } from './ResultsScreen';
 import { RotateOverlay } from './RotateOverlay';
 import { StoryScreen } from './StoryScreen';
+import { IntroScreen } from './IntroScreen';
 import { TitleScreen } from './TitleScreen';
 
 /** Battles against a named commander get the heavier theme. */
@@ -99,6 +100,8 @@ export function App() {
     return demo;
   });
   const [debugBattle, setDebugBattle] = useState(debugBattleId);
+  // The opening cinematic plays before every new game, and on request from Settings.
+  const [intro, setIntro] = useState<'new' | 'watch' | null>(null);
   const { textSize } = useStore(settings);
 
   useEffect(() => {
@@ -118,8 +121,8 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (!session && !debugBattle) music('title');
-  }, [session, debugBattle]);
+    if (!session && !debugBattle && !intro) music('title');
+  }, [session, debugBattle, intro]);
 
   const debugSetup = useMemo(
     () => (debugBattle ? loadBattle(debugBattle, lib) : null),
@@ -139,11 +142,19 @@ export function App() {
           title={debugSetup.map.name}
           onExit={() => setDebugBattle(null)}
         />
+      ) : intro ? (
+        <IntroScreen
+          onDone={() => {
+            if (intro === 'new') setSession(new GameSession(lib));
+            setIntro(null);
+          }}
+        />
       ) : session ? (
         <SessionView session={session} onTitle={() => setSession(null)} />
       ) : (
         <TitleScreen
-          onNew={() => setSession(new GameSession(lib))}
+          onNew={() => setIntro('new')}
+          onWatchIntro={() => setIntro('watch')}
           onLoad={(slot: SlotId) => {
             const loaded = GameSession.load(lib, slot);
             if (loaded) setSession(loaded);
