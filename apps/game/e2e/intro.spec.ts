@@ -30,3 +30,19 @@ test('Settings on the title screen replays the cinematic and returns to the titl
   await page.keyboard.press('Escape');
   await expect(page.getByRole('heading', { name: /Armatura/ })).toBeVisible();
 });
+
+test('the cinematic still plays once the offline service worker controls the page', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload();
+  expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await page.getByRole('button', { name: 'New Game' }).click();
+  await expect(page.locator('.intro-loading')).toBeHidden({ timeout: 15000 });
+  await expect(page.getByRole('region', { name: 'Opening cinematic' })).toBeVisible();
+  const film = page.frame({ url: /intro\/index\.html/ });
+  expect(await film?.evaluate(() => typeof (window as { renderFrame?: unknown }).renderFrame)).toBe(
+    'function',
+  );
+});
