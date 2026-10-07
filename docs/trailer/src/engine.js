@@ -856,7 +856,8 @@ Object.assign(window, {
 /* ---------- scene registry + footage paths ---------- */
 window.SCENES = [];
 window.ST = (n) => `../footage/stills/${n}.jpg`;
-window.PORT = (n) => `${window.PORTRAIT_BASE ?? '../footage/portraits/'}${n}.webp`;
+window.PORT = (n) =>
+  `${window.PORTRAIT_BASE ?? '../../../apps/game/public/art/portraits/'}${n}.webp`;
 window.CLIP = (name, sec, fps = 30) =>
   `../footage/frames/${name}/${String(Math.max(1, Math.floor(sec * fps) + 1)).padStart(4, '0')}.jpg`;
 

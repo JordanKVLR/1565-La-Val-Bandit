@@ -9,7 +9,7 @@ Accepted.
 The game needs an opening cinematic before the Prologue: about four minutes long, cut to the
 full length of _Under the Red Sun_ (227.08 s), skippable, and replayable. It was built as a
 deterministic canvas renderer in `docs/trailer/src` (`renderFrame(t)` draws any frame), which
-also renders the 1080p video master `docs/trailer/armatura-1565-intro.mp4`.
+also renders the 1080p video master (not committed; render it with `docs/trailer/render.mjs`).
 
 Shipping the MP4 would add about 85 MB to every build (web, PWA, Android, iOS and Steam). It
 would also be blurry on large screens and need re-encoding for every text fix. The renderer

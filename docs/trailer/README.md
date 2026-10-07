@@ -4,15 +4,17 @@ A 1920x1080, 30 fps motion-graphics trailer, 227.08 s long, cut to the song _Und
 (129.25 BPM). Everything is drawn on a canvas as a pure function of time (`src/`), mixed with real
 gameplay captures (`footage/`), then rendered frame by frame.
 
-| Path                                  | What it is                                                                                                                                                                                 |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `armatura-1565-trailer.mp4`           | The trailer                                                                                                                                                                                |
-| `armatura-1565-intro.mp4`             | The opening cinematic (story intro, ends at dawn on 18 May 1565); storyboard in `INTRO_STORYBOARD.md`                                                                                      |
-| `under-the-red-sun.m4a`               | The soundtrack                                                                                                                                                                             |
-| `src/`                                | Renderer: `engine.js` (helpers), `scenes_a/b/c.js` (trailer), `intro/` (opening cinematic shots and art kit), `malta_geo.js` (coastlines traced from reference maps), `main.js` (timeline) |
-| `footage/stills`, `footage/portraits` | Gameplay screenshots and portraits used by the scenes                                                                                                                                      |
-| `render.mjs`                          | Headless Chromium frame renderer (parallel workers piped into ffmpeg)                                                                                                                      |
-| `assemble.sh`                         | Joins the segments, adds the song, encodes the final MP4                                                                                                                                   |
+Rendered videos, the gameplay footage (`footage/`) and the source song are not committed (they are
+hundreds of MB). The renderer reads portraits from `apps/game/public/art/portraits/` and the song
+from `apps/game/public/music/under-the-red-sun.mp3`. Only the trailer's scenes need `footage/`
+(stills and clips); the opening cinematic renders from the repo alone.
+
+| Path                  | What it is                                                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/`                | Renderer: `engine.js` (helpers), `scenes_a/b/c.js` (trailer), `intro/` (opening cinematic shots and art kit), `malta_geo.js` (coastlines traced from reference maps), `main.js` (timeline) |
+| `INTRO_STORYBOARD.md` | The opening cinematic's storyboard (story intro, ends at dawn on 18 May 1565)                                                                                                              |
+| `render.mjs`          | Headless Chromium frame renderer (parallel workers piped into ffmpeg)                                                                                                                      |
+| `assemble.sh`         | Joins the segments, adds the song, encodes the final MP4                                                                                                                                   |
 
 ## In the game
 

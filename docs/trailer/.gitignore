@@ -2,3 +2,7 @@ footage/frames/
 node_modules
 build/
 build-intro/
+# Large media stays out of git: re-render locally (see README)
+*.mp4
+*.m4a
+footage/
