@@ -24,6 +24,10 @@ export default defineConfig({
       // Precache the art too, so portraits and textures work offline once installed.
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,json,woff2}'],
+        // The opening cinematic is its own page (intro/index.html?scale=…): serve it from the
+        // precache despite the query, and never swap it for the app shell.
+        ignoreURLParametersMatching: [/^scale$/, /^utm_/, /^fbclid$/],
+        navigateFallbackDenylist: [/\/intro\//],
         // Music is too big to precache: each track is cached the first time it plays, then
         // served from the cache (with range requests, as audio players ask for).
         runtimeCaching: [
