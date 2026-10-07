@@ -1,202 +1,256 @@
-# Armatura 1565: art prompt pack
+# Armatura 1565: art brief for Claude Design
 
-Prompts for generating every image the game needs with an AI image tool (Midjourney, DALL·E,
-Stable Diffusion, Firefly, Ideogram, etc.). All designs are original: do **not** add the names
-of existing games, studios or artists to these prompts, and don't use reference images from
-other games. That keeps the art ours and store-safe.
-
-## How to use this
-
-1. **Start with the style block.** Paste the _Style block_ at the start of every prompt (or set
-   it as your tool's style/system prompt) so all images match.
-2. **Lock each character's look first.** Generate the portrait, pick the best one, then reuse it
-   as the character reference (Midjourney `--cref`, Stable Diffusion IP-Adapter, or "same
-   character as the attached image") for their sprites and any later images.
-3. **Keep a seed.** When a batch looks right, note the seed and reuse it for the rest of that set.
-4. **Export at the listed size** (or larger, same aspect ratio) as PNG. Sprites and portraits
-   need transparent backgrounds. If your tool can't do that, ask for a flat magenta
-   (#FF00FF) background and remove it afterwards.
-5. **Drop files into the repo** at the listed path under `apps/game/public/art/`, and add them to
-   `apps/game/public/art/manifest.json`. **Portraits and terrain textures appear in the game
-   immediately.** The other sets (sprites, backgrounds, duel backdrops, UI) are ready for the
-   next code step: tell me when you have them and I'll wire them in.
-
-### Style block (use in every prompt)
-
-> Hand-painted 1990s console tactical-RPG illustration style, clean confident linework, soft
-> cel shading with painterly texture, warm Mediterranean light, muted earthy palette of
-> honey limestone, olive green, terracotta, deep sea blue and weathered brass; 16th-century
-> Malta, alternate history in which knights and janissaries pilot clockwork-and-steam
-> war-harnesses called Armature (3–4 m tall, brass ribs, riveted plates, exposed springs,
-> small pilot hatch); dignified, grounded, not cartoonish; no text, no watermark, no logo.
-
-### Negative prompt (for tools that support it)
-
-> text, letters, watermark, signature, logo, modern objects, guns from later centuries, sci-fi
-> lasers, anime chibi proportions, photorealism, blurry, extra fingers, deformed hands,
-> cropped head, busy background (for portraits and sprites)
+This file is a complete, self-contained brief. Upload it as it is and ask:
+_"Create every asset in this brief, except the portraits."_
 
 ---
 
-## 1. Character portraits
+## 0. Read this first (instructions for the designer)
 
-Dialogue boxes and battle panels. **Size:** 512×512, square, head and shoulders, facing slightly
-toward the viewer, neutral background, transparent or plain. **Path:**
-`portraits/<id>.png` → manifest `"portraits": { "<id>": "portraits/<id>.png" }`.
+### The game
 
-| id          | Prompt (after the style block)                                                                                                                                                                                                                                                                                                               |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ninu`      | Portrait of Ninu Falzon, 23-year-old Maltese farmer and fisherman, sun-browned skin, thick dark curly hair, stubborn jaw, bright determined eyes, faint scar on the chin, rough linen shirt under a battered militia leather jerkin, a cord with half of a broken bronze medallion visible at his collar; hopeful and hot-headed expression. |
-| `pawlu`     | Portrait of Pawlu Falzon, weathered Maltese farmer in his sixties, former galley slave, deep-lined face, grey stubble, kind tired eyes, old iron-shackle scars on the wrists, faded blue-grey peasant clothes, a woven straw hat pushed back.                                                                                                |
-| `kateri`    | Portrait of Kateri Borg, 22-year-old Maltese clockmaker's daughter and war-harness mechanic from Mdina, dark hair tied back with a leather cord, grease smudge on one cheek, brass magnifying loupe pushed up on her forehead, leather apron over a practical dress, a small wrench tucked in a pocket; wry clever half-smile.               |
-| `luis`      | Portrait of Fra Luis de Arrieta, Aragonese knight of the Order of St John in his forties, close-cropped greying beard, stern but kind eyes, black surcoat with a white eight-pointed cross over steel half-armour, a scar across the brow; disciplined, protective bearing.                                                                  |
-| `valette`   | Portrait of the Grand Master of the Order of St John in 1565, a lean man past seventy with a white beard, sharp commanding eyes, black robe with the white eight-pointed cross, simple steel gorget; immense dignity and a hidden sadness.                                                                                                   |
-| `balbi`     | Portrait of an Italian arquebusier and diarist, 1560s, around forty, trimmed dark beard, morion helmet under his arm, ink-stained fingers, small leather notebook tucked in his bandolier; wry observant expression.                                                                                                                         |
-| `ganni`     | Portrait of Ġanni, young burly Maltese militiaman, broad cheerful face, short black hair, sleeveless padded jack, pike shaft over one shoulder; eager, loyal grin.                                                                                                                                                                           |
-| `rozi`      | Portrait of Rożi, young Maltese militia sharpshooter woman, lean, sharp dark eyes, hair under a head scarf, powder flask and bandolier across her chest; calm and focused.                                                                                                                                                                   |
-| `deniz`     | Portrait of Deniz, 19-year-old Ottoman corsair navigator, lean and quick, dark wavy hair under a red cap, gold earring, open-collared white shirt under a short embroidered vest, a kilij hilt at his shoulder; the same stubborn jaw as Ninu; idealistic, proud.                                                                            |
-| `leyla`     | Portrait of Leyla Hatun, dignified woman in her forties of Ottoman noble blood, dark eyes, silver streak in her dark hair under a deep violet silk veil and embroidered kaftan, holding half of a broken bronze medallion near her heart; quiet strength and old grief.                                                                      |
-| `yusuf`     | Portrait of Yusuf Reis, Ottoman corsair captain in his fifties, weathered, grey-black beard, white turban with a teal sash, heavy sea coat, gold ring; gruff but fatherly.                                                                                                                                                                   |
-| `turgut`    | Portrait of an elderly legendary Ottoman admiral around eighty, long white beard, fierce wise eyes, large white turban, rich red-and-gold kaftan, standing as if cannonballs were rain.                                                                                                                                                      |
-| `mustafa`   | Portrait of the Ottoman army commander of 1565, stern older general with a thick grey beard, tall formal turban with a plume, crimson kaftan with fur trim; impatient, severe.                                                                                                                                                               |
-| `piali`     | Portrait of the Ottoman fleet admiral of 1565, younger than the army commander, neatly trimmed dark beard, admiral's turban, blue-and-gold kaftan; cool and calculating.                                                                                                                                                                     |
-| `scala`     | Portrait of Vittorio Scala, Genoese engineer-inventor in his fifties, villain, thin sharp face, neat pointed grey beard, brass-rimmed spectacles, black doublet with brass buttons, a leather tool roll, burn scar on one hand; smiling politely and coldly.                                                                                 |
-| `anastagi`  | Portrait of the captain of the Mdina cavalry, Italian officer around forty, dashing moustache, plumed burgonet helmet, cuirass over a dark red doublet; confident, daring.                                                                                                                                                                   |
-| `villager`  | Portrait of a frightened Maltese villager, middle-aged, headscarf, simple brown clothes.                                                                                                                                                                                                                                                     |
-| `soldier`   | Portrait of a generic soldier of the Order's garrison, helmet, tired soot-streaked face.                                                                                                                                                                                                                                                     |
-| `janissary` | Portrait of a generic Ottoman janissary, tall white felt börk hat with a spoon holder, moustache, blue coat.                                                                                                                                                                                                                                 |
+**Armatura 1565** is an original tactical role-playing game set during the Great Siege of Malta
+in 1565. It is an alternate history: knights of the Order of St John, Maltese militia, Ottoman
+janissaries and corsairs fight inside clockwork-and-steam war-harnesses called **Armature**
+(singular _Armatura_). They are 3–4 m tall, with brass ribs, riveted plates, exposed springs
+and a small pilot hatch. Everything else is grounded 16th-century Malta: honey-coloured
+limestone, terraced fields, dry-stone walls, galleys, bastions, the Grand Harbour.
 
----
+The game is played mostly on phones held sideways (landscape) and on the Steam Deck. Battles
+happen on an isometric 3D map of square tiles. Story scenes play out on small dioramas.
 
-## 2. Armatura unit sprites (battle map)
+### What to make
 
-One sprite sheet per frame design. **Size:** 1024×512 sheet = 8 cells of 256×256 in a row:
-`idle-front, walk1-front, walk2-front, attack-front, idle-back, walk1-back, walk2-back,
-attack-back`. "Front" means ¾ view toward the camera, "back" means ¾ view away from it. Full
-body, feet at the bottom of each cell, transparent background, same scale in every cell.
-**Path:** `sprites/<frame-id>.png`.
+Six sets, listed in order of priority. If you have to stop early, finish whole sets in this
+order, because sets 1 and 2 are the ones the game uses the moment they arrive.
 
-Start each prompt with: _"Sprite sheet, 8 poses in one row, isometric ¾ view, full body,
-consistent scale, transparent background, of a war-harness (Armatura):"_
+| #   | Set                                 | Count | Where it appears                        |
+| --- | ----------------------------------- | ----- | --------------------------------------- |
+| 1   | Terrain textures (tile tops)        | 14    | Every battle map, **used immediately**  |
+| 2   | Terrain side textures (cliff faces) | 6     | Every battle map, **used immediately**  |
+| 3   | Story backgrounds                   | 9     | Behind the story dioramas               |
+| 4   | Duel backdrops                      | 5     | Behind the 3D close-up of each attack   |
+| 5   | Title, logo, app icon and store art | 6     | Title screen, home screen, store pages  |
+| 6   | Armatura concept sheets (reference) | 16    | Reference for the 3D models (not shown) |
+| –   | Character portraits                 | –     | **Already finished. Do not make any.**  |
 
-| frame id      | Description                                                                                                                                                                     |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `haddiem`     | light Maltese militia harness, patched iron plates over a wooden frame, exposed leaf springs on the legs, rope-bound joints, red-and-white cloth sash, carries an arming sword. |
-| `moschetta`   | light militia gunner harness, slim frame, a long arquebus mounted along the right arm, powder barrels on the back, leather hood over the pilot hatch.                           |
-| `artigjan`    | light workshop harness, tool arms, wrench and clamp hands, brass pressure gauges on the chest.                                                                                  |
-| `cavaliere`   | medium knight harness of the Order, polished steel plates, black surcoat panel with a white eight-pointed cross, sword and kite shield.                                         |
-| `bastiun`     | heavy knight harness, massive tower shield, thick riveted plates, short heavy legs, slow and immovable.                                                                         |
-| `lanza`       | medium knight lancer harness, long lance, streamlined chest plate, pennant with the eight-pointed cross.                                                                        |
-| `kaptan`      | medium knight commander harness, gilded trim, banner pole on the back, crested helm dome.                                                                                       |
-| `yeniceri`    | medium Ottoman janissary harness, blue-lacquered plates, tall white felt-hat shaped head dome, kilij in hand and a long tüfek musket on the back.                               |
-| `sipahi`      | light Ottoman cavalry harness, digitigrade horse-like legs, red lacquered plates, long lance with a horsetail tassel.                                                           |
-| `humbaraci`   | medium Ottoman bombardier harness, bandolier of clay grenade pots, sling arm, soot-darkened plates.                                                                             |
-| `levend`      | light corsair harness, agile, teal sash, cutlass and boarding hook, rope-wrapped limbs.                                                                                         |
-| `reis`        | medium corsair captain harness, gold-trimmed plates, captain's cloak, heavy cutlass.                                                                                            |
-| `prototipo`   | medium experimental Genoese harness, exposed brass boiler, hissing valves, piston-driven ram-arm, mismatched plates.                                                            |
-| `colossus`    | heavy giant Genoese war machine, twice as bulky, boiler chimney on the back, shoulder-mounted cannon, huge ram-arm, glowing furnace grill.                                      |
-| `siege-tower` | armoured siege tower on wheels with a drop bridge and gun ports, brass and timber.                                                                                              |
-| `barge`       | small armoured supply barge with a swivel gun, sandbags and crates.                                                                                                             |
+### Delivery rules (apply to every asset)
 
----
+1. **One artboard per file**, at the **exact pixel size** listed, named **exactly** as the file
+   name in the tables (for example `terrain/plain.png`).
+2. **Export as PNG.** The app icon is also wanted as **SVG** (see §5).
+3. **No text, letters, numbers, signatures or watermarks** in any image. The only exception is
+   the logo (§5).
+4. **Transparency:** only where a row says _transparent_. Everything else fills the whole canvas
+   edge to edge.
+5. **Seamless where stated:** a tile texture must repeat with no visible seam when placed next to
+   itself on all four sides (sides: left and right).
+6. **No characters** in textures, backgrounds or duel backdrops. Distant, tiny figures on a
+   rampart or a ship are fine.
+7. Keep every asset **original**. Do not imitate any existing game, studio, artist or brand.
 
-## 3. Terrain textures (battle map tiles)
+### Visual style
 
-Seamless, tileable, viewed straight from above, even lighting, no shadows, no perspective.
-**Size:** 512×512. **Path:** `terrain/<id>.png` → manifest `"terrain": { "<id>": "terrain/<id>.png" }`.
-They show up on the map the moment they're listed.
+Match the finished character portraits. Each item below is part of the same style:
 
-Start each prompt with: _"Seamless tileable top-down texture, even flat lighting, hand-painted
-game texture, Maltese landscape:"_
+- **Look:** graphic-novel illustration with **bold, clean black ink outlines**.
+- **Colouring:** **muted watercolour-and-gouache shading**, with a little paper grain.
+- **Light:** warm Mediterranean light.
+- **Mood:** dignified and grounded, never cartoonish, chibi or photorealistic.
+- **Textures are the exception:** terrain textures (sets 1 and 2) are seen small and repeat, so
+  they use **thin, soft outlines or none**, with painterly detail. The same palette keeps them
+  in the family.
 
-| id         | Prompt                                                                                       |
-| ---------- | -------------------------------------------------------------------------------------------- |
-| `plain`    | short dry Mediterranean grass with small wildflowers and patches of pale soil                |
-| `field`    | terraced crop field, neat rows of young barley and cotton on red-brown soil                  |
-| `scrub`    | garigue: low thyme and spurge bushes, pale limestone pebbles, dry red earth                  |
-| `road`     | dusty unpaved cart road, pale tan dirt with two shallow wheel ruts and pebbles               |
-| `sand`     | fine golden beach sand with gentle wind ripples                                              |
-| `rubble`   | scattered broken honey-coloured limestone blocks and gravel                                  |
-| `rampart`  | top of a fortress wall, large honey-coloured globigerina limestone blocks with mortar joints |
-| `wall`     | weathered limestone masonry seen from above, darker, with lichen                             |
-| `floor`    | worn limestone flagstones of a courtyard, irregular slabs                                    |
-| `ruin`     | shattered limestone masonry with cracks, soot and fallen blocks                              |
-| `shallows` | clear turquoise shallow sea water over pale sand and rocks, light caustics                   |
-| `sea`      | deep Mediterranean blue sea with small wave crests                                           |
-| `deck`     | galley deck of weathered oak planks with tar seams and iron nails                            |
-| `trench`   | freshly dug siege trench, dark churned earth with timber planks                              |
+**Palette** (use as a guide, not a straitjacket):
 
-**Cliff sides** (the vertical faces of raised tiles). **Size:** 512×512, seamless horizontally.
-**Path:** `terrain/<name>.png` → manifest
-`"terrainSides": { "plain": "terrain/side-soil.png", "road": "terrain/side-rock.png", … }`.
-Map each terrain id to the side it should use.
+| Role                 | Colour                                |
+| -------------------- | ------------------------------------- |
+| Limestone, light     | `#E8D3A2` honey, `#EFE3C6` cream      |
+| Limestone, shadow    | `#B8935A`, `#8A6A3E`                  |
+| Soil (terra rossa)   | `#9A4E2E`, `#6E3A22`                  |
+| Vegetation           | `#7C8A4A` olive, `#4E5E2E` dark olive |
+| Sea                  | `#1D5FA8` deep, `#4FB3BF` shallow     |
+| Brass and gold       | `#C9A45C`, `#D9B56A`                  |
+| Maltese painted wood | `#1F5040` green, `#B02E2A` red        |
+| Ink and night        | `#1B1410`                             |
 
-| name         | Prompt                                                                                         |
-| ------------ | ---------------------------------------------------------------------------------------------- |
-| `side-soil`  | vertical cross-section: a band of red terra rossa soil on top of layered pale limestone strata |
-| `side-rock`  | vertical face of layered honey-coloured limestone cliff with horizontal strata                 |
-| `side-wall`  | vertical fortress wall of large limestone blocks with mortar                                   |
-| `side-sand`  | vertical face of packed sand and sandstone                                                     |
-| `side-water` | deep underwater blue gradient, darker at the bottom                                            |
-| `side-wood`  | ship hull side, dark tarred oak planks with iron bands                                         |
+**Accessibility:** the game's owner is colourblind (red/green and blue/purple). Never rely on
+those colour pairs alone to separate important things. In textures, make neighbouring terrain
+types differ in **brightness and pattern**, not just hue. For example, field rows, scrub dots
+and road ruts must read clearly in greyscale.
+
+### Accuracy rules for 1565
+
+Avoid these, because they did not exist yet or look wrong:
+
+- **Weapons:** firearms are **matchlocks only**, with an S-shaped serpentine holding a
+  smouldering cord. No flintlocks, hammers, frizzens or cartridges.
+- **Objects:** no telescopes or spyglasses (invented 1608), no glass-chimney oil lamps, no
+  goggles.
+- **Clothing:** no fezzes (Ottoman soldiers wear turbans, and janissaries a tall white felt
+  _börk_).
+- **Buildings:** Mdina has **no large church dome**; its current cathedral dome dates from 1702.
+- **Ships:** the fleets are mostly **oared galleys** with lateen sails.
+- **Backgrounds:** use Maltese limestone fortifications, never Gothic northern European castles.
+- **The Armature** are the one deliberate fantasy element: clockwork, springs, brass and steam.
+  No electric lights, screens or modern machinery.
 
 ---
 
-## 4. Story backgrounds (behind the diorama scenes)
+## 1. Terrain textures (tile tops)
 
-Painted establishing shots shown behind the isometric stage. **Size:** 1920×1080, landscape,
-no characters. **Path:** `backgrounds/<stage-id>.png`.
+Battle-map tiles, seen **straight from above**, with even flat lighting, no cast shadows and no
+perspective. **512×512, seamless on all four sides.** Each terrain should read as itself at
+64 px wide.
 
-| stage id             | Prompt                                                                                                                                                                              |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `p0-zejtun`          | dawn over terraced fields and rubble walls of Żejtun, Malta, a farmhouse of honey limestone, the bay of Marsaxlokk below with a huge Ottoman fleet of galleys rounding the headland |
-| `p1-workshop`        | interior of a 16th-century arsenal workshop in Birgu, lamp-lit, half-built war-harnesses on wooden blocks, springs and gears on benches, smoke and sparks                           |
-| `p2-st-angelo`       | the upper ward of Fort St Angelo at night overlooking the Grand Harbour, cannon on the ramparts, fires burning on the far shore                                                     |
-| `p3-camp`            | an Ottoman siege camp on a rocky point at dusk, rows of tents, banners, guns being dragged into place, the sea behind                                                               |
-| `s-mdina`            | the silent walled hill city of Mdina, narrow limestone street, bell tower, evening light                                                                                            |
-| `b6-kalkara-chapel`  | a roofless ruined chapel on the Kalkara shore under a full moon                                                                                                                     |
-| `b9-fall-of-st-elmo` | the shattered walls of a star-shaped fort at the tip of a peninsula, smoke, dawn                                                                                                    |
-
----
-
-## 5. Duel backdrops (3D close-up)
-
-Wide panoramic skies and horizons behind the 3D duel. **Size:** 2048×768. **Path:**
-`duel/<terrain-group>.png`.
-
-| name            | Prompt                                                                                                               |
-| --------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `duel/fields`   | wide panoramic view of Maltese terraced fields and rubble walls under a hazy afternoon sky, horizon low in the frame |
-| `duel/coast`    | wide panoramic view of a rocky Maltese coast and turquoise sea, galleys in the distance                              |
-| `duel/fortress` | wide panoramic view along limestone fortress bastions with smoke rising, siege lines beyond                          |
-| `duel/camp`     | wide panoramic view of an Ottoman siege camp with tents and banners at dusk                                          |
-| `duel/night`    | wide panoramic view of the Grand Harbour at night, fires reflected on the water                                      |
+| File                   | Content                                                                                                     |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `terrain/plain.png`    | Short dry Mediterranean grass, small yellow and white wildflowers, patches of pale soil.                    |
+| `terrain/field.png`    | Terraced crop field: neat parallel rows of young barley on red-brown terra rossa soil.                      |
+| `terrain/scrub.png`    | Garigue: low rounded thyme and spurge bushes, scattered pale limestone pebbles, dry red earth.              |
+| `terrain/road.png`     | Dusty unpaved cart track, pale tan dirt with two shallow wheel ruts running straight across and pebbles.    |
+| `terrain/sand.png`     | Fine golden beach sand with gentle wind ripples and a few shell fragments.                                  |
+| `terrain/rubble.png`   | Scattered broken honey-coloured limestone blocks and gravel on dusty ground.                                |
+| `terrain/rampart.png`  | Top walkway of a fortress wall: large squared honey limestone blocks with mortar joints in regular courses. |
+| `terrain/wall.png`     | Older weathered limestone masonry seen from above: darker, irregular blocks with lichen patches.            |
+| `terrain/floor.png`    | Worn limestone flagstones of a courtyard, irregular slabs with thin dark joints.                            |
+| `terrain/ruin.png`     | Shattered limestone masonry: cracks, soot stains, fallen blocks and charred timber.                         |
+| `terrain/shallows.png` | Clear turquoise shallow sea over pale sand and rocks, soft light ripples (caustics).                        |
+| `terrain/sea.png`      | Deep Mediterranean blue sea with small white-capped wave crests.                                            |
+| `terrain/deck.png`     | Galley deck: weathered oak planks running one way, dark tar seams, iron nail heads.                         |
+| `terrain/trench.png`   | Freshly dug siege trench: dark churned earth with timber boards and a few gabions (wicker baskets).         |
 
 ---
 
-## 6. Title, icon and store art
+## 2. Terrain side textures (cliff faces)
 
-| file                        | Size                  | Prompt                                                                                                                                                                                                                                                                    |
-| --------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ui/title.png`              | 1920×1080             | Title screen key art: a young Maltese pilot in a battered militia Armatura on a limestone rampart at dawn, facing a vast Ottoman fleet, with a knight's Armatura and a janissary Armatura in the background; heroic, painterly; leave the upper third calm for the logo.  |
-| `ui/logo.png`               | 1600×600, transparent | Game logo lettering "ARMATURA 1565" in a 16th-century engraved style, brass and limestone textures, an eight-pointed cross and a crescent worked subtly into the design. _(AI tools often misspell text. If so, generate the ornament only and set the words in a font.)_ |
-| `ui/icon.png`               | 1024×1024             | App icon: a stylised brass Armatura helmet over a broken bronze medallion split into two halves, cross on one half and crescent on the other; bold simple shapes readable at small sizes, deep brown background.                                                          |
-| `store/feature-graphic.png` | 1024×500              | Google Play feature graphic: two Armature facing off on a Maltese shore at sunset, room on the left for the logo.                                                                                                                                                         |
-| `store/steam-capsule.png`   | 920×430               | Steam main capsule: the hero's Armatura in the foreground, the siege of Birgu behind, logo space top-left.                                                                                                                                                                |
-| `store/steam-hero.png`      | 3840×1240             | Steam library hero: panoramic siege of the Grand Harbour, fleets, fortresses, war-harnesses; no text.                                                                                                                                                                     |
+The vertical faces of raised tiles. **512×512, seamless left to right** (the top and bottom
+edges do not need to match). The top of each image is the top edge of the cliff.
 
-Store screenshots should be real in-game captures, not AI images. Apple and Google both
-reject misleading screenshots.
+| File                     | Content                                                                                     | Used under                  |
+| ------------------------ | ------------------------------------------------------------------------------------------- | --------------------------- |
+| `terrain/side-soil.png`  | A band of red terra rossa soil with grass roots on top, over layered pale limestone strata. | plain, field, scrub, trench |
+| `terrain/side-rock.png`  | Layered honey-coloured limestone cliff with horizontal strata, cracks and small ledges.     | road, rubble, ruin          |
+| `terrain/side-wall.png`  | Fortress wall face of large squared limestone blocks in regular courses, mortar joints.     | rampart, wall, floor        |
+| `terrain/side-sand.png`  | Packed sand over soft sandstone, slightly crumbling.                                        | sand                        |
+| `terrain/side-water.png` | Underwater blue, lighter at the top and darker towards the bottom, faint light shafts.      | shallows, sea               |
+| `terrain/side-wood.png`  | Ship's hull side: dark tarred oak planks running horizontally, iron bands and nail heads.   | deck                        |
 
 ---
+
+## 3. Story backgrounds
+
+Painted establishing shots shown **behind** the small story dioramas. **1920×1080**, landscape,
+no characters, in the full ink-and-watercolour style. Keep the **centre and lower middle calm**:
+the diorama sits there, and dialogue boxes cover the bottom fifth.
+
+| File                                 | Scene                                                                                                                                                                                                          |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backgrounds/p0-zejtun.png`          | Dawn over the terraced fields and dry-stone walls of Żejtun. A flat-roofed limestone farmhouse, a carob tree, and the bay of Marsaxlokk below with a vast Ottoman fleet of galleys rounding the headland.      |
+| `backgrounds/p1-workshop.png`        | Inside a vaulted limestone arsenal workshop in Birgu, lit by forge fire and tallow candles. Half-built Armature stand on timber blocks; springs, gears and riveted plates cover the benches; smoke and sparks. |
+| `backgrounds/p2-st-angelo.png`       | The upper ward of Fort St Angelo at night, looking over the Grand Harbour. Bronze cannon on the ramparts, the Order's banner (white cross on red), fires burning on the far shore.                             |
+| `backgrounds/p3-camp.png`            | An Ottoman siege camp on a rocky point at dusk: rows of tents, horsetail standards and crescent banners, guns being dragged into place, the sea behind.                                                        |
+| `backgrounds/s-mdina.png`            | The silent walled hill city of Mdina at evening: a narrow limestone street, flat roofs, a bell tower, wooden balconies. No large dome.                                                                         |
+| `backgrounds/b1-marsaxlokk.png`      | The rocky shore of Marsaxlokk at midday, Ottoman galleys landing troops in the bay, small Maltese fishing boats pulled up on the beach, a watchtower on the point.                                             |
+| `backgrounds/b6-kalkara-chapel.png`  | A roofless ruined chapel on the Kalkara shore under a full moon, broken arches, the harbour glinting beyond.                                                                                                   |
+| `backgrounds/b8-turgut-battery.png`  | An Ottoman gun battery on the high ground of Tigné Point: earth-and-gabion walls, great bronze siege guns, smoke rolling towards Fort St Elmo across the water.                                                |
+| `backgrounds/b9-fall-of-st-elmo.png` | The shattered walls of the star-shaped Fort St Elmo at the tip of the Sciberras peninsula at dawn, smoke rising, the harbour mouth beyond.                                                                     |
+
+---
+
+## 4. Duel backdrops
+
+Wide panoramas behind the 3D close-up shown when one unit attacks another. **2048×768**, with
+the **horizon in the lower third**. The 3D fighters stand in the middle, so keep the centre
+simple. No characters.
+
+| File                | Scene                                                                            |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `duel/fields.png`   | Maltese terraced fields and dry-stone walls under a hazy afternoon sky.          |
+| `duel/coast.png`    | A rocky Maltese coast and turquoise sea, galleys far out on the water.           |
+| `duel/fortress.png` | Along limestone fortress bastions with smoke rising, Ottoman siege lines beyond. |
+| `duel/camp.png`     | An Ottoman siege camp with tents and banners at dusk.                            |
+| `duel/night.png`    | The Grand Harbour at night, fires reflected on the dark water.                   |
+
+---
+
+## 5. Title, logo, app icon and store art
+
+| File                          | Size                  | Content                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ui/title.png`                | 1920×1080             | Title key art. A battered Maltese militia Armatura stands on a limestone rampart at dawn, its young pilot (Ninu, see the cast reference) visible in the open hatch, facing a vast Ottoman fleet of galleys. A knight's Armatura (black and white cross) and a janissary Armatura (blue plates, tall white dome) stand further back. Heroic and painterly. **Keep the upper third calm** for the logo. |
+| `ui/logo.png`                 | 1600×600, transparent | The lettering **ARMATURA 1565** in a 16th-century engraved style, with brass and limestone textures. A Maltese eight-pointed cross and an Ottoman crescent are worked subtly into the ornament. This is the only asset with text. Spell it exactly.                                                                                                                                                   |
+| `ui/icon.png` + `ui/icon.svg` | 1024×1024             | App icon: a stylised brass Armatura helmet in front of a bronze medallion broken into two halves, a cross on one half and a crescent on the other. Bold, simple shapes that read at 48 px. Deep brown background (`#1B1410`) filling the square, with the subject inside the central 80% (Android crops corners). Also deliver it as a clean **SVG**.                                                 |
+| `store/feature-graphic.png`   | 1024×500              | Google Play feature graphic: a militia Armatura and a janissary Armatura facing off on a Maltese shore at sunset. Leave the left third calm for the logo. No text.                                                                                                                                                                                                                                    |
+| `store/steam-capsule.png`     | 920×430               | Steam main capsule: the militia Armatura in the foreground, the siege of Birgu behind. Leave the top left calm for the logo. No text.                                                                                                                                                                                                                                                                 |
+| `store/steam-hero.png`        | 3840×1240             | Steam library hero: a panoramic siege of the Grand Harbour with fleets, bastions and war-harnesses in battle. No text, no logo (Steam overlays it).                                                                                                                                                                                                                                                   |
+
+---
+
+## 6. Armatura concept sheets (reference only)
+
+The game draws its Armature as simple 3D models in code. These sheets are **reference** for
+making those models richer later; they are not shown in the game. **2048×1024**, plain light
+parchment background (`#EFE3C6`). Each sheet shows **front, side and back** views of one
+harness, standing, at the same scale, with a small human pilot figure beside it for size. No
+labels or text.
+
+| File                      | Harness                                                                                                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `concept/haddiem.png`     | Light Maltese militia harness: patched iron plates over a timber frame, leaf springs on the legs, rope-bound joints, red-and-white sash, arming sword.        |
+| `concept/moschetta.png`   | Light militia gunner: slim frame, a long matchlock arquebus along the right arm, small powder kegs on the back, leather hood over the hatch.                  |
+| `concept/artigjan.png`    | Light workshop harness: tool arms with wrench and clamp hands, brass pressure gauges on the chest.                                                            |
+| `concept/cavaliere.png`   | Medium knight of the Order: polished steel plates, black surcoat panel with a white eight-pointed cross, sword and shield.                                    |
+| `concept/bastiun.png`     | Heavy knight: massive tower shield, thick riveted plates, short heavy legs.                                                                                   |
+| `concept/lanza.png`       | Medium knight lancer: long lance with a cross pennant, streamlined chest plate.                                                                               |
+| `concept/kaptan.png`      | Medium knight commander: gilded trim, banner pole on the back, crested dome helm.                                                                             |
+| `concept/yeniceri.png`    | Medium janissary harness: blue-lacquered plates, tall white börk-shaped head dome with a brass spoon-holder, kilij in hand, long matchlock tüfek on the back. |
+| `concept/sipahi.png`      | Light Ottoman cavalry harness: horse-like jointed legs, red-lacquered plates, long lance with a horsetail tassel.                                             |
+| `concept/humbaraci.png`   | Medium bombardier: bandolier of clay grenade pots, sling arm, soot-darkened plates.                                                                           |
+| `concept/levend.png`      | Light corsair harness: agile, teal sash, cutlass and boarding hook, rope-wrapped limbs.                                                                       |
+| `concept/reis.png`        | Medium corsair captain: gold-trimmed plates, captain's cloak, heavy cutlass.                                                                                  |
+| `concept/prototipo.png`   | Medium experimental Genoese harness: exposed brass boiler, hissing valves, piston-driven ram-arm, mismatched plates.                                          |
+| `concept/colossus.png`    | Heavy giant Genoese war machine: twice as bulky, boiler chimney, shoulder cannon, huge ram-arm, glowing furnace grille.                                       |
+| `concept/siege-tower.png` | Armoured siege tower on timber wheels with a drop bridge and gun ports, brass and oak.                                                                        |
+| `concept/barge.png`       | Small armoured supply barge with a swivel gun, sandbags and crates.                                                                                           |
+
+---
+
+## Cast reference (for consistency only: do not draw portraits)
+
+The portraits are finished and already in the game. These descriptions are here only so key
+art that includes a character (such as `ui/title.png`) matches them.
+
+- **Ninu Falzon** (hero): 23, Maltese farmer and fisherman turned militiaman, sun-browned olive
+  skin, thick dark curly hair, green-hazel eyes, linen shirt under a battered brown leather
+  jerkin, half of a broken bronze medallion (tulip and crescent design) on a cord.
+- **Kateri Borg:** 22, armatura mechanic from Mdina, dark curly hair tied back, grease smudge,
+  single brass jeweller's loupe on a band, green dress and leather apron.
+- **Fra Luis:** knight of Aragon in his forties, greying beard, scar across the brow, steel
+  gorget and pauldrons over a black surcoat with the white eight-pointed cross.
+- **Deniz:** young Ottoman corsair navigator, dark wavy hair, red-and-white turban, gold hoop
+  earring, green embroidered vest.
+- **The Order's colours:** black habit or surcoat with a white eight-pointed cross; banner
+  white cross on red.
+- **The Ottoman side:** turbans, crimson, blue and gold kaftans, crescent and horsetail
+  standards.
+
+---
+
+## For the game's owner: adding the files
+
+1. Put each file at `apps/game/public/art/<file name>` (for example
+   `apps/game/public/art/terrain/plain.png`).
+2. Hand them to Claude Code to wire in. Sets 1 and 2 only need entries in
+   `apps/game/public/art/manifest.json` and show up straight away; the other sets need a small
+   code step each.
+3. Record any third-party element in `assets/CREDITS.md`.
 
 ## Checklist
 
-- [ ] 19 portraits (§1)
-- [ ] 16 sprite sheets (§2)
-- [ ] 14 terrain textures + 6 cliff sides (§3)
-- [ ] 7 story backgrounds (§4)
-- [ ] 5 duel backdrops (§5)
-- [ ] Title, logo, icon, 3 store images (§6)
-- [ ] Every file listed in `apps/game/public/art/manifest.json`
-- [ ] Any third-party or licensed element recorded in `assets/CREDITS.md`
+- [ ] 14 terrain textures (§1)
+- [ ] 6 terrain side textures (§2)
+- [ ] 9 story backgrounds (§3)
+- [ ] 5 duel backdrops (§4)
+- [ ] Title, logo, icon (PNG + SVG), 3 store images (§5)
+- [ ] 16 Armatura concept sheets (§6)
