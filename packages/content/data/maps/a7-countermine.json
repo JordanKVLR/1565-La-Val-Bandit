@@ -1,0 +1,44 @@
+{
+  "id": "a7-countermine",
+  "name": "The Countermine",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ttttt__ttttt",
+    "gpppp__ppppg",
+    "ppxpppppxppp",
+    "WWxWWbbWWxWW",
+    "__________x_",
+    "_x__b___b___",
+    "____________",
+    "WWWWb__bWWWW",
+    "##________##",
+    "#__________#"
+  ],
+  "height": [
+    "111110011111",
+    "211110011112",
+    "112111111211",
+    "221221122122",
+    "000000000000",
+    "000000000000",
+    "000000000000",
+    "555510015555",
+    "331111111133",
+    "311111111113"
+  ]
+}

@@ -1,0 +1,191 @@
+{
+  "id": "a6-sick-tents",
+  "name": "The Hospital Tents",
+  "map": "a6-sick-tents",
+  "seed": 16,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 5
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [7, 5],
+      "facing": "west",
+      "character": "deniz"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [7, 3],
+      "facing": "west",
+      "character": "yusuf"
+    },
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [9, 5],
+      "facing": "west",
+      "character": "leyla"
+    },
+    {
+      "id": "corsair-1",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [7, 7],
+      "facing": "west",
+      "name": "Corsair Hamid",
+      "stats": {
+        "pow": 8,
+        "dex": 7,
+        "agl": 7
+      }
+    },
+    {
+      "id": "gunner-1",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [10, 3],
+      "facing": "west",
+      "name": "Gunner Ilyas",
+      "stats": {
+        "pow": 7,
+        "dex": 9,
+        "agl": 5
+      }
+    },
+    {
+      "id": "anastagi",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [0, 4],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Anastagi",
+      "stats": {
+        "pow": 10,
+        "dex": 9,
+        "agl": 7
+      },
+      "portrait": "anastagi"
+    },
+    {
+      "id": "rider-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [1, 2],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Knight of Mdina",
+      "stats": {
+        "pow": 10,
+        "dex": 8,
+        "agl": 6
+      }
+    },
+    {
+      "id": "rider-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [0, 6],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Mdina Rider",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "rider-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [2, 8],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Mdina Rider",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "rider-4",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [4, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Mdina Rider",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "gunner-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [1, 0],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Militia Gunner",
+      "stats": {
+        "pow": 8,
+        "dex": 10,
+        "agl": 5
+      }
+    }
+  ]
+}

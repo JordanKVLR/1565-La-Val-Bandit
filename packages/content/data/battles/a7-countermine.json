@@ -1,0 +1,206 @@
+{
+  "id": "a7-countermine",
+  "name": "The Countermine",
+  "map": "a7-countermine",
+  "seed": 17,
+  "victory": [
+    {
+      "type": "escape",
+      "unitId": "kateri",
+      "tiles": [
+        [5, 0],
+        [6, 0]
+      ]
+    },
+    {
+      "type": "defeatLeader",
+      "unitId": "sapper"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "kateri"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 7],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [5, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 8],
+      "facing": "north",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [6, 7],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 8],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "sapper",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 10,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [10, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Master Sapper",
+      "stats": {
+        "pow": 12,
+        "dex": 12,
+        "agl": 5
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [0, 0],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 12,
+        "agl": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [11, 0],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 12,
+        "agl": 6
+      }
+    },
+    {
+      "id": "dig-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [0, 5],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Lağımcı",
+      "stats": {
+        "pow": 11,
+        "dex": 10,
+        "agl": 7
+      }
+    },
+    {
+      "id": "dig-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [11, 4],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Lağımcı",
+      "stats": {
+        "pow": 11,
+        "dex": 10,
+        "agl": 7
+      }
+    },
+    {
+      "id": "dig-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [11, 6],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Lağımcı",
+      "stats": {
+        "pow": 11,
+        "dex": 10,
+        "agl": 7
+      }
+    },
+    {
+      "id": "jan-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [8, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 11,
+        "agl": 6
+      }
+    }
+  ]
+}
