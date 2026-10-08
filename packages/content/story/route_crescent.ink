@@ -190,7 +190,7 @@ DENIZ: Then we take Pawlu back before either happens. Together.
 -> medallion
 
 = medallion
->>> chapter "Chapter 12" "The Broken Medallion · 8 September"
+>>> chapter "Chapter 15" "The Broken Medallion · 8 September"
 >>> stage b6-kalkara-chapel
 >>> actor ninu 5 6 north
 >>> actor deniz 4 6 north
@@ -201,16 +201,51 @@ NINU: You offered us a leash.
 DENIZ: And we don't wear leashes.
 >>> prep
 >>> battle c5-broken-medallion
+-> last_boat
+
+= last_boat
+>>> chapter "Chapter 16" "The Last Boat · 13 September"
+>>> stage c9-st-pauls-bay
+>>> actor piali 6 3 west
+>>> actor yusuf 5 4 east
+>>> actor leyla 3 4 east
+>>> actor ninu 3 3 east
+>>> actor deniz 4 4 east
+The siege is over. On the eighth of September the army burned its camp and marched to the ships. Then the Pasha, told that the relief army was smaller than feared, landed again at St Paul's Bay and marched inland to fight it.
+This morning the army came back down the hill at a run. Now all of it is trying to get into the boats at once, with the Spaniards close behind.
+PIALI: Captain Yusuf. My galleys take off the army until dusk, and not one hour longer. The Pasha may stay and argue with the Spaniards if he likes. I will not lose the Sultan's fleet as well as his army.
+YUSUF: And my passengers, Pasha?
+PIALI: Your son sent me the Genoese's papers from Corradino. I have read them. Leyla Hatun is no spy. She is only inconvenient, which at court is worse.
+PIALI: Get her aboard before dusk, and I never saw her.
+>>> exit piali
+The way to Yusuf's longboat runs along the beach. Hüsrev Aga, captain of the Pasha's guard, is standing in it with his men, and more of the guard are coming down the hill behind.
+JANISSARY: Leyla Hatun. I stood guard in the Pasha's tent when the Genoese talked. I heard what the boy is.
+JANISSARY: I have served the Sultan for thirty years. I know what one prince of the blood can cost: brothers killing brothers, whole provinces burned. Prince Cem's war was over before I was born, and my grandfather still woke up shouting about it.
+JANISSARY: Give me the boy, and the rest of you may board.
+DENIZ: He is my brother.
+JANISSARY: That is exactly what I am afraid of.
+* [Tell him you want no throne]
+    NINU: I don't want a throne. I want to go home and mend nets.
+    JANISSARY: I believe you. I also know that the men who want no throne are the ones others put on one.
+* [Stand in front of your mother]
+    ~ aff_deniz += 1
+    Ninu steps in front of Leyla. Without a word, Deniz steps in beside him.
+    JANISSARY: Both of you. Of course.
+- LEYLA: Then you will have to go through his mother, Aga. And his brother. Choose.
+>>> prep
+>>> battle c9-st-pauls-bay
+Hüsrev Aga's armatura lies on its side in the shallows. He does not try to rise.
+JANISSARY: Go, then. Pray that I was wrong about you, boy. I will pray it too.
 -> ending_crescent
 
 = ending_crescent
 >>> chapter "Epilogue" "Two Halves · September 1565"
->>> stage p0-zejtun
->>> actor ninu 3 4 north
->>> actor deniz 4 4 west
->>> actor leyla 4 3 south
->>> actor pawlu 2 4 east
-The fleet sails on the twelfth of September. Yusuf Reis's galley waits offshore for one last passenger.
+>>> stage c9-st-pauls-bay
+>>> actor ninu 7 2 north
+>>> actor deniz 8 2 west
+>>> actor leyla 8 1 south
+>>> actor pawlu 6 2 east
+By dusk the last of the army is aboard, and the fleet stands out to sea. Yusuf Reis's longboat waits in the shallows for one last passenger.
 LEYLA: The medallion should stay in one piece now. You keep it.
 NINU: No. Keep it broken. Half for Malta, half for you. Then there's always a reason to come back.
 PAWLU: Wise boy. I wonder where he gets it from.
