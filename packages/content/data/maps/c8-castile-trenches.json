@@ -1,0 +1,44 @@
+{
+  "id": "c8-castile-trenches",
+  "name": "Before Castile",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "WW##WWWW##WW",
+    "xpppxbbxpppx",
+    "ppxpppppppxp",
+    "pppp__pppppp",
+    "ttttpttptttt",
+    "pxppppppppxp",
+    "ppppxpppxppp",
+    "ttttttpttttt",
+    "ppggpprppggp",
+    "pgggprrrpggg"
+  ],
+  "height": [
+    "555555555555",
+    "222222222222",
+    "222222222222",
+    "222232222222",
+    "111121121111",
+    "222222222222",
+    "222222222222",
+    "111111211111",
+    "222222222222",
+    "222223332222"
+  ]
+}

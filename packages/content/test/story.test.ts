@@ -79,7 +79,7 @@ describe('story script', () => {
   it.each([
     ['cross', /Stand with the Order/, 'a5-scala-engine'],
     ['island', /Fight as a Maltese/, 'i5-naxxar-ridge'],
-    ['crescent', /Let him go|Cross to the Ottoman/, 'c5-broken-medallion'],
+    ['crescent', /Let him go|Cross to the Ottoman/, 'c9-st-pauls-bay'],
   ])('the %s route plays to its ending', (route, prefer, finale) => {
     const r = playthrough(prefer);
     expect(r.route).toBe(route);
