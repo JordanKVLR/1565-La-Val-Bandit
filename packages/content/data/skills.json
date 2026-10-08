@@ -1,0 +1,236 @@
+{
+  "skills": [
+    {
+      "id": "stubborn-heart",
+      "name": "Stubborn Heart",
+      "description": "Fights hardest with his back to the wall: takes 15% less damage while at half HP or below.",
+      "effect": { "type": "damageReduction", "percent": 15, "when": "selfWounded" }
+    },
+    {
+      "id": "wolfs-angle",
+      "name": "Wolf's Angle",
+      "description": "Learned hunting in the Żejtun fields: +15% damage when striking a foe's side or rear.",
+      "effect": { "type": "damageBonus", "percent": 15, "when": "flank" }
+    },
+    {
+      "id": "medallion-promise",
+      "name": "Medallion's Promise",
+      "description": "The half-medallion he carries seems to turn blows aside: enemies have 6% less chance to hit him.",
+      "effect": { "type": "evadeBonus", "amount": 6 }
+    },
+    {
+      "id": "tinkers-hands",
+      "name": "Tinker's Hands",
+      "description": "Patches her own plating between blows: recovers 3 HP at the start of each of her turns.",
+      "effect": { "type": "regen", "hp": 3 }
+    },
+    {
+      "id": "sighted-barrel",
+      "name": "Sighted Barrel",
+      "description": "A barrel she trued herself: +8% to hit at range 2 or more.",
+      "effect": { "type": "hitBonus", "amount": 8, "when": "ranged" }
+    },
+    {
+      "id": "riveted-plates",
+      "name": "Riveted Plates",
+      "description": "Every seam double-riveted: takes 8% less damage from every blow.",
+      "effect": { "type": "damageReduction", "percent": 8 }
+    },
+    {
+      "id": "oath-of-the-wall",
+      "name": "Oath of the Wall",
+      "description": "A knight's guard: Defend lets through 40% of the blow instead of half.",
+      "effect": { "type": "defendBonus", "percent": 10 }
+    },
+    {
+      "id": "shield-discipline",
+      "name": "Shield Discipline",
+      "description": "Years of drill on the ramparts: Defend costs 10 less FP.",
+      "effect": { "type": "reactionFpDiscount", "reaction": "defend", "amount": 10 }
+    },
+    {
+      "id": "aragon-riposte",
+      "name": "Aragon Riposte",
+      "description": "A fencing master's timing: +8% chance for a Counter to succeed.",
+      "effect": { "type": "counterBonus", "amount": 8 }
+    },
+    {
+      "id": "farmhands-back",
+      "name": "Farmhand's Back",
+      "description": "Used to long days in the fields: resting recovers 25% more FP.",
+      "effect": { "type": "restBonus", "percent": 25 }
+    },
+    {
+      "id": "hold-the-gap",
+      "name": "Hold the Gap",
+      "description": "Plants his feet and will not give ground: takes 10% less damage from adjacent attackers.",
+      "effect": { "type": "damageReduction", "percent": 10, "when": "melee" }
+    },
+    {
+      "id": "horse-stopper",
+      "name": "Horse-Stopper",
+      "description": "The pike's old purpose: +10% to hit light armaturas.",
+      "effect": { "type": "hitBonus", "amount": 10, "when": "foeLight" }
+    },
+    {
+      "id": "keen-eyes",
+      "name": "Keen Eyes",
+      "description": "Young and sharp-sighted: +5% to hit with every attack.",
+      "effect": { "type": "hitBonus", "amount": 5 }
+    },
+    {
+      "id": "rooftop-perch",
+      "name": "Rooftop Perch",
+      "description": "Shoots best from the flat roofs of home: +10% to hit when standing higher than the target.",
+      "effect": { "type": "hitBonus", "amount": 10, "when": "higher" }
+    },
+    {
+      "id": "loophole-cover",
+      "name": "Loophole Cover",
+      "description": "Knows how to keep her head down: takes 10% less damage from attacks at range.",
+      "effect": { "type": "damageReduction", "percent": 10, "when": "ranged" }
+    },
+    {
+      "id": "chroniclers-eye",
+      "name": "Chronicler's Eye",
+      "description": "Notes down everything he sees in battle: earns 15% more XP.",
+      "effect": { "type": "xpBonus", "percent": 15 }
+    },
+    {
+      "id": "dry-powder",
+      "name": "Dry Powder",
+      "description": "An old soldier's care with his flask: his techniques cost 5 less FP.",
+      "effect": { "type": "attackFpDiscount", "amount": 5 }
+    },
+    {
+      "id": "marked-in-the-margins",
+      "name": "Marked in the Margins",
+      "description": "Remembers who is already hurt: +12% damage against foes at half HP or below.",
+      "effect": { "type": "damageBonus", "percent": 12, "when": "foeWounded" }
+    },
+    {
+      "id": "captains-voice",
+      "name": "Captain's Voice",
+      "description": "His orders carry over the din: allies next to him get +5% to hit.",
+      "effect": { "type": "aura", "amount": 5 }
+    },
+    {
+      "id": "spurred-advance",
+      "name": "Spurred Advance",
+      "description": "A cavalryman even in an armatura: +1 MOV.",
+      "effect": { "type": "moveBonus", "tiles": 1 }
+    },
+    {
+      "id": "downhill-charge",
+      "name": "Downhill Charge",
+      "description": "Lets the slope do the work: +15% damage when standing higher than the target.",
+      "effect": { "type": "damageBonus", "percent": 15, "when": "higher" }
+    },
+    {
+      "id": "sea-legs",
+      "name": "Sea Legs",
+      "description": "Steady on a rolling deck: Avoid costs 5 less FP.",
+      "effect": { "type": "reactionFpDiscount", "reaction": "avoid", "amount": 5 }
+    },
+    {
+      "id": "star-reckoning",
+      "name": "Star Reckoning",
+      "description": "Reads the moment like the night sky: +4 initiative, so turns tend to come sooner.",
+      "effect": { "type": "initiative", "amount": 4 }
+    },
+    {
+      "id": "boarding-hook",
+      "name": "Boarding Hook",
+      "description": "Taught to strike where a crew is not looking: +10% to hit a foe's side or rear.",
+      "effect": { "type": "hitBonus", "amount": 10, "when": "flank" }
+    },
+    {
+      "id": "cutlass-fury",
+      "name": "Cutlass Fury",
+      "description": "At his worst, and best, up close: +10% damage against adjacent foes.",
+      "effect": { "type": "damageBonus", "percent": 10, "when": "melee" }
+    },
+    {
+      "id": "corsairs-gamble",
+      "name": "Corsair's Gamble",
+      "description": "Has bet his life before and won: +6% chance for a Counter to succeed.",
+      "effect": { "type": "counterBonus", "amount": 6 }
+    },
+    {
+      "id": "blood-in-the-water",
+      "name": "Blood in the Water",
+      "description": "Smells weakness: +10% to hit foes at half HP or below.",
+      "effect": { "type": "hitBonus", "amount": 10, "when": "foeWounded" }
+    },
+    {
+      "id": "veiled-poise",
+      "name": "Veiled Poise",
+      "description": "Never where a marksman expects: attacks at range have 8% less chance to hit her.",
+      "effect": { "type": "evadeBonus", "amount": 8, "when": "ranged" }
+    },
+    {
+      "id": "measured-fuse",
+      "name": "Measured Fuse",
+      "description": "Cuts every fuse to length: her techniques cost 8 less FP.",
+      "effect": { "type": "attackFpDiscount", "amount": 8 }
+    },
+    {
+      "id": "fire-among-them",
+      "name": "Fire Among Them",
+      "description": "A grenade lands where it hurts most: +10% damage at range 2 or more.",
+      "effect": { "type": "damageBonus", "percent": 10, "when": "ranged" }
+    }
+  ],
+  "characters": {
+    "ninu": [
+      { "skill": "medallion-promise", "level": 1 },
+      { "skill": "wolfs-angle", "level": 5 },
+      { "skill": "stubborn-heart", "level": 10 }
+    ],
+    "kateri": [
+      { "skill": "tinkers-hands", "level": 1 },
+      { "skill": "sighted-barrel", "level": 5 },
+      { "skill": "riveted-plates", "level": 10 }
+    ],
+    "luis": [
+      { "skill": "oath-of-the-wall", "level": 1 },
+      { "skill": "shield-discipline", "level": 5 },
+      { "skill": "aragon-riposte", "level": 10 }
+    ],
+    "ganni": [
+      { "skill": "farmhands-back", "level": 1 },
+      { "skill": "hold-the-gap", "level": 5 },
+      { "skill": "horse-stopper", "level": 10 }
+    ],
+    "rozi": [
+      { "skill": "keen-eyes", "level": 1 },
+      { "skill": "rooftop-perch", "level": 5 },
+      { "skill": "loophole-cover", "level": 10 }
+    ],
+    "balbi": [
+      { "skill": "chroniclers-eye", "level": 1 },
+      { "skill": "dry-powder", "level": 5 },
+      { "skill": "marked-in-the-margins", "level": 10 }
+    ],
+    "anastagi": [
+      { "skill": "captains-voice", "level": 1 },
+      { "skill": "spurred-advance", "level": 5 },
+      { "skill": "downhill-charge", "level": 10 }
+    ],
+    "deniz": [
+      { "skill": "sea-legs", "level": 1 },
+      { "skill": "star-reckoning", "level": 5 },
+      { "skill": "boarding-hook", "level": 10 }
+    ],
+    "yusuf": [
+      { "skill": "cutlass-fury", "level": 1 },
+      { "skill": "corsairs-gamble", "level": 5 },
+      { "skill": "blood-in-the-water", "level": 10 }
+    ],
+    "leyla": [
+      { "skill": "veiled-poise", "level": 1 },
+      { "skill": "measured-fuse", "level": 5 },
+      { "skill": "fire-among-them", "level": 10 }
+    ]
+  }
+}

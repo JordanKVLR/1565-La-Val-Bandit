@@ -3,6 +3,8 @@ import type {
   BalanceConfig,
   PilotStats,
   BattleMap,
+  Skill,
+  SkillEffect,
   BattleSetup,
   Frame,
   Gear,
@@ -21,6 +23,7 @@ import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
 import gearData from '../data/gear.json';
 import shopData from '../data/shop.json';
+import skillData from '../data/skills.json';
 import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
 import {
@@ -31,6 +34,7 @@ import {
   BattleSourceSchema,
   CastSchema,
   ShopItemSchema,
+  SkillBookSchema,
   CharacterSchema,
   FrameSchema,
   GearSchema,
@@ -39,7 +43,7 @@ import {
   WeaponSchema,
 } from './schemas';
 import { derivedStats, statsAtLevel } from './progression';
-import type { BattleSource, Character, MapSource } from './schemas';
+import type { BattleSource, Character, MapSource, SkillData } from './schemas';
 
 export * from './progression';
 export * from './schemas';
@@ -106,8 +110,26 @@ const byId = <T extends { id: string }>(
   return map;
 };
 
+/** Parses skills.json and checks every assignment names a known skill, in level order. */
+export function loadSkillBook(raw: unknown = skillData) {
+  const book = SkillBookSchema.parse(raw);
+  const skills = byId(book.skills as SkillData[], 'skill');
+  const characters = new Map<string, readonly { skill: string; level: number }[]>();
+  for (const [characterId, list] of Object.entries(book.characters)) {
+    list.forEach((entry, i) => {
+      if (!skills.has(entry.skill))
+        throw new Error(`skills.json: ${characterId} has unknown skill "${entry.skill}"`);
+      if (i > 0 && entry.level <= list[i - 1]!.level)
+        throw new Error(`skills.json: ${characterId}'s skills must unlock at rising levels`);
+    });
+    characters.set(characterId, list);
+  }
+  return { skills, characters };
+}
+
 /** All static content, parsed and validated once. */
 export function loadLibrary() {
+  const skillBook = loadSkillBook();
   return {
     balance: BalanceSchema.parse(balanceData) as BalanceConfig,
     terrains: loadTerrains(),
@@ -143,6 +165,9 @@ export function loadLibrary() {
     shop: ShopItemSchema.array().parse(shopData),
     armourers: ArmourersSchema.parse(armourerData),
     attacks: AttackSchema.array().parse(attackData),
+    skills: skillBook.skills,
+    /** characterId → the skills that character gains, with the level each unlocks at. */
+    skillSets: skillBook.characters,
   };
 }
 export type Library = ReturnType<typeof loadLibrary>;
@@ -197,6 +222,29 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
         } as Attack;
       },
     );
+}
+
+/** Every skill a named character has or will gain, each with its unlock level. */
+export function characterSkills(lib: Library, characterId: string): Skill[] {
+  return (lib.skillSets.get(characterId) ?? []).map(({ skill, level }) =>
+    toSkill(lib.skills.get(skill)!, level),
+  );
+}
+
+function toSkill(s: SkillData, level: number): Skill {
+  // zod's optional `when` is `T | undefined`; the engine's type is the same data.
+  return {
+    id: s.id,
+    name: s.name,
+    description: s.description,
+    level,
+    effect: s.effect as SkillEffect,
+  };
+}
+
+/** A generic unit's extra skills from battle JSON: all active from level 1. */
+function genericSkills(lib: Library, ids: readonly string[], where: string): Skill[] {
+  return ids.map((sid) => toSkill(need(lib.skills, sid, 'skill', where), 1));
 }
 
 /**
@@ -265,6 +313,10 @@ export function buildBattle(
     };
     const charm = gear(r?.charm, 'charm');
     const amulet = gear(r?.amulet, 'amulet');
+    const skills = [
+      ...(u.character ? characterSkills(lib, u.character) : []),
+      ...genericSkills(lib, u.skills ?? [], where),
+    ];
     const key = `${at.x},${at.y}`;
     if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
     occupied.add(key);
@@ -284,6 +336,7 @@ export function buildBattle(
       ...(charm ? { charm } : {}),
       ...(amulet ? { amulet } : {}),
       attacks: attackPool(lib, frame, weapon),
+      ...(skills.length ? { skills } : {}),
       ...(r ? { xp: r.xp, statPoints: r.statPoints ?? 0 } : {}),
       ...(veteran ? { xp: veteran.xp, statPoints: veteran.statPoints ?? 0 } : {}),
       at,

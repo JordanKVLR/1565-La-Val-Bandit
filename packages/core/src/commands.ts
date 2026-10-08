@@ -21,6 +21,7 @@ import type { BattleEvent, StatName, StrikeResult } from './events';
 import type { Coord, Facing } from './grid';
 import { coordKey, reachableTiles } from './pathfinding';
 import { rollPercent } from './rng';
+import { skillsUnlockedAt } from './skills';
 import type { BattleState } from './state';
 import { requireUnit } from './state';
 import { endTurn, finish } from './turns';
@@ -180,6 +181,9 @@ function gainXp(
     unit.level += 1;
     refreshMaxHp(state, unit);
     unit.statPoints += b.statPointsPerLevel;
+    // Skills reached at this level switch on at once; MOV is baked into the unit, so add it here.
+    const unlocked = skillsUnlockedAt(unit, unit.level);
+    for (const s of unlocked) if (s.effect.type === 'moveBonus') unit.mov += s.effect.tiles;
     // Allies the player doesn't control spend their points at once, evening out their stats.
     if (unit.controller === 'ai') {
       while (unit.statPoints > 0) {
@@ -195,6 +199,7 @@ function gainXp(
       unitId: unit.id,
       level: unit.level,
       statPoints: unit.statPoints,
+      ...(unlocked.length ? { newSkills: unlocked.map((s) => s.id) } : {}),
     });
   }
   return amount;

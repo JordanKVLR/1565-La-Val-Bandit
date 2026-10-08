@@ -190,6 +190,69 @@ export const AttackSchema = z
   .refine((a) => (a.minRange ?? 1) <= (a.maxRange ?? 99), 'minRange must be <= maxRange');
 export type AttackData = z.infer<typeof AttackSchema>;
 
+export const SKILL_CONDITIONS = [
+  'always',
+  'higher',
+  'flank',
+  'melee',
+  'ranged',
+  'foeHeavy',
+  'foeLight',
+  'foeWounded',
+  'selfWounded',
+] as const;
+const when = z.enum(SKILL_CONDITIONS).optional();
+const pct = z.number().int().min(1).max(50);
+const small = z.number().int().min(1).max(25);
+
+/** One effect per skill; the numbers are kept small so no skill decides a battle alone. */
+export const SkillEffectSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('hitBonus'), amount: small, when }).strict(),
+  z.object({ type: z.literal('damageBonus'), percent: pct, when }).strict(),
+  z.object({ type: z.literal('evadeBonus'), amount: small, when }).strict(),
+  z.object({ type: z.literal('damageReduction'), percent: pct, when }).strict(),
+  z.object({ type: z.literal('defendBonus'), percent: small }).strict(),
+  z
+    .object({
+      type: z.literal('reactionFpDiscount'),
+      reaction: z.enum(['defend', 'avoid', 'counter', 'attackBack']),
+      amount: small,
+    })
+    .strict(),
+  z.object({ type: z.literal('attackFpDiscount'), amount: small }).strict(),
+  z.object({ type: z.literal('counterBonus'), amount: small }).strict(),
+  z.object({ type: z.literal('regen'), hp: small }).strict(),
+  z.object({ type: z.literal('restBonus'), percent: pct }).strict(),
+  z.object({ type: z.literal('xpBonus'), percent: pct }).strict(),
+  z.object({ type: z.literal('moveBonus'), tiles: z.number().int().min(1).max(2) }).strict(),
+  z.object({ type: z.literal('aura'), amount: small }).strict(),
+  z.object({ type: z.literal('initiative'), amount: small }).strict(),
+]);
+
+/** A pilot skill: a passive ability with one effect (see ADR 0007). */
+export const SkillSchema = z
+  .object({
+    id,
+    name: z.string().min(1),
+    /** Plain language, one or two sentences. */
+    description: z.string().min(1),
+    effect: SkillEffectSchema,
+  })
+  .strict();
+export type SkillData = z.infer<typeof SkillSchema>;
+
+/** skills.json: the skill list, and which named character gains which skill at what level. */
+export const SkillBookSchema = z
+  .object({
+    skills: z.array(SkillSchema).min(1),
+    characters: z.record(
+      id,
+      z.array(z.object({ skill: id, level: z.number().int().min(1) }).strict()),
+    ),
+  })
+  .strict();
+export type SkillBook = z.infer<typeof SkillBookSchema>;
+
 /** A unit is either a named character (stats from characters.json) or an inline generic. */
 export const BattleUnitSchema = z
   .object({
@@ -205,6 +268,8 @@ export const BattleUnitSchema = z
     level: z.number().int().min(1),
     frame: id,
     weapon: id,
+    /** Extra skills for a generic unit (ids from skills.json), active from the start. */
+    skills: z.array(id).optional(),
     at: coord,
     facing,
   })
