@@ -10,3 +10,6 @@ playwright-report
 dist-single
 dist-native
 release
+
+# Agent worktrees (local only)
+.claude/worktrees/
