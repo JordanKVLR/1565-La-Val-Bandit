@@ -77,7 +77,7 @@ describe('story script', () => {
   });
 
   it.each([
-    ['cross', /Stand with the Order/, 'a5-scala-engine'],
+    ['cross', /Stand with the Order/, 'a9-marsa-lines'],
     ['island', /Fight as a Maltese/, 'i5-naxxar-ridge'],
     ['crescent', /Let him go|Cross to the Ottoman/, 'c5-broken-medallion'],
   ])('the %s route plays to its ending', (route, prefer, finale) => {
