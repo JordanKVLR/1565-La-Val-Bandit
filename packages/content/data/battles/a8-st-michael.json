@@ -1,0 +1,209 @@
+{
+  "id": "a8-st-michael",
+  "name": "The Last Assault",
+  "map": "a8-st-michael",
+  "seed": 18,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 5],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [4, 7],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 7],
+      "facing": "north",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [3, 5],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [6, 7],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "knight",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "bastiun",
+      "weapon": "mace-shield",
+      "at": [8, 5],
+      "facing": "north",
+      "name": "Knight of Senglea",
+      "stats": {
+        "pow": 11,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "aga",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [6, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Ağa of the Yeniçeri",
+      "stats": {
+        "pow": 13,
+        "dex": 12,
+        "agl": 7
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [1, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [3, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
+      }
+    },
+    {
+      "id": "jan-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [8, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
+      }
+    },
+    {
+      "id": "humb-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [6, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Humbaracı",
+      "stats": {
+        "pow": 11,
+        "dex": 12,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [0, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 8
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 11,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [10, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "The Pasha's Prototipo",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
+      }
+    }
+  ]
+}
