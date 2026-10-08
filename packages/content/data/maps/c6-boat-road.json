@@ -1,0 +1,44 @@
+{
+  "id": "c6-boat-road",
+  "name": "The Boat Road",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~sgggxgggs~",
+    "~wsggpppggsw",
+    "~sppgpxpgpps",
+    "wspppWpppgsw",
+    "srrrrrrrrrrs",
+    "sppppppppprw",
+    "wspgppxpgpsw",
+    "~sgppWpppgs~",
+    "~wsggxgggsw~",
+    "~~sgggggs~~~"
+  ],
+  "height": [
+    "001233332110",
+    "011233332110",
+    "012333333210",
+    "012334333210",
+    "112333333211",
+    "112333333210",
+    "012333333210",
+    "012334333210",
+    "011233332110",
+    "001233321000"
+  ]
+}

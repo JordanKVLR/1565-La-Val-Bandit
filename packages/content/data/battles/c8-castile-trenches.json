@@ -1,0 +1,198 @@
+{
+  "id": "c8-castile-trenches",
+  "name": "Turned on Their Makers",
+  "map": "c8-castile-trenches",
+  "seed": 38,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "tower"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [4, 8],
+      "facing": "north",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [6, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [3, 9],
+      "facing": "north",
+      "character": "leyla"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [7, 8],
+      "facing": "north",
+      "character": "yusuf"
+    },
+    {
+      "id": "sapper",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 4],
+      "facing": "north",
+      "name": "Ottoman Sapper",
+      "stats": {
+        "pow": 10,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "tower",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "siege-tower",
+      "weapon": "tower-guns",
+      "at": [5, 3],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Scala's Tower",
+      "stats": {
+        "pow": 11,
+        "dex": 12,
+        "agl": 0
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [2, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "proto-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [9, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "merc-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Genoese Mercenary",
+      "stats": {
+        "pow": 10,
+        "dex": 11,
+        "agl": 6
+      }
+    },
+    {
+      "id": "merc-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Genoese Mercenary",
+      "stats": {
+        "pow": 10,
+        "dex": 11,
+        "agl": 6
+      }
+    },
+    {
+      "id": "merc-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [7, 3],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Genoese Mercenary",
+      "stats": {
+        "pow": 11,
+        "dex": 10,
+        "agl": 6
+      }
+    }
+  ],
+  "salvage": ["yeniceri"]
+}
