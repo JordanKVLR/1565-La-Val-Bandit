@@ -2,6 +2,7 @@ import type { BattleState, UnitState } from '@m1565/core';
 import { attackFpCost, attackRange, unlockedAttacks } from '@m1565/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { UnitViewer } from '../../render/UnitViewer';
+import { SkillList } from '../SkillList';
 import { TechniqueCard } from './TechniqueCard';
 import type { CostPreview } from './StatBars';
 import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
@@ -100,7 +101,7 @@ export function UnitDetails({
   onClose: () => void;
   onSpend?: () => void;
 }) {
-  const [page, setPage] = useState<'stats' | 'techniques'>('stats');
+  const [page, setPage] = useState<'stats' | 'techniques' | 'skills'>('stats');
   // Enemies' techniques stay a mystery; your own are listed.
   const techniques = unit.side === 'player' ? unlockedAttacks(unit) : [];
   const reach = attackRange(unit.attacks[0]!, unit.weapon);
@@ -167,6 +168,16 @@ export function UnitDetails({
                 <dd>{reach.min === reach.max ? reach.max : `${reach.min}–${reach.max}`}</dd>
               </dl>
             </>
+          ) : page === 'skills' ? (
+            <div class="ud-skills" data-testid="unit-skills">
+              <h2 class="vb-name vbd-name">{unit.name}: Skills</h2>
+              {/* Your own pilots show what is still to come; enemies only what they have now. */}
+              <SkillList
+                skills={unit.skills ?? []}
+                level={unit.level}
+                hideLocked={unit.side !== 'player'}
+              />
+            </div>
           ) : (
             <div class="ud-techniques">
               <h2 class="vb-name vbd-name">{unit.name}: Techniques</h2>
@@ -190,6 +201,16 @@ export function UnitDetails({
             {onSpend && unit.statPoints > 0 && (
               <button type="button" class="vb-cmd" onClick={onSpend}>
                 Spend {unit.statPoints} points
+              </button>
+            )}
+            {page !== 'skills' && (unit.skills?.length ?? 0) > 0 && (
+              <button
+                type="button"
+                class="vb-cmd"
+                data-testid="unit-skills-tab"
+                onClick={() => setPage('skills')}
+              >
+                Skills
               </button>
             )}
             <button

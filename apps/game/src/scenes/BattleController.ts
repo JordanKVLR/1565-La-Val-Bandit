@@ -760,11 +760,19 @@ export class BattleController {
         sfx('defeat');
         this.pushLog(`${findUnit(before, ev.unitId)?.name ?? ev.unitId} is defeated.`);
         break;
-      case 'levelUp':
-        this.pushLog(
-          `★ ${findUnit(before, ev.unitId)?.name ?? ev.unitId} reached level ${ev.level}!`,
-        );
+      case 'levelUp': {
+        const unit = findUnit(before, ev.unitId);
+        this.pushLog(`★ ${unit?.name ?? ev.unitId} reached level ${ev.level}!`);
+        if (unit && ev.newSkills)
+          for (const name of skillNames(unit, ev.newSkills)) this.pushLog(`✦ New skill: ${name}`);
         break;
+      }
+      case 'unitRecovered': {
+        const unit = findUnit(before, ev.unitId);
+        const skill = unit?.skills?.find((s) => s.id === ev.skillId)?.name ?? ev.skillId;
+        this.pushLog(`${unit?.name ?? ev.unitId} recovers ${ev.amount} HP (${skill}).`);
+        break;
+      }
       case 'roundStarted':
         this.pushLog(`— Round ${ev.round} —`);
         break;
@@ -939,6 +947,11 @@ const REACTION_WORD: Record<Reaction, string> = {
   none: 'no reaction',
 };
 
+/** Display names for skill ids, in the order given. */
+function skillNames(unit: UnitState, ids: readonly string[]): string[] {
+  return ids.map((id) => unit.skills?.find((s) => s.id === id)?.name ?? id);
+}
+
 /** XP each player unit earned from the events of one command, with its bar before and after. */
 export function xpGains(
   before: BattleState,
@@ -957,6 +970,11 @@ export function xpGains(
       if (s.xp > 0) earned.set(s.attackerId, (earned.get(s.attackerId) ?? 0) + s.xp);
     }
   }
+  const learned = new Map<string, string[]>();
+  for (const ev of events) {
+    if (ev.type !== 'levelUp' || !ev.newSkills) continue;
+    learned.set(ev.unitId, [...(learned.get(ev.unitId) ?? []), ...ev.newSkills]);
+  }
   const out: XpGain[] = [];
   for (const [unitId, xp] of earned) {
     const was = findUnit(before, unitId);
@@ -970,6 +988,7 @@ export function xpGains(
       xpBefore: was.xp,
       levelAfter: now.level,
       xpAfter: now.xp,
+      ...(learned.has(unitId) ? { newSkills: skillNames(now, learned.get(unitId)!) } : {}),
     });
   }
   return out;

@@ -36,6 +36,14 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
             the least; stronger enemies give more, weaker ones less. Defending and dodging earn
             nothing. Every 500 XP is a level: more HP and 3 attribute points.
           </dd>
+          <dt>Skills</dt>
+          <dd>
+            Each named pilot has three skills of their own, gained at levels 1, 5 and 10: small
+            passive edges such as better aim from high ground, less damage while defending, cheaper
+            reactions or healing a little each turn. They work on their own and are already counted
+            in the forecast. Open a unit's Info and tap Skills to read them; skills still to come
+            show a padlock and the level they unlock at.
+          </dd>
           <dt>Attributes</dt>
           <dd>
             <b>BAS</b> +4 max HP per point · <b>POW</b> and <b>WEP</b> damage · <b>DEX</b> +2%
