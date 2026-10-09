@@ -29,7 +29,11 @@ export function migrateCampaign(lib: Library, raw: Raw): CampaignSave | null {
   } as unknown as CampaignSave;
 }
 
-/** Each route's last battle; only its epilogue follows, so a save past it has seen the ending. */
+/**
+ * Each route's last battle when v2 saves were made (routes had five battles then); only the
+ * epilogue followed, so a v2 save past it has seen the ending. Later finales don't matter here:
+ * v3 saves record the ending directly.
+ */
 const FINALE_ROUTES: Readonly<Record<string, string>> = {
   'a5-scala-engine': 'cross',
   'i5-naxxar-ridge': 'island',
