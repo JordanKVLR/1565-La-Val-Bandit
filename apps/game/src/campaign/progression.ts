@@ -98,3 +98,23 @@ export function raiseRosterStat(
       : r,
   );
 }
+
+/**
+ * The unlock levels of skills (skills.json) that pilots learned between two snapshots of the
+ * company, e.g. before and after a battle. Level-1 skills come with the pilot and don't count.
+ */
+export function skillsLearned(
+  lib: Library,
+  before: readonly { readonly characterId: string; readonly level: number }[],
+  after: readonly { readonly characterId: string; readonly level: number }[],
+): number[] {
+  const levels: number[] = [];
+  for (const now of after) {
+    const was = before.find((b) => b.characterId === now.characterId);
+    if (!was) continue;
+    for (const s of lib.skillSets.get(now.characterId) ?? []) {
+      if (s.level > 1 && was.level < s.level && now.level >= s.level) levels.push(s.level);
+    }
+  }
+  return levels;
+}

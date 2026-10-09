@@ -200,9 +200,14 @@ export function BattleScreen({
     return () => document.removeEventListener('keydown', onKey);
   }, [ctl, panel]);
 
+  // Progress is saved after every command (the player's and the AI's), so a console suspend or
+  // a killed app resumes from the last thing that happened. The state only changes between
+  // commands, so every snapshot is a consistent one; an AI turn resumed from one is re-planned.
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
   useEffect(() => {
-    if (mode.kind === 'command' || mode.kind === 'ended') onStateChange?.(state);
-  }, [state, mode.kind, onStateChange]);
+    onStateChangeRef.current?.(state);
+  }, [state]);
 
   const active = ctl.active();
   const tile = inspected && getTile(state.map, inspected);

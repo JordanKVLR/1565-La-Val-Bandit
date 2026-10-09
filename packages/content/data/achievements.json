@@ -1,0 +1,324 @@
+[
+  {
+    "id": "ACH_FIRST_STAND",
+    "name": "First Stand",
+    "description": "Win the battle on the shore of Marsaxlokk.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["b1-marsaxlokk"] }
+  },
+  {
+    "id": "ACH_NIGHT_CROSSING",
+    "name": "Across Dark Water",
+    "description": "Hold the quay of St Elmo after the night crossing.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["b4-night-crossing"] }
+  },
+  {
+    "id": "ACH_OTHER_SHORE",
+    "name": "The Other Shore",
+    "description": "Win the battle for the guns of Tigné.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["b5-tigne"] }
+  },
+  {
+    "id": "ACH_KALKARA",
+    "name": "Moonlit Chapel",
+    "description": "Win the battle at the chapel of Kalkara.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["b6-kalkara-chapel"] }
+  },
+  {
+    "id": "ACH_ADMIRALS_BATTERY",
+    "name": "Spike the Guns",
+    "description": "Win the battle at the Admiral's Battery.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["b8-turgut-battery"] }
+  },
+  {
+    "id": "ACH_ST_ELMO",
+    "name": "The Last of St Elmo",
+    "description": "Win through the fall of St Elmo.",
+    "hidden": false,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["b9-fall-of-st-elmo"] }
+  },
+  {
+    "id": "ACH_CROSS_RELIEF",
+    "name": "The Little Relief",
+    "description": "Bring the relief through on the road of the Cross.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["a1-piccolo-soccorso"] }
+  },
+  {
+    "id": "ACH_CROSS_BREACH",
+    "name": "Hold the Breach",
+    "description": "Hold the breach of Castile on the road of the Cross.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["a3-castile-breach"] }
+  },
+  {
+    "id": "ACH_CROSS_LAST_ASSAULT",
+    "name": "Not One Step Back",
+    "description": "Break the last assault on the road of the Cross.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["a8-st-michael"] }
+  },
+  {
+    "id": "ACH_CROSS_FINALE",
+    "name": "The Abandoned Lines",
+    "description": "Win the final battle on the road of the Cross.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["a9-marsa-lines"] }
+  },
+  {
+    "id": "ACH_ISLAND_ROAD",
+    "name": "The Road to Mdina",
+    "description": "Win the first battle on the road of the Island.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["i1-road-to-mdina"] }
+  },
+  {
+    "id": "ACH_ISLAND_WALLS",
+    "name": "The Silent City",
+    "description": "Hold the walls of Mdina on the road of the Island.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["i2-mdina-walls"] }
+  },
+  {
+    "id": "ACH_ISLAND_LANDING",
+    "name": "Sails from the North",
+    "description": "Win the battle at Mellieħa Bay on the road of the Island.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["i4-mellieha-landing"] }
+  },
+  {
+    "id": "ACH_ISLAND_FINALE",
+    "name": "The Bay of St Paul",
+    "description": "Win the final battle on the road of the Island.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["i9-st-pauls-bay"] }
+  },
+  {
+    "id": "ACH_CRESCENT_CAMP",
+    "name": "Across the Water",
+    "description": "Win the first battle on the road of the Crescent.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "battles": ["c1-marsa-camp"] }
+  },
+  {
+    "id": "ACH_CRESCENT_ESCAPE",
+    "name": "Out of the Lion's Den",
+    "description": "Escape the Pasha's camp on the road of the Crescent.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["c3-pasha-tribunal"] }
+  },
+  {
+    "id": "ACH_CRESCENT_MEDALLION",
+    "name": "The Broken Medallion",
+    "description": "Win the battle of the broken medallion on the road of the Crescent.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["c5-broken-medallion"] }
+  },
+  {
+    "id": "ACH_CRESCENT_FINALE",
+    "name": "The Last Boat",
+    "description": "Win the final battle on the road of the Crescent.",
+    "hidden": true,
+    "grade": "silver",
+    "trigger": { "type": "battleWon", "battles": ["c9-st-pauls-bay"] }
+  },
+  {
+    "id": "ACH_ENDING_CROSS",
+    "name": "Under the Cross",
+    "description": "Reach the ending of the Cross.",
+    "hidden": true,
+    "grade": "gold",
+    "trigger": { "type": "ending", "route": "cross" }
+  },
+  {
+    "id": "ACH_ENDING_ISLAND",
+    "name": "Of the Island",
+    "description": "Reach the ending of the Island.",
+    "hidden": true,
+    "grade": "gold",
+    "trigger": { "type": "ending", "route": "island" }
+  },
+  {
+    "id": "ACH_ENDING_CRESCENT",
+    "name": "Two Halves",
+    "description": "Reach the ending of the Crescent.",
+    "hidden": true,
+    "grade": "gold",
+    "trigger": { "type": "ending", "route": "crescent" }
+  },
+  {
+    "id": "ACH_ALL_ENDINGS",
+    "name": "Three Roads Walked",
+    "description": "Reach all three endings.",
+    "hidden": false,
+    "grade": "gold",
+    "trigger": { "type": "allEndings" }
+  },
+  {
+    "id": "ACH_NEW_GAME_PLUS",
+    "name": "The Siege Begins Again",
+    "description": "Start New Game+ with a company that reached an ending.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "newGamePlus" }
+  },
+  {
+    "id": "ACH_NG_PLUS_ENDING",
+    "name": "Twice Delivered",
+    "description": "Reach any ending in New Game+.",
+    "hidden": false,
+    "grade": "gold",
+    "trigger": { "type": "ending", "minNgPlus": 1 }
+  },
+  {
+    "id": "ACH_GM_ST_ELMO",
+    "name": "Iron Ravelin",
+    "description": "Win through the fall of St Elmo on Grand Master.",
+    "hidden": false,
+    "grade": "silver",
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b9-fall-of-st-elmo"],
+      "difficulty": "grandMaster"
+    }
+  },
+  {
+    "id": "ACH_GM_ENDING",
+    "name": "Grand Master",
+    "description": "Reach any ending on Grand Master.",
+    "hidden": false,
+    "grade": "gold",
+    "trigger": { "type": "ending", "difficulty": "grandMaster" }
+  },
+  {
+    "id": "ACH_FIRST_SKILL",
+    "name": "A New Trick",
+    "description": "A pilot learns their second skill.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "skillUnlocked", "minLevel": 5 }
+  },
+  {
+    "id": "ACH_THIRD_SKILL",
+    "name": "Master of the Craft",
+    "description": "A pilot learns their third skill.",
+    "hidden": false,
+    "grade": "silver",
+    "trigger": { "type": "skillUnlocked", "minLevel": 10 }
+  },
+  {
+    "id": "ACH_FIRST_PURCHASE",
+    "name": "Coin for the Armourer",
+    "description": "Buy anything at the Armoury.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "itemBought" }
+  },
+  {
+    "id": "ACH_MASTERWORK",
+    "name": "Masterwork",
+    "description": "Fit a pilot with a masterwork weapon.",
+    "hidden": false,
+    "grade": "silver",
+    "trigger": { "type": "gearFitted", "tier": "masterwork" }
+  },
+  {
+    "id": "ACH_FULL_KIT",
+    "name": "Charmed and Warded",
+    "description": "Fit a pilot with both a charm and an amulet.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "gearFitted", "fullKit": true }
+  },
+  {
+    "id": "ACH_TREASURY",
+    "name": "A Full Coffer",
+    "description": "Hold 5,000 scudi at once.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "scudiHeld", "amount": 5000 }
+  },
+  {
+    "id": "ACH_NO_LOSSES",
+    "name": "Every Pilot Home",
+    "description": "Win a battle without losing a single pilot.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "battleWon", "noLosses": true }
+  },
+  {
+    "id": "ACH_FINALE_NO_LOSSES",
+    "name": "Unbroken Company",
+    "description": "Win a road's final battle without losing a single pilot.",
+    "hidden": false,
+    "grade": "gold",
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["a9-marsa-lines", "i9-st-pauls-bay", "c9-st-pauls-bay"],
+      "noLosses": true
+    }
+  },
+  {
+    "id": "ACH_SWIFT_ROUT",
+    "name": "Swift as the Galleys",
+    "description": "Win a battle that asks you to rout every enemy by the end of round 3.",
+    "hidden": false,
+    "grade": "silver",
+    "trigger": {
+      "type": "battleWon",
+      "battles": [
+        "b1-marsaxlokk",
+        "a8-st-michael",
+        "c2-marsamxett-galleys",
+        "c6-boat-road",
+        "i6-zebbug-wells"
+      ],
+      "maxRound": 3
+    }
+  },
+  {
+    "id": "ACH_CODEX_FIRST",
+    "name": "Student of the Siege",
+    "description": "Open the historical notes and read an entry.",
+    "hidden": false,
+    "grade": "bronze",
+    "trigger": { "type": "codexRead" }
+  },
+  {
+    "id": "ACH_CODEX_ALL",
+    "name": "Chronicler",
+    "description": "Read every entry in the historical notes.",
+    "hidden": false,
+    "grade": "silver",
+    "trigger": { "type": "codexRead", "all": true }
+  },
+  {
+    "id": "ACH_PLATINUM",
+    "name": "Shield of the Island",
+    "description": "Earn every other trophy.",
+    "hidden": false,
+    "grade": "platinum",
+    "trigger": { "type": "platinum" }
+  }
+]
