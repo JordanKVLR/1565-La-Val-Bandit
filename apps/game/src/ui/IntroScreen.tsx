@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { music } from '../platform/audio';
 import { settings } from '../state/settings';
+import { usePressWord } from './KeyHint';
 import { introFinished, introScale, introTime, introVolume } from './intro';
 
 type IntroWindow = Window & { ready?: Promise<void>; renderFrame?: (t: number) => Promise<void> };
@@ -27,6 +28,7 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
     onDone();
   };
 
+  const pressWord = usePressWord();
   const scale = introScale(window.innerWidth, window.innerHeight, window.devicePixelRatio || 1);
   const src = `${import.meta.env.BASE_URL}intro/index.html?scale=${scale}`;
 
@@ -124,7 +126,7 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
       {!loaded && <p class="intro-loading">Loading…</p>}
       {loaded && blocked && (
         <button type="button" class="intro-begin" onClick={() => unblock.current()}>
-          Tap to begin
+          {pressWord} to begin
         </button>
       )}
       <button type="button" class="btn ghost intro-skip" onClick={finish}>

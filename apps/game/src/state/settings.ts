@@ -1,3 +1,4 @@
+import type { DisplaySetting } from '../platform/displayMode';
 import { Store } from './store';
 
 export interface Settings {
@@ -11,6 +12,8 @@ export interface Settings {
   fullscreen: boolean;
   /** Bolder map highlights and outlines, with the map dimmed behind them. */
   highContrast: boolean;
+  /** Handheld or TV (10-foot) layout; Auto picks TV for a gamepad on a big screen (ADR 0010). */
+  display: DisplaySetting;
 }
 
 const KEY = 'armatura.settings.v1';
@@ -23,6 +26,7 @@ const DEFAULTS: Settings = {
   sfxVolume: 0.8,
   fullscreen: true,
   highContrast: false,
+  display: 'auto',
 };
 
 function load(): Settings {

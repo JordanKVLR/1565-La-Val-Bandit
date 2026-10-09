@@ -12,8 +12,8 @@ const CONTROL_PAGES: readonly { context: ControlContext; title: string }[] = [
 function ControlsPage() {
   return (
     <div class="help-controls" data-testid="help-controls">
-      <h3>Touch</h3>
-      <dl>
+      <h3 class="pointer-only">Touch</h3>
+      <dl class="pointer-only">
         <dt>Tap</dt>
         <dd>Select a tile or unit, press a button, next line of dialogue</dd>
         <dt>Tap again</dt>
@@ -47,8 +47,10 @@ function ControlsPage() {
         </table>
       ))}
       <p class="hint">
-        With a mouse, hovering a blue tile shows the route and one click moves. On a gamepad, the
-        cursor arrows follow the camera: ↑ steps up-right on the map, → down-right. Ⓐ on your own
+        <span class="pointer-only">
+          With a mouse, hovering a blue tile shows the route and one click moves.
+        </span>{' '}
+        On a gamepad, the cursor arrows follow the camera: ↑ steps up-right on the map, → down-right. Ⓐ on your own
         unit opens Move.
       </p>
     </div>

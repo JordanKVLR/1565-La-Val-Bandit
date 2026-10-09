@@ -3,6 +3,7 @@ import type { Library, RosterEntry } from '@m1565/content';
 import type { LoadoutSummary } from '../../campaign/inventory';
 import { equipped } from '../../campaign/inventory';
 import { STAT_INFO } from '../battle/statInfo';
+import { usePressWord } from '../KeyHint';
 import { ItemIcon } from './ItemIcon';
 import type { Action, ActionId, Mode, ShelfEntry } from './model';
 import { actionsFor, iconVariant, itemDescription, itemName, nameOf, previewFor } from './model';
@@ -149,7 +150,8 @@ export function ItemDetail({
   const description = itemDescription(lib, entry.kind, entry.id);
   const [openDesc, setOpenDesc] = useState(false);
   const share = Math.round(lib.balance.armouryConfirmFraction * 100);
-  const confirmText = `That is more than ${share === 50 ? 'half' : `${share}%`} of your purse. Tap again to confirm.`;
+  const pressWord = usePressWord();
+  const confirmText = `That is more than ${share === 50 ? 'half' : `${share}%`} of your purse. ${pressWord} again to confirm.`;
   return (
     <section
       class="ar-panel item-detail"

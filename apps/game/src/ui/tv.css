@@ -1,0 +1,129 @@
+/*
+ * TV (10-foot) layout, ADR 0010. platform/display.ts sets <html data-display="tv"> with
+ * --ui-zoom (how much the whole UI is scaled) and --tv-safe (the title-safe inset per side, as
+ * a fraction of the screen). The page is laid out at about 1000×600 CSS px and zoomed to fill
+ * the TV, so every screen scales without its own TV rules.
+ *
+ * Under CSS zoom, raw vw/vh units are not zoomed back down: 100vh would be zoom × the screen.
+ * Screens therefore use the --vw / --vh / --dvh units below (`calc(55 * var(--vh))`), which are
+ * 1% of the area the UI may use: the viewport normally, the title-safe area in TV mode.
+ * styles.test.ts fails on raw viewport units in the stylesheets.
+ */
+:root {
+  --ui-zoom: 1;
+  --tv-safe: 0;
+  --vw: calc(1vw * (1 - 2 * var(--tv-safe)) / var(--ui-zoom));
+  --vh: calc(1vh * (1 - 2 * var(--tv-safe)) / var(--ui-zoom));
+  --dvh: var(--vh);
+  /* The title-safe margins, in the zoomed page's own pixels. */
+  --tv-safe-x: calc(100vw * var(--tv-safe) / var(--ui-zoom));
+  --tv-safe-y: calc(100vh * var(--tv-safe) / var(--ui-zoom));
+}
+@supports (height: 1dvh) {
+  :root {
+    --dvh: calc(1dvh * (1 - 2 * var(--tv-safe)) / var(--ui-zoom));
+  }
+}
+
+:root[data-display='tv'] {
+  zoom: var(--ui-zoom);
+}
+
+/*
+ * The app lives inside the title-safe area. Layout containment makes it the containing block
+ * for full-screen (position: fixed) screens and dialogs, so they stay inside it too.
+ */
+:root[data-display='tv'] #app {
+  position: fixed;
+  inset: var(--tv-safe-y) var(--tv-safe-x);
+  height: auto;
+  overflow: visible;
+  contain: layout;
+}
+
+/*
+ * Pictures run to the screen edge (overscan is fine); text and controls stay inside. Each
+ * screen grows into the margin behind a transparent border as wide as the margin, so its
+ * background reaches the edge while its padding box (where its content goes) is the safe area.
+ */
+:root[data-display='tv'] #app > :is(main, .intro-screen) {
+  position: absolute;
+  inset: calc(-1 * var(--tv-safe-y)) calc(-1 * var(--tv-safe-x));
+  width: auto;
+  height: auto;
+  border: solid transparent;
+  border-width: var(--tv-safe-y) var(--tv-safe-x);
+  background-origin: border-box;
+}
+:root[data-display='tv'] :is(.battle-canvas, .stage-canvas) {
+  position: absolute;
+  top: calc(-1 * var(--tv-safe-y));
+  left: calc(-1 * var(--tv-safe-x));
+  width: calc(100% + 2 * var(--tv-safe-x));
+  height: calc(100% + 2 * var(--tv-safe-y));
+}
+:root[data-display='tv'] .modal {
+  inset: calc(-1 * var(--tv-safe-y)) calc(-1 * var(--tv-safe-x));
+  padding: calc(var(--tv-safe-y) + 12px) calc(var(--tv-safe-x) + 12px);
+}
+
+/* No touch gestures or mouse hover on a TV: hide what only explains or serves those. */
+:root[data-display='tv'] .pointer-only {
+  display: none !important;
+}
+/* Button prompts are always shown (pad glyphs, see KeyHint). */
+:root[data-display='tv'] .key {
+  display: inline-block;
+}
+
+/*
+ * Title: name on the left, menu on the right, as on short phones (styles.css), so a full menu
+ * (Continue, New Game+, …) fits the safe area of a 16:9 TV.
+ */
+:root[data-display='tv'] .title-screen {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  justify-content: center;
+  column-gap: 64px;
+  row-gap: 4px;
+}
+:root[data-display='tv'] .title-screen h1,
+:root[data-display='tv'] .title-screen .subtitle,
+:root[data-display='tv'] .title-screen .build-note {
+  grid-column: 1;
+  margin: 0;
+  text-align: center;
+}
+:root[data-display='tv'] .title-menu {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+}
+
+/*
+ * Media queries still see the TV's real size, so the Armoury takes its desktop layout (four
+ * columns) in a page laid out about 960 px wide: narrower fixed columns leave the shelf room,
+ * and only the open shelf tab is labelled (the others show their icon; LB/RB switch).
+ */
+:root[data-display='tv'] .armoury.wide {
+  grid-template-columns: 72px 220px minmax(0, 1fr) 280px;
+  gap: 10px;
+}
+:root[data-display='tv'] .armoury.wide .tl-long,
+:root[data-display='tv'] .armoury.wide .shelf-tab:not(.on) .tl-short {
+  display: none;
+}
+:root[data-display='tv'] .armoury.wide .shelf-tab.on .tl-short {
+  display: inline;
+}
+:root[data-display='tv'] .armoury.wide .shelf-tab:not(.on) {
+  flex: 0 0 44px;
+}
+
+/* The smallest print (under 12 px before the zoom) is raised to stay readable from the sofa. */
+:root[data-display='tv'] .facing-now,
+:root[data-display='tv'] .vb-cmd small.why {
+  font-size: 0.75rem;
+}

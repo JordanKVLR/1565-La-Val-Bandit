@@ -35,6 +35,7 @@ import type { FigureSpec } from './Armatura';
 import { bakeFigure } from './Armatura';
 import type { UnitLook } from './unitSprite';
 import { createUnitSprite, drawUnit } from './unitSprite';
+import { measureCanvas, renderPixelRatio } from './resolution';
 
 /** World units per height step. Tiles are 1×1 on the ground plane. */
 const STEP = 0.35;
@@ -155,7 +156,6 @@ export class BattleView {
     } = {},
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.scene.background = new Color(0x2a1f2e);
 
     this.scene.add(new HemisphereLight(0xe8f0ff, 0x6b5a3a, 1.3));
@@ -547,6 +547,8 @@ export class BattleView {
   private resize(): void {
     const { clientWidth: w, clientHeight: h } = this.canvas;
     if (!w || !h) return;
+    // Screen density, TV zoom and the 4K cap (ADR 0010).
+    this.renderer.setPixelRatio(renderPixelRatio(measureCanvas(this.canvas)));
     this.renderer.setSize(w, h, false);
     // Fit roughly the map diagonal to the shorter screen side.
     const viewHeight = Math.max(this.map.width, this.map.depth) * 0.85;
@@ -588,8 +590,9 @@ export class BattleView {
   }
 
   private pan(dx: number, dy: number): void {
-    const worldPerPixel =
-      (this.camera.top - this.camera.bottom) / this.zoom / this.canvas.clientHeight;
+    // Pointer deltas are on-screen pixels, which the TV zoom makes larger than layout pixels.
+    const screenHeight = this.canvas.getBoundingClientRect().height || this.canvas.clientHeight;
+    const worldPerPixel = (this.camera.top - this.camera.bottom) / this.zoom / screenHeight;
     const right = new Vector3().setFromMatrixColumn(this.camera.matrix, 0).setY(0).normalize();
     const forward = new Vector3().setFromMatrixColumn(this.camera.matrix, 1).setY(0).normalize();
     this.target.addScaledVector(right, -dx * worldPerPixel);
