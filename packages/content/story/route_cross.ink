@@ -46,7 +46,7 @@ NINU: Then we fight here, Eminence.
 -> hospital_tents
 
 = hospital_tents
->>> chapter "Interlude" "The Hospital Tents · 7 August"
+>>> chapter "Interlude" "Smoke over the Marsa · 7 August"
 >>> stage p3-camp
 >>> actor leyla 3 3 south
 >>> actor deniz 3 5 north
