@@ -1,7 +1,9 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { Story } from 'inkjs';
 import { describe, expect, it } from 'vitest';
 import story from '../story/main.ink';
-import { battleSources, loadLibrary, mapSources } from '../src';
+import { battleSources, loadLibrary, loadMap, mapSources } from '../src';
 
 const lib = loadLibrary();
 const speakers = new Set([...lib.cast.values()].map((c) => c.speaker));
@@ -78,7 +80,7 @@ describe('story script', () => {
 
   it.each([
     ['cross', /Stand with the Order/, 'a9-marsa-lines'],
-    ['island', /Fight as a Maltese/, 'i5-naxxar-ridge'],
+    ['island', /Fight as a Maltese/, 'i9-st-pauls-bay'],
     ['crescent', /Let him go|Cross to the Ottoman/, 'c9-st-pauls-bay'],
   ])('the %s route plays to its ending', (route, prefer, finale) => {
     const r = playthrough(prefer);
@@ -86,6 +88,31 @@ describe('story script', () => {
     expect(r.ended).toBe(true);
     expect(r.battles).toContain('b9-fall-of-st-elmo');
     expect(r.battles.at(-1)).toBe(finale);
+  });
+
+  it('never stands a character on a wall, in the sea or off the stage', () => {
+    const dir = resolve(__dirname, '../story');
+    const problems: string[] = [];
+    for (const file of readdirSync(dir).filter((f) => f.endsWith('.ink'))) {
+      let map: ReturnType<typeof loadMap> | null = null;
+      readFileSync(resolve(dir, file), 'utf8')
+        .split('\n')
+        .forEach((raw, i) => {
+          const line = raw.trim();
+          const stage = /^>>> stage (\S+)/.exec(line);
+          if (stage) {
+            const src = mapSources[stage[1] as keyof typeof mapSources];
+            map = src ? loadMap(src, lib.terrains) : null;
+          }
+          const actor = /^>>> actor (\S+) (\d+) (\d+)/.exec(line);
+          if (!actor || !map) return;
+          const [x, y] = [Number(actor[2]), Number(actor[3])];
+          const tile = x < map.width && y < map.depth ? map.tiles[y * map.width + x] : undefined;
+          if (!tile || lib.terrains.get(tile.terrain)?.impassable)
+            problems.push(`${file}:${i + 1} ${actor[1]} at ${x},${y}`);
+        });
+    }
+    expect(problems).toEqual([]);
   });
 
   it('uses every battle in the data folder', () => {

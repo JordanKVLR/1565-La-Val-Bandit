@@ -1,0 +1,196 @@
+{
+  "id": "i9-st-pauls-bay",
+  "name": "St Paul's Bay",
+  "map": "i9-st-pauls-bay",
+  "seed": 29,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "scala"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 12,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "anastagi",
+      "side": "player",
+      "controller": "human",
+      "level": 12,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [6, 8],
+      "facing": "north",
+      "character": "anastagi"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [4, 8],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 9],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "tercio",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "bastiun",
+      "weapon": "mace-shield",
+      "at": [7, 8],
+      "facing": "north",
+      "name": "Tercio Sergeant",
+      "stats": {
+        "pow": 10,
+        "dex": 8,
+        "agl": 4
+      }
+    },
+    {
+      "id": "scala",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 16,
+      "frame": "colossus",
+      "weapon": "colossus-cannon",
+      "at": [4, 3],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Scala",
+      "stats": {
+        "pow": 16,
+        "dex": 13,
+        "agl": 5,
+        "def": 14,
+        "bas": 15
+      },
+      "portrait": "scala"
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 13,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [2, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 15,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "proto-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 13,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [9, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 15,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "reis",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [7, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Rearguard Reis",
+      "stats": {
+        "pow": 15,
+        "dex": 11,
+        "agl": 8
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [3, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 14,
+        "dex": 12,
+        "agl": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [8, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 14,
+        "dex": 12,
+        "agl": 6
+      }
+    }
+  ]
+}

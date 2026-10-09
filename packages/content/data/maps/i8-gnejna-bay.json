@@ -1,0 +1,44 @@
+{
+  "id": "i8-gnejna-bay",
+  "name": "Ġnejna Bay",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~wwsspgggg",
+    "~~wwssppgggg",
+    "~wwsspppgggg",
+    "wwssprpffffg",
+    "wsspprrfxfgg",
+    "sspppfrrfggg",
+    "spppfffrrggg",
+    "gggfxffgrrgg",
+    "gggfffgggrrg",
+    "gggffgggggrr"
+  ],
+  "height": [
+    "000001124455",
+    "000011224555",
+    "000112225555",
+    "001122233334",
+    "011222333344",
+    "112223333444",
+    "122233334445",
+    "444333344455",
+    "445333444555",
+    "455334445555"
+  ]
+}

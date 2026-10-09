@@ -2,7 +2,7 @@
 >>> chapter "The Crescent" "Chapter 7 · Across the Water, early July"
 >>> stage p3-camp
 >>> actor ninu 3 5 north
->>> actor kateri 2 5 north
+>>> actor kateri 2 4 east
 >>> actor deniz 4 3 south
 They cross by night in a fishing boat. Deniz is waiting at the rocks below the Ottoman camp, as he promised in the message Ninu sent by a Maltese slave.
 DENIZ: I said I owed you one. I didn't say I'd be happy to pay it.

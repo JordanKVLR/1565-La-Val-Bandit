@@ -172,7 +172,7 @@ NINU: I'm not here to give. I'm here to take you home, Pa.
 >>> stage b6-kalkara-chapel
 >>> actor ninu 5 5 north
 >>> actor kateri 4 6 north
->>> actor pawlu 5 3 south
+>>> actor pawlu 6 3 south
 The colossus lies on its side among the broken arches, hissing like a kettle left on the fire. The door of its cage hangs open.
 NINU: Pa!
 PAWLU: Look at you. In a knight's frame, with a knight's sword. Your mother would... well. Never mind your mother. Not tonight.

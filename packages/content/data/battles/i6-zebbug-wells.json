@@ -1,0 +1,169 @@
+{
+  "id": "i6-zebbug-wells",
+  "name": "Wells of Żebbuġ",
+  "map": "i6-zebbug-wells",
+  "seed": 26,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "warden"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [2, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [3, 8],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [3, 3],
+      "facing": "east",
+      "character": "rozi"
+    },
+    {
+      "id": "warden",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "artigjan",
+      "weapon": "boat-hook",
+      "at": [1, 4],
+      "facing": "east",
+      "name": "Well-keeper Ċensu",
+      "stats": {
+        "pow": 6,
+        "dex": 6,
+        "agl": 6
+      },
+      "portrait": "villager"
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [11, 3],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Forager Sipahi",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "lev-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [11, 5],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Levend Forager",
+      "stats": {
+        "pow": 8,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [9, 1],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Levend Forager",
+      "stats": {
+        "pow": 8,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "lev-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [9, 7],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Levend Forager",
+      "stats": {
+        "pow": 8,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [10, 4],
+      "facing": "west",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 8,
+        "dex": 10,
+        "agl": 5
+      }
+    }
+  ]
+}

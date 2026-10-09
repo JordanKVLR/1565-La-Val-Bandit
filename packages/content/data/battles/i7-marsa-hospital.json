@@ -1,0 +1,162 @@
+{
+  "id": "i7-marsa-hospital",
+  "name": "Rearguard of the Sick",
+  "map": "i7-marsa-hospital",
+  "seed": 27,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 4
+    },
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 5,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [5, 3],
+      "facing": "south",
+      "character": "deniz"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [6, 4],
+      "facing": "south",
+      "character": "yusuf"
+    },
+    {
+      "id": "jan-ally",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [4, 3],
+      "facing": "south",
+      "name": "Janissary Ömer",
+      "stats": {
+        "pow": 8,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sipahi-ally",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [7, 4],
+      "facing": "south",
+      "name": "Sipahi Murad",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "lancer-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [3, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Mdina Lancer",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 6
+      }
+    },
+    {
+      "id": "lancer-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [6, 9],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Mdina Lancer",
+      "stats": {
+        "pow": 9,
+        "dex": 8,
+        "agl": 6
+      }
+    },
+    {
+      "id": "raider-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [0, 7],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "pow": 8,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "raider-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [11, 8],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "pow": 8,
+        "dex": 8,
+        "agl": 7
+      }
+    },
+    {
+      "id": "gunner-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 9],
+      "facing": "north",
+      "ai": "defensive",
+      "name": "Militia Gunner",
+      "stats": {
+        "pow": 7,
+        "dex": 9,
+        "agl": 6
+      }
+    }
+  ]
+}
