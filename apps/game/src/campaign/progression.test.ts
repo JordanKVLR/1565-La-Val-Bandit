@@ -1,7 +1,7 @@
 import { createBattle } from '@m1565/core';
 import { loadBattle, loadLibrary } from '@m1565/content';
 import { describe, expect, it } from 'vitest';
-import { applyBattleResults, newRosterEntry, withProgress } from './progression';
+import { applyBattleResults, newRosterEntry, skillsLearned, withProgress } from './progression';
 
 const lib = loadLibrary();
 
@@ -35,5 +35,23 @@ describe('XP carries over between stages', () => {
       level: 2,
       xp: 120,
     });
+  });
+});
+
+describe('skillsLearned', () => {
+  const lib = loadLibrary();
+  const levels = (lib.skillSets.get('ninu') ?? []).map((s) => s.level);
+
+  it("lists the unlock levels a pilot's level-up crossed, not the starting skill", () => {
+    expect(levels).toEqual([1, 5, 10]);
+    const at = (level: number) => [{ characterId: 'ninu', level }];
+    expect(skillsLearned(lib, at(1), at(4))).toEqual([]);
+    expect(skillsLearned(lib, at(4), at(5))).toEqual([5]);
+    expect(skillsLearned(lib, at(4), at(11))).toEqual([5, 10]);
+    expect(skillsLearned(lib, at(5), at(5))).toEqual([]);
+  });
+
+  it('ignores pilots who were not in the company before', () => {
+    expect(skillsLearned(lib, [], [{ characterId: 'ninu', level: 10 }])).toEqual([]);
   });
 });

@@ -1,16 +1,20 @@
 import type { BattleSetup, BattleState, Difficulty } from '@m1565/core';
 import { isBattleId, loadBattle, loadLibrary } from '@m1565/content';
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { GameSession } from '../campaign/GameSession';
 import { migrateCampaign } from '../campaign/migrate';
 import { canStartNewGamePlus, newGamePlus } from '../campaign/newGamePlus';
-import { music, sfx, unlockAudio } from '../platform/audio';
+import { syncAchievements } from '../platform/achievements';
+import { music, pauseAudio, resumeAudio, sfx, unlockAudio } from '../platform/audio';
 import { enterFullscreenIfWanted, initFullscreen } from '../platform/fullscreen';
+import { installLifecycle } from '../platform/lifecycle';
 import type { SlotId } from '../platform/storage';
-import { readSave } from '../platform/storage';
+import { flushStorage, readSave } from '../platform/storage';
+import { gameplayPause } from '../state/pause';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
 import { ArmouryScreen } from './armoury/ArmouryScreen';
+import { ControllerNotice } from './ControllerNotice';
 import { BattleScreen } from './BattleScreen';
 import { EndScreen } from './EndScreen';
 import { GameMenu } from './GameMenu';
@@ -115,6 +119,8 @@ export function App() {
   const [intro, setIntro] = useState<'new' | 'watch' | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>('knight');
   const { textSize } = useStore(settings);
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
 
   useEffect(() => {
     document.documentElement.dataset.textSize = textSize;
@@ -123,6 +129,8 @@ export function App() {
   // Sound may only start after a user gesture; also give every button a soft click.
   useEffect(() => {
     initFullscreen();
+    // Re-send unlocks recorded on this device (one may have failed while offline).
+    syncAchievements();
     const onPointer = (e: PointerEvent) => {
       unlockAudio();
       enterFullscreenIfWanted();
@@ -131,9 +139,27 @@ export function App() {
     window.addEventListener('pointerdown', onPointer);
     // Keyboard focus navigation and the gamepad (a pad press also counts as user input).
     const uninstallInput = installInput(unlockAudio);
+    // Suspend (console/phone/Deck sleep, app switch, tab hidden, quit): save now, make it
+    // durable, and hold sound, animation and the battle; resume carries on where it was.
+    const root = document.documentElement;
+    const uninstallLifecycle = installLifecycle({
+      onSuspend: () => {
+        sessionRef.current?.flush();
+        void flushStorage();
+        pauseAudio();
+        gameplayPause.hold('suspended');
+        root.dataset.suspended = '';
+      },
+      onResume: () => {
+        delete root.dataset.suspended;
+        gameplayPause.release('suspended');
+        resumeAudio();
+      },
+    });
     return () => {
       window.removeEventListener('pointerdown', onPointer);
       uninstallInput();
+      uninstallLifecycle();
     };
   }, []);
 
@@ -190,6 +216,7 @@ export function App() {
         />
       )}
       <RotateOverlay />
+      <ControllerNotice />
     </>
   );
 }

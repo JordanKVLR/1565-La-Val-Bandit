@@ -1,0 +1,16 @@
+{
+  "tvAuto": {
+    "minWidth": 1600,
+    "minHeight": 900
+  },
+  "tv": {
+    "layoutWidth": 1000,
+    "layoutHeight": 600,
+    "maxZoom": 4,
+    "safeZone": 0.05
+  },
+  "render": {
+    "maxPixelRatio": 2,
+    "maxRenderPixels": 3686400
+  }
+}

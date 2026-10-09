@@ -29,6 +29,7 @@ import { XpPanel } from './battle/XpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
+import { useTapVerb } from './KeyHint';
 
 interface Props {
   setup: BattleSetup;
@@ -87,6 +88,7 @@ export function BattleScreen({
   // Only one overlay at a time: opening one closes whatever else was open.
   const [panel, setPanel] = useState<Panel>('none');
   const close = () => setPanel('none');
+  const tapVerb = useTapVerb();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -154,7 +156,10 @@ export function BattleScreen({
       // by a click is not, so Enter still acts on the map.
       const button = target?.closest<HTMLElement>('button, a, [role="button"]');
       if (confirm && button && (inDialog || button.matches(':focus-visible'))) return;
-      if (confirm) used();
+      // In the attack menu and facing picker, Enter with nothing focused is left to the generic
+      // fallback (ui/input.ts), which focuses the dialog's default choice: Ⓐ always does
+      // something, and a second Ⓐ presses it.
+      if (confirm && m.kind !== 'attackMenu' && m.kind !== 'facing') used();
       switch (e.key) {
         case 'm':
         case 'M':
@@ -200,9 +205,14 @@ export function BattleScreen({
     return () => document.removeEventListener('keydown', onKey);
   }, [ctl, panel]);
 
+  // Progress is saved after every command (the player's and the AI's), so a console suspend or
+  // a killed app resumes from the last thing that happened. The state only changes between
+  // commands, so every snapshot is a consistent one; an AI turn resumed from one is re-planned.
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
   useEffect(() => {
-    if (mode.kind === 'command' || mode.kind === 'ended') onStateChange?.(state);
-  }, [state, mode.kind, onStateChange]);
+    onStateChangeRef.current?.(state);
+  }, [state]);
 
   const active = ctl.active();
   const tile = inspected && getTile(state.map, inspected);
@@ -255,7 +265,7 @@ export function BattleScreen({
       <div class="hud-controls" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
         <button
           type="button"
-          class="btn icon"
+          class="btn icon pointer-only"
           aria-label="Rotate left"
           onClick={() => viewRef.current?.rotate(-1)}
         >
@@ -263,7 +273,7 @@ export function BattleScreen({
         </button>
         <button
           type="button"
-          class="btn icon"
+          class="btn icon pointer-only"
           aria-label="Rotate right"
           onClick={() => viewRef.current?.rotate(1)}
         >
@@ -321,7 +331,7 @@ export function BattleScreen({
       )}
       {mode.kind === 'move' && mode.pending && (
         <SubModeBar
-          label={`AP −${mode.pending.cost} · tap again to move`}
+          label={`AP −${mode.pending.cost} · ${tapVerb} again to move`}
           onCancel={() => ctl.cancel()}
           confirm="Move here"
           onConfirm={() => ctl.confirmMove()}
@@ -330,7 +340,7 @@ export function BattleScreen({
       {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
         <SubModeBar
-          label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: tap a marked enemy`}
+          label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: ${tapVerb === 'tap' ? 'tap' : 'pick'} a marked enemy`}
           onCancel={() => ctl.cancel()}
         />
       )}

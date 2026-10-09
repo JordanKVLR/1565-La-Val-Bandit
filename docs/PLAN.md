@@ -228,7 +228,10 @@ skippable on tap.
 
 Mouse/keyboard and gamepad (Steam Deck) map to the same abstract input actions: a tile cursor
 on the battle map, spatial focus in menus, and prompts that follow the last input (ADR 0009;
-the full table is on the Controls page of How to play).
+the full table is on the Controls page of How to play). On a TV the 10-foot layout scales the
+whole UI (≈29 px body text at 1080p), keeps it inside a 5% title-safe area and hides touch-only
+controls; Settings → Display picks Auto / Handheld / TV, and Auto chooses TV for a gamepad on a
+big screen (ADR 0010).
 
 ### 2.7 Accessibility
 
@@ -441,12 +444,13 @@ dmg, reaction}` …). The renderer only **plays events**, so the logic never wai
 - 60 fps battle view; ≤ 100 draw calls; ≤ 150 MB RAM.
 - Initial web download for the slice ≤ 15 MB; lazy-load later chapters.
 - Texture atlases ≤ 2048². Terrain is a single merged mesh; props are instanced.
-- DPR capped at 2. Render-on-demand when idle, to save battery.
+- DPR capped at 2, and 3D canvases render at most 2560×1440 internal pixels (a 4K screen is
+  upscaled; ADR 0010, `data/display.json`). Render-on-demand when idle, to save battery.
 
 ### 5.6 Quality gates (CI on every push / PR)
 
 `lint → typecheck → unit tests → content validation → build → Playwright smoke
-(360×800 landscape, 1280×800 Deck, 1920×1080)` plus a web preview deploy. Balance sim
+(360×800 landscape, 1280×800 Deck, TV layout at 1920×1080 and 3840×2160)` plus a web preview deploy. Balance sim
 runs nightly.
 
 ---

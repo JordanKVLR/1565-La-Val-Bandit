@@ -63,23 +63,29 @@ export function unlockAudio(): void {
   if (active && active.el.paused && !document.hidden) playElement(active);
 }
 
+/** Silences everything at once (app suspended or hidden); `resumeAudio` picks up again. */
+export function pauseAudio(): void {
+  if (ctx && ctx.state === 'running') void ctx.suspend();
+  for (const t of tracks.values()) t.el.pause();
+}
+
+/** Resumes the sound paused by `pauseAudio` (never while the page is hidden). */
+export function resumeAudio(): void {
+  if (!ctx || document.hidden) return;
+  if (active) playElement(active);
+  if (ctx.state !== 'suspended') return;
+  void ctx.resume().then(() => {
+    if (seq) seq.nextStepTime = seq.nextNoteTime = ctx!.currentTime + 0.05;
+  });
+}
+
 /**
  * Stop all sound the moment the page is hidden (switching apps, locking the phone, closing the
  * tab) and pick up again when it comes back. Without this, phones keep playing for a while.
  */
 function watchVisibility(): void {
-  const pause = () => {
-    if (ctx && ctx.state === 'running') void ctx.suspend();
-    for (const t of tracks.values()) t.el.pause();
-  };
-  const resume = () => {
-    if (!ctx || document.hidden) return;
-    if (active) playElement(active);
-    if (ctx.state !== 'suspended') return;
-    void ctx.resume().then(() => {
-      if (seq) seq.nextStepTime = seq.nextNoteTime = ctx!.currentTime + 0.05;
-    });
-  };
+  const pause = pauseAudio;
+  const resume = resumeAudio;
   document.addEventListener('visibilitychange', () => (document.hidden ? pause() : resume()));
   window.addEventListener('pagehide', pause);
   window.addEventListener('pageshow', resume);

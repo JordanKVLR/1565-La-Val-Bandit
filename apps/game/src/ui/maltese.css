@@ -156,7 +156,7 @@
   padding-top: 9px;
 }
 .modal-box {
-  max-height: calc(100dvh - 24px);
+  max-height: calc(100 * var(--dvh) - 24px);
   overflow-y: auto;
   background: linear-gradient(rgba(30, 24, 20, 0.98), rgba(22, 18, 15, 0.98));
   border: 3px solid var(--mt-cream);
@@ -305,7 +305,7 @@
   .vb-forecast.react .vb-commands {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: min(330px, 42vw);
+    width: min(330px, 42 * var(--vw));
   }
   .vb-forecast.react .vb-cmd.go {
     grid-column: 1 / -1;
@@ -319,7 +319,7 @@
     display: none;
   }
   .vb-forecast.react .vb-sides {
-    right: calc(max(12px, env(safe-area-inset-right)) + min(330px, 42vw) + 10px);
+    right: calc(max(12px, env(safe-area-inset-right)) + min(330px, 42 * var(--vw)) + 10px);
   }
   .vb-forecast.react .vb-side-top .portrait {
     width: 44px;

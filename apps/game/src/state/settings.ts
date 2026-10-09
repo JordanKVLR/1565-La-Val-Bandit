@@ -1,3 +1,5 @@
+import type { DisplaySetting } from '../platform/displayMode';
+import { readJson, writeJson } from '../platform/storage';
 import { Store } from './store';
 
 export interface Settings {
@@ -11,6 +13,8 @@ export interface Settings {
   fullscreen: boolean;
   /** Bolder map highlights and outlines, with the map dimmed behind them. */
   highContrast: boolean;
+  /** Handheld or TV (10-foot) layout; Auto picks TV for a gamepad on a big screen (ADR 0010). */
+  display: DisplaySetting;
 }
 
 const KEY = 'armatura.settings.v1';
@@ -23,23 +27,15 @@ const DEFAULTS: Settings = {
   sfxVolume: 0.8,
   fullscreen: true,
   highContrast: false,
+  display: 'auto',
 };
 
 function load(): Settings {
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Settings>) } : DEFAULTS;
-  } catch {
-    return DEFAULTS;
-  }
+  return { ...DEFAULTS, ...readJson<Partial<Settings>>(KEY) };
 }
 
 export const settings = new Store<Settings>(load());
 
-settings.subscribe(() => {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(settings.get()));
-  } catch {
-    // Storage can be unavailable (private mode); settings then last for the session only.
-  }
-});
+// Saved at once and crash-safely (platform/storage). If storage is unavailable (private mode)
+// the settings last for the session only.
+settings.subscribe(() => void writeJson(KEY, settings.get()));

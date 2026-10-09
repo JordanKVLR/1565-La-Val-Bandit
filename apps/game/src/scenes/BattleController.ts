@@ -43,6 +43,7 @@ import { figureSpec } from '../render/Armatura';
 import { ARROW_COLORS, SIDE_COLORS } from '../render/palette';
 import type { HighlightKind, UnitVisual } from '../render/BattleView';
 import { sfx } from '../platform/audio';
+import { gameplayPause } from '../state/pause';
 import { settings } from '../state/settings';
 import { Store } from '../state/store';
 import type { CursorDir, ScreenCorners } from './cursor';
@@ -154,7 +155,12 @@ export interface BattleView {
   readonly notices: readonly { readonly id: number; readonly text: string }[];
 }
 
-const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+/**
+ * Waits `ms`, then for as long as gameplay is paused (app suspended, controller disconnected):
+ * the AI's pacing pauses go through here, so an enemy turn holds between its steps.
+ */
+const delay = (ms: number) =>
+  new Promise<void>((r) => setTimeout(r, ms)).then(() => gameplayPause.whenRunning());
 const pickLine = (lines: readonly string[]) =>
   lines[Math.floor(Math.random() * lines.length)] ?? '';
 

@@ -1,6 +1,11 @@
 import type { ControlContext, PadInput } from '../platform/input/controls';
 import { keyForPad } from '../platform/input/controls';
 import { setInputDevice } from '../platform/input/device';
+import {
+  controllerNotice,
+  noteControllerConnection,
+  noteControllerEvent,
+} from '../platform/input/disconnect';
 import { installGamepad } from '../platform/input/gamepad';
 import type { NavDir } from './spatial';
 import { pickInDirection } from './spatial';
@@ -260,15 +265,25 @@ export function currentContext(): ControlContext {
 export function installInput(onPad?: () => void): () => void {
   const onKeyDevice = (e: KeyboardEvent) => {
     if (e.isTrusted) setInputDevice('keyboard');
+    // While the controller disconnect notice is up, any key closes it and goes no further.
+    if (controllerNotice.get().open && noteControllerEvent({ type: 'otherInput' })) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
   };
   const onPointer = () => setInputDevice('pointer');
   window.addEventListener('keydown', onKeyDevice, true);
   window.addEventListener('pointerdown', onPointer, true);
   window.addEventListener('keydown', onFallbackKey);
-  const stopPad = installGamepad((input) => {
-    onPad?.();
-    dispatchPadInput(input, currentContext());
-  });
+  const stopPad = installGamepad(
+    (input, padIndex) => {
+      onPad?.();
+      // A press that closes the controller disconnect notice is used up by it.
+      if (noteControllerEvent({ type: 'padInput', index: padIndex })) return;
+      dispatchPadInput(input, currentContext());
+    },
+    (e) => noteControllerConnection(e.type, e.index),
+  );
   return () => {
     window.removeEventListener('keydown', onKeyDevice, true);
     window.removeEventListener('pointerdown', onPointer, true);
