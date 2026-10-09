@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { controllerNotice, dismissControllerNotice } from '../platform/input/disconnect';
 import { useStore } from '../state/store';
+import { t } from '../i18n';
 
 /**
  * "Controller disconnected": shown above everything when the pad in use goes away mid-game
@@ -29,12 +30,12 @@ export function ControllerNotice() {
       onClick={dismissControllerNotice}
     >
       <div class="modal-box">
-        <h2 id="controller-notice-title">Controller disconnected</h2>
+        <h2 id="controller-notice-title">{t('controller.title')}</h2>
         <p id="controller-notice-text" class="modal-hint">
-          The game is paused. Reconnect your controller, or press any key or tap to continue.
+          {t('controller.text')}
         </p>
         <button type="button" class="btn" ref={button} data-nav-default>
-          Continue
+          {t('common.continue')}
         </button>
       </div>
     </div>

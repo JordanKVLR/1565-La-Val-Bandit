@@ -1,4 +1,5 @@
 import type { BalanceConfig, PilotStats, StatName, UnitState } from '@m1565/core';
+import { t } from '../../i18n';
 import { portraitUrl } from '../../render/art';
 import { STAT_INFO } from './statInfo';
 
@@ -74,9 +75,21 @@ export function UnitBars({
 }) {
   return (
     <div class="unit-bars">
-      <Bar label="HP" value={unit.hp} max={unit.maxHp} kind="hp" />
-      <Bar label="AP" value={unit.ap} max={balance.apMax} kind="ap" delta={-(preview?.ap ?? 0)} />
-      <Bar label="FP" value={unit.fp} max={balance.fpMax} kind="fp" delta={preview?.fp ?? 0} />
+      <Bar label={t('stat.hp')} value={unit.hp} max={unit.maxHp} kind="hp" />
+      <Bar
+        label={t('stat.ap')}
+        value={unit.ap}
+        max={balance.apMax}
+        kind="ap"
+        delta={-(preview?.ap ?? 0)}
+      />
+      <Bar
+        label={t('stat.fp')}
+        value={unit.fp}
+        max={balance.fpMax}
+        kind="fp"
+        delta={preview?.fp ?? 0}
+      />
     </div>
   );
 }
@@ -123,7 +136,7 @@ export function AttributeBars({
             <button
               type="button"
               class="btn icon raise"
-              aria-label={raiseLabel ? raiseLabel(s.label) : `Raise ${s.label}`}
+              aria-label={raiseLabel ? raiseLabel(s.label) : t('stat.raise', { stat: s.label })}
               disabled={!canRaise || stats[s.key] >= ATTRIBUTE_BAR_MAX}
               onClick={() => onRaise(s.key)}
             >
@@ -139,12 +152,12 @@ export function AttributeBars({
 
 /** Armour (shield) or movement (boot) icon with the number in the middle. */
 export function StatIcon({ kind, value }: { kind: 'arm' | 'mov'; value: number }) {
-  const name = kind === 'arm' ? 'Armour' : 'Movement';
+  const name = kind === 'arm' ? t('stat.armour') : t('stat.movement');
   return (
     <span
       class={`stat-icon stat-icon-${kind}`}
       role="img"
-      aria-label={`${name} ${value}`}
+      aria-label={t('stat.iconLabel', { name, n: value })}
       title={name}
     >
       <svg viewBox="0 0 32 32" aria-hidden="true">

@@ -1,7 +1,7 @@
 import { attackFpCost } from '@m1565/core';
 import type { BattleController } from '../../scenes/BattleController';
-import { attackStats } from './attackText';
-import { techniqueEffects } from './TechniqueCard';
+import { t } from '../../i18n';
+import { attackStats, techniqueEffects } from './attackText';
 import { KeyHint } from '../KeyHint';
 
 /** The active unit's learned techniques; locked ones stay hidden until unlocked. */
@@ -11,20 +11,22 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
   // Only techniques the pilot has learned are listed; discovering new ones is part of the game.
   const options = ctl.attackOptions().filter((o) => o.unlocked);
   return (
-    <div class="attack-menu" role="dialog" aria-label="Choose an attack">
+    <div class="attack-menu" role="dialog" aria-label={t('attackMenu.label')}>
       <header class="am-head">
         <strong>{unit.name}</strong>
-        <span>
-          AP {unit.ap} · {unit.weapon.name}
-        </span>
+        <span>{t('attackMenu.ap', { ap: unit.ap, weapon: unit.weapon.name })}</span>
         <button type="button" class="btn ghost" onClick={() => ctl.cancel()}>
-          Back <KeyHint action="back" />
+          {t('common.back')} <KeyHint action="back" />
         </button>
       </header>
       <ul class="am-list">
         {options.map(({ attack, affordable, targets }) => {
           const usable = affordable && targets.length > 0;
-          const reason = !affordable ? 'Not enough AP' : !targets.length ? 'No enemy in range' : '';
+          const reason = !affordable
+            ? t('attackMenu.noAp')
+            : !targets.length
+              ? t('attackMenu.noTarget')
+              : '';
           return (
             <li key={attack.id}>
               <button
@@ -40,7 +42,7 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
                 </span>
                 {attack.description && <span class="am-desc">{attack.description}</span>}
                 {techniqueEffects(attack).length > 0 && (
-                  <span class="am-tags">{techniqueEffects(attack).join(' · ')}</span>
+                  <span class="am-tags">{techniqueEffects(attack).join(t('common.sep'))}</span>
                 )}
                 {reason && <span class="am-reason">{reason}</span>}
               </button>

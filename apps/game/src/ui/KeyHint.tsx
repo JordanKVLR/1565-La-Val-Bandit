@@ -1,8 +1,11 @@
+import type { ParamValue } from '../i18n/format';
 import { displayMode } from '../platform/display';
 import type { ControlAction, ControlContext, InputDevice } from '../platform/input/controls';
 import { promptFor } from '../platform/input/controls';
 import { inputDevice } from '../platform/input/device';
 import { useStore } from '../state/store';
+import type { PromptHint } from './prompts';
+import { promptText } from './prompts';
 
 /**
  * Which prompts to show: the last input's, except that the TV layout (ADR 0010) shows pad
@@ -36,16 +39,11 @@ export function KeyHint({
   );
 }
 
-/** "Tap", "Press Enter" or "Press Ⓐ", for hints like "Tap to continue". */
-export function usePressWord(): string {
+/** `promptText` (ui/prompts.ts) for the device whose prompts are showing. */
+export function usePrompt(): (
+  hint: PromptHint,
+  params?: Readonly<Record<string, ParamValue>>,
+) => string {
   const device = usePromptDevice();
-  if (device === 'gamepad') return `Press ${promptFor('confirm', device, 'menu')}`;
-  if (device === 'keyboard') return 'Press Enter';
-  return 'Tap';
-}
-
-/** "tap", "press Enter" or "press Ⓐ", for the middle of a sentence. */
-export function useTapVerb(): string {
-  const word = usePressWord();
-  return word.charAt(0).toLowerCase() + word.slice(1);
+  return (hint, params) => promptText(hint, device, params);
 }

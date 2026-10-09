@@ -14,6 +14,7 @@ import { addItem, buy, equip, release, sell, swap } from './inventory';
 import { migrateCampaign } from './migrate';
 import type { NewGameOptions } from './newGamePlus';
 import { refitKit } from './newGamePlus';
+import type { ResultLine } from './progression';
 import {
   applyBattleResults,
   newRosterEntry,
@@ -48,7 +49,7 @@ export type Screen =
       readonly key: number;
     }
   | { readonly kind: 'prep' }
-  | { readonly kind: 'results'; readonly battleId: string; readonly lines: readonly string[] }
+  | { readonly kind: 'results'; readonly battleId: string; readonly lines: readonly ResultLine[] }
   | { readonly kind: 'end' };
 
 export interface SessionView {
@@ -231,9 +232,10 @@ export class GameSession {
     const salvage = firstWin ? battleSalvage(screen.battleId) : [];
     let stores = this.state.stores;
     for (const id of salvage) stores = addItem(stores, 'frame', id);
-    const salvaged = salvage.map(
-      (id) => `Salvaged armatura: ${this.lib.frames.get(id)?.name ?? id}`,
-    );
+    const salvaged = salvage.map((id): ResultLine => ({
+      kind: 'salvage',
+      frame: this.lib.frames.get(id)?.name ?? id,
+    }));
     const before = this.state;
     this.patch({
       roster,
@@ -254,7 +256,7 @@ export class GameSession {
     this.show({
       kind: 'results',
       battleId: screen.battleId,
-      lines: [`+${reward} scudi`, ...salvaged, ...lines],
+      lines: [{ kind: 'scudi', amount: reward }, ...salvaged, ...lines],
     });
     this.autosave();
   }

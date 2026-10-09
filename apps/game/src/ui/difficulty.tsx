@@ -1,23 +1,15 @@
 import type { BalanceConfig, Difficulty } from '@m1565/core';
 import { DEFAULT_DIFFICULTY, DIFFICULTIES, difficultyMods, isDifficulty } from '@m1565/core';
+import { t } from '../i18n';
 
-export const DIFFICULTY_NAMES: Readonly<Record<Difficulty, string>> = {
-  squire: 'Squire',
-  knight: 'Knight',
-  grandMaster: 'Grand Master',
-};
+/** The mode's name in the player's language. */
+export const difficultyName = (d: Difficulty): string => t(`difficulty.name.${d}`);
 
 /** Rank pips, so the modes differ by shape and count as well as by name (never by colour). */
 const PIPS: Readonly<Record<Difficulty, string>> = {
   squire: '◆',
   knight: '◆◆',
   grandMaster: '◆◆◆',
-};
-
-const TAGLINES: Readonly<Record<Difficulty, string>> = {
-  squire: 'For the story.',
-  knight: 'The intended challenge.',
-  grandMaster: 'For veterans of the siege.',
 };
 
 const pct = (mult: number) => Math.round(Math.abs(mult - 1) * 100);
@@ -27,23 +19,27 @@ export function difficultySummary(b: BalanceConfig, d: Difficulty): string {
   const m = difficultyMods(b, d);
   const parts: string[] = [];
   if (m.enemyLevel !== 0 || m.enemyStats !== 1) {
-    const lv = Math.abs(m.enemyLevel);
+    const n = Math.abs(m.enemyLevel);
     const level = m.enemyLevel
-      ? `${lv} level${lv === 1 ? '' : 's'} ${m.enemyLevel > 0 ? 'higher' : 'lower'}`
+      ? t(m.enemyLevel > 0 ? 'difficulty.levelsHigher' : 'difficulty.levelsLower', { n })
       : '';
     const stats =
-      m.enemyStats !== 1 ? `${pct(m.enemyStats)}% ${m.enemyStats > 1 ? 'stronger' : 'weaker'}` : '';
-    parts.push(`Enemies ${[level, stats].filter(Boolean).join(', ')}`);
+      m.enemyStats !== 1
+        ? t(m.enemyStats > 1 ? 'difficulty.stronger' : 'difficulty.weaker', {
+            n: pct(m.enemyStats),
+          })
+        : '';
+    const changes = [level, stats].filter(Boolean).join(t('common.listSep'));
+    parts.push(t('difficulty.enemies', { changes }));
   } else {
-    parts.push('Enemies as written');
+    parts.push(t('difficulty.enemiesAsWritten'));
   }
-  if (m.scudi !== 1) parts.push(`${pct(m.scudi)}% ${m.scudi > 1 ? 'more' : 'fewer'} scudi`);
-  parts.push(
-    m.defeatKeepsXp
-      ? 'A lost battle keeps its experience: retry for free'
-      : 'A lost battle’s experience is lost on retry',
-  );
-  return parts.join(' · ');
+  if (m.scudi !== 1)
+    parts.push(
+      t(m.scudi > 1 ? 'difficulty.moreScudi' : 'difficulty.fewerScudi', { n: pct(m.scudi) }),
+    );
+  parts.push(t(m.defeatKeepsXp ? 'difficulty.keepXp' : 'difficulty.loseXp'));
+  return parts.join(t('common.sep'));
 }
 
 /** The three modes as large buttons; the current one is marked in text, not only by style. */
@@ -57,7 +53,7 @@ export function DifficultyPicker({
   onPick: (d: Difficulty) => void;
 }) {
   return (
-    <div class="slots difficulty-picker" role="group" aria-label="Difficulty">
+    <div class="slots difficulty-picker" role="group" aria-label={t('difficulty.title')}>
       {DIFFICULTIES.map((d) => (
         <button
           type="button"
@@ -74,12 +70,14 @@ export function DifficultyPicker({
           </span>
           <span class="difficulty-text">
             <strong>
-              {DIFFICULTY_NAMES[d]}
-              {d === DEFAULT_DIFFICULTY && <em class="difficulty-tag"> (recommended)</em>}
-              {value === d && <em class="difficulty-tag"> ✓ current</em>}
+              {difficultyName(d)}
+              {d === DEFAULT_DIFFICULTY && (
+                <em class="difficulty-tag"> {t('difficulty.recommended')}</em>
+              )}
+              {value === d && <em class="difficulty-tag"> ✓ {t('difficulty.current')}</em>}
             </strong>
             <small>
-              {TAGLINES[d]} {difficultySummary(balance, d)}
+              {t(`difficulty.tagline.${d}`)} {difficultySummary(balance, d)}
             </small>
           </span>
         </button>
@@ -99,8 +97,8 @@ export function SaveBadges({
   const d = isDifficulty(save.difficulty) ? save.difficulty : DEFAULT_DIFFICULTY;
   return (
     <span class="save-badges">
-      {cycle > 0 && <span class="badge ngplus">NG+ {cycle}</span>}
-      <span class="badge">{DIFFICULTY_NAMES[d]}</span>
+      {cycle > 0 && <span class="badge ngplus">{t('ngPlus.badge', { n: cycle })}</span>}
+      <span class="badge">{difficultyName(d)}</span>
     </span>
   );
 }

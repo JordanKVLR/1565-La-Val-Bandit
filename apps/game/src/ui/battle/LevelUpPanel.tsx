@@ -1,6 +1,7 @@
 import type { PilotStats, StatName, UnitState } from '@m1565/core';
 import { AttributeBars } from './StatBars';
 import { NewSkills } from '../SkillList';
+import { t } from '../../i18n';
 
 interface Props {
   /** The unit: its top-level attributes include gear, `pilot` holds its own. */
@@ -16,11 +17,11 @@ interface Props {
 /** Spend level-up points on any of the six attributes. Techniques stay a surprise. */
 export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props) {
   return (
-    <div class="modal" role="dialog" aria-label="Level up">
+    <div class="modal" role="dialog" aria-label={t('levelUp.label')}>
       <div class="modal-box levelup">
-        <h2>{title ?? `${unit.name} reached level ${unit.level}!`}</h2>
+        <h2>{title ?? t('levelUp.title', { name: unit.name, level: unit.level })}</h2>
         <p class="points" data-testid="stat-points">
-          {unit.statPoints} point{unit.statPoints === 1 ? '' : 's'} to spend · Max HP {unit.maxHp}
+          {t('levelUp.points', { n: unit.statPoints, hp: unit.maxHp })}
         </p>
         <NewSkills
           names={(unit.skills ?? []).filter((s) => s.level === unit.level).map((s) => s.name)}
@@ -32,9 +33,9 @@ export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props)
           onRaise={onRaise}
           canRaise={unit.statPoints > 0}
         />
-        <p class="hint">New techniques unlock as your attributes grow. Experiment to find them.</p>
+        <p class="hint">{t('levelUp.hint')}</p>
         <button type="button" class="btn" onClick={onDone}>
-          {doneLabel ?? (unit.statPoints > 0 ? 'Save points for later' : 'Continue')}
+          {doneLabel ?? (unit.statPoints > 0 ? t('levelUp.saveForLater') : t('common.continue'))}
         </button>
       </div>
     </div>

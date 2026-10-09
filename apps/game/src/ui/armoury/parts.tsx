@@ -1,21 +1,17 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { t } from '../../i18n';
 import type { Tier } from './ItemIcon';
 
-const TIER_LABEL: Record<Tier, string> = {
-  common: 'Common',
-  fine: 'Fine',
-  masterwork: 'Masterwork',
-};
 const PIPS: Record<Tier, number> = { common: 1, fine: 2, masterwork: 3 };
 
 /** Quality tier, readable without colour: a label, pips and a border style. */
 export function TierBadge({ tier, size = 'sm' }: { tier: Tier; size?: 'sm' | 'md' }) {
   return (
-    <span class={`tier-badge t-${tier} s-${size}`} title={TIER_LABEL[tier]}>
+    <span class={`tier-badge t-${tier} s-${size}`} title={t(`tier.${tier}`)}>
       <span class="pips" aria-hidden="true">
         {'◆'.repeat(PIPS[tier])}
       </span>
-      {size === 'md' || tier !== 'common' ? <span class="tl">{TIER_LABEL[tier]}</span> : null}
+      {size === 'md' || tier !== 'common' ? <span class="tl">{t(`tier.${tier}`)}</span> : null}
     </span>
   );
 }
@@ -25,11 +21,14 @@ export function TierBadge({ tier, size = 'sm' }: { tier: Tier; size?: 'sm' | 'md
  * direction never depends on colour.
  */
 export function StatDelta({
+  id,
   label,
   before,
   after,
   max,
 }: {
+  /** Names the row for tests (`stat-delta-<id>`); never shown. */
+  id: string;
   label: string;
   before: number;
   after: number;
@@ -43,8 +42,16 @@ export function StatDelta({
     <div
       class={`stat-delta${diff > 0 ? ' up' : diff < 0 ? ' down' : ''}`}
       role="img"
-      aria-label={`${label} ${before} to ${after}${diff ? `, ${diff > 0 ? 'up' : 'down'} ${Math.abs(diff)}` : ''}`}
-      data-testid={`stat-delta-${label}`}
+      aria-label={t(
+        diff > 0 ? 'armoury.deltaUp' : diff < 0 ? 'armoury.deltaDown' : 'armoury.deltaSame',
+        {
+          stat: label,
+          before,
+          after,
+          n: Math.abs(diff),
+        },
+      )}
+      data-testid={`stat-delta-${id}`}
     >
       <span class="sd-label">{label}</span>
       <span class="sd-track">
@@ -97,10 +104,10 @@ export function ScudiCounter({ value }: { value: number }) {
     return () => cancelAnimationFrame(frame);
   }, [value]);
   return (
-    <span class="scudi-counter" data-testid="scudi" aria-label={`${value} scudi`}>
+    <span class="scudi-counter" data-testid="scudi" aria-label={t('armoury.scudi', { n: value })}>
       <CoinGlyph />
       <b>{shown.toLocaleString()}</b>
-      <span class="visually-hidden">{value} scudi</span>
+      <span class="visually-hidden">{t('armoury.scudi', { n: value })}</span>
       {float && (
         <span key={float.n} class={`scudi-float ${float.up ? 'up' : 'down'}`} aria-hidden="true">
           {float.text}

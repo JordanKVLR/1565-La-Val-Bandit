@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { GameSession } from '../../campaign/GameSession';
 import type { ItemKind } from '../../campaign/inventory';
 import { equipped } from '../../campaign/inventory';
+import { t } from '../../i18n';
 import { sfx } from '../../platform/audio';
 import { portraitUrl } from '../../render/art';
 import { figureSpec } from '../../render/Armatura';
@@ -31,19 +32,14 @@ interface Selected {
   readonly holderId?: string;
 }
 
-const SLOT_LABEL: Record<ItemKind, string> = {
-  frame: 'Armatura',
-  weapon: 'Weapon',
-  charm: 'Charm',
-  amulet: 'Amulet',
-};
+const slotLabel = (kind: ItemKind): string => t(`item.kind.${kind}`);
 const UI_KEY = 'm1565.armoury.ui';
 const CONFIRM_MS = 4000;
 
 function loadUi(): { tab: ItemKind; mode: Mode } {
   try {
     const raw = JSON.parse(localStorage.getItem(UI_KEY) ?? '{}') as { tab?: string };
-    const tab = TABS.find((t) => t.kind === raw.tab)?.kind ?? 'weapon';
+    const tab = TABS.find((k) => k === raw.tab) ?? 'weapon';
     return { tab, mode: 'shop' };
   } catch {
     return { tab: 'weapon', mode: 'shop' };
@@ -108,7 +104,7 @@ function ArmaturaCanvas({
         <canvas ref={ref} class="arm-viewer" data-testid="arm-viewer" aria-hidden="true" />
       )}
       {preview && (preview.kind === 'frame' || preview.kind === 'weapon') && (
-        <span class="preview-ribbon">Preview</span>
+        <span class="preview-ribbon">{t('armoury.preview')}</span>
       )}
     </div>
   );
@@ -129,7 +125,10 @@ function PilotChip({
   const side = sideOf(lib, entry.characterId);
   const url = portraitUrl(entry.characterId);
   const frame = lib.frames.get(entry.frame)?.name ?? entry.frame;
-  const label = `${name}, level ${entry.level}, ${frame}${(entry.statPoints ?? 0) ? `, ${entry.statPoints} stat points to spend` : ''}`;
+  const points = entry.statPoints ?? 0;
+  const label = points
+    ? t('armoury.pilotChipPoints', { name, level: entry.level, frame, n: points })
+    : t('armoury.pilotChip', { name, level: entry.level, frame });
   return (
     <button
       type="button"
@@ -146,7 +145,7 @@ function PilotChip({
         {url ? <img src={url} alt="" /> : name.charAt(0)}
       </span>
       <span class="pc-name">{name.split(' ').pop()}</span>
-      <span class="pc-lv">Lv {entry.level}</span>
+      <span class="pc-lv">{t('unit.lv', { n: entry.level })}</span>
       {(entry.statPoints ?? 0) > 0 && (
         <span class="pc-pip" aria-hidden="true">
           +{entry.statPoints}
@@ -176,13 +175,16 @@ function PilotStage({
       class="ar-panel pilot-stage"
       id="pilot-stage"
       data-testid="pilot-stage"
-      aria-label="Pilot"
+      aria-label={t('armoury.pilot')}
     >
       <header class="ps-head">
         <h3>{nameOf(lib, pilot.characterId)}</h3>
         <small>
-          Lv {pilot.level} · {side === 'malta' ? 'Order of St John' : 'Ottoman'} ·{' '}
-          {frame ? `${frame.class} armatura` : ''}
+          {[
+            t('unit.lv', { n: pilot.level }),
+            t(`armoury.side.${side}`),
+            frame ? t(`frameClass.armatura.${frame.class}`) : '',
+          ].join(t('common.sep'))}
         </small>
       </header>
       <ArmaturaCanvas lib={lib} pilot={pilot} preview={preview} />
@@ -195,7 +197,10 @@ function PilotStage({
               type="button"
               class={`slot-btn${id ? '' : ' empty'}${flash === kind ? ' flash' : ''}`}
               data-testid={`slot-${kind}`}
-              aria-label={`${SLOT_LABEL[kind]}: ${id ? itemName(lib, kind, id) : 'empty'}`}
+              aria-label={t('armoury.slot', {
+                slot: slotLabel(kind),
+                item: id ? itemName(lib, kind, id) : t('armoury.slotEmpty'),
+              })}
               onClick={() => onSlot(kind)}
             >
               {id ? (
@@ -212,8 +217,8 @@ function PilotStage({
                 </span>
               )}
               <span class="slot-text">
-                <small>{SLOT_LABEL[kind]}</small>
-                <b>{id ? itemName(lib, kind, id) : 'Empty'}</b>
+                <small>{slotLabel(kind)}</small>
+                <b>{id ? itemName(lib, kind, id) : t('armoury.empty')}</b>
               </span>
             </button>
           );
@@ -245,29 +250,34 @@ function TrainingSheet({
   const i = roster.indexOf(entry);
   const step = (d: number) => onPilot(roster[(i + d + roster.length) % roster.length]!.characterId);
   return (
-    <div class="modal" role="dialog" aria-label="Training" data-testid="training-sheet">
+    <div
+      class="modal"
+      role="dialog"
+      aria-label={t('armoury.training')}
+      data-testid="training-sheet"
+    >
       <div class="modal-box training-box">
         <header class="tr-head">
           <button
             type="button"
             class="btn ghost tr-arrow"
-            aria-label="Previous pilot"
+            aria-label={t('armoury.prevPilot')}
             onClick={() => step(-1)}
           >
             ‹
           </button>
           <h3>
-            Training · {nameOf(lib, entry.characterId)}
+            {t('armoury.trainingTitle', { name: nameOf(lib, entry.characterId) })}
             <small>
               {(entry.statPoints ?? 0) > 0
-                ? `${entry.statPoints} point${entry.statPoints === 1 ? '' : 's'} to spend`
-                : 'No points to spend'}
+                ? t('roster.pointsToSpend', { n: entry.statPoints ?? 0 })
+                : t('armoury.noPoints')}
             </small>
           </h3>
           <button
             type="button"
             class="btn ghost tr-arrow"
-            aria-label="Next pilot"
+            aria-label={t('armoury.nextPilot')}
             onClick={() => step(1)}
           >
             ›
@@ -286,15 +296,15 @@ function TrainingSheet({
           {onBattle ? (
             <>
               <button type="button" class="btn ghost" onClick={onBattle}>
-                Spend later
+                {t('armoury.spendLater')}
               </button>
               <button type="button" class="btn" onClick={onClose}>
-                Keep training
+                {t('armoury.keepTraining')}
               </button>
             </>
           ) : (
             <button type="button" class="btn" onClick={onClose}>
-              Done
+              {t('common.done')}
             </button>
           )}
         </footer>
@@ -347,8 +357,8 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
 
   useEffect(() => {
     if (!confirm) return;
-    const t = setTimeout(() => setConfirm(null), CONFIRM_MS);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setConfirm(null), CONFIRM_MS);
+    return () => clearTimeout(timer);
   }, [confirm]);
 
   const sections = useMemo(
@@ -487,16 +497,17 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
       setBurst({ n: (burst?.n ?? 0) + 1, up: action.id === 'sell' });
     say(buying ? 'onBuy' : action.id === 'sell' ? 'onSell' : 'onEquip');
     sfx('select');
-    const msg: Record<ActionId, string> = {
-      equip: `${who} fits the ${entry.name}.`,
-      swap: `${who} swaps for the ${entry.name}.`,
-      take: `${who} takes the ${entry.name}.`,
-      'buy-equip': `Bought the ${entry.name} and fitted it to ${who}. ${left} scudi left.`,
-      buy: `Bought the ${entry.name}. ${left} scudi left.`,
-      remove: `${who} takes off the ${entry.name}.`,
-      sell: `Sold the ${entry.name}. ${left} scudi.`,
+    const item = entry.name;
+    const msg: Record<ActionId, () => string> = {
+      equip: () => t('armoury.did.equip', { who, item }),
+      swap: () => t('armoury.did.swap', { who, item }),
+      take: () => t('armoury.did.take', { who, item }),
+      'buy-equip': () => t('armoury.did.buyEquip', { who, item, left }),
+      buy: () => t('armoury.did.buy', { item, left }),
+      remove: () => t('armoury.did.remove', { who, item }),
+      sell: () => t('armoury.did.sell', { item, left }),
     };
-    setAnnounce(msg[action.id]);
+    setAnnounce(msg[action.id]());
     if (action.id === 'remove' || (action.id === 'sell' && entry.owned <= 1)) closeDetail();
     else if (fits) setSelected({ kind: entry.kind, id: entry.id, source: 'fitted' });
   };
@@ -526,8 +537,8 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
       if (training) return;
       const k = e.key.toLowerCase();
       if ((k === 'q' || k === 'e') && mode === 'shop') {
-        const i = TABS.findIndex((t) => t.kind === tab);
-        setTab(TABS[(i + (k === 'e' ? 1 : TABS.length - 1)) % TABS.length]!.kind);
+        const i = TABS.indexOf(tab);
+        setTab(TABS[(i + (k === 'e' ? 1 : TABS.length - 1)) % TABS.length]!);
       } else if ((k === '[' || k === ']') && roster.length > 1 && pilot) {
         const i = roster.indexOf(pilot);
         pickPilot(roster[(i + (k === ']' ? 1 : roster.length - 1)) % roster.length]!.characterId);
@@ -553,14 +564,14 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
   if (!pilot) {
     return (
       <main class="armoury" data-testid="armoury-screen">
-        <p class="shelf-empty">Nobody in the company yet.</p>
+        <p class="shelf-empty">{t('armoury.nobody')}</p>
         <button
           type="button"
           class="btn go"
           data-testid="to-battle"
           onClick={() => session.closePrep()}
         >
-          Onward
+          {t('armoury.onward')}
         </button>
       </main>
     );
@@ -586,7 +597,7 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
       class={`armoury${isWide ? ' wide' : ''}`}
       data-side={side}
       data-testid="armoury-screen"
-      aria-label="Armoury and workshop"
+      aria-label={t('armoury.label')}
     >
       <header class="armourer-bar" data-testid="armourer-bar">
         <ArmourerEmblem side={side} />
@@ -615,10 +626,11 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
           data-testid="train"
           onClick={() => setTraining('open')}
         >
-          Train{pending > 0 && <span class="pip">{pending}</span>}
+          {t('armoury.train')}
+          {pending > 0 && <span class="pip">{pending}</span>}
         </button>
         <button type="button" class="btn go ab-battle" data-testid="to-battle" onClick={toBattle}>
-          To battle
+          {t('armoury.toBattle')}
         </button>
       </header>
 
@@ -626,7 +638,7 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
         class="pilot-rail"
         role="tablist"
         aria-orientation="vertical"
-        aria-label="Pilots"
+        aria-label={t('armoury.pilots')}
         data-testid="pilot-rail"
         onKeyDown={onRailKey}
       >

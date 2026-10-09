@@ -2,6 +2,7 @@ import type { StatName } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
 import { characterSkills } from '@m1565/content';
 import { summarize } from '../campaign/inventory';
+import { t } from '../i18n';
 import { AttributeBars, MovIcon } from './battle/StatBars';
 import { SkillList } from './SkillList';
 
@@ -34,22 +35,26 @@ export function RosterStats({
     <div class="roster-stats">
       <div class="rs-head">
         {frame && <MovIcon mov={frame.move} />}
-        {points > 0 && <b class="rs-points">{points} points to spend</b>}
+        {points > 0 && <b class="rs-points">{t('roster.pointsToSpend', { n: points })}</b>}
       </div>
       <AttributeBars
         stats={entry.stats}
         geared={geared}
         {...(points > 0 ? { onRaise } : {})}
-        raiseLabel={(label) => `Raise ${label} for ${entry.characterId}`}
+        raiseLabel={(stat) => t('roster.raise', { stat, pilot: entry.characterId })}
       />
       {showAttacks && (
         <ul class="rs-attacks">
-          <li class="ok">Techniques: {learned.length ? learned.join(', ') : 'none yet'}</li>
+          <li class="ok">
+            {t('roster.techniques', {
+              list: learned.length ? learned.join(t('common.listSep')) : t('roster.noTechniques'),
+            })}
+          </li>
         </ul>
       )}
       {skills.length > 0 && (
-        <section class="rs-skills" aria-label="Skills">
-          <h4>Skills</h4>
+        <section class="rs-skills" aria-label={t('roster.skills')}>
+          <h4>{t('roster.skills')}</h4>
           <SkillList skills={skills} level={entry.level} testId="roster-skills" />
         </section>
       )}

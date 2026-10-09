@@ -4,6 +4,7 @@ import { useMemo, useState } from 'preact/hooks';
 import { migrateCampaign } from '../campaign/migrate';
 import { canStartNewGamePlus } from '../campaign/newGamePlus';
 import type { CampaignSave } from '../campaign/types';
+import { t, tParts } from '../i18n';
 import type { SlotId } from '../platform/storage';
 import { readSave, SLOTS } from '../platform/storage';
 import { DifficultyPicker, SaveBadges } from './difficulty';
@@ -20,7 +21,8 @@ interface Props {
   onWatchIntro: () => void;
 }
 
-const slotName = (slot: SlotId, i: number) => (slot === 'auto' ? 'Autosave' : `Slot ${i}`);
+const slotName = (slot: SlotId, i: number) =>
+  slot === 'auto' ? t('save.autosave') : t('save.slot', { n: i });
 
 /** Every slot's save, upgraded to the current format (null if empty or unreadable). */
 function readAll(lib: Library): Record<SlotId, CampaignSave | null> {
@@ -45,10 +47,8 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
   const finished = SLOTS.filter((s) => canStartNewGamePlus(saves[s]));
   return (
     <main class="title-screen">
-      <h1>
-        Armatura <span class="title-year">1565</span>
-      </h1>
-      <p class="subtitle">The Great Siege of Malta</p>
+      <h1>{tParts('title.heading', { year: <span class="title-year">1565</span> })}</h1>
+      <p class="subtitle">{t('title.subtitle')}</p>
       <div class="title-menu">
         {auto && (
           <button
@@ -57,7 +57,7 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
             data-nav-default
             onClick={() => onLoad('auto')}
           >
-            <span>Continue</span>
+            <span>{t('common.continue')}</span>
             <SaveBadges save={auto} />
           </button>
         )}
@@ -68,49 +68,45 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
           data-nav-default={!auto || undefined}
           onClick={() => setPanel('new')}
         >
-          New Game
+          {t('title.newGame')}
         </button>
         {finished.length > 0 && (
           <button type="button" class="btn ghost" onClick={() => setPanel('ngplus')}>
-            New Game+
+            {t('title.newGamePlus')}
           </button>
         )}
         <button type="button" class="btn ghost" onClick={() => setPanel('load')}>
-          Load
+          {t('title.load')}
         </button>
         <button type="button" class="btn ghost" onClick={() => setPanel('settings')}>
-          Settings
+          {t('common.settings')}
         </button>
         <button type="button" class="btn ghost" onClick={() => setPanel('codex')}>
-          Historical notes
+          {t('codex.title')}
         </button>
       </div>
-      <p class="build-note">Prototype build · placeholder art</p>
+      <p class="build-note">{t('title.buildNote')}</p>
 
       {panel === 'settings' && (
         <SettingsPanel onClose={() => setPanel('none')} onWatchIntro={onWatchIntro} />
       )}
       {panel === 'new' && (
-        <div class="modal" role="dialog" aria-label="Choose difficulty">
+        <div class="modal" role="dialog" aria-label={t('title.chooseDifficulty')}>
           <div class="modal-box difficulty-box">
-            <h2>Choose difficulty</h2>
-            <p class="modal-hint">You can change it later from the menu.</p>
+            <h2>{t('title.chooseDifficulty')}</h2>
+            <p class="modal-hint">{t('title.chooseDifficultyHint')}</p>
             <DifficultyPicker balance={lib.balance} onPick={onNew} />
             <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
-              Back
+              {t('common.back')}
             </button>
           </div>
         </div>
       )}
       {panel === 'ngplus' && (
-        <div class="modal" role="dialog" aria-label="New Game+">
+        <div class="modal" role="dialog" aria-label={t('title.newGamePlus')}>
           <div class="modal-box">
-            <h2>New Game+</h2>
-            <p class="modal-hint">
-              Begin the story again with your company: levels, attributes, gear, stores and scudi
-              carry over. Enemies grow stronger with every cycle. The new playthrough autosaves; the
-              finished save is kept unless it is the autosave.
-            </p>
+            <h2>{t('title.newGamePlus')}</h2>
+            <p class="modal-hint">{t('title.ngPlusText')}</p>
             <div class="slots">
               {finished.map((slot) => {
                 const save = saves[slot];
@@ -124,7 +120,10 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
                     <span>{slotName(slot, SLOTS.indexOf(slot))}</span>
                     <span class="slot-detail">
                       <small>
-                        Next: NG+ {(save?.ngPlus ?? 0) + 1} · {describeSave(save)}
+                        {t('title.ngPlusNext', {
+                          n: (save?.ngPlus ?? 0) + 1,
+                          save: describeSave(save),
+                        })}
                       </small>
                       <SaveBadges save={save} />
                     </span>
@@ -133,7 +132,7 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
               })}
             </div>
             <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
-              Back
+              {t('common.back')}
             </button>
           </div>
         </div>
@@ -142,9 +141,9 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
         <CodexScreen completedBattles={battlesWonInSaves()} onClose={() => setPanel('none')} />
       )}
       {panel === 'load' && (
-        <div class="modal" role="dialog" aria-label="Load game">
+        <div class="modal" role="dialog" aria-label={t('title.loadGame')}>
           <div class="modal-box">
-            <h2>Load</h2>
+            <h2>{t('title.load')}</h2>
             <div class="slots">
               {SLOTS.map((slot, i) => {
                 const save = saves[slot];
@@ -166,7 +165,7 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
               })}
             </div>
             <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
-              Back
+              {t('common.back')}
             </button>
           </div>
         </div>

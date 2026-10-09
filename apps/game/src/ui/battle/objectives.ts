@@ -1,5 +1,6 @@
 import type { BattleState } from '@m1565/core';
 import { findUnit } from '@m1565/core';
+import { t } from '../../i18n';
 
 /** Plain-language win and loss conditions for the battle HUD. */
 export function describeObjectives(state: BattleState): { win: string; lose: string } {
@@ -8,18 +9,24 @@ export function describeObjectives(state: BattleState): { win: string; lose: str
     .map((v) => {
       switch (v.type) {
         case 'rout':
-          return 'Defeat all enemies';
+          return t('objective.rout');
         case 'defeatLeader':
-          return `Defeat ${name(v.unitId)}`;
+          return t('objective.defeatLeader', { name: name(v.unitId) });
         case 'survive':
-          return `Hold out for ${v.rounds} rounds`;
+          return t('objective.survive', { n: v.rounds });
         case 'escape':
-          return `Get ${name(v.unitId)} to the gold tiles`;
+          return t('objective.escape', { name: name(v.unitId) });
       }
     })
-    .join(' or ');
-  const lose = ['all your units fall', ...state.defeat.map((d) => `${name(d.unitId)} falls`)].join(
-    ' or ',
-  );
+    .join(t('objective.or'));
+  const lose = [
+    t('objective.allFall'),
+    ...state.defeat.map((d) => t('objective.unitFalls', { name: name(d.unitId) })),
+  ].join(t('objective.or'));
   return { win, lose };
+}
+
+/** The tile readout: height, cover and terrain, e.g. "1H 10% Field". */
+export function terrainLabel(height: number, terrain: { avoid: number; name: string }): string {
+  return t('battle.terrainLabel', { height, avoid: terrain.avoid, terrain: terrain.name });
 }

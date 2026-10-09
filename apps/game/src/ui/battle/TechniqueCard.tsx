@@ -1,32 +1,9 @@
 import type { Attack, PilotStats, Weapon } from '@m1565/core';
-import { attackRange, RANGED_STYLES } from '@m1565/core';
-import { requirementText } from './attackText';
+import { attackRange } from '@m1565/core';
+import { t } from '../../i18n';
+import { rangeText, requirementText, techniqueEffects } from './attackText';
 
-/** What a technique does, in plain words (e.g. "Strikes twice", "Ignores half of DEF"). */
-export function techniqueEffects(a: Attack): string[] {
-  const out: string[] = [];
-  const hits = a.hits ?? 1;
-  if (hits > 1)
-    out.push(`Strikes ${hits === 2 ? 'twice' : `${hits} times`}, each blow rolled separately`);
-  if (a.pierce)
-    out.push(
-      a.pierce >= 0.99
-        ? "Ignores the target's DEF"
-        : a.pierce >= 0.5
-          ? `Ignores ${a.pierce === 0.5 ? 'half' : `${Math.round(a.pierce * 100)}%`} of the target's DEF`
-          : `Ignores ${Math.round(a.pierce * 100)}% of the target's DEF`,
-    );
-  if (a.fatigue) out.push(`Tires the target: +${a.fatigue} FP`);
-  if (a.apDamage) out.push(`Shakes the target: −${a.apDamage} AP for its next actions`);
-  if (a.noCounter) out.push("Can't be answered with Attack back or Counter");
-  if (RANGED_STYLES.has(a.style)) out.push('Ranged: reloading and smoke cost extra FP');
-  if ((a.maxRange ?? 1) >= 2 && !RANGED_STYLES.has(a.style))
-    out.push('Reaches an enemy two tiles away');
-  if (a.power >= 1.3) out.push('Heavy: a big wind-up, very tiring');
-  if (a.accuracy >= 10) out.push('Accurate: easier to land');
-  else if (a.accuracy <= -25) out.push('Wild: hard to land');
-  return out;
-}
+export { techniqueEffects };
 
 /**
  * A technique explained in full: description, plain-language effects and every number. Used in
@@ -48,7 +25,6 @@ export function TechniqueCard({
   compact?: boolean;
 }) {
   const r = attackRange(attack, weapon);
-  const range = r.min === r.max ? `${r.max}` : `${r.min}–${r.max}`;
   const hits = attack.hits ?? 1;
   const req = requirementText(attack, stats);
   const effects = techniqueEffects(attack);
@@ -56,7 +32,7 @@ export function TechniqueCard({
     <div class={`tech-card${compact ? ' compact' : ''}`}>
       <div class="tc-head">
         <strong class="tc-name">{attack.name}</strong>
-        <span class="tc-style">{attack.style}</span>
+        <span class="tc-style">{t(`attackStyle.${attack.style}`)}</span>
       </div>
       {attack.description && <p class="tc-desc">{attack.description}</p>}
       {effects.length > 0 && (
@@ -68,32 +44,32 @@ export function TechniqueCard({
       )}
       <dl class="tc-numbers">
         <div>
-          <dt>Power</dt>
+          <dt>{t('tech.power')}</dt>
           <dd>
             {Math.round(attack.power * 100)}%{hits > 1 ? ` ×${hits}` : ''}
           </dd>
         </div>
         <div>
-          <dt>Hit</dt>
+          <dt>{t('tech.hit')}</dt>
           <dd>
             {attack.accuracy > 0 ? '+' : attack.accuracy < 0 ? '−' : '±'}
             {Math.abs(attack.accuracy)}%
           </dd>
         </div>
         <div>
-          <dt>AP</dt>
+          <dt>{t('stat.ap')}</dt>
           <dd>{attack.apCost}</dd>
         </div>
         <div>
-          <dt>FP</dt>
+          <dt>{t('stat.fp')}</dt>
           <dd>{fpCost}</dd>
         </div>
         <div>
-          <dt>Range</dt>
-          <dd>{range}</dd>
+          <dt>{t('tech.range')}</dt>
+          <dd>{rangeText(r.min, r.max)}</dd>
         </div>
       </dl>
-      {!compact && req && <p class="tc-req">Needs {req}</p>}
+      {!compact && req && <p class="tc-req">{t('tech.needs', { requirements: req })}</p>}
     </div>
   );
 }

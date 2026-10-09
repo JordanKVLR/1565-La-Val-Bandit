@@ -1,17 +1,14 @@
 import type { Library, RosterEntry } from '@m1565/content';
 import type { ItemKind } from '../../campaign/inventory';
-import { bonusText } from '../battle/statInfo';
+import { t } from '../../i18n';
+import { bonusParts } from '../battle/statInfo';
 import { ItemIcon } from './ItemIcon';
 import type { Mode, ShelfEntry, ShelfSection } from './model';
 import { headlineDelta, iconVariant, nameOf, previewFor } from './model';
 import { CoinGlyph, TierBadge } from './parts';
 
-export const TABS: readonly { kind: ItemKind; label: string; short: string }[] = [
-  { kind: 'weapon', label: 'Weapons', short: 'Arms' },
-  { kind: 'charm', label: 'Charms', short: 'Charms' },
-  { kind: 'amulet', label: 'Amulets', short: 'Amulets' },
-  { kind: 'frame', label: 'Armaturas', short: 'Harness' },
-];
+/** The shelf tabs, in order (names: `shelf.tab.<kind>`, short ones `shelf.tabShort.<kind>`). */
+export const TABS: readonly ItemKind[] = ['weapon', 'charm', 'amulet', 'frame'];
 
 /** The test id part of an entry: pilot-held items are distinct per holder. */
 export const cardId = (e: Pick<ShelfEntry, 'kind' | 'id' | 'holderId'>) =>
@@ -29,22 +26,31 @@ const TAB_ICON: Record<ItemKind, { kind: 'weapon' | 'frame' | 'charm' | 'amulet'
 };
 
 function emptyText(tab: ItemKind, mode: Mode): string {
-  if (mode === 'sell')
-    return "No spares to sell. Fitted gear can't be sold, and armaturas are never traded.";
-  if (tab === 'frame')
-    return 'No spare armaturas. New harnesses are won in the story or salvaged after victories.';
-  return 'Nothing on this shelf yet. Win battles to unlock stock.';
+  if (mode === 'sell') return t('shelf.emptySell');
+  if (tab === 'frame') return t('shelf.emptyFrames');
+  return t('shelf.empty');
 }
 
-/** The chips on a card: up to three bonuses, or the frame's HP and MOV. */
-function chips(lib: Library, e: ShelfEntry): string[] {
-  const parts = bonusText(e.bonus)
-    .split(' · ')
-    .filter(Boolean)
-    .sort((a, b) => Math.abs(parseInt(b.slice(3))) - Math.abs(parseInt(a.slice(3))));
+interface Chip {
+  readonly text: string;
+  /** A penalty, drawn differently (and marked with a minus). */
+  readonly neg: boolean;
+}
+
+/** The chips on a card: up to three bonuses (largest first), or the frame's HP and MOV. */
+function chips(lib: Library, e: ShelfEntry): Chip[] {
+  const parts = bonusParts(e.bonus)
+    .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+    .map((p) => ({ text: p.text, neg: p.value < 0 }));
   if (e.kind === 'frame') {
     const f = lib.frames.get(e.id);
-    return f ? [`HP ${f.hp}`, `MOV ${f.move}`, ...parts.slice(0, 2)] : parts;
+    return f
+      ? [
+          { text: t('stat.hpValue', { n: f.hp }), neg: false },
+          { text: t('stat.movValue', { n: f.move }), neg: false },
+          ...parts.slice(0, 2),
+        ]
+      : parts;
   }
   return parts.slice(0, 3);
 }
@@ -53,25 +59,34 @@ function foot(lib: Library, e: ShelfEntry, mode: Mode) {
   if (mode === 'sell')
     return (
       <span class="ic-price">
-        <CoinGlyph /> Sell · {e.sellPrice ?? 0}
+        <CoinGlyph /> {t('shelf.sellPrice', { n: e.sellPrice ?? 0 })}
       </span>
     );
   switch (e.source) {
     case 'fitted':
-      return <span class="ic-stamp">✠ Fitted</span>;
+      return <span class="ic-stamp">✠ {t('shelf.fitted')}</span>;
     case 'stores':
-      return <span class="ic-owned">×{e.owned} in stores</span>;
+      return <span class="ic-owned">{t('shelf.inStores', { n: e.owned })}</span>;
     case 'pilot':
-      return <span class="ic-owned">On {nameOf(lib, e.holderId ?? '')}</span>;
+      return (
+        <span class="ic-owned">
+          {t('armoury.onPilot', { pilot: nameOf(lib, e.holderId ?? '') })}
+        </span>
+      );
     case 'shop':
       return (
         <span class="ic-price">
           <CoinGlyph /> {e.price ?? 0}
-          {e.owned > 0 && <small> · ×{e.owned} owned</small>}
+          {e.owned > 0 && (
+            <small>
+              {t('common.sep')}
+              {t('shelf.owned', { n: e.owned })}
+            </small>
+          )}
         </span>
       );
     case 'unusable':
-      return <span class="ic-owned">Other side</span>;
+      return <span class="ic-owned">{t('shelf.otherSide')}</span>;
   }
 }
 
@@ -101,19 +116,25 @@ function ItemCard({
         })()
       : null;
   const cs = chips(lib, entry);
-  const tierWord = entry.tier ?? lib.frames.get(entry.id)?.class ?? '';
+  const frameClass = lib.frames.get(entry.id)?.class;
+  const tierWord = entry.tier
+    ? t(`tierWord.${entry.tier}`)
+    : frameClass
+      ? t(`frameClass.${frameClass}`)
+      : '';
+  const sep = t('common.listSep');
   const label = [
     entry.name,
     tierWord,
-    cs.join(', '),
-    entry.source === 'shop' && mode === 'shop' ? `${entry.price} scudi` : null,
-    mode === 'sell' ? `sells for ${entry.sellPrice} scudi` : null,
-    entry.source === 'fitted' ? 'fitted' : null,
+    cs.map((c) => c.text).join(sep),
+    entry.source === 'shop' && mode === 'shop' ? t('armoury.scudi', { n: entry.price ?? 0 }) : null,
+    mode === 'sell' ? t('shelf.cardSellsFor', { n: entry.sellPrice ?? 0 }) : null,
+    entry.source === 'fitted' ? t('shelf.cardFitted') : null,
     hint,
-    entry.blocked ? `unavailable: ${entry.blocked}` : null,
+    entry.blocked ? t('shelf.cardUnavailable', { reason: entry.blocked }) : null,
   ]
     .filter(Boolean)
-    .join(', ');
+    .join(sep);
   return (
     <button
       type="button"
@@ -148,8 +169,8 @@ function ItemCard({
           <span class="ic-reason">{entry.blocked}</span>
         ) : (
           cs.map((c) => (
-            <span key={c} class={`chip${/-\d/.test(c) ? ' neg' : ''}`}>
-              {c}
+            <span key={c.text} class={`chip${c.neg ? ' neg' : ''}`}>
+              {c.text}
             </span>
           ))
         )}
@@ -194,14 +215,13 @@ export function Shelf({
   onMode: (mode: Mode) => void;
   onSelect: (entry: ShelfEntry) => void;
 }) {
-  const active = TABS.find((t) => t.kind === tab)!;
   const onTabKey = (e: KeyboardEvent) => {
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     e.preventDefault();
-    const i = TABS.findIndex((t) => t.kind === tab);
+    const i = TABS.indexOf(tab);
     const next = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length]!;
-    onTab(next.kind);
-    document.getElementById(`shelf-tab-${next.kind}`)?.focus();
+    onTab(next);
+    document.getElementById(`shelf-tab-${next}`)?.focus();
   };
   const onGridKey = (e: KeyboardEvent) => {
     const grid = e.currentTarget as HTMLElement;
@@ -236,37 +256,37 @@ export function Shelf({
     <section
       class={`ar-panel shelf${mode === 'sell' ? ' selling' : ''}`}
       data-testid="shelf"
-      aria-label="Shelf"
+      aria-label={t('shelf.label')}
     >
       <div class="shelf-head">
         {mode === 'shop' ? (
-          <div class="shelf-tabs" role="tablist" aria-label="Item kinds" onKeyDown={onTabKey}>
-            {TABS.map((t) => (
+          <div class="shelf-tabs" role="tablist" aria-label={t('shelf.kinds')} onKeyDown={onTabKey}>
+            {TABS.map((kind) => (
               <button
-                key={t.kind}
-                id={`shelf-tab-${t.kind}`}
+                key={kind}
+                id={`shelf-tab-${kind}`}
                 type="button"
                 role="tab"
-                aria-selected={t.kind === tab}
+                aria-selected={kind === tab}
                 aria-controls="shelf-panel"
-                tabIndex={t.kind === tab ? 0 : -1}
-                class={`shelf-tab${t.kind === tab ? ' on' : ''}`}
-                data-testid={`shelf-tab-${t.kind}`}
-                onClick={() => onTab(t.kind)}
+                tabIndex={kind === tab ? 0 : -1}
+                class={`shelf-tab${kind === tab ? ' on' : ''}`}
+                data-testid={`shelf-tab-${kind}`}
+                onClick={() => onTab(kind)}
               >
                 <ItemIcon
-                  kind={TAB_ICON[t.kind].kind}
-                  variant={TAB_ICON[t.kind].v}
+                  kind={TAB_ICON[kind].kind}
+                  variant={TAB_ICON[kind].v}
                   size={22}
                   title=""
                 />
-                <span class="tl-long">{t.label}</span>
-                <span class="tl-short">{t.short}</span>
+                <span class="tl-long">{t(`shelf.tab.${kind}`)}</span>
+                <span class="tl-short">{t(`shelf.tabShort.${kind}`)}</span>
               </button>
             ))}
           </div>
         ) : (
-          <h3 class="shelf-sell-title">Sell spares (half price)</h3>
+          <h3 class="shelf-sell-title">{t('shelf.sellTitle')}</h3>
         )}
         <button
           type="button"
@@ -275,14 +295,14 @@ export function Shelf({
           data-testid="shelf-mode-sell"
           onClick={() => onMode(mode === 'sell' ? 'shop' : 'sell')}
         >
-          <CoinGlyph /> {mode === 'sell' ? 'Done selling' : 'Sell spares'}
+          <CoinGlyph /> {mode === 'sell' ? t('shelf.doneSelling') : t('shelf.sellSpares')}
         </button>
       </div>
       <div
         id="shelf-panel"
         class="shelf-grid"
         role="listbox"
-        aria-label={mode === 'sell' ? 'Spares to sell' : active.label}
+        aria-label={mode === 'sell' ? t('shelf.sparesToSell') : t(`shelf.tab.${tab}`)}
         onKeyDown={onGridKey}
       >
         {empty && (

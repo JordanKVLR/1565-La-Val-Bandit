@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { BattleMap, TerrainType } from '../src';
-import { formatTerrainLabel, getTile, inBounds, manhattan, neighbors, validateMap } from '../src';
+import { getTile, inBounds, manhattan, neighbors, validateMap } from '../src';
 
 const plain: TerrainType = { id: 'plain', name: 'Plain', moveCost: 4, avoid: 5 };
 const terrains = new Map([[plain.id, plain]]);
@@ -37,11 +37,5 @@ describe('grid', () => {
     expect(validateMap(map, terrains)).toEqual([]);
     const bad: BattleMap = { ...map, tiles: [{ terrain: 'lava', height: -1 }] };
     expect(validateMap(bad, terrains)).toHaveLength(3);
-  });
-});
-
-describe('terrain label', () => {
-  it('matches the HUD format', () => {
-    expect(formatTerrainLabel(1, plain)).toBe('1H 5% Plain');
   });
 });

@@ -3,6 +3,7 @@ import { loadLibrary } from '@m1565/content';
 import type { FigureSpec } from '../../render/Armatura';
 import { figureSpec } from '../../render/Armatura';
 import { genericPortraitId } from '../../render/art';
+import { t } from '../../i18n';
 
 /**
  * Pieces of the classic tactical-RPG battle look: framed panels with AP/FP/HP bars labelled
@@ -41,7 +42,7 @@ export function unitFigure(unit: UnitState, accent: string): FigureSpec {
 
 /** Name of a charm or amulet by id, or "No charm" / "No amulet". */
 export function gearName(id: string | null, slot: 'charm' | 'amulet'): string {
-  if (!id) return slot === 'charm' ? 'No charm' : 'No amulet';
+  if (!id) return slot === 'charm' ? t('gear.noCharm') : t('gear.noAmulet');
   lib ??= loadLibrary();
   return lib.gear.get(id)?.name ?? id;
 }
@@ -109,9 +110,9 @@ export function VbBars({
 }) {
   return (
     <div class="vb-bars">
-      <VbBar label="AP" value={unit.ap} max={balance.apMax} kind="ap" delta={-ap} />
-      <VbBar label="FP" value={unit.fp} max={balance.fpMax} kind="fp" delta={fp} />
-      <VbBar label="HP" value={unit.hp} max={unit.maxHp} kind="hp" />
+      <VbBar label={t('stat.ap')} value={unit.ap} max={balance.apMax} kind="ap" delta={-ap} />
+      <VbBar label={t('stat.fp')} value={unit.fp} max={balance.fpMax} kind="fp" delta={fp} />
+      <VbBar label={t('stat.hp')} value={unit.hp} max={unit.maxHp} kind="hp" />
     </div>
   );
 }

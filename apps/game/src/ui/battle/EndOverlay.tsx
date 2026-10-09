@@ -1,3 +1,5 @@
+import { t } from '../../i18n';
+
 interface Props {
   outcome: 'victory' | 'defeat';
   onRetry: () => void;
@@ -11,20 +13,17 @@ export function EndOverlay({
   outcome,
   onRetry,
   onContinue,
-  continueLabel = 'Continue',
+  continueLabel = t('common.continue'),
   retryNote,
 }: Props) {
+  const title = outcome === 'victory' ? t('battle.victory') : t('battle.defeat');
   return (
-    <div
-      class={`end-overlay ${outcome}`}
-      role="dialog"
-      aria-label={outcome === 'victory' ? 'Victory' : 'Defeat'}
-    >
-      <h2>{outcome === 'victory' ? 'Victory' : 'Defeat'}</h2>
+    <div class={`end-overlay ${outcome}`} role="dialog" aria-label={title}>
+      <h2>{title}</h2>
       <div class="end-actions">
         {outcome === 'defeat' && (
           <button type="button" class="btn" onClick={onRetry}>
-            Retry battle
+            {t('battle.retry')}
           </button>
         )}
         <button
@@ -32,7 +31,7 @@ export function EndOverlay({
           class={`btn ${outcome === 'defeat' ? 'ghost' : ''}`}
           onClick={onContinue}
         >
-          {outcome === 'victory' ? continueLabel : 'Give up'}
+          {outcome === 'victory' ? continueLabel : t('battle.giveUp')}
         </button>
       </div>
       {outcome === 'defeat' && retryNote && <p class="end-note">{retryNote}</p>}
