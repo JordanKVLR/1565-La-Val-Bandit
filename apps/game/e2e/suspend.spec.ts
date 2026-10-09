@@ -23,8 +23,10 @@ test('a killed game resumes on the same story line and after the same battle mov
   await expect(page.getByTestId('chapter-card')).toBeVisible();
   for (let i = 0; i < 7; i++) await page.keyboard.press('Enter');
   const line = page.getByTestId('dialogue-text');
-  await expect(line).not.toBeEmpty();
+  // Wait for the typewriter to finish the line (the ▼ marker), then remember it.
+  await expect(page.locator('.dlg-next')).toBeVisible();
   const said = await line.textContent();
+  expect(said).toBeTruthy();
 
   // The app is hidden (suspend): it saves, holds sound and gameplay, and marks the page.
   await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));

@@ -48,7 +48,7 @@ describe('resuming after a kill', () => {
     expect(lineOf(relaunch())).toBe(lineOf(s));
   });
 
-  it('a battle resumes from the latest command, and flush rewrites it', () => {
+  it('a battle resumes from the latest command; flush retries a snapshot that failed', () => {
     const s = new GameSession(lib, undefined, { difficulty: 'knight' });
     playUntil(s, (v) => v.screen.kind === 'battle');
     const screen = s.state.screen;
@@ -58,15 +58,28 @@ describe('resuming after a kill', () => {
       return sc.kind === 'battle' ? (sc.initial?.round ?? null) : null;
     };
     // A snapshot as the battle screen hands it over after a command: here, a later round.
-    s.saveBattleProgress({ ...createBattle(screen.setup).state, round: 3 });
+    const start = createBattle(screen.setup).state;
+    s.saveBattleProgress({ ...start, round: 3 });
     expect(resumedAt(relaunch())).toBe(3);
-    // Something else overwrote the autosave (say, a battle start written by an older path):
-    // the suspend hook writes the latest snapshot again.
-    s.autosave();
-    expect(relaunch().state.screen).toMatchObject({ kind: 'battle' });
-    expect(resumedAt(relaunch())).toBeNull();
+    // The next snapshot can't be written (storage busy or full)…
+    const real = platform.storage;
+    setStorageBackend({
+      getItem: (k) => real.get(k) ?? null,
+      setItem: () => {
+        throw new Error('QuotaExceededError');
+      },
+      removeItem: (k) => void real.delete(k),
+    });
+    s.saveBattleProgress({ ...start, round: 4 });
+    setStorageBackend(null);
+    expect(resumedAt(relaunch())).toBe(3);
+    // …so the suspend hook writes it when the app is sent to the background.
     s.flush();
-    expect(resumedAt(relaunch())).toBe(3);
+    expect(resumedAt(relaunch())).toBe(4);
+    // With everything saved, a flush writes nothing.
+    const saved = real.get(saveKey('auto'));
+    s.flush();
+    expect(real.get(saveKey('auto'))).toBe(saved);
   });
 
   it('flush in a battle without a snapshot leaves the autosave alone', () => {
@@ -77,11 +90,22 @@ describe('resuming after a kill', () => {
     expect(platform.storage.get(saveKey('auto'))).toBe(before);
   });
 
-  it('flush on the story screen saves the current line', () => {
+  it('flush on the story screen saves a line whose write failed', () => {
     const s = new GameSession(lib, undefined, { difficulty: 'knight' });
     s.advance();
-    platform.storage.clear();
+    const real = platform.storage;
+    setStorageBackend({
+      getItem: (k) => real.get(k) ?? null,
+      setItem: () => {
+        throw new Error('storage busy');
+      },
+      removeItem: (k) => void real.delete(k),
+    });
+    s.advance();
+    setStorageBackend(null);
+    expect(lineOf(relaunch())).not.toBe(lineOf(s));
     s.flush();
+    expect(lineOf(relaunch())).toBe(lineOf(s));
     expect(readSave<CampaignSave>('auto')?.lastStep).toMatchObject({ kind: 'line' });
   });
 

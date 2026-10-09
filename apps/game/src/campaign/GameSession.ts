@@ -87,6 +87,8 @@ export class GameSession {
   private lastStep: StoryStep | null = null;
   /** The latest mid-battle snapshot, for the suspend hook (`flush`). */
   private battleSnapshot: { readonly key: number; readonly state: BattleState } | null = null;
+  /** Whether anything changed since the autosave was last written successfully. */
+  private dirty = true;
 
   /**
    * Resumes `save`, or starts a new playthrough with `start` (difficulty, and for New Game+ the
@@ -383,17 +385,19 @@ export class GameSession {
     const screen = this.state.screen;
     if (screen.kind !== 'battle') return;
     this.battleSnapshot = { key: screen.key, state };
+    this.dirty = true;
     this.write('auto', { id: screen.battleId, state });
   }
 
   /**
-   * Suspend/quit hook (platform/lifecycle): writes the latest progress again, so whatever the
-   * player sees now is what Continue resumes. In battle that is the latest snapshot; without one
+   * Suspend/quit hook (platform/lifecycle): writes any progress not saved yet (a failed or
+   * skipped write), so whatever the player sees now is what Continue resumes. In battle that is the latest snapshot; without one
    * the autosave already holds the battle's start, and is left alone.
    */
   flush(): void {
     const screen = this.state.screen;
-    if (screen.kind === 'title') return;
+    // Everything is saved as it happens; this only retries what has not been written yet.
+    if (!this.dirty || screen.kind === 'title') return;
     if (screen.kind === 'battle') {
       const snap = this.battleSnapshot;
       if (snap?.key === screen.key) this.write('auto', { id: screen.battleId, state: snap.state });
@@ -586,6 +590,7 @@ export class GameSession {
   }
 
   private patch(p: Partial<SessionView>): void {
+    this.dirty = true;
     this.view.set({ ...this.view.get(), ...p });
   }
 
@@ -610,7 +615,9 @@ export class GameSession {
       ending: s.ending,
       ...(Object.keys(s.kit).length ? { kit: s.kit } : {}),
     };
-    return writeSave(slot, save);
+    const ok = writeSave(slot, save);
+    if (ok && slot === 'auto') this.dirty = false;
+    return ok;
   }
 }
 
