@@ -1,6 +1,6 @@
 import { loadDisplayConfig } from '@m1565/content';
 import { describe, expect, it } from 'vitest';
-import type { DisplayEnvironment } from './displayMode';
+import type { DisplayEnvironment, DisplaySetting } from './displayMode';
 import { resolveDisplayMode, tvZoom } from './displayMode';
 
 const cfg = loadDisplayConfig();
@@ -33,6 +33,12 @@ describe('display mode', () => {
   it('honours a forced choice whatever the screen and input', () => {
     expect(resolveDisplayMode('tv', env('pointer', 851, 393), cfg)).toBe('tv');
     expect(resolveDisplayMode('handheld', env('gamepad', 3840, 2160), cfg)).toBe('handheld');
+  });
+
+  it('treats an unknown stored setting as Auto', () => {
+    const stale = 'tenfoot' as DisplaySetting;
+    expect(resolveDisplayMode(stale, env('gamepad', 1920, 1080), cfg)).toBe('tv');
+    expect(resolveDisplayMode(stale, env('pointer', 1920, 1080), cfg)).toBe('handheld');
   });
 
   it('thresholds come from the data', () => {

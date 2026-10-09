@@ -46,7 +46,9 @@
  * screen grows into the margin behind a transparent border as wide as the margin, so its
  * background reaches the edge while its padding box (where its content goes) is the safe area.
  */
-:root[data-display='tv'] #app > :is(main, .intro-screen) {
+/* Full-screen overlays inside a screen (close-up, end of battle, chapter cards) do the same. */
+:root[data-display='tv'] #app > :is(main, .intro-screen),
+:root[data-display='tv'] :is(.closeup, .end-overlay, .chapter-card, .stage-blank) {
   position: absolute;
   inset: calc(-1 * var(--tv-safe-y)) calc(-1 * var(--tv-safe-x));
   width: auto;
@@ -126,4 +128,12 @@
 :root[data-display='tv'] .facing-now,
 :root[data-display='tv'] .vb-cmd small.why {
   font-size: 0.75rem;
+}
+
+/* The duel close-up's scene runs out to the edges too (its dialogue bar stays inside). */
+:root[data-display='tv'] .cu-canvas {
+  top: calc(-1 * var(--tv-safe-y));
+  left: calc(-1 * var(--tv-safe-x));
+  width: calc(100% + 2 * var(--tv-safe-x));
+  height: calc(100% + var(--tv-safe-y));
 }

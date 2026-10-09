@@ -4,7 +4,7 @@ import { Store } from '../state/store';
 import type { DisplayMode } from './displayMode';
 import { resolveDisplayMode, tvZoom } from './displayMode';
 import type { InputDevice } from './input/controls';
-import { inputDevice } from './input/device';
+import { inputDevice, setInputDevice } from './input/device';
 
 /**
  * Applies the display mode to the page (ADR 0010): `<html data-display="tv|handheld">`, the
@@ -28,6 +28,8 @@ function rememberedInput(): InputDevice {
 export function installDisplay(): () => void {
   const root = document.documentElement;
   let lastInput = rememberedInput();
+  // A pad player starts with pad prompts, and the first mouse or key press counts as a change.
+  if (lastInput === 'gamepad') setInputDevice('gamepad');
 
   const apply = () => {
     const width = window.innerWidth;
