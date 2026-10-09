@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BattleState, Skill, SkillContext, SkillEffect, UnitSpec } from '../src';
+import type { BattleState, PilotStats, Skill, SkillContext, SkillEffect, UnitSpec } from '../src';
 import {
   activeSkills,
   applyCommand,
@@ -20,6 +20,8 @@ import {
 } from '../src';
 import { GUN, makeMap, setup, unit } from './fixtures';
 
+type Over = Partial<Omit<UnitSpec, 'stats'>> & { stats?: Partial<PilotStats> };
+
 let n = 0;
 function skill(effect: SkillEffect, level = 1): Skill {
   n += 1;
@@ -32,8 +34,8 @@ function skill(effect: SkillEffect, level = 1): Skill {
  */
 function duel(
   opts: {
-    a?: Partial<UnitSpec>;
-    t?: Partial<UnitSpec>;
+    a?: Over;
+    t?: Over;
     extra?: UnitSpec[];
     heights?: string[];
   } = {},
