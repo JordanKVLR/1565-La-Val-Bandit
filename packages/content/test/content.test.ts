@@ -3,6 +3,8 @@ import type { BattleId } from '../src';
 import {
   attackPool,
   battleSalvage,
+  characterSkills,
+  loadSkillBook,
   battleSources,
   BattleSourceSchema,
   buildBattle,
@@ -12,7 +14,7 @@ import {
   loadTerrains,
   mapSources,
 } from '../src';
-import { createBattle, DEFAULT_BALANCE } from '@m1565/core';
+import { activeSkills, createBattle, DEFAULT_BALANCE } from '@m1565/core';
 import castData from '../data/cast.json';
 
 describe('content', () => {
@@ -243,5 +245,75 @@ describe('armaturas and weapon progression', () => {
         expect([...tiers].sort(), `${route} ${side}`).toEqual(['common', 'fine', 'masterwork']);
       }
     }
+  });
+});
+
+describe('pilot skills', () => {
+  const lib = loadLibrary();
+
+  it('give every named character three skills at rising levels, all distinct', () => {
+    const seen = new Set<string>();
+    for (const id of lib.characters.keys()) {
+      const skills = characterSkills(lib, id);
+      expect(
+        skills.map((s) => s.level),
+        id,
+      ).toEqual([1, 5, 10]);
+      for (const s of skills) {
+        expect(seen.has(s.id), `${s.id} is given twice`).toBe(false);
+        seen.add(s.id);
+      }
+    }
+    expect(lib.skills.size).toBeGreaterThanOrEqual(20);
+    expect(lib.skills.size).toBeLessThanOrEqual(30);
+  });
+
+  it('only assigns skills to real characters, with short plain descriptions', () => {
+    for (const id of lib.skillSets.keys()) expect(lib.characters.has(id), id).toBe(true);
+    for (const s of lib.skills.values()) {
+      expect(s.description.length, s.id).toBeLessThanOrEqual(140);
+      const sentences = s.description.split(/[.!?](?:\s|$)/).filter((x) => x.trim());
+      expect(sentences.length, s.id).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('rejects unknown skills and out-of-order unlocks', () => {
+    const skills = [{ id: 'x', name: 'X', description: 'X.', effect: { type: 'regen', hp: 1 } }];
+    expect(() =>
+      loadSkillBook({ skills, characters: { ninu: [{ skill: 'nope', level: 1 }] } }),
+    ).toThrow(/unknown skill/);
+    expect(() =>
+      loadSkillBook({
+        skills,
+        characters: {
+          ninu: [
+            { skill: 'x', level: 5 },
+            { skill: 'x', level: 5 },
+          ],
+        },
+      }),
+    ).toThrow(/rising levels/);
+    const huge = [{ ...skills[0], effect: { type: 'regen', hp: 99 } }];
+    expect(() => loadSkillBook({ skills: huge, characters: {} })).toThrow();
+  });
+
+  it('reach named units in battle, locked until their level', () => {
+    const { state } = createBattle(loadBattle('b1-marsaxlokk'));
+    const ninu = state.units.find((u) => u.characterId === 'ninu')!;
+    expect(ninu.skills.map((s) => s.id)).toEqual(characterSkills(lib, 'ninu').map((s) => s.id));
+    expect(activeSkills(ninu).map((s) => s.id)).toEqual(['medallion-promise']);
+  });
+
+  it('can be given to generic units from battle JSON', () => {
+    const base = battleSources['b1-marsaxlokk'] as { units: Array<Record<string, unknown>> };
+    const generic = base.units.find((u) => !u.character)!;
+    const others = base.units.filter((u) => u !== generic);
+    const withSkills = (skills: string[]) =>
+      BattleSourceSchema.parse({ ...base, units: [...others, { ...generic, skills }] });
+    const spec = buildBattle(withSkills(['keen-eyes']), lib).units.find(
+      (u) => u.id === generic.id,
+    )!;
+    expect(spec.skills?.map((s) => [s.id, s.level])).toEqual([['keen-eyes', 1]]);
+    expect(() => buildBattle(withSkills(['nope']), lib)).toThrow(/unknown skill/);
   });
 });

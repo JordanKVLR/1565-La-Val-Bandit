@@ -49,6 +49,10 @@ test('the Armoury fits on one screen, buys and fits a weapon, sells a spare and 
   // Unspent stat points: the first To battle offers training, Spend later moves on.
   await page.getByTestId('to-battle').click();
   await expect(page.getByTestId('training-sheet')).toBeVisible();
+  // Skills are listed; ones not reached yet are locked with the level they unlock at.
+  const skills = page.getByTestId('roster-skills');
+  await expect(skills.locator('.skill-row.active').first()).toBeAttached();
+  await expect(skills.locator('.skill-row.locked').first()).toContainText(/Unlocks at Lv \d+/);
   await page.getByRole('button', { name: 'Spend later' }).click();
   await expect(page.getByTestId('armoury-screen')).toBeHidden();
   expect(errors).toEqual([]);

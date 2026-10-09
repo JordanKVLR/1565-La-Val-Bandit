@@ -278,6 +278,7 @@ function TrainingSheet({
             lib={lib}
             entry={entry}
             showAttacks
+            showSkills
             onRaise={(stat) => onRaise(entry.characterId, stat)}
           />
         </div>

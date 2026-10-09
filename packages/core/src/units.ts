@@ -2,6 +2,8 @@ import type { Attack } from './attacks';
 import { starterAttacks } from './attacks';
 import type { BalanceConfig } from './balance';
 import type { Coord, Facing } from './grid';
+import type { Skill } from './skills';
+import { moveBonus } from './skills';
 
 export type Side = 'player' | 'enemy';
 export type Controller = 'human' | 'ai';
@@ -82,6 +84,8 @@ export interface UnitSpec {
   readonly amulet?: Gear;
   /** Attacks this frame/weapon combination can learn (besides the two starter attacks). */
   readonly attacks?: readonly Attack[];
+  /** Pilot skills, each active from its own level (ADR 0008). */
+  readonly skills?: readonly Skill[];
   readonly xp?: number;
   /** Unspent stat points carried in from earlier level-ups. */
   readonly statPoints?: number;
@@ -117,6 +121,8 @@ export interface UnitState extends MutableStats {
   gear: PilotStats;
   /** Starter attacks first, then every technique this frame and weapon allow. */
   attacks: Attack[];
+  /** Every pilot skill, locked or not; active ones are those at or below `level`. */
+  skills: Skill[];
   level: number;
   /** XP towards the next level (0 to balance.xpPerLevel - 1). */
   xp: number;
@@ -155,6 +161,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
   const stats = effectiveStats(pilot, bonuses, balance.statMax);
   const gear = sumBonuses(bonuses);
   const hp = maxHpFor(spec.level, stats.bas, spec.frame.hp, balance);
+  const skills = [...(spec.skills ?? [])];
   return {
     id: spec.id,
     characterId: spec.characterId ?? null,
@@ -173,6 +180,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     gear,
     ...stats,
     attacks: [...starterAttacks(spec.weapon), ...(spec.attacks ?? [])],
+    skills,
     level: spec.level,
     xp: spec.xp ?? 0,
     statPoints: spec.statPoints ?? 0,
@@ -180,7 +188,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
     hp,
     ap: balance.apStart,
     fp: 0,
-    mov: spec.frame.move,
+    mov: spec.frame.move + moveBonus({ skills, level: spec.level }),
     pos: { ...spec.at },
     facing: spec.facing,
     defeated: false,

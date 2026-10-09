@@ -965,6 +965,12 @@
 .training-box {
   width: min(640px, 100%);
 }
+/* On short phones the attributes and skills scroll; the pilot arrows and Done stay in view. */
+.training-box .tr-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
 .tr-head {
   display: grid;
   grid-template-columns: 44px 1fr 44px;
@@ -991,6 +997,10 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+.tr-head,
+.tr-foot {
+  flex: none;
 }
 
 /* Coin burst */

@@ -192,6 +192,15 @@ skippable on tap.
   game announces "New technique learned" when raising a stat unlocks one.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.
+- **Skills** (ADR 0008): each named pilot has three passive skills of their own, unlocked at
+  levels 1, 5 and 10 (`packages/content/data/skills.json`, 30 in all). Each has one modest
+  effect, sometimes conditional: more accuracy or damage (from height, from the flank, at range,
+  against wounded or light foes), harder to hit, less damage taken, a stronger or cheaper Defend,
+  cheaper Avoid or techniques, better Counter odds, a little HP back each turn, faster rest, more
+  XP, +1 MOV, +initiative, or +5% hit for adjacent allies. Skills feed the same formulas as
+  everything else, so the forecast shows them. The unit sheet and the Training sheet list them,
+  locked ones greyed with a padlock and "Unlocks at Lv N"; reaching the level announces
+  "New skill".
 - **Armoury**, open between every battle: buys and sells weapons, charms and amulets for
   _scudi_ (spares sell for half price). Armaturas are never sold. Battles pay 150 scudi plus
   60 + 15 × level per enemy defeated, and 100 more for losing nobody. Every weapon type has
@@ -484,8 +493,8 @@ Each milestone ends with a playable build on the web preview, and CI green.
 | **M3** | Battle UX          | Action menu, combat forecast panel, reaction choice, close-up scene, damage FX, turn queue, results                                | ✅ Done                                                                                                |
 | **M4** | Story engine       | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus                     | ✅ Done                                                                                                |
 | **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | ✅ Done                                                                                                |
-| M6     | Progression        | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning                                                | ✅ Done (levels, loadouts, shop; skills still to do)                                                   |
-| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | ✅ Done (24 battles, 3 routes, 3 endings, NG+, 3 difficulty modes: ADR 0007)                           |
+| M6     | Progression        | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning                                                | ✅ Done (levels, loadouts, shop, pilot skills)                                                         |
+| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | ✅ Done (36 battles, 3 routes, 3 endings, NG+, 3 difficulty modes: ADR 0007)                           |
 | M8     | Platform shells    | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves                                                    | 🟡 Shells built (Capacitor Android/iOS, Electron + Steam achievements); store accounts and ads pending |
 | M9     | Polish & launch    | Final art/audio integration, localization, accessibility pass, performance pass, store assets                                      | 🟡 Placeholder audio, help, settings done; final art/audio, gamepad and store assets pending           |
 
