@@ -97,6 +97,28 @@ export function usableAttacks(
   );
 }
 
+/**
+ * Why a reaction or a strike-back technique can't be used. A code with its numbers, never text:
+ * the game words it in the player's language (ADR 0012).
+ */
+export type UnavailableReason =
+  /** The technique can't reach the attacker. */
+  | { readonly code: 'outOfReach' }
+  /** Paying this technique's FP would take the defender past full fatigue. */
+  | { readonly code: 'tooTired'; readonly fpCost: number }
+  /** The defender's FP is full (Spent): it can only do nothing. */
+  | { readonly code: 'spent' }
+  | { readonly code: 'rearNoDefend' }
+  | { readonly code: 'rearNoStrikeBack' }
+  /** The attack has `noCounter`. */
+  | { readonly code: 'unanswerable'; readonly attackName: string }
+  /** No technique reaches the attacker. */
+  | { readonly code: 'attackerOutOfReach' }
+  /** Every technique that reaches would cost too much FP. */
+  | { readonly code: 'tooTiredToStrikeBack' }
+  /** Counter only works against attacks from the front. */
+  | { readonly code: 'frontOnly' };
+
 /** One entry of the reaction menu: every reaction is listed, with why it can't be used. */
 export interface ReactionChoice {
   readonly reaction: Reaction;
@@ -104,7 +126,7 @@ export interface ReactionChoice {
   /** FP this reaction adds to the defender (after SPI). */
   readonly fpCost: number;
   /** Why the reaction is unavailable, for the menu. */
-  readonly reason?: string;
+  readonly reason?: UnavailableReason;
 }
 
 /**
@@ -122,7 +144,7 @@ export interface BackAttackOption {
   /** FP the strike back would cost. */
   readonly fpCost: number;
   /** Why it can't be used, for the menu. */
-  readonly reason?: string;
+  readonly reason?: UnavailableReason;
 }
 
 /**
@@ -140,11 +162,11 @@ export function attackBackOptions(
     .filter((a) => meetsRequirements(stats, a))
     .map((attack) => {
       const fpCost = attackBackFpCost(attack, defender);
-      const reason =
+      const reason: UnavailableReason | undefined =
         attackerPos && !attackInRange(attack, defender.weapon, defender.pos, attackerPos)
-          ? 'Out of reach'
+          ? { code: 'outOfReach' }
           : fpCost > fpLeft
-            ? `Too tired (needs ${fpCost} FP)`
+            ? { code: 'tooTired', fpCost }
             : undefined;
       return { attack, available: reason === undefined, fpCost, ...(reason ? { reason } : {}) };
     });
@@ -221,8 +243,12 @@ export function reactionChoices(
 ): ReactionChoice[] {
   const zone = facingZone(defender.pos, defender.facing, attackerPos);
   const fresh = canAct(state, defender);
-  const spent = 'Too fatigued (FP full)';
-  const choice = (reaction: Reaction, reason: string | undefined): ReactionChoice => ({
+  const spent: UnavailableReason = { code: 'spent' };
+  const unanswerable = (a: Attack): UnavailableReason => ({
+    code: 'unanswerable',
+    attackName: a.name,
+  });
+  const choice = (reaction: Reaction, reason: UnavailableReason | undefined): ReactionChoice => ({
     reaction,
     available: reason === undefined,
     fpCost: reactionFpCost(state, defender, reaction, attackerPos),
@@ -230,30 +256,30 @@ export function reactionChoices(
   });
   const backs = attackBackOptions(state, defender, attackerPos);
   return [
-    choice('defend', !fresh ? spent : zone === 'rear' ? "Can't defend from behind" : undefined),
+    choice('defend', !fresh ? spent : zone === 'rear' ? { code: 'rearNoDefend' } : undefined),
     choice('avoid', !fresh ? spent : undefined),
     choice(
       'attackBack',
       !fresh
         ? spent
         : zone === 'rear'
-          ? "Can't strike back from behind"
+          ? { code: 'rearNoStrikeBack' }
           : attack?.noCounter
-            ? `${attack.name} can't be answered`
+            ? unanswerable(attack)
             : backs.some((o) => o.available)
               ? undefined
-              : backs.every((o) => o.reason === 'Out of reach')
-                ? 'Attacker out of reach'
-                : 'Too tired to strike back',
+              : backs.every((o) => o.reason?.code === 'outOfReach')
+                ? { code: 'attackerOutOfReach' }
+                : { code: 'tooTiredToStrikeBack' },
     ),
     choice(
       'counter',
       !fresh
         ? spent
         : zone !== 'front'
-          ? 'Only against attacks from the front'
+          ? { code: 'frontOnly' }
           : attack?.noCounter
-            ? `${attack.name} can't be answered`
+            ? unanswerable(attack)
             : undefined,
     ),
     choice('none', undefined),

@@ -113,7 +113,7 @@ export function applyCommand(
         );
         if (!option?.available)
           throw new CommandError(
-            `Can't strike back with "${cmd.backAttackId}"${option?.reason ? `: ${option.reason}` : ''}`,
+            `Can't strike back with "${cmd.backAttackId}"${option?.reason ? ` (${option.reason.code})` : ''}`,
           );
       }
       resolveAttack(state, unit, target, attack, cmd.reaction, events, cmd.backAttackId);

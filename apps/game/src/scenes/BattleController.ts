@@ -37,6 +37,7 @@ import {
   unlockedAttacks,
 } from '@m1565/core';
 import type { BarkSet, Library } from '@m1565/content';
+import { t } from '../i18n';
 import type { XpGain } from '../ui/battle/XpPanel';
 import type { FigureSpec } from '../render/Armatura';
 import { figureSpec } from '../render/Armatura';
@@ -536,7 +537,8 @@ export class BattleController {
       this.patch({ state });
       const after = findUnit(state, unitId);
       for (const a of after ? unlockedAttacks(after) : []) {
-        if (!known.has(a.id)) this.notify(`${after!.name} learned a new technique: ${a.name}!`);
+        if (!known.has(a.id))
+          this.notify(t('log.learnedTechnique', { name: after!.name, technique: a.name }));
       }
     } catch (e) {
       if (!(e instanceof CommandError)) throw e;
@@ -719,7 +721,7 @@ export class BattleController {
     await this.renderer?.focus(unit.pos, 300 / this.speed());
     if (unit.controller === 'human') {
       if (unit.fp >= state.balance.fpMax) {
-        this.notify(`${unit.name} has fainted from fatigue and must rest this turn.`);
+        this.notify(t('log.fainted', { name: unit.name }));
       }
       // The active unit is selected for the player, its movement range already showing.
       this.cursorPos = unit.pos;
@@ -804,7 +806,8 @@ export class BattleController {
       result = applyCommand(before, cmd);
     } catch (e) {
       if (e instanceof CommandError) {
-        this.pushLog(`⚠ ${e.message}`);
+        // Only a UI bug offers an illegal command; core's message is for developers.
+        this.pushLog(t('log.rejected', { reason: e.message }));
         return false;
       }
       throw e;
@@ -867,23 +870,24 @@ export class BattleController {
       }
       case 'unitDefeated':
         sfx('defeat');
-        this.pushLog(`${findUnit(before, ev.unitId)?.name ?? ev.unitId} is defeated.`);
+        this.pushLog(t('log.defeated', { name: findUnit(before, ev.unitId)?.name ?? ev.unitId }));
         break;
       case 'levelUp': {
         const unit = findUnit(before, ev.unitId);
-        this.pushLog(`★ ${unit?.name ?? ev.unitId} reached level ${ev.level}!`);
+        this.pushLog(t('log.levelUp', { name: unit?.name ?? ev.unitId, level: ev.level }));
         if (unit && ev.newSkills)
-          for (const name of skillNames(unit, ev.newSkills)) this.pushLog(`✦ New skill: ${name}`);
+          for (const name of skillNames(unit, ev.newSkills))
+            this.pushLog(t('log.newSkill', { name }));
         break;
       }
       case 'unitRecovered': {
         const unit = findUnit(before, ev.unitId);
         const skill = unit?.skills?.find((s) => s.id === ev.skillId)?.name ?? ev.skillId;
-        this.pushLog(`${unit?.name ?? ev.unitId} recovers ${ev.amount} HP (${skill}).`);
+        this.pushLog(t('log.recovers', { name: unit?.name ?? ev.unitId, n: ev.amount, skill }));
         break;
       }
       case 'roundStarted':
-        this.pushLog(`— Round ${ev.round} —`);
+        this.pushLog(t('log.round', { n: ev.round }));
         break;
       default:
         break;
@@ -998,7 +1002,7 @@ export class BattleController {
     const id = ++this.noticeId;
     sfx('victory');
     this.patch({ notices: [...this.view.get().notices, { id, text }] });
-    this.pushLog(`★ ${text}`);
+    this.pushLog(t('log.notice', { text }));
     setTimeout(
       () => this.patch({ notices: this.view.get().notices.filter((n) => n.id !== id) }),
       3500,
@@ -1021,7 +1025,8 @@ function replyLines(b: BarkSet, reaction: Reaction, s: StrikeResult): readonly s
   return b.hurt;
 }
 
-function describeAttack(
+/** The battle log line for an exchange of blows. */
+export function describeAttack(
   state: BattleState,
   ev: Extract<BattleEvent, { type: 'attackResolved' }>,
 ): string {
@@ -1031,30 +1036,39 @@ function describeAttack(
   const hits = ev.strikes.filter((s) => s.hit);
   const dmg = hits.reduce((n, s) => n + s.damage, 0);
   const xp = ev.strikes.reduce((n, s) => n + s.xp, 0);
+  const attacker = name(first.attackerId);
+  const target = name(first.targetId);
+  const attack = ev.attackName;
   if (ev.counter?.success && ev.retaliation) {
-    return `${name(first.targetId)} COUNTERS ${name(first.attackerId)}'s ${ev.attackName} (${ev.counter.chance}% chance): ${ev.retaliation.damage} damage reflected.`;
+    return t('log.counters', {
+      target,
+      attacker,
+      attack,
+      chance: ev.counter.chance,
+      damage: ev.retaliation.damage,
+    });
   }
-  const how = REACTION_WORD[ev.reaction];
+  const how = t(`log.how.${ev.reaction}`);
   const main = hits.length
-    ? `${name(first.attackerId)} uses ${ev.attackName} on ${name(first.targetId)}: ${dmg} damage (${how})${xp ? `, +${xp} XP` : ''}.`
-    : `${name(first.targetId)} avoids ${name(first.attackerId)}'s ${ev.attackName}.`;
-  if (ev.counter && !ev.counter.success) return `${main} The counter failed.`;
+    ? xp
+      ? t('log.usesXp', { attacker, attack, target, damage: dmg, how, xp })
+      : t('log.uses', { attacker, attack, target, damage: dmg, how })
+    : t('log.avoids', { target, attacker, attack });
+  if (ev.counter && !ev.counter.success) return t('log.counterFailed', { main });
   if (!ev.retaliation) return main;
   const back = [ev.retaliation, ...(ev.retaliationFollowUps ?? [])];
   const landed = back.filter((c) => c.hit);
   const backDmg = landed.reduce((n, c) => n + c.damage, 0);
   const backXp = back.reduce((n, c) => n + c.xp, 0);
-  const withWhat = ev.retaliationName ? ` with ${ev.retaliationName}` : '';
-  return `${main} Strikes back${withWhat}: ${landed.length ? `${backDmg} damage${backXp ? `, +${backXp} XP` : ''}` : 'miss'}.`;
+  const result = !landed.length
+    ? t('log.backMiss')
+    : backXp
+      ? t('log.backDamageXp', { n: backDmg, xp: backXp })
+      : t('log.backDamage', { n: backDmg });
+  return ev.retaliationName
+    ? t('log.strikesBackWith', { main, technique: ev.retaliationName, result })
+    : t('log.strikesBack', { main, result });
 }
-
-const REACTION_WORD: Record<Reaction, string> = {
-  defend: 'defended',
-  avoid: 'tried to avoid',
-  attackBack: 'took it to strike back',
-  counter: 'failed counter',
-  none: 'no reaction',
-};
 
 /** Display names for skill ids, in the order given. */
 function skillNames(unit: UnitState, ids: readonly string[]): string[] {

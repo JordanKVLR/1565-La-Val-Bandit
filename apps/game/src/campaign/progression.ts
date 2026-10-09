@@ -1,6 +1,23 @@
 import type { BattleState, StatName } from '@m1565/core';
 import type { CharacterProgress, Library, RosterEntry } from '@m1565/content';
 
+/**
+ * One line of the victory summary, as data: the results screen words it in the player's
+ * language (ui/results.ts).
+ */
+export type ResultLine =
+  | { readonly kind: 'scudi'; readonly amount: number }
+  | { readonly kind: 'salvage'; readonly frame: string }
+  | {
+      readonly kind: 'pilot';
+      readonly name: string;
+      /** Levels gained in the battle (0 for none). */
+      readonly levels: number;
+      readonly level: number;
+      readonly xp: number;
+      readonly xpPerLevel: number;
+    };
+
 export function newRosterEntry(
   lib: Library,
   characterId: string,
@@ -31,8 +48,8 @@ export function applyBattleResults(
   roster: readonly RosterEntry[],
   state: BattleState,
   veterans: Readonly<Record<string, CharacterProgress>> = {},
-): { roster: RosterEntry[]; veterans: Record<string, CharacterProgress>; lines: string[] } {
-  const lines: string[] = [];
+): { roster: RosterEntry[]; veterans: Record<string, CharacterProgress>; lines: ResultLine[] } {
+  const lines: ResultLine[] = [];
   // Named allies outside the company keep their progress for later.
   const nextVeterans: Record<string, CharacterProgress> = { ...veterans };
   for (const unit of state.units) {
@@ -51,12 +68,14 @@ export function applyBattleResults(
     );
     if (!unit) return entry;
     const name = lib.characters.get(entry.characterId)?.name ?? entry.characterId;
-    const levels = unit.level - entry.level;
-    lines.push(
-      levels > 0
-        ? `${name} rose ${levels} level${levels > 1 ? 's' : ''} to Lv ${unit.level} (${unit.xp}/${state.balance.xpPerLevel} XP)`
-        : `${name}: Lv ${unit.level}, ${unit.xp}/${state.balance.xpPerLevel} XP`,
-    );
+    lines.push({
+      kind: 'pilot',
+      name,
+      levels: Math.max(0, unit.level - entry.level),
+      level: unit.level,
+      xp: unit.xp,
+      xpPerLevel: state.balance.xpPerLevel,
+    });
     return {
       ...entry,
       level: unit.level,

@@ -6,7 +6,8 @@ import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
-import { usePressWord } from './KeyHint';
+import { t } from '../i18n';
+import { usePrompt } from './KeyHint';
 
 type StoryScreenState = Extract<Screen, { kind: 'story' }>;
 
@@ -98,7 +99,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
   };
   const tapRef = useRef(onTap);
   tapRef.current = onTap;
-  const pressWord = usePressWord();
+  const prompt = usePrompt();
 
   // Keyboard and gamepad: Enter/Space (pad Ⓐ) continue, Esc or the pad's Menu button open the
   // menu. Choices are buttons, reached with the arrows (see ui/input.ts).
@@ -125,7 +126,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
     <main class="story-screen" onClick={onTap} data-testid="story-screen">
       <Stage stage={view.stage} lib={lib} />
       <div class="story-controls" onClick={(e) => e.stopPropagation()}>
-        <button type="button" class="btn icon" aria-label="Menu" onClick={onMenu}>
+        <button type="button" class="btn icon" aria-label={t('common.menu')} onClick={onMenu}>
           ☰
         </button>
       </div>
@@ -134,7 +135,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
         <div class="chapter-card" data-testid="chapter-card">
           <h2>{screen.card.title}</h2>
           <p>{screen.card.subtitle}</p>
-          <span class="tap-hint">{pressWord} to continue</span>
+          <span class="tap-hint">{prompt('continue')}</span>
         </div>
       )}
 
@@ -169,7 +170,12 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
       )}
 
       {screen.choices && (
-        <div class="choices" role="group" aria-label="Choices" onClick={(e) => e.stopPropagation()}>
+        <div
+          class="choices"
+          role="group"
+          aria-label={t('story.choices')}
+          onClick={(e) => e.stopPropagation()}
+        >
           {screen.choices.map((c, i) => (
             <button
               type="button"

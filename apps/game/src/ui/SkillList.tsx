@@ -1,4 +1,5 @@
 import type { Skill } from '@m1565/core';
+import { t, tParts } from '../i18n';
 
 /** A small padlock, drawn so a locked skill reads by shape as well as by being greyed. */
 export function Padlock({ size = 14 }: { size?: number }) {
@@ -51,7 +52,7 @@ export function SkillList({
   testId?: string;
 }) {
   const shown = hideLocked ? skills.filter((s) => s.level <= level) : skills;
-  if (!shown.length) return <p class="skill-none">No skills.</p>;
+  if (!shown.length) return <p class="skill-none">{t('skills.none')}</p>;
   return (
     <ul class="skill-list" data-testid={testId}>
       {shown.map((s) => {
@@ -61,15 +62,19 @@ export function SkillList({
             key={s.id}
             class={`skill-row ${locked ? 'locked' : 'active'}`}
             data-testid={`skill-${s.id}`}
-            aria-label={`${s.name}: ${locked ? `locked, unlocks at level ${s.level}` : 'active'}. ${s.description ?? ''}`}
+            aria-label={t(locked ? 'skills.ariaLocked' : 'skills.ariaActive', {
+              name: s.name,
+              level: s.level,
+              description: s.description ?? '',
+            })}
           >
             <span class="skill-icon">{locked ? <Padlock /> : <ActiveMark />}</span>
             <span class="skill-body">
               <span class="skill-head">
                 <b class="skill-name">{s.name}</b>
-                {fresh.includes(s.id) && <span class="skill-new">New</span>}
+                {fresh.includes(s.id) && <span class="skill-new">{t('skills.new')}</span>}
                 <small class="skill-state">
-                  {locked ? `Unlocks at Lv ${s.level}` : `Active · Lv ${s.level}`}
+                  {t(locked ? 'skills.unlocksAt' : 'skills.activeAt', { level: s.level })}
                 </small>
               </span>
               {s.description && <span class="skill-desc">{s.description}</span>}
@@ -88,7 +93,7 @@ export function NewSkills({ names }: { names: readonly string[] }) {
     <p class="skill-announce" data-testid="new-skill">
       {names.map((name) => (
         <span key={name}>
-          <ActiveMark /> New skill: <b>{name}</b>
+          <ActiveMark /> {tParts('skills.newSkill', { name: <b>{name}</b> })}
         </span>
       ))}
     </p>

@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+
 /** Shown by CSS only when the device is in portrait: the game is landscape-only. */
 export function RotateOverlay() {
   return (
@@ -5,7 +7,7 @@ export function RotateOverlay() {
       <div class="rotate-icon" aria-hidden="true">
         ⤾
       </div>
-      <p>Turn your phone sideways to play.</p>
+      <p>{t('rotate.text')}</p>
     </div>
   );
 }

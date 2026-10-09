@@ -1,14 +1,8 @@
 import type { BattleSetup, BattleState, Facing } from '@m1565/core';
-import {
-  attackFpCost,
-  findUnit,
-  formatTerrainLabel,
-  getTile,
-  terrainAt,
-  unitAt,
-} from '@m1565/core';
+import { attackFpCost, findUnit, getTile, terrainAt, unitAt } from '@m1565/core';
 import type { Library } from '@m1565/content';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { t } from '../i18n';
 import { BattleView } from '../render/BattleView';
 import { BattleController } from '../scenes/BattleController';
 import type { CursorDir } from '../scenes/cursor';
@@ -27,9 +21,9 @@ import { settings } from '../state/settings';
 import { LevelUpPanel } from './battle/LevelUpPanel';
 import { XpPanel } from './battle/XpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
-import { describeObjectives } from './battle/objectives';
+import { describeObjectives, terrainLabel } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
-import { useTapVerb } from './KeyHint';
+import { usePrompt } from './KeyHint';
 
 interface Props {
   setup: BattleSetup;
@@ -88,7 +82,7 @@ export function BattleScreen({
   // Only one overlay at a time: opening one closes whatever else was open.
   const [panel, setPanel] = useState<Panel>('none');
   const close = () => setPanel('none');
-  const tapVerb = useTapVerb();
+  const prompt = usePrompt();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -244,19 +238,21 @@ export function BattleScreen({
 
   return (
     <main class="battle-screen">
-      <canvas ref={canvasRef} class="battle-canvas" aria-label={`Battle map: ${title}`} />
+      <canvas ref={canvasRef} class="battle-canvas" aria-label={t('battle.mapLabel', { title })} />
 
       <header class="hud-top" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
         <div class="map-name">{title}</div>
         {active && state.outcome === 'ongoing' && (
           <div class="turn-banner" data-testid="turn-banner">
-            Round {state.round} · {active.name}
+            {t('battle.turnBanner', { round: state.round, name: active.name })}
           </div>
         )}
         {state.outcome === 'ongoing' && (
           <div class="objective" data-testid="objective">
-            <span>Win: {describeObjectives(state).win}</span>
-            <span class="lose">Lose if {describeObjectives(state).lose}</span>
+            <span>{t('battle.win', { objectives: describeObjectives(state).win })}</span>
+            <span class="lose">
+              {t('battle.lose', { conditions: describeObjectives(state).lose })}
+            </span>
           </div>
         )}
       </header>
@@ -266,7 +262,7 @@ export function BattleScreen({
         <button
           type="button"
           class="btn icon pointer-only"
-          aria-label="Rotate left"
+          aria-label={t('battle.rotateLeft')}
           onClick={() => viewRef.current?.rotate(-1)}
         >
           ⟲
@@ -274,12 +270,17 @@ export function BattleScreen({
         <button
           type="button"
           class="btn icon pointer-only"
-          aria-label="Rotate right"
+          aria-label={t('battle.rotateRight')}
           onClick={() => viewRef.current?.rotate(1)}
         >
           ⟳
         </button>
-        <button type="button" class="btn icon" aria-label="Menu" onClick={() => setPanel('menu')}>
+        <button
+          type="button"
+          class="btn icon"
+          aria-label={t('common.menu')}
+          onClick={() => setPanel('menu')}
+        >
           ☰
         </button>
       </div>
@@ -321,7 +322,7 @@ export function BattleScreen({
         )}
         {tile && terrain && (
           <div class="terrain-label" data-testid="terrain-label">
-            {formatTerrainLabel(tile.height, terrain)}
+            {terrainLabel(tile.height, terrain)}
           </div>
         )}
       </div>
@@ -331,16 +332,20 @@ export function BattleScreen({
       )}
       {mode.kind === 'move' && mode.pending && (
         <SubModeBar
-          label={`AP −${mode.pending.cost} · ${tapVerb} again to move`}
+          label={prompt('moveAgain', { cost: mode.pending.cost })}
           onCancel={() => ctl.cancel()}
-          confirm="Move here"
+          confirm={t('battle.moveHere')}
           onConfirm={() => ctl.confirmMove()}
         />
       )}
       {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
         <SubModeBar
-          label={`${active?.attacks.find((a) => a.id === mode.attackId)?.name ?? 'Attack'}: ${tapVerb === 'tap' ? 'tap' : 'pick'} a marked enemy`}
+          label={prompt('pickEnemy', {
+            attack:
+              active?.attacks.find((a) => a.id === mode.attackId)?.name ??
+              t('battle.action.attack'),
+          })}
           onCancel={() => ctl.cancel()}
         />
       )}
@@ -380,7 +385,7 @@ export function BattleScreen({
       {mode.kind === 'reaction' && (
         <div class="reaction-wrap">
           <div class="reaction-title">
-            {findUnit(state, mode.attackerId)!.name} attacks! How do you respond?
+            {t('battle.reactionTitle', { name: findUnit(state, mode.attackerId)!.name })}
           </div>
           <ForecastPanel
             key={`${mode.attackerId}>${mode.defenderId}`}

@@ -5,6 +5,19 @@
  * Controls help page is drawn from these rows, and prompts next to buttons read them too.
  */
 
+import type { MessageKey } from '../../i18n';
+import { tDynamic } from '../../i18n';
+
+/** A key into the UI string table (ADR 0012), or text that never changes, like "[ ]" or "M". */
+export type ControlText = MessageKey | { readonly literal: string };
+
+const lit = (literal: string): ControlText => ({ literal });
+
+/** The words for a binding's label or key, in the player's language. */
+export function controlText(text: ControlText): string {
+  return typeof text === 'string' ? tDynamic(text) : text.literal;
+}
+
 /** Inputs of the W3C "standard" gamepad layout, named as on an Xbox pad or the Steam Deck. */
 export type PadButton =
   | 'a'
@@ -58,16 +71,16 @@ export type ControlAction =
 
 export interface ControlBinding {
   readonly action: ControlAction;
-  /** What it does, in the player's words (rows with the same text are one line in Help). */
-  readonly label: string;
+  /** What it does, in the player's words (rows with the same label are one line in Help). */
+  readonly label: MessageKey;
   /** The key the screen listens for; the gamepad sends this key too. */
   readonly key: string;
   /** How the keyboard side is written for people. */
-  readonly keyLabel: string;
+  readonly keyLabel: ControlText;
   /** Gamepad inputs that trigger it, the first one shown in prompts. */
   readonly pad: readonly PadInput[];
   /** How the gamepad side is written in Help, when the glyphs alone would not say it. */
-  readonly padLabel?: string;
+  readonly padLabel?: ControlText;
 }
 
 /** Short glyphs for prompts next to buttons. Letters inside shapes, never colour alone. */
@@ -95,7 +108,7 @@ export const PAD_GLYPHS: Readonly<Record<PadInput, string>> = {
   rsRight: 'R→',
 };
 
-const arrows = (label: string, padLabel = 'D-pad / left stick'): ControlBinding[] =>
+const arrows = (label: MessageKey, padLabel: ControlText = 'controls.pad.dpad'): ControlBinding[] =>
   (
     [
       ['up', 'ArrowUp'],
@@ -107,20 +120,20 @@ const arrows = (label: string, padLabel = 'D-pad / left stick'): ControlBinding[
     action,
     label,
     key,
-    keyLabel: 'Arrow keys',
+    keyLabel: 'controls.key.arrows',
     pad: [action],
     padLabel,
   }));
 
-const CONFIRM = (label: string): ControlBinding => ({
+const CONFIRM = (label: MessageKey): ControlBinding => ({
   action: 'confirm',
   label,
   key: 'Enter',
-  keyLabel: 'Enter / Space',
+  keyLabel: 'controls.key.confirm',
   pad: ['a'],
 });
 
-const BACK = (label: string, keyLabel = 'Esc'): ControlBinding => ({
+const BACK = (label: MessageKey, keyLabel: ControlText = 'controls.key.esc'): ControlBinding => ({
   action: 'back',
   label,
   key: 'Escape',
@@ -130,164 +143,164 @@ const BACK = (label: string, keyLabel = 'Esc'): ControlBinding => ({
 
 export const CONTROLS: Readonly<Record<ControlContext, readonly ControlBinding[]>> = {
   battle: [
-    ...arrows('Move the tile cursor'),
-    CONFIRM('Select the tile under the cursor · confirm'),
-    BACK('Back / cancel', 'Esc / right-click'),
+    ...arrows('controls.moveCursor'),
+    CONFIRM('controls.selectTile'),
+    BACK('controls.backCancel', 'controls.key.escRightClick'),
     {
       action: 'menu',
-      label: 'Battle menu',
+      label: 'controls.battleMenu',
       key: 'ContextMenu',
-      keyLabel: 'Esc (with nothing to cancel)',
+      keyLabel: 'controls.key.escNothingToCancel',
       pad: ['start'],
-      padLabel: '☰ Menu',
+      padLabel: 'controls.pad.menu',
     },
     {
       action: 'move',
-      label: 'Move',
+      label: 'controls.move',
       key: 'm',
-      keyLabel: 'M',
+      keyLabel: lit('M'),
       pad: ['ls'],
-      padLabel: 'L3 (or Ⓐ on your unit)',
+      padLabel: 'controls.pad.move',
     },
-    { action: 'attack', label: 'Attack', key: 'a', keyLabel: 'A', pad: ['x'] },
-    { action: 'endTurn', label: 'End turn', key: 'e', keyLabel: 'E', pad: ['y'] },
+    { action: 'attack', label: 'controls.attack', key: 'a', keyLabel: lit('A'), pad: ['x'] },
+    { action: 'endTurn', label: 'controls.endTurn', key: 'e', keyLabel: lit('E'), pad: ['y'] },
     {
       action: 'undo',
-      label: 'Undo the move',
+      label: 'controls.undo',
       key: 'u',
-      keyLabel: 'U',
+      keyLabel: lit('U'),
       pad: ['view'],
-      padLabel: '⧉ View',
+      padLabel: 'controls.pad.view',
     },
     {
       action: 'prevUnit',
-      label: 'Previous / next unit',
+      label: 'controls.cycleUnit',
       key: '[',
-      keyLabel: '[ ]',
+      keyLabel: lit('[ ]'),
       pad: ['lb'],
-      padLabel: 'LB / RB',
+      padLabel: lit('LB / RB'),
     },
     {
       action: 'nextUnit',
-      label: 'Previous / next unit',
+      label: 'controls.cycleUnit',
       key: ']',
-      keyLabel: '[ ]',
+      keyLabel: lit('[ ]'),
       pad: ['rb'],
-      padLabel: 'LB / RB',
+      padLabel: lit('LB / RB'),
     },
     {
       action: 'rotateLeft',
-      label: 'Rotate the camera',
+      label: 'controls.rotate',
       key: ',',
-      keyLabel: ', .',
+      keyLabel: lit(', .'),
       pad: ['lt', 'rsLeft'],
-      padLabel: 'LT / RT or right stick ←→',
+      padLabel: 'controls.pad.rotate',
     },
     {
       action: 'rotateRight',
-      label: 'Rotate the camera',
+      label: 'controls.rotate',
       key: '.',
-      keyLabel: ', .',
+      keyLabel: lit(', .'),
       pad: ['rt', 'rsRight'],
-      padLabel: 'LT / RT or right stick ←→',
+      padLabel: 'controls.pad.rotate',
     },
     {
       action: 'zoomIn',
-      label: 'Zoom',
+      label: 'controls.zoom',
       key: '=',
-      keyLabel: '+ −  (or mouse wheel)',
+      keyLabel: 'controls.key.zoom',
       pad: ['rsUp'],
-      padLabel: 'Right stick ↑↓',
+      padLabel: 'controls.pad.rightStick',
     },
     {
       action: 'zoomOut',
-      label: 'Zoom',
+      label: 'controls.zoom',
       key: '-',
-      keyLabel: '+ −  (or mouse wheel)',
+      keyLabel: 'controls.key.zoom',
       pad: ['rsDown'],
-      padLabel: 'Right stick ↑↓',
+      padLabel: 'controls.pad.rightStick',
     },
   ],
   armoury: [
-    ...arrows('Move between pilots, shelves and items'),
-    CONFIRM('Choose'),
-    BACK('Back / close'),
+    ...arrows('controls.moveArmoury'),
+    CONFIRM('controls.choose'),
+    BACK('controls.backClose'),
     {
       action: 'prevTab',
-      label: 'Previous / next shelf',
+      label: 'controls.cycleShelf',
       key: 'q',
-      keyLabel: 'Q E',
+      keyLabel: lit('Q E'),
       pad: ['lb'],
-      padLabel: 'LB / RB',
+      padLabel: lit('LB / RB'),
     },
     {
       action: 'nextTab',
-      label: 'Previous / next shelf',
+      label: 'controls.cycleShelf',
       key: 'e',
-      keyLabel: 'Q E',
+      keyLabel: lit('Q E'),
       pad: ['rb'],
-      padLabel: 'LB / RB',
+      padLabel: lit('LB / RB'),
     },
     {
       action: 'prevPilot',
-      label: 'Previous / next pilot',
+      label: 'controls.cyclePilot',
       key: '[',
-      keyLabel: '[ ]',
+      keyLabel: lit('[ ]'),
       pad: ['lt'],
-      padLabel: 'LT / RT',
+      padLabel: lit('LT / RT'),
     },
     {
       action: 'nextPilot',
-      label: 'Previous / next pilot',
+      label: 'controls.cyclePilot',
       key: ']',
-      keyLabel: '[ ]',
+      keyLabel: lit('[ ]'),
       pad: ['rt'],
-      padLabel: 'LT / RT',
+      padLabel: lit('LT / RT'),
     },
   ],
   menu: [
-    ...arrows('Move between buttons'),
-    CONFIRM('Press the button · next line of dialogue'),
-    BACK('Back / close'),
+    ...arrows('controls.moveButtons'),
+    CONFIRM('controls.pressButton'),
+    BACK('controls.backClose'),
     {
       action: 'menu',
-      label: 'Open the menu (story)',
+      label: 'controls.openMenu',
       key: 'ContextMenu',
-      keyLabel: 'Esc',
+      keyLabel: 'controls.key.esc',
       pad: ['start'],
-      padLabel: '☰ Menu',
+      padLabel: 'controls.pad.menu',
     },
     {
       action: 'prevTab',
-      label: 'Previous / next tab',
+      label: 'controls.cycleTab',
       key: '[',
-      keyLabel: '[ ]',
+      keyLabel: lit('[ ]'),
       pad: ['lb'],
-      padLabel: 'LB / RB',
+      padLabel: lit('LB / RB'),
     },
     {
       action: 'nextTab',
-      label: 'Previous / next tab',
+      label: 'controls.cycleTab',
       key: ']',
-      keyLabel: '[ ]',
+      keyLabel: lit('[ ]'),
       pad: ['rb'],
-      padLabel: 'LB / RB',
+      padLabel: lit('LB / RB'),
     },
     {
       action: 'scrollUp',
-      label: 'Scroll',
+      label: 'controls.scroll',
       key: 'PageUp',
-      keyLabel: 'Page Up / Down',
+      keyLabel: 'controls.key.page',
       pad: ['rsUp'],
-      padLabel: 'Right stick ↑↓',
+      padLabel: 'controls.pad.rightStick',
     },
     {
       action: 'scrollDown',
-      label: 'Scroll',
+      label: 'controls.scroll',
       key: 'PageDown',
-      keyLabel: 'Page Up / Down',
+      keyLabel: 'controls.key.page',
       pad: ['rsDown'],
-      padLabel: 'Right stick ↑↓',
+      padLabel: 'controls.pad.rightStick',
     },
   ],
 };
@@ -313,18 +326,25 @@ export function promptFor(
   if (device === 'gamepad') return PAD_GLYPHS[b.pad[0]!];
   // Single-letter keys read best as the letter; the rest use their short name.
   if (b.key.length === 1) return b.key.toUpperCase();
-  return { Enter: 'Enter', Escape: 'Esc', ContextMenu: 'Esc' }[b.key] ?? b.keyLabel;
+  const short: Readonly<Record<string, MessageKey>> = {
+    Enter: 'controls.key.enter',
+    Escape: 'controls.key.esc',
+    ContextMenu: 'controls.key.esc',
+  };
+  return controlText(short[b.key] ?? b.keyLabel);
 }
 
 /** One line per distinct label, for the Controls help page. */
 export function helpRows(context: ControlContext): { label: string; keys: string; pad: string }[] {
   const rows: { label: string; keys: string; pad: string }[] = [];
+  const seen = new Set<MessageKey>();
   for (const b of CONTROLS[context]) {
-    if (rows.some((r) => r.label === b.label)) continue;
+    if (seen.has(b.label)) continue;
+    seen.add(b.label);
     rows.push({
-      label: b.label,
-      keys: b.keyLabel,
-      pad: b.padLabel ?? b.pad.map((p) => PAD_GLYPHS[p]).join(' / '),
+      label: controlText(b.label),
+      keys: controlText(b.keyLabel),
+      pad: b.padLabel ? controlText(b.padLabel) : b.pad.map((p) => PAD_GLYPHS[p]).join(' / '),
     });
   }
   return rows;

@@ -68,8 +68,34 @@ describe('facing rules', () => {
     expect(choices.map((c) => c.reaction)).toEqual(REACTIONS);
     expect(choices.find((c) => c.reaction === 'defend')).toMatchObject({
       available: false,
-      reason: "Can't defend from behind",
+      reason: { code: 'rearNoDefend' },
     });
+  });
+
+  it('gives each unavailable reaction a reason code, not text (the game words it)', () => {
+    const reasons = (s: BattleState, attack?: Attack) =>
+      Object.fromEntries(
+        reactionChoices(s, requireUnit(s, 't'), requireUnit(s, 'a'), undefined, attack).map((c) => [
+          c.reaction,
+          c.reason,
+        ]),
+      );
+    expect(reasons(duel('south'))).toMatchObject({
+      attackBack: { code: 'rearNoStrikeBack' },
+      counter: { code: 'frontOnly' },
+    });
+    expect(reasons(duel('east')).counter).toEqual({ code: 'frontOnly' });
+    const head = duel('north');
+    const feint = { ...requireUnit(head, 'a').attacks[0]!, name: 'Feint', noCounter: true };
+    expect(reasons(head, feint)).toMatchObject({
+      attackBack: { code: 'unanswerable', attackName: 'Feint' },
+      counter: { code: 'unanswerable', attackName: 'Feint' },
+    });
+    const spent = { ...head, units: head.units.map((u) => (u.id === 't' ? { ...u, fp: 100 } : u)) };
+    const all = reasons(spent);
+    for (const r of ['defend', 'avoid', 'attackBack', 'counter'] as const)
+      expect(all[r]).toEqual({ code: 'spent' });
+    expect(all.none).toBeUndefined();
   });
 
   it('reacting needs no AP, but a Spent unit (FP full) can only do nothing', () => {
@@ -160,17 +186,20 @@ describe('choosing the strike back', () => {
   it('greys out techniques that would take FP past 100, and out-of-reach ones', () => {
     const tired = options(withTwin(70));
     expect(tired.map((o) => o.available)).toEqual([true, false, false]);
-    expect(tired[1]!.reason).toMatch(/Too tired/);
+    expect(tired[1]!.reason).toEqual({ code: 'tooTired', fpCost: tired[1]!.fpCost });
     const gunner = { ...requireUnit(withTwin(), 't'), weapon: GUN, attacks: starterAttacks(GUN) };
     const s = withTwin();
     const fire = attackBackOptions(s, gunner, requireUnit(s, 'a').pos)[0]!;
-    expect(fire).toMatchObject({ available: false, reason: 'Out of reach' });
+    expect(fire).toMatchObject({ available: false, reason: { code: 'outOfReach' } });
     // Too tired for any of them: the reaction itself says why.
     const spent = withTwin(80);
     const choice = reactionChoices(spent, requireUnit(spent, 't'), requireUnit(spent, 'a')).find(
       (c) => c.reaction === 'attackBack',
     );
-    expect(choice).toMatchObject({ available: false, reason: 'Too tired to strike back' });
+    expect(choice).toMatchObject({
+      available: false,
+      reason: { code: 'tooTiredToStrikeBack' },
+    });
   });
 
   it('strikes back with the chosen technique: its FP, every hit, and its name', () => {
@@ -210,7 +239,7 @@ describe('choosing the strike back', () => {
         reaction: 'attackBack',
         backAttackId,
       });
-    expect(() => attackBack(withTwin(70), 'twin')).toThrow(/Too tired/);
+    expect(() => attackBack(withTwin(70), 'twin')).toThrow(/tooTired/);
     expect(() => attackBack(withTwin(), 'nope')).toThrow(/Can't strike back/);
   });
 

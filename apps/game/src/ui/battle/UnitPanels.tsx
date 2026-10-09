@@ -1,12 +1,14 @@
 import type { BattleState, UnitState } from '@m1565/core';
 import { attackFpCost, attackRange, unlockedAttacks } from '@m1565/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { t } from '../../i18n';
 import { UnitViewer } from '../../render/UnitViewer';
 import { SkillList } from '../SkillList';
 import { TechniqueCard } from './TechniqueCard';
 import type { CostPreview } from './StatBars';
 import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
 import { STAT_INFO } from './statInfo';
+import { rangeText } from './attackText';
 import { frameName, gearName, portraitIdFor, unitFigure, VbBars } from './vb';
 
 import { SIDE_COLORS as SIDE_COLOR } from '../../render/palette';
@@ -36,23 +38,23 @@ export function UnitCard({
       </div>
       <div class="uc-head">
         <strong class="vb-name">{unit.name}</strong>
-        <small>LV {unit.level}</small>
+        <small>{t('unit.lvUpper', { n: unit.level })}</small>
         <button
           type="button"
           class="vb-cmd mini details"
           onClick={onDetails}
-          aria-label={`Details for ${unit.name}`}
+          aria-label={t('unit.detailsFor', { name: unit.name })}
         >
-          Info
+          {t('unit.info')}
         </button>
       </div>
       {unit.side === 'player' && (
         <span class="xp-line" data-testid="unit-xp">
-          EXP {unit.xp}/{state.balance.xpPerLevel}
+          {t('unit.exp', { xp: unit.xp, max: state.balance.xpPerLevel })}
           <span class="xp-track">
             <span style={{ width: `${(unit.xp / state.balance.xpPerLevel) * 100}%` }} />
           </span>
-          {unit.statPoints > 0 && <b> +{unit.statPoints} pts</b>}
+          {unit.statPoints > 0 && <b> {t('unit.points', { n: unit.statPoints })}</b>}
         </span>
       )}
     </aside>
@@ -106,7 +108,12 @@ export function UnitDetails({
   const techniques = unit.side === 'player' ? unlockedAttacks(unit) : [];
   const reach = attackRange(unit.attacks[0]!, unit.weapon);
   return (
-    <div class="modal vbd" role="dialog" aria-label={`${unit.name} details`} onClick={onClose}>
+    <div
+      class="modal vbd"
+      role="dialog"
+      aria-label={t('unit.details', { name: unit.name })}
+      onClick={onClose}
+    >
       <div class="vbd-sheet" onClick={(e) => e.stopPropagation()}>
         <section class="vb-panel vbd-left">
           <Figure unit={unit} />
@@ -144,7 +151,7 @@ export function UnitDetails({
                       <b>
                         {unit[s.key]}
                         {unit[s.key] !== unit.pilot[s.key] && (
-                          <small class="vbd-gear" title="From gear">
+                          <small class="vbd-gear" title={t('unit.fromGear')}>
                             {gearNote(unit[s.key] - unit.pilot[s.key])}
                           </small>
                         )}
@@ -156,21 +163,25 @@ export function UnitDetails({
               </div>
               <h2 class="vb-name vbd-name">{unit.name}</h2>
               <dl class="vbd-list">
-                <dt>Current Level</dt>
+                <dt>{t('unit.currentLevel')}</dt>
                 <dd>{unit.level}</dd>
-                <dt>Exp. To Next</dt>
+                <dt>{t('unit.expToNext')}</dt>
                 <dd>{unit.side === 'player' ? state.balance.xpPerLevel - unit.xp : '---'}</dd>
-                <dt>Blocks</dt>
-                <dd>{Math.round(unit.def * state.balance.defDamagePerPoint)} dmg</dd>
-                <dt>Move</dt>
+                <dt>{t('unit.blocks')}</dt>
+                <dd>
+                  {t('unit.blocksValue', {
+                    n: Math.round(unit.def * state.balance.defDamagePerPoint),
+                  })}
+                </dd>
+                <dt>{t('unit.move')}</dt>
                 <dd>{unit.mov}</dd>
-                <dt>Range</dt>
-                <dd>{reach.min === reach.max ? reach.max : `${reach.min}–${reach.max}`}</dd>
+                <dt>{t('unit.range')}</dt>
+                <dd>{rangeText(reach.min, reach.max)}</dd>
               </dl>
             </>
           ) : page === 'skills' ? (
             <div class="ud-skills" data-testid="unit-skills">
-              <h2 class="vb-name vbd-name">{unit.name}: Skills</h2>
+              <h2 class="vb-name vbd-name">{t('unit.skillsTitle', { name: unit.name })}</h2>
               {/* Your own pilots show what is still to come; enemies only what they have now. */}
               <SkillList
                 skills={unit.skills ?? []}
@@ -180,7 +191,7 @@ export function UnitDetails({
             </div>
           ) : (
             <div class="ud-techniques">
-              <h2 class="vb-name vbd-name">{unit.name}: Techniques</h2>
+              <h2 class="vb-name vbd-name">{t('unit.techniquesTitle', { name: unit.name })}</h2>
               {unit.side === 'player' ? (
                 <div class="tech-list">
                   {techniques.map((a) => (
@@ -193,14 +204,14 @@ export function UnitDetails({
                   ))}
                 </div>
               ) : (
-                <p>An enemy's techniques are only revealed in battle.</p>
+                <p>{t('unit.enemyTechniques')}</p>
               )}
             </div>
           )}
           <div class="vbd-actions">
             {onSpend && unit.statPoints > 0 && (
               <button type="button" class="vb-cmd" onClick={onSpend}>
-                Spend {unit.statPoints} points
+                {t('unit.spendPoints', { n: unit.statPoints })}
               </button>
             )}
             {page !== 'skills' && (unit.skills?.length ?? 0) > 0 && (
@@ -210,7 +221,7 @@ export function UnitDetails({
                 data-testid="unit-skills-tab"
                 onClick={() => setPage('skills')}
               >
-                Skills
+                {t('unit.skills')}
               </button>
             )}
             <button
@@ -218,10 +229,10 @@ export function UnitDetails({
               class="vb-cmd more"
               onClick={() => setPage(page === 'stats' ? 'techniques' : 'stats')}
             >
-              {page === 'stats' ? 'More Info' : 'Back'}
+              {page === 'stats' ? t('unit.moreInfo') : t('common.back')}
             </button>
             <button type="button" class="vb-cmd" onClick={onClose}>
-              Close
+              {t('common.close')}
             </button>
           </div>
         </section>

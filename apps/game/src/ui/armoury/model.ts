@@ -11,6 +11,7 @@ import {
   summarize,
   swapBlocked,
 } from '../../campaign/inventory';
+import { t } from '../../i18n';
 import type { Tier } from './ItemIcon';
 
 /** Where a shelf entry comes from, which decides what can be done with it. */
@@ -128,7 +129,12 @@ export function shelfSections(
     return (['weapon', 'charm', 'amulet'] as const)
       .map((k) => ({
         source: 'stores' as const,
-        title: k === 'weapon' ? 'Spare weapons' : k === 'charm' ? 'Spare charms' : 'Spare amulets',
+        title:
+          k === 'weapon'
+            ? t('shelf.section.spareWeapons')
+            : k === 'charm'
+              ? t('shelf.section.spareCharms')
+              : t('shelf.section.spareAmulets'),
         entries: spares(view.stores, k).map(([id]) => entry(lib, view, k, id, 'stores')),
       }))
       .filter((s) => s.entries.length > 0);
@@ -148,12 +154,16 @@ export function shelfSections(
   };
 
   const fitted = equipped(pilot, kind);
-  add('fitted', 'Fitted', fitted && take(fitted) ? [entry(lib, view, kind, fitted, 'fitted')] : []);
+  add(
+    'fitted',
+    t('shelf.section.fitted'),
+    fitted && take(fitted) ? [entry(lib, view, kind, fitted, 'fitted')] : [],
+  );
 
   const stored = spares(view.stores, kind);
   add(
     'stores',
-    'In the stores',
+    t('shelf.section.stores'),
     stored
       .filter(([id]) => canUse(lib, pilot, kind, id) && take(id))
       .map(([id]) => entry(lib, view, kind, id, 'stores')),
@@ -161,7 +171,7 @@ export function shelfSections(
 
   add(
     'pilot',
-    'On other pilots',
+    t('shelf.section.pilots'),
     view.roster
       .filter((r) => r.characterId !== pilotId && equipped(r, kind) !== null)
       .map((r) => {
@@ -181,20 +191,23 @@ export function shelfSections(
       .map((s) => {
         const e = entry(lib, view, kind, s.item, 'shop', { shopItem: s });
         const short = (e.price ?? 0) - view.scudi;
-        return short > 0 ? { ...e, blocked: `Need ${short} more scudi` } : e;
+        return short > 0 ? { ...e, blocked: t('armoury.needScudi', { n: short }) } : e;
       })
       .sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    add('shop', "The armourer's stock", stock);
+    add('shop', t('shelf.section.stock'), stock);
   } else {
     const side = sideOf(lib, pilotId);
     add(
       'unusable',
-      'Not for this pilot',
+      t('shelf.section.unusable'),
       stored
         .filter(([id]) => !canUse(lib, pilot, kind, id) && take(id))
         .map(([id]) =>
           entry(lib, view, kind, id, 'unusable', {
-            blocked: `${nameOf(lib, pilotId)} fights for ${side === 'malta' ? 'Malta' : 'the Porte'}; this armatura serves the other side`,
+            blocked: t('armoury.otherSide', {
+              name: nameOf(lib, pilotId),
+              side: t(`armoury.fightsFor.${side}`),
+            }),
           }),
         ),
     );
@@ -212,29 +225,30 @@ export interface Action {
 
 /** What the detail panel offers for an entry (see the Armoury spec, section 3.2). */
 export function actionsFor(e: ShelfEntry, mode: Mode, pilotHasSlotItem: boolean): Action[] {
-  if (mode === 'sell') return [{ id: 'sell', label: `Sell · ${e.sellPrice ?? 0}`, primary: true }];
+  if (mode === 'sell')
+    return [{ id: 'sell', label: t('action.sell', { n: e.sellPrice ?? 0 }), primary: true }];
   switch (e.source) {
     case 'stores':
-      return [{ id: 'equip', label: 'Equip', primary: true }];
+      return [{ id: 'equip', label: t('action.equip'), primary: true }];
     case 'pilot':
       return [
         pilotHasSlotItem
-          ? { id: 'swap', label: 'Swap', primary: true }
-          : { id: 'take', label: 'Take', primary: true },
+          ? { id: 'swap', label: t('action.swap'), primary: true }
+          : { id: 'take', label: t('action.take'), primary: true },
       ];
     case 'shop':
       return e.owned > 0
         ? [
-            { id: 'equip', label: 'Equip spare', primary: true },
-            { id: 'buy', label: `Buy another · ${e.price ?? 0}`, primary: false },
+            { id: 'equip', label: t('action.equipSpare'), primary: true },
+            { id: 'buy', label: t('action.buyAnother', { n: e.price ?? 0 }), primary: false },
           ]
         : [
-            { id: 'buy-equip', label: `Buy & equip · ${e.price ?? 0}`, primary: true },
-            { id: 'buy', label: `Buy · ${e.price ?? 0}`, primary: false },
+            { id: 'buy-equip', label: t('action.buyEquip', { n: e.price ?? 0 }), primary: true },
+            { id: 'buy', label: t('action.buy', { n: e.price ?? 0 }), primary: false },
           ];
     case 'fitted':
       return e.kind === 'charm' || e.kind === 'amulet'
-        ? [{ id: 'remove', label: 'Remove', primary: true }]
+        ? [{ id: 'remove', label: t('action.remove'), primary: true }]
         : [];
     case 'unusable':
       return [];
@@ -254,17 +268,17 @@ export function previewFor(
 /** The most telling changes for the card's hint line: the best gain and the worst loss. */
 export function headlineDelta(before: LoadoutSummary, after: LoadoutSummary): string | null {
   const rows: [string, number][] = [
-    ['DMG', after.damage - before.damage],
-    ['HIT', after.accuracy - before.accuracy],
-    ['BLOCK', after.block - before.block],
-    ['HP', after.hp - before.hp],
-    ['MOV', after.move - before.move],
+    [t('stat.dmg'), after.damage - before.damage],
+    [t('stat.hit'), after.accuracy - before.accuracy],
+    [t('stat.block'), after.block - before.block],
+    [t('stat.hp'), after.hp - before.hp],
+    [t('stat.mov'), after.move - before.move],
   ];
   const gain = rows.reduce((a, b) => (b[1] > a[1] ? b : a));
   const loss = rows.reduce((a, b) => (b[1] < a[1] ? b : a));
   const parts = [
-    gain[1] > 0 ? `▲ ${gain[0]} +${gain[1]}` : null,
-    loss[1] < 0 ? `▼ ${loss[0]} −${-loss[1]}` : null,
+    gain[1] > 0 ? t('armoury.gain', { stat: gain[0], n: gain[1] }) : null,
+    loss[1] < 0 ? t('armoury.loss', { stat: loss[0], n: -loss[1] }) : null,
   ].filter(Boolean);
   return parts.length ? parts.join('  ') : null;
 }

@@ -2,6 +2,7 @@ import type { PilotStats, StatBonus } from '@m1565/core';
 import { effectiveStats, maxHpFor, meetsRequirements, starterAttacks } from '@m1565/core';
 import type { Library, RosterEntry, ShopItem } from '@m1565/content';
 import { ALLEGIANCE_FACTIONS, attackPool } from '@m1565/content';
+import { t } from '../i18n';
 
 /**
  * The player's gear, the classic way: real items, not unlimited designs. An armatura or weapon
@@ -123,13 +124,13 @@ export function swapBlocked(
 ): string | undefined {
   const to = h.roster.find((r) => r.characterId === toId);
   const from = h.roster.find((r) => r.characterId === fromId);
-  if (!to || !from || toId === fromId) return 'No one to swap with';
+  if (!to || !from || toId === fromId) return t('swap.noOne');
   const item = equipped(from, kind);
-  if (!item) return 'Nothing fitted';
+  if (!item) return t('swap.nothingFitted');
   const theirs = lib.characters.get(fromId)?.name ?? fromId;
-  if (!canUse(lib, to, kind, item)) return "Can't use this armatura";
+  if (!canUse(lib, to, kind, item)) return t('swap.cantUseFrame');
   const mine = equipped(to, kind);
-  if (mine && !canUse(lib, from, kind, mine)) return `${theirs} can't use yours in exchange`;
+  if (mine && !canUse(lib, from, kind, mine)) return t('swap.theyCantUse', { name: theirs });
   return undefined;
 }
 
@@ -243,6 +244,7 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
       ? `${weapon.maxRange}`
       : `${weapon.minRange}–${weapon.maxRange}`
     : '';
+  // e.g. "blade 1": the weapon type in the player's language, then the range in tiles.
   const techniques =
     frame && weapon
       ? [...starterAttacks(weapon), ...attackPool(lib, frame, weapon)]
@@ -256,7 +258,7 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint),
     accuracy: stats.dex * b.dexHitFactor,
     block: Math.round(stats.def * b.defDamagePerPoint),
-    reach: weapon ? `${weapon.type} ${range}` : '',
+    reach: weapon ? `${t(`weaponType.${weapon.type}`)} ${range}` : '',
     techniques,
   };
 }

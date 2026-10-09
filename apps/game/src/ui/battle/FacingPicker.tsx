@@ -1,4 +1,5 @@
 import type { Facing } from '@m1565/core';
+import { t } from '../../i18n';
 
 type Corner = 'upLeft' | 'upRight' | 'downLeft' | 'downRight';
 
@@ -14,15 +15,15 @@ const ARROWS: Record<Corner, string> = { upLeft: '↖', upRight: '↗', downLeft
 /** End-of-turn facing choice, laid out to match the isometric screen directions. */
 export function FacingPicker({ corners, current, onPick, onCancel }: Props) {
   return (
-    <div class="facing-picker" role="dialog" aria-label="Choose facing">
-      <p>Face which way?</p>
+    <div class="facing-picker" role="dialog" aria-label={t('facing.choose')}>
+      <p>{t('facing.question')}</p>
       <div class="facing-grid">
         {(Object.keys(ARROWS) as Corner[]).map((c) => (
           <button
             type="button"
             key={c}
             class={`btn facing-btn ${corners[c] === current ? 'current' : ''}`}
-            aria-label={`Face ${corners[c]}`}
+            aria-label={t(`facing.face.${corners[c]}`)}
             aria-pressed={corners[c] === current}
             data-nav-default={corners[c] === current || undefined}
             onClick={() => onPick(corners[c])}
@@ -31,14 +32,14 @@ export function FacingPicker({ corners, current, onPick, onCancel }: Props) {
             {/* The current facing is marked in words too, not by the outline alone. */}
             {corners[c] === current && (
               <small class="facing-now" aria-hidden="true">
-                now
+                {t('facing.now')}
               </small>
             )}
           </button>
         ))}
       </div>
       <button type="button" class="btn ghost" data-nav-back onClick={onCancel}>
-        Back
+        {t('common.back')}
       </button>
     </div>
   );
