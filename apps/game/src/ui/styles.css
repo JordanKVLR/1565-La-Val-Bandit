@@ -2151,3 +2151,111 @@ input[type='range'] {
   min-height: 44px;
   opacity: 0.8;
 }
+
+/* ── Difficulty and New Game+ (ADR 0007) ────────────────────── */
+.modal-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.btn.slot.difficulty-option {
+  justify-content: flex-start;
+}
+/* The current mode: a thick gold edge and a "✓ current" label, never colour alone. */
+.btn.slot.difficulty-option.on {
+  border-width: 4px;
+  background: linear-gradient(#5a2019, var(--blood));
+}
+.difficulty-pips {
+  min-width: 3.2em;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+.difficulty-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.difficulty-tag {
+  font-size: 0.8em;
+  font-weight: normal;
+}
+.slot-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+.save-badges {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.badge {
+  display: inline-block;
+  padding: 0 0.5em;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--parchment);
+  background: var(--panel);
+  white-space: nowrap;
+}
+/* NG+ is told apart by its double border and bold text as well as its colour. */
+.badge.ngplus {
+  border-style: double;
+  border-width: 3px;
+  font-weight: bold;
+  color: var(--gold);
+  margin-left: 6px;
+}
+.save-badges .badge.ngplus {
+  margin-left: 0;
+}
+.btn.title-continue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.end-note,
+.end-ngplus {
+  margin: 0;
+  max-width: 32em;
+  text-align: center;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+/* Landscape: the three modes sit side by side as cards, so they fit a phone without scrolling. */
+.modal-box.difficulty-box {
+  width: min(880px, 100%);
+}
+.difficulty-picker {
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: stretch;
+}
+.btn.slot.difficulty-option {
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 0.4em 0.8em;
+}
+.difficulty-pips {
+  min-width: 0;
+}
+.difficulty-text small {
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+@media (max-height: 520px) {
+  .difficulty-text small {
+    font-size: 0.75rem;
+  }
+}

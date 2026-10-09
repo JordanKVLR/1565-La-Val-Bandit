@@ -198,6 +198,11 @@ skippable on tap.
   three tiers per side (common, fine, masterwork), unlocked as the story goes on along every
   route. The screen is the armourer's workshop (ADR 0005): pilot rail, 3D armatura with its four
   slots, a shelf of item cards, and a before → after comparison for every item.
+- **Difficulty and New Game+** (ADR 0007): Squire, Knight (default) and Grand Master scale
+  content-built enemies (levels, attributes) and scudi income from `balance.json`; on Squire a
+  lost battle keeps its experience, so Retry is free. After any ending, New Game+ restarts the
+  story with the company's levels, attributes, gear, stores and scudi, and enemies stronger per
+  cycle.
 - **Affinity:** hidden relationship values changed by dialogue choices; they gate scenes, routes
   and ending variations.
 
@@ -480,7 +485,7 @@ Each milestone ends with a playable build on the web preview, and CI green.
 | **M4** | Story engine       | Ink integration, diorama scenes, portrait dialogue box, choices/flags/affinity, chapter flow, title/save menus                     | ✅ Done                                                                                                |
 | **M5** | **Vertical slice** | P0–P3 + B1–B5 content (incl. the first Ottoman side-story battle), tutorial prompts, audio placeholders, settings, i18n extraction | ✅ Done                                                                                                |
 | M6     | Progression        | Levels, skills, shop, Armatura customization, recruitable units, balance-sim tuning                                                | ✅ Done (levels, loadouts, shop; skills still to do)                                                   |
-| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | ✅ Done (24 battles, 3 routes, 3 endings)                                                              |
+| M7     | Campaign           | Routes A/B/C, endings, NG+                                                                                                         | ✅ Done (24 battles, 3 routes, 3 endings, NG+, 3 difficulty modes: ADR 0007)                           |
 | M8     | Platform shells    | Capacitor Android/iOS, Electron/Steam, ads + consent, achievements, cloud saves                                                    | 🟡 Shells built (Capacitor Android/iOS, Electron + Steam achievements); store accounts and ads pending |
 | M9     | Polish & launch    | Final art/audio integration, localization, accessibility pass, performance pass, store assets                                      | 🟡 Placeholder audio, help, settings done; final art/audio, gamepad and store assets pending           |
 

@@ -1,9 +1,12 @@
-import type { BattleState, Facing } from '@m1565/core';
+import type { BattleState, Difficulty, Facing } from '@m1565/core';
 import type { CharacterProgress, RosterEntry } from '@m1565/content';
 import type { Stores } from './inventory';
 import type { StoryStep } from '../story/StoryRunner';
 
 export type { CharacterProgress, RosterEntry };
+
+/** What a pilot had fitted: armatura, weapon, charm and amulet. */
+export type Loadout = Pick<RosterEntry, 'frame' | 'weapon' | 'charm' | 'amulet'>;
 
 export interface StageActor {
   readonly x: number;
@@ -21,7 +24,7 @@ export interface ChapterInfo {
   readonly subtitle: string;
 }
 
-export const CAMPAIGN_SAVE_VERSION = 2;
+export const CAMPAIGN_SAVE_VERSION = 3;
 
 export interface CampaignSave {
   readonly version: number;
@@ -41,4 +44,15 @@ export interface CampaignSave {
   readonly battle: { readonly id: string; readonly state?: BattleState } | null;
   readonly savedAt: number;
   readonly playMs: number;
+  /** Chosen at New Game; can be changed from the in-game menu. */
+  readonly difficulty: Difficulty;
+  /** New Game+ cycle: completed playthroughs before this one (0 = first). */
+  readonly ngPlus: number;
+  /** Route of the ending reached in this playthrough, once reached (offers New Game+). */
+  readonly ending: string | null;
+  /**
+   * New Game+: what each carried-over pilot had fitted at the end of the last playthrough. The
+   * items wait in the stores and are fitted again when the pilot rejoins.
+   */
+  readonly kit?: Readonly<Record<string, Loadout>>;
 }

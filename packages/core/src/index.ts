@@ -3,6 +3,7 @@ export * from './ai';
 export * from './balance';
 export * from './battle';
 export * from './combat';
+export * from './difficulty';
 export * from './commands';
 export * from './events';
 export * from './grid';

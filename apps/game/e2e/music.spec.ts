@@ -14,6 +14,7 @@ test('Gentle Piano plays outside battle and Thunderous Charge in battle', async 
   const piano = trackLoaded(page, /gentle-piano/);
   await page.goto('./');
   await page.getByRole('button', { name: 'New Game' }).click();
+  await page.getByRole('button', { name: /^Knight/ }).click();
   await page.getByRole('button', { name: 'Skip' }).click();
   expect([200, 206]).toContain(await piano);
 

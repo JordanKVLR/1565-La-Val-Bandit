@@ -36,6 +36,10 @@ interface Props {
   /** Resume from a saved mid-battle state. */
   initial?: BattleState;
   onExit: (outcome: 'victory' | 'defeat' | 'quit', state: BattleState) => void;
+  /** Retry after a defeat; without it the battle simply restarts in place. */
+  onRetry?: (state: BattleState) => void;
+  /** Says what retrying costs on this difficulty. */
+  retryNote?: string;
   onStateChange?: (state: BattleState) => void;
   continueLabel?: string;
 }
@@ -67,6 +71,8 @@ export function BattleScreen({
   title,
   initial,
   onExit,
+  onRetry,
+  retryNote,
   onStateChange,
   continueLabel,
 }: Props) {
@@ -345,7 +351,8 @@ export function BattleScreen({
       {mode.kind === 'ended' && (
         <EndOverlay
           outcome={mode.outcome}
-          onRetry={() => ctl.retry()}
+          onRetry={() => (onRetry ? onRetry(state) : ctl.retry())}
+          {...(retryNote ? { retryNote } : {})}
           onContinue={() => onExit(mode.outcome, state)}
           {...(continueLabel ? { continueLabel } : {})}
         />

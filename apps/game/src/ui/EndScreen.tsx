@@ -8,6 +8,10 @@ export function EndScreen({ onTitle }: { onTitle: () => void }) {
         <br />
         Placeholder art and sound throughout; final assets to come.
       </p>
+      <p class="end-ngplus">
+        New Game+ is now open on the title screen: begin again with your company, against a stronger
+        enemy.
+      </p>
       <button type="button" class="btn" onClick={onTitle}>
         Return to title
       </button>
