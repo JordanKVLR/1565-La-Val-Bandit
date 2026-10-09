@@ -2,6 +2,14 @@ import type { Settings } from '../state/settings';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
 import { installApp, installOffer, isIos, isStandalone } from '../platform/fullscreen';
+import type { DisplaySetting } from '../platform/displayMode';
+
+/** Layout choices (ADR 0010): Auto picks TV for a gamepad on a big screen. */
+const DISPLAY_CHOICES: readonly (readonly [DisplaySetting, string])[] = [
+  ['auto', 'Auto'],
+  ['handheld', 'Handheld'],
+  ['tv', 'TV'],
+];
 
 function OnOff({
   value,
@@ -139,6 +147,26 @@ export function SettingsPanel({
             </button>
           </div>
         </div>
+        <div class="setting">
+          <span>Display</span>
+          <div class="seg" role="group" aria-label="Display">
+            {DISPLAY_CHOICES.map(([v, label]) => (
+              <button
+                type="button"
+                key={v}
+                class={`btn tab ${s.display === v ? 'on' : ''}`}
+                aria-pressed={s.display === v}
+                data-testid={`display-${v}`}
+                onClick={() => set({ display: v })}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p class="setting-hint">
+          Auto uses the TV layout when you play with a controller on a big screen.
+        </p>
         <label class="setting">
           <span>Music</span>
           <input

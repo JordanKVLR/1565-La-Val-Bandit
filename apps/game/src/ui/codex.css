@@ -1,8 +1,7 @@
 /* Historical notes: a list of entries beside the open entry, sized for a landscape phone. */
 .modal-box.codex {
   width: min(920px, 100%);
-  height: calc(100vh - 24px);
-  height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  height: calc(100 * var(--dvh) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   padding-left: max(18px, env(safe-area-inset-left));
   padding-right: max(18px, env(safe-area-inset-right));
   overflow: hidden;

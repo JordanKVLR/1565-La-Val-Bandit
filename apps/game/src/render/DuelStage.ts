@@ -22,6 +22,7 @@ import type { FigureSpec, Pose } from './Armatura';
 import { ArmaturaFighter, guardFor, POSE_KEYS } from './Armatura';
 import type { Key } from './duelMoves';
 import { GAP, moveFor, reactionFor } from './duelMoves';
+import { measureCanvas, renderPixelRatio } from './resolution';
 
 export type DuelFighter = FigureSpec;
 
@@ -81,7 +82,6 @@ export class DuelStage {
     private readonly speed = 1,
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.camera.position.set(0, 1.35, 6.2);
     this.camera.lookAt(0, 0.95, 0);
 
@@ -453,6 +453,8 @@ export class DuelStage {
   private resize(): void {
     const { clientWidth: w, clientHeight: h } = this.canvas;
     if (!w || !h) return;
+    // Screen density, TV zoom and the 4K cap (ADR 0010).
+    this.renderer.setPixelRatio(renderPixelRatio(measureCanvas(this.canvas)));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // Keep both fighters in frame on narrow screens.

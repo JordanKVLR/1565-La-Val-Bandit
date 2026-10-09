@@ -11,6 +11,7 @@ import {
 } from 'three';
 import type { FigureSpec } from './Armatura';
 import { ArmaturaFighter, guardFor } from './Armatura';
+import { measureCanvas, renderPixelRatio } from './resolution';
 
 /**
  * A single unit on a stone plinth, turning slowly: the armatura on the unit details screen.
@@ -30,7 +31,6 @@ export class UnitViewer {
     spec: FigureSpec,
   ) {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.camera.position.set(0, 1.2, 3.9);
     this.camera.lookAt(0, 1.0, 0);
     this.scene.add(new HemisphereLight(0xdfe8ff, 0x3a2e1e, 1.1));
@@ -73,6 +73,8 @@ export class UnitViewer {
   private resize(): void {
     const { clientWidth: w, clientHeight: h } = this.canvas;
     if (!w || !h) return;
+    // Screen density, TV zoom and the 4K cap (ADR 0010).
+    this.renderer.setPixelRatio(renderPixelRatio(measureCanvas(this.canvas)));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.position.z = Math.max(3.9, 3 / this.camera.aspect);
