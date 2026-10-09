@@ -1,0 +1,136 @@
+{
+  "id": "c6-boat-road",
+  "name": "The Boat Road",
+  "map": "c6-boat-road",
+  "seed": 36,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [5, 4],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [6, 4],
+      "facing": "south",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [5, 5],
+      "facing": "east",
+      "character": "kateri"
+    },
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 6,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [6, 5],
+      "facing": "west",
+      "character": "leyla"
+    },
+    {
+      "id": "hire-capt",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [10, 4],
+      "facing": "west",
+      "ai": "aggressive",
+      "name": "Scala's Factor",
+      "stats": {
+        "pow": 10,
+        "dex": 9,
+        "agl": 7
+      }
+    },
+    {
+      "id": "hire-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [1, 2],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Hired Blade",
+      "stats": {
+        "pow": 8,
+        "dex": 7,
+        "agl": 6
+      }
+    },
+    {
+      "id": "hire-gun",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Hired Gunner",
+      "stats": {
+        "pow": 7,
+        "dex": 8,
+        "agl": 5
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [1, 4],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 9,
+        "dex": 7,
+        "agl": 4
+      }
+    }
+  ],
+  "salvage": ["levend"]
+}

@@ -1,0 +1,44 @@
+{
+  "id": "a8-st-michael",
+  "name": "Walls of St Michael",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "gpptttttttpg",
+    "ppxppppppxpp",
+    "pppppxxppppp",
+    "WbbWWWWWWbbW",
+    "#__##__##__#",
+    "____________",
+    "__WW____WW__",
+    "____________",
+    "_WW__rr__WW_",
+    "____rrrr____"
+  ],
+  "height": [
+    "211000000012",
+    "112111111211",
+    "111112211111",
+    "422444444224",
+    "433443344334",
+    "333333333333",
+    "335533335533",
+    "333333333333",
+    "355335533553",
+    "333333333333"
+  ]
+}

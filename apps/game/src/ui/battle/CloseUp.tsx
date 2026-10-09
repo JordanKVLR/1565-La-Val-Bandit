@@ -3,6 +3,7 @@ import { sfx } from '../../platform/audio';
 import { DuelStage } from '../../render/DuelStage';
 import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
 import { settings } from '../../state/settings';
+import { usePressWord } from '../KeyHint';
 
 interface Props {
   data: CloseUpData;
@@ -30,6 +31,7 @@ export function CloseUp({ data, onDone }: Props) {
   const [popups, setPopups] = useState<Popup[]>([]);
   // The banner names the technique in play: the attack, then the one used to strike back.
   const [title, setTitle] = useState(data.attackName);
+  const pressWord = usePressWord();
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
 
@@ -153,7 +155,7 @@ export function CloseUp({ data, onDone }: Props) {
           <div class={`portrait portrait-${data.right.side}`}>{data.right.initial}</div>
         </div>
       </div>
-      <div class="cu-skip">Tap to skip</div>
+      <div class="cu-skip">{pressWord} to skip</div>
     </div>
   );
 }

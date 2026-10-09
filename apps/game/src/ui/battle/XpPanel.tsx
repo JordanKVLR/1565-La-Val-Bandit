@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'preact/hooks';
+import { NewSkills } from '../SkillList';
 
 export interface XpGain {
   readonly unitId: string;
@@ -8,6 +9,8 @@ export interface XpGain {
   readonly xpBefore: number;
   readonly levelAfter: number;
   readonly xpAfter: number;
+  /** Names of pilot skills gained with the level-ups in this exchange. */
+  readonly newSkills?: readonly string[];
 }
 
 /**
@@ -61,6 +64,7 @@ export function XpPanel({
                   )}{' '}
                   · {g.xpAfter}/{xpPerLevel} XP · {xpPerLevel - g.xpAfter} to next level
                 </small>
+                <NewSkills names={g.newSkills ?? []} />
               </li>
             );
           })}

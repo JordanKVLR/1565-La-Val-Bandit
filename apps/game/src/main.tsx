@@ -7,6 +7,7 @@ import '@fontsource/cinzel/700.css';
 import './ui/styles.css';
 import './ui/maltese.generated.css';
 import './ui/maltese.css';
+import './ui/input.css';
 
 registerSW({ immediate: true });
 

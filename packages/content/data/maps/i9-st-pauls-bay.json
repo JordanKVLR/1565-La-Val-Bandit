@@ -1,0 +1,44 @@
+{
+  "id": "i9-st-pauls-bay",
+  "name": "St Paul's Bay",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~~~~~~~~~",
+    "~ddww~~wwdd~",
+    "wwssswwssssw",
+    "sssppsssppss",
+    "pppxppppxppp",
+    "ffppggpppfff",
+    "fffpgggppfff",
+    "xffpprrppffx",
+    "gggprrrrpggg",
+    "ggprrggrrpgg"
+  ],
+  "height": [
+    "000000000000",
+    "011000000110",
+    "001110011110",
+    "111221112211",
+    "111211112111",
+    "222223322222",
+    "222233332222",
+    "333333333333",
+    "444444444444",
+    "444444444444"
+  ]
+}

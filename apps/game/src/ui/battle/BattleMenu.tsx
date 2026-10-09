@@ -12,7 +12,7 @@ export function BattleMenu({ onResume, onLog, onHelp, onSettings, onQuit }: Prop
     <div class="modal" role="dialog" aria-label="Battle menu" onClick={onResume}>
       <div class="modal-box menu-box" onClick={(e) => e.stopPropagation()}>
         <h2>Menu</h2>
-        <button type="button" class="btn" onClick={onResume}>
+        <button type="button" class="btn" data-nav-back onClick={onResume}>
           Resume
         </button>
         <button type="button" class="btn ghost" onClick={onLog}>
@@ -44,7 +44,7 @@ export function LogPanel({ log, onClose }: { log: readonly string[]; onClose: ()
             [...log].reverse().map((l, i) => <p key={i}>{l}</p>)
           )}
         </div>
-        <button type="button" class="btn" onClick={onClose}>
+        <button type="button" class="btn" data-nav-back onClick={onClose}>
           Close
         </button>
       </div>

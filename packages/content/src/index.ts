@@ -1,8 +1,11 @@
 import type {
   Attack,
   BalanceConfig,
+  Difficulty,
   PilotStats,
   BattleMap,
+  Skill,
+  SkillEffect,
   BattleSetup,
   Frame,
   Gear,
@@ -11,7 +14,14 @@ import type {
   UnitSpec,
   Weapon,
 } from '@m1565/core';
-import { getTile, techniqueCost, validateMap } from '@m1565/core';
+import {
+  enemyScaling,
+  getTile,
+  scaleEnemyLevel,
+  scaleEnemyStats,
+  techniqueCost,
+  validateMap,
+} from '@m1565/core';
 import armourerData from '../data/armourers.json';
 import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
@@ -21,6 +31,7 @@ import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
 import gearData from '../data/gear.json';
 import shopData from '../data/shop.json';
+import skillData from '../data/skills.json';
 import terrainData from '../data/terrain.json';
 import weaponData from '../data/weapons.json';
 import {
@@ -31,6 +42,7 @@ import {
   BattleSourceSchema,
   CastSchema,
   ShopItemSchema,
+  SkillBookSchema,
   CharacterSchema,
   FrameSchema,
   GearSchema,
@@ -39,8 +51,9 @@ import {
   WeaponSchema,
 } from './schemas';
 import { derivedStats, statsAtLevel } from './progression';
-import type { BattleSource, Character, MapSource } from './schemas';
+import type { BattleSource, Character, MapSource, SkillData } from './schemas';
 
+export * from './codex';
 export * from './progression';
 export * from './schemas';
 
@@ -106,8 +119,26 @@ const byId = <T extends { id: string }>(
   return map;
 };
 
+/** Parses skills.json and checks every assignment names a known skill, in level order. */
+export function loadSkillBook(raw: unknown = skillData) {
+  const book = SkillBookSchema.parse(raw);
+  const skills = byId(book.skills as SkillData[], 'skill');
+  const characters = new Map<string, readonly { skill: string; level: number }[]>();
+  for (const [characterId, list] of Object.entries(book.characters)) {
+    list.forEach((entry, i) => {
+      if (!skills.has(entry.skill))
+        throw new Error(`skills.json: ${characterId} has unknown skill "${entry.skill}"`);
+      if (i > 0 && entry.level <= list[i - 1]!.level)
+        throw new Error(`skills.json: ${characterId}'s skills must unlock at rising levels`);
+    });
+    characters.set(characterId, list);
+  }
+  return { skills, characters };
+}
+
 /** All static content, parsed and validated once. */
 export function loadLibrary() {
+  const skillBook = loadSkillBook();
   return {
     balance: BalanceSchema.parse(balanceData) as BalanceConfig,
     terrains: loadTerrains(),
@@ -143,6 +174,9 @@ export function loadLibrary() {
     shop: ShopItemSchema.array().parse(shopData),
     armourers: ArmourersSchema.parse(armourerData),
     attacks: AttackSchema.array().parse(attackData),
+    skills: skillBook.skills,
+    /** characterId → the skills that character gains, with the level each unlocks at. */
+    skillSets: skillBook.characters,
   };
 }
 export type Library = ReturnType<typeof loadLibrary>;
@@ -199,6 +233,29 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
     );
 }
 
+/** Every skill a named character has or will gain, each with its unlock level. */
+export function characterSkills(lib: Library, characterId: string): Skill[] {
+  return (lib.skillSets.get(characterId) ?? []).map(({ skill, level }) =>
+    toSkill(lib.skills.get(skill)!, level),
+  );
+}
+
+function toSkill(s: SkillData, level: number): Skill {
+  // zod's optional `when` is `T | undefined`; the engine's type is the same data.
+  return {
+    id: s.id,
+    name: s.name,
+    description: s.description,
+    level,
+    effect: s.effect as SkillEffect,
+  };
+}
+
+/** A generic unit's extra skills from battle JSON: all active from level 1. */
+function genericSkills(lib: Library, ids: readonly string[], where: string): Skill[] {
+  return ids.map((sid) => toSkill(need(lib.skills, sid, 'skill', where), 1));
+}
+
 /**
  * A unit's full stats: saved/explicit values first; named characters fill gaps from their
  * expected build at this level; generic units derive BAS/DEF/WEP from level and frame.
@@ -221,16 +278,27 @@ function resolveStats(
   return out;
 }
 
+/** How hard the playthrough is: enemies are scaled for the difficulty and New Game+ cycle. */
+export interface BattleOptions {
+  readonly difficulty?: Difficulty;
+  /** Completed playthroughs before this one (0 = first). */
+  readonly ngPlus?: number;
+}
+
 /**
  * Resolves a battle's references (map, frames, weapons, characters) into a core BattleSetup.
  * Named player characters found in `roster` fight with their saved level, stats and loadout.
+ * Enemies are scaled for the difficulty and New Game+ cycle in `options` (Knight, first
+ * playthrough, leaves them exactly as authored).
  */
 export function buildBattle(
   source: BattleSource,
   lib: Library = loadLibrary(),
   roster: readonly RosterEntry[] = [],
   progress: Readonly<Record<string, CharacterProgress>> = {},
+  options: BattleOptions = {},
 ): BattleSetup {
+  const scaling = enemyScaling(lib.balance, options.difficulty ?? 'knight', options.ngPlus ?? 0);
   const saved = new Map(roster.map((r) => [r.characterId, r]));
   const where = `battle ${source.id}`;
   const mapSource = mapSources[source.map];
@@ -247,7 +315,9 @@ export function buildBattle(
       ? { ...u0, level: r.level, stats: r.stats, frame: r.frame, weapon: r.weapon }
       : veteran
         ? { ...u0, level: veteran.level, stats: veteran.stats }
-        : u0;
+        : u0.side === 'enemy'
+          ? { ...u0, level: scaleEnemyLevel(u0.level, scaling) }
+          : u0;
     const character = u.character
       ? need(lib.characters, u.character, 'character', where)
       : undefined;
@@ -265,9 +335,15 @@ export function buildBattle(
     };
     const charm = gear(r?.charm, 'charm');
     const amulet = gear(r?.amulet, 'amulet');
+    const skills = [
+      ...(u.character ? characterSkills(lib, u.character) : []),
+      ...genericSkills(lib, u.skills ?? [], where),
+    ];
     const key = `${at.x},${at.y}`;
     if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
     occupied.add(key);
+    // Without a saved roster entry, a named character arrives at the level the battle expects.
+    const stats = resolveStats(u.stats, character, u.level, frame.class, u.side, lib);
     return {
       id: u.id,
       ...(u.character ? { characterId: u.character } : {}),
@@ -277,13 +353,14 @@ export function buildBattle(
       controller: u.controller,
       ...(u.ai ? { ai: u.ai } : {}),
       level: u.level,
-      // Without a saved roster entry, a named character arrives at the level the battle expects.
-      stats: resolveStats(u.stats, character, u.level, frame.class, u.side, lib),
+      // Enemies are scaled for the difficulty and New Game+ cycle.
+      stats: u.side === 'enemy' ? scaleEnemyStats(stats, scaling, lib.balance.statMax) : stats,
       frame,
       weapon,
       ...(charm ? { charm } : {}),
       ...(amulet ? { amulet } : {}),
       attacks: attackPool(lib, frame, weapon),
+      ...(skills.length ? { skills } : {}),
       ...(r ? { xp: r.xp, statPoints: r.statPoints ?? 0 } : {}),
       ...(veteran ? { xp: veteran.xp, statPoints: veteran.statPoints ?? 0 } : {}),
       at,
@@ -324,8 +401,9 @@ export function loadBattle(
   lib: Library = loadLibrary(),
   roster: readonly RosterEntry[] = [],
   progress: Readonly<Record<string, CharacterProgress>> = {},
+  options: BattleOptions = {},
 ): BattleSetup {
-  return buildBattle(BattleSourceSchema.parse(battleSources[id]), lib, roster, progress);
+  return buildBattle(BattleSourceSchema.parse(battleSources[id]), lib, roster, progress, options);
 }
 
 export function isBattleId(id: string): id is BattleId {

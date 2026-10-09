@@ -1,0 +1,213 @@
+{
+  "id": "a9-marsa-lines",
+  "name": "The Abandoned Lines",
+  "map": "a9-marsa-lines",
+  "seed": 19,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "scala"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 12,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [5, 8],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [4, 9],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "balbi",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 9],
+      "facing": "north",
+      "character": "balbi"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [3, 8],
+      "facing": "north",
+      "character": "ganni"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [8, 8],
+      "facing": "north",
+      "character": "rozi"
+    },
+    {
+      "id": "relief",
+      "side": "player",
+      "controller": "human",
+      "level": 12,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [6, 8],
+      "facing": "north",
+      "name": "Relief Captain",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 6,
+        "def": 13,
+        "bas": 14
+      }
+    },
+    {
+      "id": "scala",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 15,
+      "frame": "prototipo",
+      "weapon": "colossus-cannon",
+      "at": [6, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Scala",
+      "stats": {
+        "pow": 15,
+        "dex": 14,
+        "agl": 6
+      },
+      "portrait": "scala"
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Scala's Hireling",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 8
+      }
+    },
+    {
+      "id": "proto-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [4, 3],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 13,
+        "dex": 12,
+        "agl": 5
+      }
+    },
+    {
+      "id": "proto-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "prototipo",
+      "weapon": "ram-arm",
+      "at": [7, 3],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Prototipo",
+      "stats": {
+        "pow": 13,
+        "dex": 12,
+        "agl": 5
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [2, 5],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Rearguard Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 13,
+        "agl": 6
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [9, 5],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Rearguard Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 13,
+        "agl": 6
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [0, 4],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "pow": 13,
+        "dex": 12,
+        "agl": 9
+      }
+    }
+  ]
+}

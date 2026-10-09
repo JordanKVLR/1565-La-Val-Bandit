@@ -62,6 +62,16 @@ export type BattleEvent =
       readonly unitId: string;
       readonly level: number;
       readonly statPoints: number;
+      /** Ids of pilot skills that became active at this level. */
+      readonly newSkills?: readonly string[];
+    }
+  /** A skill restored HP at the start of the unit's turn. */
+  | {
+      readonly type: 'unitRecovered';
+      readonly unitId: string;
+      readonly skillId: string;
+      readonly amount: number;
+      readonly hp: number;
     }
   | {
       readonly type: 'statRaised';

@@ -2,6 +2,17 @@ import type { Attack } from './attacks';
 import { attackRange, basicAttack, meetsRequirements } from './attacks';
 import type { Coord, Facing } from './grid';
 import { DIRECTIONS, manhattan } from './grid';
+import type { SkillContext } from './skills';
+import {
+  attackFpDiscount,
+  counterBonus,
+  defendBonus,
+  reactionDiscount,
+  skillDamageMult,
+  skillDamageReduction,
+  skillHitModifier,
+  xpMult,
+} from './skills';
 import type { BattleState } from './state';
 import { heightAt, livingUnits, terrainAt } from './state';
 import type { UnitState, Weapon } from './units';
@@ -96,9 +107,13 @@ export interface ReactionChoice {
   readonly reason?: string;
 }
 
-/** FP a strike back costs: the technique's AP and FP together, all paid as FP (no AP). */
-export function attackBackFpCost(attack: Attack): number {
-  return attack.apCost + attack.fpCost;
+/**
+ * FP a strike back costs: the technique's AP and FP together, all paid as FP (no AP). With the
+ * defender given, its skills' discount comes off.
+ */
+export function attackBackFpCost(attack: Attack, defender?: UnitState): number {
+  const full = attack.apCost + attack.fpCost;
+  return defender ? Math.max(0, full - reactionDiscount(defender, 'attackBack')) : full;
 }
 
 export interface BackAttackOption {
@@ -124,7 +139,7 @@ export function attackBackOptions(
   return defender.attacks
     .filter((a) => meetsRequirements(stats, a))
     .map((attack) => {
-      const fpCost = attackBackFpCost(attack);
+      const fpCost = attackBackFpCost(attack, defender);
       const reason =
         attackerPos && !attackInRange(attack, defender.weapon, defender.pos, attackerPos)
           ? 'Out of reach'
@@ -164,9 +179,9 @@ export function attackBackWith(
   );
 }
 
-/** FP an attack costs this unit on its own turn (after SPI). */
-export function attackFpCost(state: BattleState, unit: UnitState, attack: Attack): number {
-  return attack.fpCost;
+/** FP an attack costs this unit on its own turn (after its skills' discount). */
+export function attackFpCost(_state: BattleState, unit: UnitState, attack: Attack): number {
+  return Math.max(0, attack.fpCost - attackFpDiscount(unit));
 }
 
 /**
@@ -181,15 +196,16 @@ export function reactionFpCost(
   backAttackId?: string,
 ): number {
   const b = state.balance;
+  const less = (cost: number) => Math.max(0, cost - reactionDiscount(defender, reaction));
   switch (reaction) {
     case 'defend':
-      return b.defendFpCost;
+      return less(b.defendFpCost);
     case 'avoid':
-      return b.avoidFpCost;
+      return less(b.avoidFpCost);
     case 'counter':
-      return b.counterFpCost;
+      return less(b.counterFpCost);
     case 'attackBack':
-      return attackBackFpCost(attackBackWith(state, defender, attackerPos, backAttackId));
+      return attackBackFpCost(attackBackWith(state, defender, attackerPos, backAttackId), defender);
     case 'none':
       return 0;
   }
@@ -257,18 +273,20 @@ export function availableReactions(
     .map((c) => c.reaction);
 }
 
-/** Chance (percent) that a Counter turns the blow back on the attacker. */
+/** Chance (percent) that a Counter turns the blow back on the attacker (skills add after the clamp). */
 export function counterChance(
   state: BattleState,
   defender: UnitState,
   attacker: UnitState,
 ): number {
   const b = state.balance;
-  return clamp(
-    b.counterBaseChance +
-      b.counterStatFactor * (defender.dex + defender.agl - (attacker.dex + attacker.agl)),
-    b.counterMinChance,
-    b.counterMaxChance,
+  return (
+    clamp(
+      b.counterBaseChance +
+        b.counterStatFactor * (defender.dex + defender.agl - (attacker.dex + attacker.agl)),
+      b.counterMinChance,
+      b.counterMaxChance,
+    ) + counterBonus(defender)
   );
 }
 
@@ -280,6 +298,10 @@ export interface StrikeNumbers {
   readonly heightDiff: number;
   readonly assist: number;
   readonly pierce: number;
+  /** Hit chance from skills (attacker's bonuses and allies' auras, minus the target's evasion). */
+  readonly skillHit: number;
+  /** Fraction of the final damage the target's skills take off. */
+  readonly reduction: number;
 }
 
 /**
@@ -318,6 +340,14 @@ export function strikeNumbers(
   const tired =
     (attacker.fp >= b.fpTired ? -b.tiredPenalty : 0) +
     (target.fp >= b.fpTired ? b.tiredPenalty : 0);
+  const ctx: SkillContext = {
+    self: attacker,
+    foe: target,
+    heightDiff,
+    distance: manhattan(from, target.pos),
+    flank: zone !== 'front',
+  };
+  const skillHit = skillHitModifier(state, attacker, from, target, ctx);
   const baseHit =
     b.baseHit +
     attack.accuracy +
@@ -327,12 +357,27 @@ export function strikeNumbers(
     zoneHit +
     assist -
     (terrainAt(state, target.pos)?.avoid ?? 0) +
-    tired;
+    tired +
+    skillHit;
   const heightMult = 1 + clamp(heightDiff, 0, b.heightDamageMaxSteps) * b.heightDamagePerStep;
   const zoneMult = zone === 'rear' ? b.rearDamageMult : 1;
   const raw =
-    (attacker.pow + attacker.wep) * b.damagePerPoint * attack.power * heightMult * zoneMult;
-  return { baseHit, baseDamage: raw, zone, heightDiff, assist, pierce: attack.pierce ?? 0 };
+    (attacker.pow + attacker.wep) *
+    b.damagePerPoint *
+    attack.power *
+    heightMult *
+    zoneMult *
+    skillDamageMult(attacker, ctx);
+  return {
+    baseHit,
+    baseDamage: raw,
+    zone,
+    heightDiff,
+    assist,
+    pierce: attack.pierce ?? 0,
+    skillHit,
+    reduction: skillDamageReduction(target, ctx),
+  };
 }
 
 export function hitChanceFor(state: BattleState, n: StrikeNumbers, reaction: Reaction): number {
@@ -351,10 +396,15 @@ export function damageFor(
 ): number {
   const b = state.balance;
   const mult =
-    reaction === 'defend' ? b.defendDamageMult : reaction === 'counter' ? b.counterFailMult : 1;
-  // DEF blocks first; Defend then halves what gets through (so a defended blow is about half).
+    reaction === 'defend'
+      ? Math.max(0, b.defendDamageMult - defendBonus(target) / 100)
+      : reaction === 'counter'
+        ? b.counterFailMult
+        : 1;
+  // DEF blocks first; Defend then halves what gets through (so a defended blow is about half),
+  // and the target's skills take their share last.
   const blocked = target.def * b.defDamagePerPoint * (1 - n.pierce);
-  return Math.max(1, Math.round((n.baseDamage - blocked) * mult));
+  return Math.max(1, Math.round((n.baseDamage - blocked) * mult * (1 - n.reduction)));
 }
 
 /**
@@ -379,7 +429,7 @@ export function xpFor(
   const direction = zone === 'front' ? b.xpFront : zone === 'side' ? b.xpSide : b.xpRear;
   const share = Math.min(1, damage / Math.max(1, target.maxHp));
   const hit = (b.xpHitBase + b.xpDamageShare * share) * direction;
-  return Math.max(1, Math.round((hit + (defeated ? b.xpDefeat : 0)) * level));
+  return Math.max(1, Math.round((hit + (defeated ? b.xpDefeat : 0)) * level * xpMult(attacker)));
 }
 
 export interface AttackForecast {
@@ -451,7 +501,7 @@ export function forecastAttack(
         attackId: backAttack.id,
         attackName: backAttack.name,
         hits: backAttack.hits ?? 1,
-        fpCost: attackBackFpCost(backAttack),
+        fpCost: attackBackFpCost(backAttack, target),
         hitChance: hitChanceFor(state, back, 'none'),
         damage: damageFor(state, back, movedAttacker, 'none'),
       },

@@ -11,6 +11,7 @@ import type { Library } from '@m1565/content';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { BattleView } from '../render/BattleView';
 import { BattleController } from '../scenes/BattleController';
+import type { CursorDir } from '../scenes/cursor';
 import { useStore } from '../state/store';
 import { ActionMenu, SubModeBar } from './battle/ActionMenu';
 import { AttackMenu } from './battle/AttackMenu';
@@ -36,6 +37,10 @@ interface Props {
   /** Resume from a saved mid-battle state. */
   initial?: BattleState;
   onExit: (outcome: 'victory' | 'defeat' | 'quit', state: BattleState) => void;
+  /** Retry after a defeat; without it the battle simply restarts in place. */
+  onRetry?: (state: BattleState) => void;
+  /** Says what retrying costs on this difficulty. */
+  retryNote?: string;
   onStateChange?: (state: BattleState) => void;
   continueLabel?: string;
 }
@@ -67,6 +72,8 @@ export function BattleScreen({
   title,
   initial,
   onExit,
+  onRetry,
+  retryNote,
   onStateChange,
   continueLabel,
 }: Props) {
@@ -102,45 +109,95 @@ export function BattleScreen({
     // Runs once per controller: the map never changes mid-battle, and state flows through ctl.
   }, [ctl]);
 
-  // PC keyboard: M move · A attack · E end turn · U undo · Esc back · Enter/Space confirm.
+  // Keyboard (and the gamepad, which sends the same keys; see platform/input/controls.ts):
+  // arrows move the tile cursor · Enter/Space select or confirm · Esc back (or the menu) ·
+  // M move · A attack · E end turn · U undo · [ ] cycle units · , . rotate · + − zoom.
+  // On `document`, so these run before the generic focus fallbacks on `window` (ui/input.ts).
   useEffect(() => {
+    const ARROWS: Record<string, CursorDir> = {
+      ArrowUp: 'up',
+      ArrowDown: 'down',
+      ArrowLeft: 'left',
+      ArrowRight: 'right',
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if ((e.target as HTMLElement | null)?.closest('input, select, textarea')) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest('input, select, textarea')) return;
       const m = ctl.mode;
+      const used = () => e.preventDefault();
+      if (e.key === 'ContextMenu') {
+        used();
+        setPanel((p) => (p === 'none' ? 'menu' : 'none'));
+        return;
+      }
       if (e.key === 'Escape') {
+        used();
         if (panel !== 'none') close();
+        else if (m.kind === 'command') setPanel('menu');
         else ctl.cancel();
         return;
       }
       if (panel !== 'none') return;
+      // A focused button inside a dialog (forecast, facing, level-up...) is pressed natively.
+      const inDialog = !!target?.closest('[role="dialog"]');
+      const dir = ARROWS[e.key];
+      if (dir) {
+        if (inDialog || !ctl.moveCursor(dir)) return;
+        used();
+        // The map has the player's attention now: Enter must act on the cursor, not a button.
+        if (target && target !== document.body) target.blur();
+        return;
+      }
       const confirm = e.key === 'Enter' || e.key === ' ';
-      if (confirm) e.preventDefault();
-      switch (e.key.toLowerCase()) {
+      // A button reached with Tab or the D-pad is pressed natively; one merely left focused
+      // by a click is not, so Enter still acts on the map.
+      const button = target?.closest<HTMLElement>('button, a, [role="button"]');
+      if (confirm && button && (inDialog || button.matches(':focus-visible'))) return;
+      if (confirm) used();
+      switch (e.key) {
         case 'm':
+        case 'M':
           ctl.chooseMove();
           return;
         case 'a':
+        case 'A':
           ctl.chooseAttack();
           return;
         case 'e':
+        case 'E':
           ctl.chooseEndTurn();
           return;
         case 'u':
+        case 'U':
           ctl.undoMove();
+          return;
+        case '[':
+        case ']':
+          if (ctl.cycleCursor(e.key === ']' ? 1 : -1)) used();
+          return;
+        case ',':
+        case '.':
+          used();
+          viewRef.current?.rotate(e.key === '.' ? 1 : -1);
+          return;
+        case '=':
+        case '+':
+        case '-':
+          used();
+          viewRef.current?.zoomBy(e.key === '-' ? 1 / 1.1 : 1.1);
           return;
       }
       if (!confirm) return;
-      if (m.kind === 'move' && m.pending) ctl.confirmMove();
-      else if (m.kind === 'forecast') ctl.confirmAttack();
-      else if (m.kind === 'xp') ctl.finishXp();
+      if (ctl.confirmCursor()) return;
+      if (m.kind === 'xp') ctl.finishXp();
       else if (m.kind === 'closeUp') ctl.finishCloseUp();
       else if (m.kind === 'levelUp') ctl.finishLevelUp();
       else if (m.kind === 'reaction')
         document.querySelector<HTMLButtonElement>('[data-testid="react-go"]')?.click();
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [ctl, panel]);
 
   useEffect(() => {
@@ -345,7 +402,8 @@ export function BattleScreen({
       {mode.kind === 'ended' && (
         <EndOverlay
           outcome={mode.outcome}
-          onRetry={() => ctl.retry()}
+          onRetry={() => (onRetry ? onRetry(state) : ctl.retry())}
+          {...(retryNote ? { retryNote } : {})}
           onContinue={() => onExit(mode.outcome, state)}
           {...(continueLabel ? { continueLabel } : {})}
         />

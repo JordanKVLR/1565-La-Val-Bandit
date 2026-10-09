@@ -10,8 +10,17 @@ export const OLDEST_BATTLE_SAVE = 7;
 
 type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 
-/** migrations[n] upgrades a version-n save to version n+1 (none yet since the v7 reset). */
-const migrations: Record<number, Migration> = {};
+/** migrations[n] upgrades a version-n save to version n+1. */
+const migrations: Record<number, Migration> = {
+  // Version 8 added pilot skills; a battle saved before them carries on without any.
+  7: (raw) => ({
+    ...raw,
+    units: ((raw.units as Record<string, unknown>[] | undefined) ?? []).map((u) => ({
+      skills: [],
+      ...u,
+    })),
+  }),
+};
 
 export class OutdatedSaveError extends Error {
   constructor(version: number) {

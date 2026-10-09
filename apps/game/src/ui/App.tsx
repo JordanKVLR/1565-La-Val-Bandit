@@ -1,10 +1,13 @@
-import type { BattleSetup, BattleState } from '@m1565/core';
+import type { BattleSetup, BattleState, Difficulty } from '@m1565/core';
 import { isBattleId, loadBattle, loadLibrary } from '@m1565/content';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { GameSession } from '../campaign/GameSession';
+import { migrateCampaign } from '../campaign/migrate';
+import { canStartNewGamePlus, newGamePlus } from '../campaign/newGamePlus';
 import { music, sfx, unlockAudio } from '../platform/audio';
 import { enterFullscreenIfWanted, initFullscreen } from '../platform/fullscreen';
 import type { SlotId } from '../platform/storage';
+import { readSave } from '../platform/storage';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
 import { ArmouryScreen } from './armoury/ArmouryScreen';
@@ -15,6 +18,7 @@ import { ResultsScreen } from './ResultsScreen';
 import { RotateOverlay } from './RotateOverlay';
 import { StoryScreen } from './StoryScreen';
 import { IntroScreen } from './IntroScreen';
+import { installInput } from './input';
 import { TitleScreen } from './TitleScreen';
 
 /** Battles against a named commander get the heavier theme. */
@@ -70,6 +74,12 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
           title={screen.setup.map.name}
           {...(screen.initial ? { initial: screen.initial } : {})}
           onExit={(outcome, state: BattleState) => session.finishBattle(outcome, state)}
+          onRetry={(state) => session.retryBattle(state)}
+          retryNote={
+            session.defeatKeepsXp
+              ? 'Your pilots keep the experience they earned.'
+              : 'The battle restarts; experience from this attempt is lost.'
+          }
           onStateChange={(state) => session.saveBattleProgress(state)}
         />
       )}
@@ -79,6 +89,7 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
       {menu && (
         <GameMenu
           session={session}
+          lib={lib}
           onClose={() => setMenu(false)}
           onQuit={() => {
             session.autosave();
@@ -102,6 +113,7 @@ export function App() {
   const [debugBattle, setDebugBattle] = useState(debugBattleId);
   // The opening cinematic plays before every new game, and on request from Settings.
   const [intro, setIntro] = useState<'new' | 'watch' | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty>('knight');
   const { textSize } = useStore(settings);
 
   useEffect(() => {
@@ -117,7 +129,12 @@ export function App() {
       if ((e.target as HTMLElement | null)?.closest('button')) sfx('tap');
     };
     window.addEventListener('pointerdown', onPointer);
-    return () => window.removeEventListener('pointerdown', onPointer);
+    // Keyboard focus navigation and the gamepad (a pad press also counts as user input).
+    const uninstallInput = installInput(unlockAudio);
+    return () => {
+      window.removeEventListener('pointerdown', onPointer);
+      uninstallInput();
+    };
   }, []);
 
   useEffect(() => {
@@ -145,7 +162,7 @@ export function App() {
       ) : intro ? (
         <IntroScreen
           onDone={() => {
-            if (intro === 'new') setSession(new GameSession(lib));
+            if (intro === 'new') setSession(new GameSession(lib, undefined, { difficulty }));
             setIntro(null);
           }}
         />
@@ -153,7 +170,18 @@ export function App() {
         <SessionView session={session} onTitle={() => setSession(null)} />
       ) : (
         <TitleScreen
-          onNew={() => setIntro('new')}
+          lib={lib}
+          onNew={(d) => {
+            setDifficulty(d);
+            setIntro('new');
+          }}
+          onNewGamePlus={(slot: SlotId) => {
+            // Starts the story again at once (the opening cinematic was seen last time).
+            const raw = readSave<Record<string, unknown>>(slot);
+            const save = raw ? migrateCampaign(lib, raw) : null;
+            if (save && canStartNewGamePlus(save))
+              setSession(new GameSession(lib, undefined, newGamePlus(lib, save)));
+          }}
           onWatchIntro={() => setIntro('watch')}
           onLoad={(slot: SlotId) => {
             const loaded = GameSession.load(lib, slot);

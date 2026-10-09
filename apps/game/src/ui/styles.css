@@ -2151,3 +2151,211 @@ input[type='range'] {
   min-height: 44px;
   opacity: 0.8;
 }
+
+/* ── Difficulty and New Game+ (ADR 0007) ────────────────────── */
+.modal-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+.btn.slot.difficulty-option {
+  justify-content: flex-start;
+}
+/* The current mode: a thick gold edge and a "✓ current" label, never colour alone. */
+.btn.slot.difficulty-option.on {
+  border-width: 4px;
+  background: linear-gradient(#5a2019, var(--blood));
+}
+.difficulty-pips {
+  min-width: 3.2em;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+.difficulty-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.difficulty-tag {
+  font-size: 0.8em;
+  font-weight: normal;
+}
+.slot-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+.save-badges {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.badge {
+  display: inline-block;
+  padding: 0 0.5em;
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--parchment);
+  background: var(--panel);
+  white-space: nowrap;
+}
+/* NG+ is told apart by its double border and bold text as well as its colour. */
+.badge.ngplus {
+  border-style: double;
+  border-width: 3px;
+  font-weight: bold;
+  color: var(--gold);
+  margin-left: 6px;
+}
+.save-badges .badge.ngplus {
+  margin-left: 0;
+}
+.btn.title-continue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.end-note,
+.end-ngplus {
+  margin: 0;
+  max-width: 32em;
+  text-align: center;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+/* Landscape: the three modes sit side by side as cards, so they fit a phone without scrolling. */
+.modal-box.difficulty-box {
+  width: min(880px, 100%);
+}
+.difficulty-picker {
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: stretch;
+}
+.btn.slot.difficulty-option {
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 0.4em 0.8em;
+}
+.difficulty-pips {
+  min-width: 0;
+}
+.difficulty-text small {
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+@media (max-height: 520px) {
+  .difficulty-text small {
+    font-size: 0.75rem;
+  }
+}
+/* Pilot skills: active ones carry a star and "Active"; locked ones a padlock, a dashed edge,
+   grey text and "Unlocks at Lv N", so the state never depends on colour alone. */
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+.skill-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 6px 8px;
+  background: rgba(20, 14, 10, 0.7);
+  border: 1px solid rgba(201, 164, 92, 0.6);
+  border-radius: 4px;
+}
+.skill-row.locked {
+  border-style: dashed;
+  border-color: rgba(200, 200, 200, 0.45);
+  color: #b9b4ab;
+  opacity: 0.7;
+  filter: grayscale(1);
+}
+.skill-icon {
+  flex: none;
+  display: inline-flex;
+  padding-top: 2px;
+  color: var(--gold);
+}
+.skill-row.locked .skill-icon {
+  color: #d8d4cc;
+}
+.skill-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.skill-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+.skill-name {
+  color: var(--gold);
+}
+.skill-row.locked .skill-name {
+  color: inherit;
+}
+.skill-state {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.skill-new {
+  padding: 0 5px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--gold);
+  border-radius: 3px;
+}
+.skill-desc {
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+.skill-none {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+.skill-announce {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0 0;
+  color: var(--gold);
+}
+.skill-announce svg {
+  vertical-align: -2px;
+}
+.rs-skills {
+  margin-top: 6px;
+}
+.rs-skills h4 {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  font-variant: small-caps;
+  color: var(--gold);
+}
+.ud-skills .skill-list {
+  max-height: 62vh;
+  overflow-y: auto;
+}

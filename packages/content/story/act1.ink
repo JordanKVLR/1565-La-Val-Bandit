@@ -40,7 +40,7 @@ DENIZ: ...I don't like this. But a debt is a debt.
 >>> stage b6-kalkara-chapel
 >>> actor ninu 5 5 north
 >>> actor kateri 4 6 north
->>> actor deniz 5 3 south
+>>> actor deniz 6 3 south
 Scala's machine retreats into the dark, whistling steam. The young corsair is down on one knee in his broken frame.
 DENIZ: Go on, then. Finish it.
 NINU: You fight well for a pirate.

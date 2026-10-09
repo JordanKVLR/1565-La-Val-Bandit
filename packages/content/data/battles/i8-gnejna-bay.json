@@ -1,0 +1,186 @@
+{
+  "id": "i8-gnejna-bay",
+  "name": "Letters for Sicily",
+  "map": "i8-gnejna-bay",
+  "seed": 28,
+  "victory": [
+    {
+      "type": "escape",
+      "unitId": "rozi",
+      "tiles": [
+        [3, 1],
+        [2, 2],
+        [1, 3]
+      ]
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "rozi"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [10, 8],
+      "facing": "west",
+      "character": "ninu"
+    },
+    {
+      "id": "anastagi",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [9, 8],
+      "facing": "west",
+      "character": "anastagi"
+    },
+    {
+      "id": "rozi",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [11, 9],
+      "facing": "west",
+      "character": "rozi"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [11, 8],
+      "facing": "west",
+      "character": "kateri"
+    },
+    {
+      "id": "ganni",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [10, 9],
+      "facing": "west",
+      "character": "ganni"
+    },
+    {
+      "id": "reis",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 9,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [3, 3],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Galley Reis",
+      "stats": {
+        "pow": 10,
+        "dex": 10,
+        "agl": 7
+      }
+    },
+    {
+      "id": "lev-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Levend",
+      "stats": {
+        "pow": 9,
+        "dex": 9,
+        "agl": 7
+      }
+    },
+    {
+      "id": "lev-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [1, 5],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Levend",
+      "stats": {
+        "pow": 9,
+        "dex": 9,
+        "agl": 7
+      }
+    },
+    {
+      "id": "jan-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [9, 1],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 10,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "jan-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [1, 8],
+      "facing": "east",
+      "ai": "hold",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 10,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 8,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [6, 6],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "pow": 10,
+        "dex": 9,
+        "agl": 8
+      }
+    }
+  ]
+}

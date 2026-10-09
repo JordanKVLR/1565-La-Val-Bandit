@@ -216,6 +216,19 @@ export class BattleView {
     this.updateCamera();
   }
 
+  /** Zooms by a factor (keyboard and gamepad; pinch and the wheel use the same limits). */
+  zoomBy(factor: number): void {
+    this.setZoom(this.zoom * factor);
+  }
+
+  /** Pans to a tile only if it sits near the screen edge, so a moving cursor stays in view. */
+  reveal(c: Coord): void {
+    const { x, y } = this.tileScreenPosition(c);
+    const w = this.canvas.clientWidth;
+    const h = this.canvas.clientHeight;
+    if (x < w * 0.15 || x > w * 0.85 || y < h * 0.2 || y > h * 0.8) void this.focus(c, 180);
+  }
+
   /** Creates, updates or removes unit billboards to match the given list. */
   syncUnits(list: readonly UnitVisual[]): void {
     const seen = new Set<string>();
@@ -357,6 +370,7 @@ export class BattleView {
 
   /** Smoothly pans the camera to centre on a tile. */
   focus(c: Coord, ms = 350): Promise<void> {
+    if (prefersReducedMotion()) ms = 1;
     const from = this.target.clone();
     const to = new Vector3(c.x + 0.5, 0, c.y + 0.5);
     const start = performance.now();
@@ -662,6 +676,14 @@ export class BattleView {
   private currentPinchDistance(): number {
     const [a, b] = [...this.pointers.values()];
     return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
+  }
+}
+
+function prefersReducedMotion(): boolean {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
   }
 }
 

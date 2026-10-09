@@ -1,7 +1,9 @@
 import type { BattleEvent } from './events';
 import { nextInt } from './rng';
+import { activeSkills, initiativeBonus, restMult } from './skills';
 import type { BattleState } from './state';
 import { requireUnit } from './state';
+import type { UnitState } from './units';
 import { evaluateOutcome } from './victory';
 
 /** Rolls initiative (AGI + d6, ties by id) for every living unit and starts the round. */
@@ -17,7 +19,7 @@ export function startRound(state: BattleState, events: BattleEvent[]): void {
     .map((u) => {
       const [d6, rng] = nextInt(state.rng, 1, 6);
       state.rng = rng;
-      return { id: u.id, init: u.agl + d6 };
+      return { id: u.id, init: u.agl + d6 + initiativeBonus(u) };
     });
   rolls.sort((a, b) => b.init - a.init || a.id.localeCompare(b.id));
   state.turnOrder = rolls.map((r) => r.id);
@@ -42,6 +44,7 @@ export function advanceTurn(state: BattleState, events: BattleEvent[]): void {
       startFacing: unit.facing,
       startAp: unit.ap,
     };
+    regenerate(unit, events);
     events.push({
       type: 'turnStarted',
       unitId: unit.id,
@@ -65,11 +68,22 @@ export function endTurn(state: BattleState, events: BattleEvent[]): void {
   const rested = !turn.moved && !turn.acted;
   if (!unit.defeated) {
     const b = state.balance;
-    const recovery = Math.floor(unit.ap / b.apPerFpRecovered);
+    const recovery = Math.floor((unit.ap / b.apPerFpRecovered) * restMult(unit));
     unit.fp = Math.max(0, unit.fp - recovery);
   }
   events.push({ type: 'turnEnded', unitId: unit.id, rested });
   advanceTurn(state, events);
+}
+
+/** Regeneration skills restore HP as the unit's turn begins (never above max). */
+function regenerate(unit: UnitState, events: BattleEvent[]): void {
+  for (const skill of activeSkills(unit)) {
+    if (skill.effect.type !== 'regen') continue;
+    const amount = Math.min(skill.effect.hp, unit.maxHp - unit.hp);
+    if (amount <= 0) continue;
+    unit.hp += amount;
+    events.push({ type: 'unitRecovered', unitId: unit.id, skillId: skill.id, amount, hp: unit.hp });
+  }
 }
 
 export function finish(

@@ -6,6 +6,7 @@ test('title screen starts a new game on the prologue card', async ({ page }) => 
   await page.goto('./');
   await expect(page.getByRole('heading', { name: /Armatura/ })).toBeVisible();
   await page.getByRole('button', { name: 'New Game' }).click();
+  await page.getByRole('button', { name: /^Knight/ }).click();
   await page.getByRole('button', { name: 'Skip' }).click();
   await expect(page.getByTestId('chapter-card')).toContainText('Prologue');
   await page.getByTestId('story-screen').click();

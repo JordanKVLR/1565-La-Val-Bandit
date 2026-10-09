@@ -1,9 +1,12 @@
 import type { PilotStats, StatName, UnitState } from '@m1565/core';
 import { AttributeBars } from './StatBars';
+import { NewSkills } from '../SkillList';
 
 interface Props {
   /** The unit: its top-level attributes include gear, `pilot` holds its own. */
-  unit: PilotStats & Pick<UnitState, 'name' | 'level' | 'statPoints' | 'maxHp' | 'pilot'>;
+  unit: PilotStats &
+    Pick<UnitState, 'name' | 'level' | 'statPoints' | 'maxHp' | 'pilot'> &
+    Partial<Pick<UnitState, 'skills'>>;
   title?: string;
   onRaise: (stat: StatName) => void;
   onDone: () => void;
@@ -19,6 +22,9 @@ export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props)
         <p class="points" data-testid="stat-points">
           {unit.statPoints} point{unit.statPoints === 1 ? '' : 's'} to spend · Max HP {unit.maxHp}
         </p>
+        <NewSkills
+          names={(unit.skills ?? []).filter((s) => s.level === unit.level).map((s) => s.name)}
+        />
         <AttributeBars
           stats={unit.pilot}
           geared={unit}

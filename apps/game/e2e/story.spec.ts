@@ -9,6 +9,7 @@ test('new game plays through the prologue into the first battle, and Continue re
   await page.evaluate(() => localStorage.clear());
   await page.reload();
   await page.getByRole('button', { name: 'New Game' }).click();
+  await page.getByRole('button', { name: /^Knight/ }).click();
   await page.getByRole('button', { name: 'Skip' }).click();
 
   const story = page.getByTestId('story-screen');

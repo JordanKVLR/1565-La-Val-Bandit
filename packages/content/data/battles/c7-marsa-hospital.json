@@ -1,0 +1,164 @@
+{
+  "id": "c7-marsa-hospital",
+  "name": "The Hospital Tents",
+  "map": "c7-marsa-hospital",
+  "seed": 37,
+  "victory": [
+    {
+      "type": "survive",
+      "rounds": 5
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    },
+    {
+      "type": "protect",
+      "unitId": "deniz"
+    }
+  ],
+  "units": [
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [6, 6],
+      "facing": "west",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [7, 6],
+      "facing": "west",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 8,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [7, 4],
+      "facing": "west",
+      "character": "kateri"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 9,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [4, 4],
+      "facing": "west",
+      "character": "yusuf"
+    },
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 7,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [8, 4],
+      "facing": "west",
+      "character": "leyla"
+    },
+    {
+      "id": "rider-capt",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "kaptan",
+      "weapon": "pike",
+      "at": [0, 4],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Mdina Knight",
+      "stats": {
+        "pow": 11,
+        "dex": 10,
+        "agl": 7
+      }
+    },
+    {
+      "id": "rider-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [1, 1],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Mdina Rider",
+      "stats": {
+        "pow": 10,
+        "dex": 9,
+        "agl": 6
+      }
+    },
+    {
+      "id": "rider-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "lanza",
+      "weapon": "pike",
+      "at": [1, 7],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Mdina Rider",
+      "stats": {
+        "pow": 10,
+        "dex": 9,
+        "agl": 6
+      }
+    },
+    {
+      "id": "rider-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [0, 2],
+      "facing": "east",
+      "ai": "aggressive",
+      "name": "Mdina Rider",
+      "stats": {
+        "pow": 10,
+        "dex": 9,
+        "agl": 7
+      }
+    },
+    {
+      "id": "rider-gun",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [0, 9],
+      "facing": "east",
+      "ai": "defensive",
+      "name": "Mdina Arquebusier",
+      "stats": {
+        "pow": 9,
+        "dex": 10,
+        "agl": 6
+      }
+    }
+  ]
+}

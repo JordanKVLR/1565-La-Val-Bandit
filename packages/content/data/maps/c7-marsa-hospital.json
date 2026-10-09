@@ -1,0 +1,44 @@
+{
+  "id": "c7-marsa-hospital",
+  "name": "The Hospital Tents",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ffffpppppss~",
+    "fffppWW_pssw",
+    "ffppp__pWpsw",
+    "gpppp_WW_pps",
+    "fppp______ps",
+    "fpppWW_WW_pp",
+    "gpppp____ppp",
+    "ffpppWW_Wppg",
+    "tttttpp_pppg",
+    "ffppppppppgg"
+  ],
+  "height": [
+    "111111111100",
+    "111111111100",
+    "111111111110",
+    "111111111111",
+    "111111111111",
+    "111111111111",
+    "111111111111",
+    "111111111112",
+    "000001111112",
+    "111111111122"
+  ]
+}

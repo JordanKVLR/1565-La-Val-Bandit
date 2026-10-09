@@ -71,8 +71,9 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
 }
 
 test('a player can move, end turns and answer enemy attacks through round 2', async ({ page }) => {
-  // Plays two full rounds of animated turns; allow for slower CI machines.
-  test.setTimeout(60_000);
+  // Plays two full rounds of animated turns: about 35–45 s alone on the Deck viewport, longer
+  // when the suite runs four software-rendered browsers at once.
+  test.setTimeout(120_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('./?battle=b1-marsaxlokk');

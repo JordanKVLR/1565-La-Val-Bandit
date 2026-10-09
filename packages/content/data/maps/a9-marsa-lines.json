@@ -1,0 +1,44 @@
+{
+  "id": "a9-marsa-lines",
+  "name": "The Abandoned Lines",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "~~~~dddd~~~~",
+    "~~wwddddww~~",
+    "~wss_rr_ssw~",
+    "spp_rrrr_pps",
+    "pWWppxxppWWp",
+    "pp##pppp##pp",
+    "ttttttxttttt",
+    "ppgpppppgppp",
+    "pgxppffppxgp",
+    "ggpprrrrppgg"
+  ],
+  "height": [
+    "000011110000",
+    "000011110000",
+    "001111111100",
+    "011111111110",
+    "122112211221",
+    "112211112211",
+    "000000100000",
+    "111111111111",
+    "112111111211",
+    "221111111122"
+  ]
+}

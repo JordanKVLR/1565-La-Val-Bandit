@@ -45,6 +45,8 @@ import type { HighlightKind, UnitVisual } from '../render/BattleView';
 import { sfx } from '../platform/audio';
 import { settings } from '../state/settings';
 import { Store } from '../state/store';
+import type { CursorDir, ScreenCorners } from './cursor';
+import { cycleUnit, DEFAULT_CORNERS, stepCursor } from './cursor';
 
 /** What the renderer must offer the controller. Keeps the controller testable without WebGL. */
 export interface BattleRenderer {
@@ -54,6 +56,10 @@ export interface BattleRenderer {
   select(c: Coord | undefined): void;
   focus(c: Coord, ms?: number): Promise<void>;
   shake(id: string): void;
+  /** Which facing points to each screen corner, so the cursor arrows follow the camera. */
+  screenFacings?(): ScreenCorners;
+  /** Pans just enough to keep a tile on screen (the keyboard/gamepad cursor). */
+  reveal?(c: Coord): void;
 }
 
 export interface CloseUpSide {
@@ -165,6 +171,8 @@ export class BattleController {
   private pendingXp: (() => void) | undefined;
   private running = false;
   private disposed = false;
+  /** The keyboard/gamepad tile cursor; follows taps and mouse hover too. */
+  private cursorPos: Coord | undefined;
 
   constructor(
     private readonly setup: BattleSetup,
@@ -210,6 +218,7 @@ export class BattleController {
   // ── Player input ────────────────────────────────────────────────────────────
 
   tapTile(c: Coord): void {
+    this.cursorPos = c;
     const mode = this.mode;
     if (mode.kind === 'move') {
       const reach = mode.reach.get(coordKey(c));
@@ -254,6 +263,7 @@ export class BattleController {
 
   /** PC: the mouse over a tile previews the route there (so one click then moves). */
   hoverTile(c: Coord | null): void {
+    if (c) this.cursorPos = c;
     const mode = this.mode;
     if (mode.kind !== 'move') return;
     const reach = c ? mode.reach.get(coordKey(c)) : undefined;
@@ -389,6 +399,98 @@ export class BattleController {
       this.showMoveRange(mode.reach);
     } else if (k === 'move') this.toCommand();
     else if (k === 'attackMenu' || k === 'facing') this.resumeTurn();
+  }
+
+  // ── Keyboard / gamepad cursor ───────────────────────────────────────────────
+
+  /** The tile under the keyboard/gamepad cursor, if any. */
+  cursor(): Coord | undefined {
+    return this.cursorPos;
+  }
+
+  /** Whether the map takes cursor input now (the player is choosing a tile). */
+  cursorActive(): boolean {
+    return (
+      this.active()?.controller === 'human' &&
+      ['command', 'move', 'target', 'forecast'].includes(this.mode.kind)
+    );
+  }
+
+  /**
+   * Moves the cursor one tile in a screen direction. In move mode the route there previews,
+   * as with a mouse hover. Returns false when the map is not taking cursor input.
+   */
+  moveCursor(dir: CursorDir): boolean {
+    if (!this.cursorActive()) return false;
+    const from = this.cursorPos ?? this.view.get().inspected ?? this.active()!.pos;
+    const corners = this.renderer?.screenFacings?.() ?? DEFAULT_CORNERS;
+    this.pointCursor(stepCursor(from, dir, corners, this.state.map));
+    return true;
+  }
+
+  /**
+   * Jumps the cursor to the next (1) or previous (−1) unit on the field; while choosing a
+   * target, only through the enemies the technique can reach.
+   */
+  cycleCursor(step: 1 | -1): boolean {
+    if (!this.cursorActive()) return false;
+    const mode = this.mode;
+    const ids =
+      mode.kind === 'target'
+        ? mode.targets
+        : mode.kind === 'forecast'
+          ? this.targetsFor(this.active()!, mode.attackId)
+          : undefined;
+    const units = livingUnits(this.state).filter((u) => !ids || ids.includes(u.id));
+    const to = cycleUnit(units, this.cursorPos, step);
+    if (to) this.pointCursor(to);
+    return true;
+  }
+
+  /**
+   * Acts on the tile under the cursor, like tapping it, with two shortcuts for pads: on your own
+   * unit it opens Move, and in a forecast it confirms the attack unless the cursor picked
+   * another target.
+   */
+  confirmCursor(): boolean {
+    if (!this.cursorActive()) return false;
+    const mode = this.mode;
+    const c = this.cursorPos;
+    if (mode.kind === 'move' && mode.pending) {
+      this.confirmMove();
+    } else if (mode.kind === 'forecast') {
+      const t = c && unitAt(this.state, c);
+      if (
+        t &&
+        t.id !== mode.targetId &&
+        this.targetsFor(this.active()!, mode.attackId).includes(t.id)
+      )
+        this.tapTile(c);
+      else this.confirmAttack();
+    } else if (mode.kind === 'target') {
+      // Only a marked enemy does anything; elsewhere the cursor just reads the tile.
+      const t = c && unitAt(this.state, c);
+      if (t && mode.targets.includes(t.id)) this.tapTile(c);
+    } else if (
+      mode.kind === 'command' &&
+      c &&
+      unitAt(this.state, c)?.id === this.activeId() &&
+      this.canMove()
+    ) {
+      this.chooseMove();
+    } else if (c) {
+      this.tapTile(c);
+    }
+    return true;
+  }
+
+  private pointCursor(c: Coord): void {
+    this.cursorPos = c;
+    // In move mode this previews the route (or clears it off the range), like a mouse hover.
+    this.hoverTile(c);
+    if (this.mode.kind !== 'move' || !this.mode.pending) this.patch({ inspected: c });
+    this.renderer?.select(c);
+    this.renderer?.reveal?.(c);
   }
 
   /** The player's answer to an enemy attack; with Attack back, the technique to strike with. */
@@ -614,6 +716,7 @@ export class BattleController {
         this.notify(`${unit.name} has fainted from fatigue and must rest this turn.`);
       }
       // The active unit is selected for the player, its movement range already showing.
+      this.cursorPos = unit.pos;
       this.renderer?.select(unit.pos);
       this.resumeTurn();
     } else {
@@ -760,11 +863,19 @@ export class BattleController {
         sfx('defeat');
         this.pushLog(`${findUnit(before, ev.unitId)?.name ?? ev.unitId} is defeated.`);
         break;
-      case 'levelUp':
-        this.pushLog(
-          `★ ${findUnit(before, ev.unitId)?.name ?? ev.unitId} reached level ${ev.level}!`,
-        );
+      case 'levelUp': {
+        const unit = findUnit(before, ev.unitId);
+        this.pushLog(`★ ${unit?.name ?? ev.unitId} reached level ${ev.level}!`);
+        if (unit && ev.newSkills)
+          for (const name of skillNames(unit, ev.newSkills)) this.pushLog(`✦ New skill: ${name}`);
         break;
+      }
+      case 'unitRecovered': {
+        const unit = findUnit(before, ev.unitId);
+        const skill = unit?.skills?.find((s) => s.id === ev.skillId)?.name ?? ev.skillId;
+        this.pushLog(`${unit?.name ?? ev.unitId} recovers ${ev.amount} HP (${skill}).`);
+        break;
+      }
       case 'roundStarted':
         this.pushLog(`— Round ${ev.round} —`);
         break;
@@ -939,6 +1050,11 @@ const REACTION_WORD: Record<Reaction, string> = {
   none: 'no reaction',
 };
 
+/** Display names for skill ids, in the order given. */
+function skillNames(unit: UnitState, ids: readonly string[]): string[] {
+  return ids.map((id) => unit.skills?.find((s) => s.id === id)?.name ?? id);
+}
+
 /** XP each player unit earned from the events of one command, with its bar before and after. */
 export function xpGains(
   before: BattleState,
@@ -957,6 +1073,11 @@ export function xpGains(
       if (s.xp > 0) earned.set(s.attackerId, (earned.get(s.attackerId) ?? 0) + s.xp);
     }
   }
+  const learned = new Map<string, string[]>();
+  for (const ev of events) {
+    if (ev.type !== 'levelUp' || !ev.newSkills) continue;
+    learned.set(ev.unitId, [...(learned.get(ev.unitId) ?? []), ...ev.newSkills]);
+  }
   const out: XpGain[] = [];
   for (const [unitId, xp] of earned) {
     const was = findUnit(before, unitId);
@@ -970,6 +1091,7 @@ export function xpGains(
       xpBefore: was.xp,
       levelAfter: now.level,
       xpAfter: now.xp,
+      ...(learned.has(unitId) ? { newSkills: skillNames(now, learned.get(unitId)!) } : {}),
     });
   }
   return out;

@@ -1,0 +1,110 @@
+/*
+ * Keyboard, gamepad and accessibility rules shared by every screen. Loaded last, after the
+ * Maltese theme, so focus rings and readable small print win over decoration.
+ */
+
+/* Prompts follow the last input: key letters, or pad glyphs (Ⓐ Ⓑ LB …) after a gamepad. */
+:root[data-input='keyboard'] .key,
+:root[data-input='gamepad'] .key {
+  display: inline-block;
+}
+.key {
+  opacity: 0.9;
+}
+.key.pad {
+  border-radius: 999px;
+  padding: 0 6px;
+}
+
+/* Every control shows where focus is; with a pad, always (programmatic focus included). */
+:focus-visible {
+  outline: 3px solid #ffd76a;
+  outline-offset: 2px;
+}
+:root[data-input='gamepad'] :focus {
+  outline: 3px solid #ffd76a;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.65);
+}
+
+/* The facing you already have, in words as well as the outline. */
+.facing-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.facing-now {
+  font-size: 0.6rem;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+
+/* Touch targets: the level-up + buttons and the unit card's Details were 36px tall. */
+.btn.icon.raise {
+  min-height: 44px;
+  height: 44px;
+}
+.vb-cmd.mini {
+  min-height: 44px;
+}
+
+/* Small print readable on the dark ground (contrast ≥ 4.5:1). */
+.build-note,
+.log-lines .empty {
+  opacity: 0.8;
+}
+.tap-hint,
+.dlg-name small {
+  opacity: 0.85;
+}
+
+/* Help: Rules / Controls pages. */
+.help-tabs {
+  align-self: flex-start;
+}
+.help-controls h3 {
+  margin: 0.4em 0 0.2em;
+  color: var(--gold);
+  font-variant: small-caps;
+}
+.controls-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.controls-table caption {
+  text-align: left;
+  color: var(--gold);
+  font-variant: small-caps;
+  font-size: 1.05rem;
+  padding-bottom: 2px;
+}
+.controls-table th,
+.controls-table td {
+  padding: 4px 6px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(239, 227, 198, 0.2);
+}
+.controls-table thead th {
+  font-variant: small-caps;
+  opacity: 0.85;
+}
+.controls-table tbody th {
+  font-weight: normal;
+}
+
+/* Reduced motion: no decorative animation or easing anywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

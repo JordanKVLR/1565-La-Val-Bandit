@@ -1,0 +1,190 @@
+{
+  "id": "c9-st-pauls-bay",
+  "name": "The Last Boat",
+  "map": "c9-st-pauls-bay",
+  "seed": 39,
+  "victory": [
+    {
+      "type": "escape",
+      "unitId": "leyla",
+      "tiles": [
+        [8, 1],
+        [9, 1]
+      ]
+    },
+    {
+      "type": "defeatLeader",
+      "unitId": "husrev"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "leyla"
+    },
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "units": [
+    {
+      "id": "leyla",
+      "side": "player",
+      "controller": "human",
+      "level": 10,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [2, 4],
+      "facing": "north",
+      "character": "leyla"
+    },
+    {
+      "id": "ninu",
+      "side": "player",
+      "controller": "human",
+      "level": 12,
+      "frame": "cavaliere",
+      "weapon": "bastard-sword",
+      "at": [3, 3],
+      "facing": "north",
+      "character": "ninu"
+    },
+    {
+      "id": "deniz",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "levend",
+      "weapon": "kilij",
+      "at": [4, 4],
+      "facing": "north",
+      "character": "deniz"
+    },
+    {
+      "id": "kateri",
+      "side": "player",
+      "controller": "human",
+      "level": 11,
+      "frame": "moschetta",
+      "weapon": "arquebus",
+      "at": [2, 5],
+      "facing": "north",
+      "character": "kateri"
+    },
+    {
+      "id": "yusuf",
+      "side": "player",
+      "controller": "human",
+      "level": 12,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [4, 5],
+      "facing": "north",
+      "character": "yusuf"
+    },
+    {
+      "id": "husrev",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 14,
+      "frame": "yeniceri",
+      "weapon": "damascene-kilij",
+      "at": [8, 2],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Hüsrev Aga",
+      "stats": {
+        "pow": 15,
+        "dex": 13,
+        "agl": 6
+      },
+      "portrait": "janissary"
+    },
+    {
+      "id": "guard-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [5, 9],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Pasha's Guard",
+      "stats": {
+        "pow": 12,
+        "dex": 11,
+        "agl": 6
+      }
+    },
+    {
+      "id": "guard-2",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [9, 4],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Pasha's Guard",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "guard-3",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [3, 9],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Pasha's Guard",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sipahi-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [8, 8],
+      "facing": "north",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 8
+      }
+    },
+    {
+      "id": "humb-1",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 12,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [6, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Pasha's Bombardier",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
+      }
+    }
+  ]
+}
