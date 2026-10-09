@@ -1,0 +1,44 @@
+{
+  "id": "i6-zebbug-wells",
+  "name": "Wells of Żebbuġ",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "gWW_WWgfffgg",
+    "gW___WgfffWg",
+    "_r_W_rrrfffg",
+    "WW___Wpfxffg",
+    "W_____prrrrr",
+    "WW___Wpfffpp",
+    "_r_W_rpfxfgg",
+    "gW___WgfffWW",
+    "ggrrrggpffgg",
+    "ggrggggppggg"
+  ],
+  "height": [
+    "355355322211",
+    "353335322231",
+    "333533322211",
+    "553335322211",
+    "533333322211",
+    "553335322211",
+    "333533322211",
+    "353335322233",
+    "333333322211",
+    "333333322211"
+  ]
+}
