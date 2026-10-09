@@ -1,7 +1,8 @@
 import type { CodexEntry } from '@m1565/content';
 import { codexUnlocked, loadCodex } from '@m1565/content';
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { CampaignSave } from '../campaign/types';
+import { noteCodexRead } from '../platform/achievements';
 import { readSave, SLOTS } from '../platform/storage';
 import { KeyHint } from './KeyHint';
 import './codex.css';
@@ -65,6 +66,14 @@ export function CodexScreen({
   const locked = shown.length - open.length;
   const [selectedId, setSelectedId] = useState(open[0]?.id);
   const selected = open.find((e) => e.id === selectedId) ?? open[0];
+  // Every entry shown counts as read, for the codex achievements.
+  useEffect(() => {
+    if (selected)
+      noteCodexRead(
+        selected.id,
+        codex.map((e) => e.id),
+      );
+  }, [selected, codex]);
 
   return (
     <div class="modal" role="dialog" aria-modal="true" aria-label="Historical notes">

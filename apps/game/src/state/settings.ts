@@ -1,3 +1,4 @@
+import { readJson, writeJson } from '../platform/storage';
 import { Store } from './store';
 
 export interface Settings {
@@ -26,20 +27,11 @@ const DEFAULTS: Settings = {
 };
 
 function load(): Settings {
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Settings>) } : DEFAULTS;
-  } catch {
-    return DEFAULTS;
-  }
+  return { ...DEFAULTS, ...readJson<Partial<Settings>>(KEY) };
 }
 
 export const settings = new Store<Settings>(load());
 
-settings.subscribe(() => {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(settings.get()));
-  } catch {
-    // Storage can be unavailable (private mode); settings then last for the session only.
-  }
-});
+// Saved at once and crash-safely (platform/storage). If storage is unavailable (private mode)
+// the settings last for the session only.
+settings.subscribe(() => void writeJson(KEY, settings.get()));

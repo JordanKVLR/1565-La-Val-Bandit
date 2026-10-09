@@ -51,12 +51,23 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
       <p class="subtitle">The Great Siege of Malta</p>
       <div class="title-menu">
         {auto && (
-          <button type="button" class="btn title-continue" onClick={() => onLoad('auto')}>
+          <button
+            type="button"
+            class="btn title-continue"
+            data-nav-default
+            onClick={() => onLoad('auto')}
+          >
             <span>Continue</span>
             <SaveBadges save={auto} />
           </button>
         )}
-        <button type="button" class={`btn ${auto ? 'ghost' : ''}`} onClick={() => setPanel('new')}>
+        {/* The first D-pad press or Ⓐ lands on Continue, else New Game (ui/input.ts). */}
+        <button
+          type="button"
+          class={`btn ${auto ? 'ghost' : ''}`}
+          data-nav-default={!auto || undefined}
+          onClick={() => setPanel('new')}
+        >
           New Game
         </button>
         {finished.length > 0 && (

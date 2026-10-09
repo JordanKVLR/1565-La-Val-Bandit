@@ -111,7 +111,7 @@ export function GameMenu({
           <button type="button" class="btn ghost" onClick={onQuit}>
             Title screen
           </button>
-          <button type="button" class="btn" data-nav-back onClick={onClose}>
+          <button type="button" class="btn" data-nav-back data-nav-default onClick={onClose}>
             Resume
           </button>
         </div>

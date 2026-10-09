@@ -108,3 +108,14 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* The controller disconnect notice sits above every screen and overlay while gameplay waits. */
+.controller-notice {
+  z-index: 120;
+}
+/* Suspended (app in the background): CSS animations hold still with the game. */
+:root[data-suspended] *,
+:root[data-suspended] *::before,
+:root[data-suspended] *::after {
+  animation-play-state: paused !important;
+}

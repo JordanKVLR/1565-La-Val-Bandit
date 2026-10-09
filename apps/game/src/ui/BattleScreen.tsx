@@ -154,7 +154,10 @@ export function BattleScreen({
       // by a click is not, so Enter still acts on the map.
       const button = target?.closest<HTMLElement>('button, a, [role="button"]');
       if (confirm && button && (inDialog || button.matches(':focus-visible'))) return;
-      if (confirm) used();
+      // In the attack menu and facing picker, Enter with nothing focused is left to the generic
+      // fallback (ui/input.ts), which focuses the dialog's default choice: Ⓐ always does
+      // something, and a second Ⓐ presses it.
+      if (confirm && m.kind !== 'attackMenu' && m.kind !== 'facing') used();
       switch (e.key) {
         case 'm':
         case 'M':
@@ -200,9 +203,14 @@ export function BattleScreen({
     return () => document.removeEventListener('keydown', onKey);
   }, [ctl, panel]);
 
+  // Progress is saved after every command (the player's and the AI's), so a console suspend or
+  // a killed app resumes from the last thing that happened. The state only changes between
+  // commands, so every snapshot is a consistent one; an AI turn resumed from one is re-planned.
+  const onStateChangeRef = useRef(onStateChange);
+  onStateChangeRef.current = onStateChange;
   useEffect(() => {
-    if (mode.kind === 'command' || mode.kind === 'ended') onStateChange?.(state);
-  }, [state, mode.kind, onStateChange]);
+    onStateChangeRef.current?.(state);
+  }, [state]);
 
   const active = ctl.active();
   const tile = inspected && getTile(state.map, inspected);

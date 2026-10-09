@@ -65,6 +65,8 @@ export function DifficultyPicker({
           class={`btn slot difficulty-option ${value === d ? 'on' : ''}`}
           aria-pressed={value === undefined ? undefined : value === d}
           data-difficulty={d}
+          // The first D-pad press or Ⓐ lands on the current mode, else the recommended one.
+          data-nav-default={(value ?? DEFAULT_DIFFICULTY) === d || undefined}
           onClick={() => onPick(d)}
         >
           <span class="difficulty-pips" aria-hidden="true">

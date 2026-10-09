@@ -75,6 +75,14 @@ export function heldOnAny(pads: readonly (PadLike | null | undefined)[]): Set<Pa
   return held;
 }
 
+/**
+ * Index of the first pad holding `input` (the pad that sent it), or -1. Indexes are the
+ * browser's `Gamepad.index`, i.e. positions in `navigator.getGamepads()`.
+ */
+export function padHolding(pads: readonly (PadLike | null | undefined)[], input: PadInput): number {
+  return pads.findIndex((p) => !!p && heldInputs(p).has(input));
+}
+
 export interface Repeat {
   /** Time before the first repeat, ms. */
   readonly delay: number;

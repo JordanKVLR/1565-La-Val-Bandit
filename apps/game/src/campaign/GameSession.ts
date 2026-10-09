@@ -3,13 +3,9 @@ import { DEFAULT_DIFFICULTY, deserializeBattle, difficultyMods, scaleScudi } fro
 import type { Library, ShopItem } from '@m1565/content';
 import { battleSalvage, isBattleId, loadBattle } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
-import {
-  BATTLE_ACHIEVEMENTS,
-  ENDING_ACHIEVEMENTS,
-  unlockAchievement,
-} from '../platform/achievements';
+import { reportAchievementEvent } from '../platform/achievements';
 import type { SlotId } from '../platform/storage';
-import { readSave, writeSave } from '../platform/storage';
+import { readRecord, saveKey, writeSave } from '../platform/storage';
 import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
@@ -18,7 +14,13 @@ import { addItem, buy, equip, release, sell, swap } from './inventory';
 import { migrateCampaign } from './migrate';
 import type { NewGameOptions } from './newGamePlus';
 import { refitKit } from './newGamePlus';
-import { applyBattleResults, newRosterEntry, raiseRosterStat, withProgress } from './progression';
+import {
+  applyBattleResults,
+  newRosterEntry,
+  raiseRosterStat,
+  skillsLearned,
+  withProgress,
+} from './progression';
 import type {
   CampaignSave,
   ChapterInfo,
@@ -83,6 +85,10 @@ export class GameSession {
   private startedAt = Date.now();
   private playMsBefore = 0;
   private lastStep: StoryStep | null = null;
+  /** The latest mid-battle snapshot, for the suspend hook (`flush`). */
+  private battleSnapshot: { readonly key: number; readonly state: BattleState } | null = null;
+  /** Whether anything changed since the autosave was last written successfully. */
+  private dirty = true;
 
   /**
    * Resumes `save`, or starts a new playthrough with `start` (difficulty, and for New Game+ the
@@ -109,6 +115,8 @@ export class GameSession {
       ending: save?.ending ?? null,
       kit: save?.kit ?? carry?.kit ?? {},
     });
+    const cycle = save ? 0 : (start?.ngPlus ?? 0);
+    if (cycle > 0) reportAchievementEvent({ type: 'newGamePlus', cycle });
     if (save) {
       this.playMsBefore = save.playMs;
       this.lastStep = save.lastStep;
@@ -117,30 +125,44 @@ export class GameSession {
       } else if (save.lastStep?.kind === 'line') {
         this.show({ kind: 'story', line: save.lastStep, choices: null, card: null });
       } else {
-        this.advance();
+        this.step();
       }
     } else {
-      this.advance();
+      this.step();
     }
   }
 
   static load(lib: Library, slot: SlotId): GameSession | null {
-    const raw = readSave<Record<string, unknown>>(slot);
-    const save = raw ? migrateCampaign(lib, raw) : null;
-    if (!save) return null;
-    try {
-      return new GameSession(lib, save);
-    } catch {
-      return null;
-    }
+    // The newest whole copy that still migrates and resumes; a damaged one falls back to the
+    // previous good copy (platform/storage keeps one).
+    let session: GameSession | null = null;
+    readRecord(saveKey(slot), (raw) => {
+      try {
+        const save = migrateCampaign(lib, JSON.parse(raw) as Record<string, unknown>);
+        session = save ? new GameSession(lib, save) : null;
+      } catch {
+        session = null;
+      }
+      return session !== null;
+    });
+    return session;
   }
 
   get state(): SessionView {
     return this.view.get();
   }
 
-  /** Tap on the story screen: dismiss a chapter card or move to the next line. */
+  /**
+   * Tap on the story screen: dismiss a chapter card or move to the next line. Every step is
+   * saved at once, so a suspended or killed game resumes on the same line.
+   */
   advance(): void {
+    this.step();
+    this.autosave();
+  }
+
+  /** Runs the script until it shows something. */
+  private step(): void {
     for (let guard = 0; guard < 500; guard++) {
       const step = this.runner.next();
       if (step.kind === 'line') {
@@ -167,7 +189,6 @@ export class GameSession {
   choose(index: number): void {
     this.runner.choose(index);
     this.advance();
-    this.autosave();
   }
 
   /** Called by the battle screen when a battle ends or the player leaves it. */
@@ -213,6 +234,7 @@ export class GameSession {
     const salvaged = salvage.map(
       (id) => `Salvaged armatura: ${this.lib.frames.get(id)?.name ?? id}`,
     );
+    const before = this.state;
     this.patch({
       roster,
       veterans,
@@ -221,7 +243,14 @@ export class GameSession {
       completedBattles,
     });
     this.runner.setVar('last_battle', screen.battleId);
-    unlockAchievement(BATTLE_ACHIEVEMENTS[screen.battleId]);
+    reportAchievementEvent({
+      type: 'battleWon',
+      battle: screen.battleId,
+      difficulty: this.state.difficulty,
+      noLosses,
+      round: state.round,
+    });
+    this.reportProgress(before);
     this.show({
       kind: 'results',
       battleId: screen.battleId,
@@ -265,12 +294,10 @@ export class GameSession {
 
   closeResults(): void {
     this.advance();
-    this.autosave();
   }
 
   closePrep(): void {
     this.advance();
-    this.autosave();
   }
 
   /** Fits a spare item to a pilot (or takes off a charm/amulet with null). */
@@ -284,7 +311,7 @@ export class GameSession {
   }
 
   buyItem(item: ShopItem): void {
-    this.applyHoldings(buy(this.lib, this.holdings(), item));
+    this.applyHoldings(buy(this.lib, this.holdings(), item), true);
   }
 
   sellItem(kind: ItemKind, id: string): void {
@@ -296,9 +323,35 @@ export class GameSession {
     return { roster, stores, scudi };
   }
 
-  private applyHoldings(h: Holdings): void {
+  private applyHoldings(h: Holdings, bought = false): void {
+    const before = this.state;
     this.patch({ roster: h.roster, stores: h.stores, scudi: h.scudi });
+    if (bought && h.scudi < before.scudi) reportAchievementEvent({ type: 'itemBought' });
+    this.reportProgress(before);
     this.autosave();
+  }
+
+  /**
+   * Reports what changed since `before` that can earn achievements: skills learned, gear
+   * fitted, scudi held.
+   */
+  private reportProgress(before: SessionView): void {
+    const s = this.state;
+    const company = (v: SessionView) => [
+      ...v.roster,
+      ...Object.entries(v.veterans).map(([characterId, p]) => ({ characterId, level: p.level })),
+    ];
+    for (const level of skillsLearned(this.lib, company(before), company(s))) {
+      reportAchievementEvent({ type: 'skillUnlocked', level });
+    }
+    if (s.roster !== before.roster) {
+      reportAchievementEvent({
+        type: 'gearFitted',
+        tiers: s.roster.map((r) => this.lib.weapons.get(r.weapon)?.tier ?? 'common'),
+        fullKit: s.roster.some((r) => !!r.charm && !!r.amulet),
+      });
+    }
+    if (s.scudi > before.scudi) reportAchievementEvent({ type: 'scudiHeld', amount: s.scudi });
   }
 
   /**
@@ -331,7 +384,26 @@ export class GameSession {
   saveBattleProgress(state: BattleState): void {
     const screen = this.state.screen;
     if (screen.kind !== 'battle') return;
+    this.battleSnapshot = { key: screen.key, state };
+    this.dirty = true;
     this.write('auto', { id: screen.battleId, state });
+  }
+
+  /**
+   * Suspend/quit hook (platform/lifecycle): writes any progress not saved yet (a failed or
+   * skipped write), so whatever the player sees now is what Continue resumes. In battle that is the latest snapshot; without one
+   * the autosave already holds the battle's start, and is left alone.
+   */
+  flush(): void {
+    const screen = this.state.screen;
+    // Everything is saved as it happens; this only retries what has not been written yet.
+    if (!this.dirty || screen.kind === 'title') return;
+    if (screen.kind === 'battle') {
+      const snap = this.battleSnapshot;
+      if (snap?.key === screen.key) this.write('auto', { id: screen.battleId, state: snap.state });
+      return;
+    }
+    this.autosave();
   }
 
   saveTo(slot: SlotId): boolean {
@@ -422,9 +494,12 @@ export class GameSession {
         this.patch({ roster: h.roster, stores: h.stores, veterans });
         return false;
       }
-      case 'scudi':
+      case 'scudi': {
+        const before = this.state;
         this.patch({ scudi: this.state.scudi + this.scudiIncome(Number(args[0] ?? 0)) });
+        this.reportProgress(before);
         return false;
+      }
       case 'battle': {
         const id = args[0] ?? '';
         if (!isBattleId(id)) throw new Error(`Story asked for unknown battle "${id}"`);
@@ -441,7 +516,12 @@ export class GameSession {
       case 'end': {
         // Every ending counts on every cycle and difficulty; reaching one offers New Game+.
         const route = String(this.runner.getVar('route'));
-        unlockAchievement(ENDING_ACHIEVEMENTS[route]);
+        reportAchievementEvent({
+          type: 'ending',
+          route,
+          difficulty: this.state.difficulty,
+          ngPlus: this.state.ngPlus,
+        });
         this.patch({ ending: route });
         this.show({ kind: 'end' });
         this.autosave();
@@ -494,7 +574,9 @@ export class GameSession {
       state,
       this.state.veterans,
     );
+    const before = this.state;
     this.patch({ roster, veterans });
+    this.reportProgress(before);
     return true;
   }
 
@@ -508,6 +590,7 @@ export class GameSession {
   }
 
   private patch(p: Partial<SessionView>): void {
+    this.dirty = true;
     this.view.set({ ...this.view.get(), ...p });
   }
 
@@ -532,7 +615,9 @@ export class GameSession {
       ending: s.ending,
       ...(Object.keys(s.kit).length ? { kit: s.kit } : {}),
     };
-    return writeSave(slot, save);
+    const ok = writeSave(slot, save);
+    if (ok && slot === 'auto') this.dirty = false;
+    return ok;
   }
 }
 
