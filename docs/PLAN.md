@@ -226,7 +226,9 @@ skippable on tap.
 | Long-press                   | unit/terrain info           |
 | Undo button                  | undo movement before acting |
 
-Mouse/keyboard and gamepad (Steam Deck) map to the same abstract input actions.
+Mouse/keyboard and gamepad (Steam Deck) map to the same abstract input actions: a tile cursor
+on the battle map, spatial focus in menus, and prompts that follow the last input (ADR 0009;
+the full table is on the Controls page of How to play).
 
 ### 2.7 Accessibility
 

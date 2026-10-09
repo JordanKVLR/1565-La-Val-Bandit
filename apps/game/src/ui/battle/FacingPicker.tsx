@@ -23,13 +23,21 @@ export function FacingPicker({ corners, current, onPick, onCancel }: Props) {
             key={c}
             class={`btn facing-btn ${corners[c] === current ? 'current' : ''}`}
             aria-label={`Face ${corners[c]}`}
+            aria-pressed={corners[c] === current}
+            data-nav-default={corners[c] === current || undefined}
             onClick={() => onPick(corners[c])}
           >
             {ARROWS[c]}
+            {/* The current facing is marked in words too, not by the outline alone. */}
+            {corners[c] === current && (
+              <small class="facing-now" aria-hidden="true">
+                now
+              </small>
+            )}
           </button>
         ))}
       </div>
-      <button type="button" class="btn ghost" onClick={onCancel}>
+      <button type="button" class="btn ghost" data-nav-back onClick={onCancel}>
         Back
       </button>
     </div>

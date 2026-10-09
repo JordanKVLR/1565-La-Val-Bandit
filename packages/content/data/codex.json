@@ -1,0 +1,200 @@
+[
+  {
+    "id": "great-siege",
+    "title": "The Great Siege of Malta",
+    "kind": "historical",
+    "category": "event",
+    "when": "18 May – 8 September 1565",
+    "text": "In the spring of 1565 Sultan Suleiman sent a great fleet and army against Malta, home of the Knights of St John since 1530. Estimates of the Ottoman force range from about 22,000 to over 40,000 men; the defenders numbered roughly 6,000 to 8,500, most of them Spanish and Italian soldiers and Maltese islanders rather than knights.\n\nFor almost four months the attackers bombarded and stormed the forts around the Grand Harbour. They took Fort St Elmo but never broke Birgu or Senglea, and withdrew when a relief army from Sicily landed in September."
+  },
+  {
+    "id": "knights",
+    "title": "The Order of St John",
+    "kind": "historical",
+    "category": "people",
+    "when": "Founded c. 1099 · on Malta from 1530",
+    "text": "A religious military order that began by caring for pilgrims in Jerusalem, the Knights Hospitaller were driven from Rhodes by Suleiman in 1522. In 1530 Emperor Charles V granted them Malta, Gozo and Tripoli, for the yearly rent of a single falcon.\n\nThe knights were nobles from across Catholic Europe, grouped into 'langues' by language. Their galleys raided Muslim shipping across the Mediterranean, which the Ottomans and their corsair allies answered in kind."
+  },
+  {
+    "id": "valette",
+    "title": "Jean Parisot de Valette",
+    "kind": "historical",
+    "category": "people",
+    "when": "c. 1495 – 1568 · Grand Master from 1557",
+    "text": "A knight from Provence who had spent his whole life in the Order, Valette was about seventy when the siege began. In 1541 he was captured at sea and spent around a year at the oar of an Ottoman galley before being freed in an exchange of prisoners.\n\nDuring the siege he refused to abandon Birgu, sent reinforcements across to St Elmo by night, and is said to have joined the fighting at the breaches himself. The new fortified city he founded on Mount Sciberras in 1566 still bears his name: Valletta."
+  },
+  {
+    "id": "suleiman",
+    "title": "Sultan Suleiman",
+    "kind": "historical",
+    "category": "people",
+    "when": "1494 – 1566 · Sultan from 1520",
+    "text": "Called 'the Magnificent' in Europe and 'the Lawgiver' at home, Suleiman ruled the Ottoman Empire at the height of its power. He had already expelled the Knights from Rhodes in 1522, and he saw their raids from Malta as a threat to the sea routes of his empire.\n\nHe did not sail to Malta himself. He died the following year, on campaign in Hungary at the siege of Szigetvár."
+  },
+  {
+    "id": "mustafa-pasha",
+    "title": "Mustafa Pasha",
+    "kind": "historical",
+    "category": "people",
+    "when": "Commander of the Ottoman army, 1565",
+    "text": "A veteran general, Mustafa Pasha led the land forces of the expedition. He shared command with the admiral Piali Pasha and was told to await the advice of Turgut Reis, and the three did not always agree.\n\nAccounts describe him as a hard and capable soldier who pressed assault after assault on Birgu and Senglea through the summer, and who finally ordered the withdrawal when the relief army landed."
+  },
+  {
+    "id": "piali-pasha",
+    "title": "Piali Pasha",
+    "kind": "historical",
+    "category": "people",
+    "when": "Kapudan Pasha (grand admiral)",
+    "text": "Admiral of the Ottoman fleet and victor over a Christian fleet at Djerba in 1560, Piali Pasha had married into the sultan's family. His first concern in 1565 was a safe anchorage for his galleys.\n\nHe wanted the harbour of Marsamxett, which was covered by the guns of Fort St Elmo. That is one reason the Ottomans began with St Elmo instead of marching on Birgu or Mdina, a choice historians still debate."
+  },
+  {
+    "id": "turgut-reis",
+    "title": "Turgut Reis",
+    "kind": "historical",
+    "category": "people",
+    "when": "c. 1485 – 1565 · Governor of Tripoli",
+    "text": "Known in Europe as Dragut, Turgut Reis was the most celebrated corsair captain of his age and governor of Tripoli. He arrived at Malta in early June, after the siege had begun, and took charge of the batteries pounding St Elmo.\n\nHe was struck by flying stone from a cannon shot while directing the guns and died around the time St Elmo fell. Tigné Point, where one of his batteries stood, was long known as Dragut Point."
+  },
+  {
+    "id": "anastagi",
+    "title": "Vincenzo Anastagi",
+    "kind": "historical",
+    "category": "people",
+    "when": "Cavalry commander at Mdina",
+    "text": "A knight from Perugia, Anastagi led the small force of cavalry kept at Mdina in the centre of the island. Through the summer his riders harried Ottoman foragers and water parties.\n\nOn 7 August, during a great assault on Birgu and Senglea, he fell on the lightly guarded Ottoman camp at Marsa, burning tents and killing the sick and wounded. Believing a relief army had arrived, the Ottoman commanders called off the assault."
+  },
+  {
+    "id": "balbi",
+    "title": "Francesco Balbi di Correggio",
+    "kind": "historical",
+    "category": "people",
+    "when": "c. 1505 – c. 1589 · arquebusier and chronicler",
+    "text": "An Italian soldier who served as an arquebusier in the Spanish garrison of Senglea, Balbi kept a record of the siege day by day. He published it in Spanish in 1567, and it remains one of the main eyewitness accounts.\n\nIn this game Balbi narrates the chapter openings. His real diary is plain, precise and full of names; the words he speaks here are our own."
+  },
+  {
+    "id": "st-elmo",
+    "title": "Fort St Elmo",
+    "kind": "historical",
+    "category": "place",
+    "when": "Besieged 24 May – 23 June 1565",
+    "text": "A small star-shaped fort at the tip of the Sciberras peninsula, built in the 1550s to guard the entrances of both harbours. The Ottomans expected it to fall in days.\n\nIts garrison, reinforced by boat across the Grand Harbour at night, held for about a month under constant bombardment and repeated assaults. When it finally fell on 23 June almost none of its defenders survived, and the Ottomans had lost thousands of men and much precious time."
+  },
+  {
+    "id": "birgu-senglea",
+    "title": "Birgu and Senglea",
+    "kind": "historical",
+    "category": "place",
+    "when": "The Order's two fortified towns",
+    "text": "Two narrow peninsulas reaching into the Grand Harbour, side by side. Birgu, with Fort St Angelo at its tip, was the Order's seat; Senglea, with Fort St Michael, faced it across a creek that the defenders closed with a great chain.\n\nThrough July and August both towns endured bombardment, mines and assault from land and sea, including a famous attack by boats on Senglea's palisade on 15 July. After the siege Birgu was renamed Città Vittoriosa and Senglea Città Invitta, 'the unconquered city'."
+  },
+  {
+    "id": "mdina",
+    "title": "Mdina",
+    "kind": "historical",
+    "category": "place",
+    "when": "The old capital",
+    "text": "The walled city on a ridge in the centre of Malta, seat of the island's nobility and bishop long before the knights arrived. In 1565 it was held by a small garrison and Anastagi's cavalry.\n\nThe Ottomans never seriously attacked it. A local tradition says its defenders dressed townspeople as soldiers and lined the walls with them to look stronger than they were; whether or not that is true, Mdina's horsemen played a large part in the siege."
+  },
+  {
+    "id": "marsa",
+    "title": "Marsa and the poisoned wells",
+    "kind": "historical",
+    "category": "place",
+    "when": "Late May 1565",
+    "text": "The Ottoman army made its main camp at Marsa, the low ground at the head of the Grand Harbour, where there were springs and wells.\n\nBefore the invaders arrived, the defenders fouled the wells with hemp, dung and other filth, so the camp suffered from bad water and disease throughout the summer. Water for the army often had to be carried from far away."
+  },
+  {
+    "id": "relief",
+    "title": "The Piccolo and Gran Soccorso",
+    "kind": "historical",
+    "category": "event",
+    "when": "Early July and 7–8 September 1565",
+    "text": "Don García de Toledo, Viceroy of Sicily, was slow to send help, for he had to gather ships and men and could not risk Spain's fleet. In early July a small relief of some six or seven hundred soldiers, the Piccolo Soccorso, landed in the north and slipped into Birgu by night.\n\nThe Gran Soccorso, around eight thousand men, landed at Mellieħa on 7 September. The exhausted Ottoman army lifted the siege the next day, and fought a last rearguard action near St Paul's Bay as it embarked. Malta still marks 8 September as Victory Day."
+  },
+  {
+    "id": "galleys",
+    "title": "Galleys",
+    "kind": "historical",
+    "category": "warfare",
+    "when": "Warships of the Mediterranean",
+    "text": "Long, low warships driven by oars, with sails for open water and a few heavy guns in the bow. Both sides fought with them, and both sides rowed them with captives, convicts and paid oarsmen chained to the benches.\n\nThousands of Maltese and Ottoman subjects alike spent years at the oar after capture at sea or in raids. Being ransomed or exchanged was the hope of every galley slave."
+  },
+  {
+    "id": "arquebus",
+    "title": "Matchlock arquebuses",
+    "kind": "historical",
+    "category": "warfare",
+    "when": "Firearms of the 1560s",
+    "text": "The arquebus was a smoothbore gun fired by a smouldering cord, the match, lowered into a pan of priming powder. It was slow to load and unreliable in wind and rain, but a ball from it could pierce armour.\n\nBoth armies relied heavily on arquebusiers, and the janissaries were famed marksmen with their long tüfek. The defenders also used fire weapons: hoops and pots of burning pitch hurled down onto attackers in the breaches."
+  },
+  {
+    "id": "militia",
+    "title": "The Maltese militia",
+    "kind": "historical",
+    "category": "people",
+    "when": "The islanders under arms",
+    "text": "Farmers, fishermen, craftsmen and townsfolk formed a large share of the defenders, serving as soldiers, gunners, labourers and swimmers who carried messages across the harbour.\n\nMaltese villagers also took refuge inside the walls with their families and animals, and many fought at the breaches beside the knights. Their part in the victory was long underplayed in histories written by and about the Order."
+  },
+  {
+    "id": "janissaries",
+    "title": "Janissaries and sipahis",
+    "kind": "historical",
+    "category": "people",
+    "when": "The sultan's soldiers",
+    "text": "The janissaries (yeniçeri, 'new soldiers') were the sultan's standing infantry: professional, disciplined and paid in coin, recruited as boys through the devşirme and trained for war from youth. Several thousand served at Malta.\n\nSipahis were cavalrymen who held land in return for service. On a rocky island with little room to ride, many fought on foot. The army also included volunteers, engineers and miners who dug under the walls of Birgu."
+  },
+  {
+    "id": "corsairs",
+    "title": "Corsairs of North Africa",
+    "kind": "historical",
+    "category": "people",
+    "when": "Tripoli, Algiers and the sea",
+    "text": "The corsair captains of Tripoli and Algiers fought at sea in the sultan's name and for prizes and captives of their own. Turgut Reis brought ships and men from Tripoli, and Hasan Pasha, son of the famous Hayreddin Barbarossa, came from Algiers and led the attack on Senglea in July.\n\nRaiding went both ways: the Order's own galleys and Christian privateers also seized ships and sold captives. To the people of the coasts, the difference often mattered little."
+  },
+  {
+    "id": "armature",
+    "title": "The Armature",
+    "kind": "fiction",
+    "category": "story",
+    "text": "The war-harnesses that every soldier in this game pilots never existed. Real soldiers of 1565 fought on foot or horseback in steel breastplates, helmets and mail, with pikes, swords and arquebuses.\n\nIn the game's story the Armature were invented around 1550 by Vittorio Scala and sold to both the Order and the Porte. Only a few hundred exist, which is why our battles are small squad actions inside the larger siege."
+  },
+  {
+    "id": "ninu",
+    "title": "Ninu Falzon and the company",
+    "kind": "fiction",
+    "category": "story",
+    "text": "Ninu, his adoptive father Pawlu, the mechanic Kateri Borg, Fra Luis de Arrieta and the militiamen Ġanni and Rożi are invented characters. They stand for the many ordinary Maltese and soldiers whose names were never written down.\n\nThe places they fight in, and the dates of the great events around them, follow the history as closely as the story allows."
+  },
+  {
+    "id": "deniz",
+    "title": "Deniz and Yusuf",
+    "kind": "fiction",
+    "category": "story",
+    "unlockAfter": "b4-night-crossing",
+    "text": "Deniz, a young navigator serving under Turgut Reis, and his father Yusuf, a corsair captain, are invented characters. Through them the game tells the Ottoman side of the siege: soldiers and sailors with their own loyalties, fears and courage.\n\nTurgut Reis, his batteries and his death are historical; Deniz's part in them is not."
+  },
+  {
+    "id": "leyla",
+    "title": "Leyla Hatun",
+    "kind": "fiction",
+    "category": "story",
+    "unlockAfter": "b8-turgut-battery",
+    "text": "Leyla, who serves in a pasha's household with the fleet, is an invented character, and so is her claim to descend from Şehzade Cem.\n\nCem himself was real: an Ottoman prince who lost a war of succession to his brother and fled to the Knights at Rhodes in 1482, spending the rest of his life as a valuable captive in Christian hands. No descendant of his is known to have played any part in 1565."
+  },
+  {
+    "id": "valette-secret",
+    "title": "Valette's secret",
+    "kind": "fiction",
+    "category": "story",
+    "unlockAfter": "b8-turgut-battery",
+    "text": "Valette's year as a galley slave in 1541 is historical. Everything the game adds to it is invented: his meeting with Leyla, their love affair, their son, and the broken medallion. There is no evidence for any of it.\n\nThe story uses this secret to ask what duty and family ask of people on both sides of a war. It is not a claim about the real Grand Master."
+  },
+  {
+    "id": "scala",
+    "title": "Vittorio Scala",
+    "kind": "fiction",
+    "category": "story",
+    "unlockAfter": "b5-tigne",
+    "text": "Scala, the Genoese inventor who builds the Armature and sells them to both sides, is invented, as are his prototype machines and his schemes.\n\nGenoa itself was real and powerful in 1565: its bankers financed the Spanish crown, and its admiral Gian Andrea Doria commanded galleys for Spain. Scala belongs to no real family or firm."
+  }
+]

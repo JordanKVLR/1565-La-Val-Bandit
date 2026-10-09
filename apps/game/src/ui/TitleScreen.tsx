@@ -7,6 +7,7 @@ import type { CampaignSave } from '../campaign/types';
 import type { SlotId } from '../platform/storage';
 import { readSave, SLOTS } from '../platform/storage';
 import { DifficultyPicker, SaveBadges } from './difficulty';
+import { battlesWonInSaves, CodexScreen } from './CodexScreen';
 import { describeSave } from './GameMenu';
 import { SettingsPanel } from './SettingsPanel';
 
@@ -36,7 +37,9 @@ function readAll(lib: Library): Record<SlotId, CampaignSave | null> {
 }
 
 export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }: Props) {
-  const [panel, setPanel] = useState<'none' | 'load' | 'settings' | 'new' | 'ngplus'>('none');
+  const [panel, setPanel] = useState<'none' | 'load' | 'settings' | 'new' | 'ngplus' | 'codex'>(
+    'none',
+  );
   const saves = useMemo(() => readAll(lib), [lib]);
   const auto = saves.auto;
   const finished = SLOTS.filter((s) => canStartNewGamePlus(saves[s]));
@@ -67,6 +70,9 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
         <button type="button" class="btn ghost" onClick={() => setPanel('settings')}>
           Settings
         </button>
+        <button type="button" class="btn ghost" onClick={() => setPanel('codex')}>
+          Historical notes
+        </button>
       </div>
       <p class="build-note">Prototype build · placeholder art</p>
 
@@ -79,7 +85,7 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
             <h2>Choose difficulty</h2>
             <p class="modal-hint">You can change it later from the menu.</p>
             <DifficultyPicker balance={lib.balance} onPick={onNew} />
-            <button type="button" class="btn ghost" onClick={() => setPanel('none')}>
+            <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
               Back
             </button>
           </div>
@@ -115,11 +121,14 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
                 );
               })}
             </div>
-            <button type="button" class="btn ghost" onClick={() => setPanel('none')}>
+            <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
               Back
             </button>
           </div>
         </div>
+      )}
+      {panel === 'codex' && (
+        <CodexScreen completedBattles={battlesWonInSaves()} onClose={() => setPanel('none')} />
       )}
       {panel === 'load' && (
         <div class="modal" role="dialog" aria-label="Load game">
@@ -145,7 +154,7 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
                 );
               })}
             </div>
-            <button type="button" class="btn ghost" onClick={() => setPanel('none')}>
+            <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
               Back
             </button>
           </div>

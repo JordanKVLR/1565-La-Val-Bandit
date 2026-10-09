@@ -18,6 +18,7 @@ import { ResultsScreen } from './ResultsScreen';
 import { RotateOverlay } from './RotateOverlay';
 import { StoryScreen } from './StoryScreen';
 import { IntroScreen } from './IntroScreen';
+import { installInput } from './input';
 import { TitleScreen } from './TitleScreen';
 
 /** Battles against a named commander get the heavier theme. */
@@ -128,7 +129,12 @@ export function App() {
       if ((e.target as HTMLElement | null)?.closest('button')) sfx('tap');
     };
     window.addEventListener('pointerdown', onPointer);
-    return () => window.removeEventListener('pointerdown', onPointer);
+    // Keyboard focus navigation and the gamepad (a pad press also counts as user input).
+    const uninstallInput = installInput(unlockAudio);
+    return () => {
+      window.removeEventListener('pointerdown', onPointer);
+      uninstallInput();
+    };
   }, []);
 
   useEffect(() => {

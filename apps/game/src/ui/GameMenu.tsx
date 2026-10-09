@@ -6,6 +6,7 @@ import type { SlotId } from '../platform/storage';
 import { readSave } from '../platform/storage';
 import { useStore } from '../state/store';
 import { DIFFICULTY_NAMES, DifficultyPicker, SaveBadges } from './difficulty';
+import { battlesWonInSaves, CodexScreen } from './CodexScreen';
 import { SettingsPanel } from './SettingsPanel';
 
 const MANUAL: readonly SlotId[] = ['slot1', 'slot2', 'slot3'];
@@ -34,6 +35,7 @@ export function GameMenu({
   const [message, setMessage] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [changing, setChanging] = useState(false);
+  const [showCodex, setShowCodex] = useState(false);
   const [, refresh] = useState(0);
   const { difficulty, ngPlus } = useStore(session.view);
   if (showSettings) return <SettingsPanel onClose={() => setShowSettings(false)} />;
@@ -52,12 +54,16 @@ export function GameMenu({
               setChanging(false);
             }}
           />
-          <button type="button" class="btn ghost" onClick={() => setChanging(false)}>
+          <button type="button" class="btn ghost" data-nav-back onClick={() => setChanging(false)}>
             Back
           </button>
         </div>
       </div>
     );
+  if (showCodex) {
+    const won = new Set([...battlesWonInSaves(), ...session.view.get().completedBattles]);
+    return <CodexScreen completedBattles={[...won]} onClose={() => setShowCodex(false)} />;
+  }
   return (
     <div class="modal" role="dialog" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
       <div class="modal-box">
@@ -99,10 +105,13 @@ export function GameMenu({
           <button type="button" class="btn ghost" onClick={() => setShowSettings(true)}>
             Settings
           </button>
+          <button type="button" class="btn ghost" onClick={() => setShowCodex(true)}>
+            Historical notes
+          </button>
           <button type="button" class="btn ghost" onClick={onQuit}>
             Title screen
           </button>
-          <button type="button" class="btn" onClick={onClose}>
+          <button type="button" class="btn" data-nav-back onClick={onClose}>
             Resume
           </button>
         </div>

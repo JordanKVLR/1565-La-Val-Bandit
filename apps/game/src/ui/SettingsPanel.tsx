@@ -14,10 +14,20 @@ function OnOff({
 }) {
   return (
     <div class="seg" role="group" aria-label={label}>
-      <button type="button" class={`btn tab ${value ? 'on' : ''}`} onClick={() => onChange(true)}>
+      <button
+        type="button"
+        class={`btn tab ${value ? 'on' : ''}`}
+        aria-pressed={value}
+        onClick={() => onChange(true)}
+      >
         On
       </button>
-      <button type="button" class={`btn tab ${!value ? 'on' : ''}`} onClick={() => onChange(false)}>
+      <button
+        type="button"
+        class={`btn tab ${!value ? 'on' : ''}`}
+        aria-pressed={!value}
+        onClick={() => onChange(false)}
+      >
         Off
       </button>
     </div>
@@ -65,12 +75,13 @@ export function SettingsPanel({
         )}
         <div class="setting">
           <span>Battle speed</span>
-          <div class="seg">
+          <div class="seg" role="group" aria-label="Battle speed">
             {([1, 2, 4] as const).map((v) => (
               <button
                 type="button"
                 key={v}
                 class={`btn tab ${s.battleSpeed === v ? 'on' : ''}`}
+                aria-pressed={s.battleSpeed === v}
                 onClick={() => set({ battleSpeed: v })}
               >
                 ×{v}
@@ -88,10 +99,11 @@ export function SettingsPanel({
         </div>
         <div class="setting">
           <span>Duel close-ups</span>
-          <div class="seg">
+          <div class="seg" role="group" aria-label="Duel close-ups">
             <button
               type="button"
               class={`btn tab ${s.closeUps ? 'on' : ''}`}
+              aria-pressed={s.closeUps}
               onClick={() => set({ closeUps: true })}
             >
               On
@@ -99,6 +111,7 @@ export function SettingsPanel({
             <button
               type="button"
               class={`btn tab ${!s.closeUps ? 'on' : ''}`}
+              aria-pressed={!s.closeUps}
               onClick={() => set({ closeUps: false })}
             >
               Off
@@ -107,10 +120,11 @@ export function SettingsPanel({
         </div>
         <div class="setting">
           <span>Text size</span>
-          <div class="seg">
+          <div class="seg" role="group" aria-label="Text size">
             <button
               type="button"
               class={`btn tab ${s.textSize === 'normal' ? 'on' : ''}`}
+              aria-pressed={s.textSize === 'normal'}
               onClick={() => set({ textSize: 'normal' })}
             >
               Normal
@@ -118,6 +132,7 @@ export function SettingsPanel({
             <button
               type="button"
               class={`btn tab ${s.textSize === 'large' ? 'on' : ''}`}
+              aria-pressed={s.textSize === 'large'}
               onClick={() => set({ textSize: 'large' })}
             >
               Large
@@ -156,7 +171,7 @@ export function SettingsPanel({
             </button>
           </div>
         )}
-        <button type="button" class="btn" onClick={onClose}>
+        <button type="button" class="btn" data-nav-back onClick={onClose}>
           Done
         </button>
       </div>
