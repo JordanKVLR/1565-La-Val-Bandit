@@ -965,32 +965,15 @@
 .training-box {
   width: min(640px, 100%);
 }
-.tr-head {
-  display: grid;
-  grid-template-columns: 44px 1fr 44px;
-  align-items: center;
-  gap: 8px;
+/* On short phones the attributes and skills scroll; the pilot arrows and Done stay in view. */
+.training-box .tr-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
-.tr-head h3 {
-  margin: 0;
-  text-align: center;
-  font-family: var(--font-vb);
-  color: var(--gold);
-}
-.tr-head h3 small {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 13px;
-  color: var(--mt-cream);
-}
-.tr-arrow {
-  width: 44px;
-  padding: 0;
-}
+.tr-head,
 .tr-foot {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+  flex: none;
 }
 
 /* Coin burst */
