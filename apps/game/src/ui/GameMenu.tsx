@@ -3,6 +3,7 @@ import type { GameSession } from '../campaign/GameSession';
 import type { CampaignSave } from '../campaign/types';
 import type { SlotId } from '../platform/storage';
 import { readSave } from '../platform/storage';
+import { battlesWonInSaves, CodexScreen } from './CodexScreen';
 import { SettingsPanel } from './SettingsPanel';
 
 const MANUAL: readonly SlotId[] = ['slot1', 'slot2', 'slot3'];
@@ -28,8 +29,13 @@ export function GameMenu({
 }) {
   const [message, setMessage] = useState('');
   const [showSettings, setShowSettings] = useState(false);
+  const [showCodex, setShowCodex] = useState(false);
   const [, refresh] = useState(0);
   if (showSettings) return <SettingsPanel onClose={() => setShowSettings(false)} />;
+  if (showCodex) {
+    const won = new Set([...battlesWonInSaves(), ...session.view.get().completedBattles]);
+    return <CodexScreen completedBattles={[...won]} onClose={() => setShowCodex(false)} />;
+  }
   return (
     <div class="modal" role="dialog" aria-label="Menu" onClick={(e) => e.stopPropagation()}>
       <div class="modal-box">
@@ -59,10 +65,13 @@ export function GameMenu({
           <button type="button" class="btn ghost" onClick={() => setShowSettings(true)}>
             Settings
           </button>
+          <button type="button" class="btn ghost" onClick={() => setShowCodex(true)}>
+            Historical notes
+          </button>
           <button type="button" class="btn ghost" onClick={onQuit}>
             Title screen
           </button>
-          <button type="button" class="btn" onClick={onClose}>
+          <button type="button" class="btn" data-nav-back onClick={onClose}>
             Resume
           </button>
         </div>

@@ -2,6 +2,7 @@ import { useState } from 'preact/hooks';
 import type { CampaignSave } from '../campaign/types';
 import type { SlotId } from '../platform/storage';
 import { readSave, SLOTS } from '../platform/storage';
+import { battlesWonInSaves, CodexScreen } from './CodexScreen';
 import { describeSave } from './GameMenu';
 import { SettingsPanel } from './SettingsPanel';
 
@@ -12,7 +13,7 @@ interface Props {
 }
 
 export function TitleScreen({ onNew, onLoad, onWatchIntro }: Props) {
-  const [panel, setPanel] = useState<'none' | 'load' | 'settings'>('none');
+  const [panel, setPanel] = useState<'none' | 'load' | 'settings' | 'codex'>('none');
   const auto = readSave<CampaignSave>('auto');
   return (
     <main class="title-screen">
@@ -35,11 +36,17 @@ export function TitleScreen({ onNew, onLoad, onWatchIntro }: Props) {
         <button type="button" class="btn ghost" onClick={() => setPanel('settings')}>
           Settings
         </button>
+        <button type="button" class="btn ghost" onClick={() => setPanel('codex')}>
+          Historical notes
+        </button>
       </div>
       <p class="build-note">Prototype build · placeholder art</p>
 
       {panel === 'settings' && (
         <SettingsPanel onClose={() => setPanel('none')} onWatchIntro={onWatchIntro} />
+      )}
+      {panel === 'codex' && (
+        <CodexScreen completedBattles={battlesWonInSaves()} onClose={() => setPanel('none')} />
       )}
       {panel === 'load' && (
         <div class="modal" role="dialog" aria-label="Load game">
@@ -62,7 +69,7 @@ export function TitleScreen({ onNew, onLoad, onWatchIntro }: Props) {
                 );
               })}
             </div>
-            <button type="button" class="btn ghost" onClick={() => setPanel('none')}>
+            <button type="button" class="btn ghost" data-nav-back onClick={() => setPanel('none')}>
               Back
             </button>
           </div>

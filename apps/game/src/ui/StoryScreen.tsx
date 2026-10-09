@@ -6,6 +6,7 @@ import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
+import { usePressWord } from './KeyHint';
 
 type StoryScreenState = Extract<Screen, { kind: 'story' }>;
 
@@ -59,13 +60,22 @@ function Stage({ stage, lib }: { stage: StageState; lib: Library }) {
 /** Reveals text over time; a tap first completes the line, the next tap advances. */
 function useTypewriter(text: string, cps = 60): [string, boolean, () => void] {
   const [shown, setShown] = useState(0);
-  useEffect(() => setShown(0), [text]);
+  // With reduced motion the whole line appears at once.
+  useEffect(() => setShown(prefersReducedMotion() ? text.length : 0), [text]);
   useEffect(() => {
     if (shown >= text.length) return;
     const t = setTimeout(() => setShown((n) => Math.min(text.length, n + 2)), 2000 / cps);
     return () => clearTimeout(t);
   }, [shown, text, cps]);
   return [text.slice(0, shown), shown >= text.length, () => setShown(text.length)];
+}
+
+function prefersReducedMotion(): boolean {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch {
+    return false;
+  }
 }
 
 export function StoryScreen({ session, lib, onMenu }: Props) {
@@ -86,6 +96,30 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
     if (!done) finish();
     else session.advance();
   };
+  const tapRef = useRef(onTap);
+  tapRef.current = onTap;
+  const pressWord = usePressWord();
+
+  // Keyboard and gamepad: Enter/Space (pad Ⓐ) continue, Esc or the pad's Menu button open the
+  // menu. Choices are buttons, reached with the arrows (see ui/input.ts).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      const target = e.target as HTMLElement | null;
+      if (e.key === 'Escape' || e.key === 'ContextMenu') {
+        e.preventDefault();
+        onMenu();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        if (target?.closest('button')?.matches(':focus-visible')) return;
+        if (screen.choices) return;
+        e.preventDefault();
+        tapRef.current();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onMenu, screen.choices]);
 
   return (
     <main class="story-screen" onClick={onTap} data-testid="story-screen">
@@ -100,7 +134,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
         <div class="chapter-card" data-testid="chapter-card">
           <h2>{screen.card.title}</h2>
           <p>{screen.card.subtitle}</p>
-          <span class="tap-hint">Tap to continue</span>
+          <span class="tap-hint">{pressWord} to continue</span>
         </div>
       )}
 
@@ -137,7 +171,13 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
       {screen.choices && (
         <div class="choices" role="group" aria-label="Choices" onClick={(e) => e.stopPropagation()}>
           {screen.choices.map((c, i) => (
-            <button type="button" class="btn choice" key={i} onClick={() => session.choose(i)}>
+            <button
+              type="button"
+              class="btn choice"
+              key={i}
+              data-nav-default={i === 0 || undefined}
+              onClick={() => session.choose(i)}
+            >
               {c}
             </button>
           ))}

@@ -2,6 +2,7 @@ import { attackFpCost } from '@m1565/core';
 import type { BattleController } from '../../scenes/BattleController';
 import { attackStats } from './attackText';
 import { techniqueEffects } from './TechniqueCard';
+import { KeyHint } from '../KeyHint';
 
 /** The active unit's learned techniques; locked ones stay hidden until unlocked. */
 export function AttackMenu({ ctl }: { ctl: BattleController }) {
@@ -17,7 +18,7 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
           AP {unit.ap} · {unit.weapon.name}
         </span>
         <button type="button" class="btn ghost" onClick={() => ctl.cancel()}>
-          Back
+          Back <KeyHint action="back" />
         </button>
       </header>
       <ul class="am-list">
@@ -30,6 +31,7 @@ export function AttackMenu({ ctl }: { ctl: BattleController }) {
                 type="button"
                 class="am-item"
                 disabled={!usable}
+                data-nav-default={usable || undefined}
                 onClick={() => ctl.chooseTechnique(attack.id)}
               >
                 <span class="am-name">{attack.name}</span>

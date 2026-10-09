@@ -7,7 +7,11 @@ interface Props {
 
 export function EndOverlay({ outcome, onRetry, onContinue, continueLabel = 'Continue' }: Props) {
   return (
-    <div class={`end-overlay ${outcome}`} role="dialog" aria-label={outcome}>
+    <div
+      class={`end-overlay ${outcome}`}
+      role="dialog"
+      aria-label={outcome === 'victory' ? 'Victory' : 'Defeat'}
+    >
       <h2>{outcome === 'victory' ? 'Victory' : 'Defeat'}</h2>
       <div class="end-actions">
         {outcome === 'defeat' && (

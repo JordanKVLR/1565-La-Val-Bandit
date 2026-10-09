@@ -79,6 +79,7 @@ export function VbBar({
         role="meter"
         aria-label={label}
         aria-valuenow={value}
+        aria-valuemin={0}
         aria-valuemax={max}
       >
         <span class="vb-fill" style={{ width: `${pct(solid, max)}%` }} />

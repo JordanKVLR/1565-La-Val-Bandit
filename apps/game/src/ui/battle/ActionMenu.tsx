@@ -1,11 +1,5 @@
 import type { BattleController } from '../../scenes/BattleController';
-
-/** Keyboard shortcut hint, shown only with a mouse (see .key in styles.css). */
-const Key = ({ k }: { k: string }) => (
-  <kbd class="key" aria-hidden="true">
-    {k}
-  </kbd>
-);
+import { KeyHint } from '../KeyHint';
 
 /**
  * The active unit's commands. While `moving`, its movement range is on the map (the default at
@@ -25,7 +19,7 @@ export function ActionMenu({ ctl, moving = false }: { ctl: BattleController; mov
         onClick={() => ctl.chooseMove()}
         title={moving ? 'Tap a blue tile to see the route, again to move' : undefined}
       >
-        Move <Key k="M" />
+        Move <KeyHint action="move" />
       </button>
       <button
         type="button"
@@ -33,15 +27,15 @@ export function ActionMenu({ ctl, moving = false }: { ctl: BattleController; mov
         disabled={!ctl.canAttack()}
         onClick={() => ctl.chooseAttack()}
       >
-        Attack <Key k="A" />
+        Attack <KeyHint action="attack" />
       </button>
       {ctl.canUndo() && (
         <button type="button" class="btn action" onClick={() => ctl.undoMove()}>
-          Undo <Key k="U" />
+          Undo <KeyHint action="undo" />
         </button>
       )}
       <button type="button" class="btn action end" onClick={() => ctl.chooseEndTurn()}>
-        End Turn <Key k="E" />
+        End Turn <KeyHint action="endTurn" />
       </button>
     </nav>
   );
@@ -63,11 +57,11 @@ export function SubModeBar({
       <span>{label}</span>
       {confirm && onConfirm && (
         <button type="button" class="btn" onClick={onConfirm}>
-          {confirm}
+          {confirm} <KeyHint action="confirm" />
         </button>
       )}
       <button type="button" class="btn ghost" onClick={onCancel}>
-        Back
+        Back <KeyHint action="back" />
       </button>
     </div>
   );

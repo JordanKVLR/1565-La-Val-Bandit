@@ -41,6 +41,7 @@ import {
 import { derivedStats, statsAtLevel } from './progression';
 import type { BattleSource, Character, MapSource } from './schemas';
 
+export * from './codex';
 export * from './progression';
 export * from './schemas';
 

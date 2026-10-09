@@ -223,9 +223,11 @@ export function Shelf({
           : e.key === 'End'
             ? cards.length - 1
             : null;
-    if (j === null) return;
+    // Past the first or last card, the key is left for spatial focus (keyboard and gamepad
+    // can then reach the tabs and buttons around the grid; see ui/input.ts).
+    if (j === null || j < 0 || j >= cards.length) return;
     e.preventDefault();
-    cards[Math.max(0, Math.min(cards.length - 1, j))]?.focus();
+    cards[j]?.focus();
   };
   const empty = sections.every((s) => s.entries.length === 0);
   const keys = sections.flatMap((s) => s.entries.map(entryKey));
