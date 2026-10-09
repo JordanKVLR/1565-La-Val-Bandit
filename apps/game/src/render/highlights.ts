@@ -1,4 +1,5 @@
 import type { Coord } from '@m1565/core';
+import type { BufferGeometry } from 'three';
 import {
   BoxGeometry,
   CanvasTexture,
@@ -9,6 +10,7 @@ import {
   SRGBColorSpace,
   Vector3,
 } from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { OKABE } from './palette';
 
 export type HighlightKind = 'move' | 'path' | 'range' | 'target' | 'danger' | 'goal';
@@ -156,6 +158,17 @@ function patternTexture(style: Style, strong: boolean): CanvasTexture {
   return t;
 }
 
+/**
+ * One mesh for many placed pieces that share a material: a move range of 40 tiles is one draw
+ * call rather than 40 (ADR 0010; PLAN §5.5 budgets 100 draw calls).
+ */
+function mergedMesh(pieces: BufferGeometry[], material: MeshBasicMaterial): Mesh | null {
+  if (!pieces.length) return null;
+  const geometry = mergeGeometries(pieces);
+  for (const p of pieces) p.dispose();
+  return geometry ? new Mesh(geometry, material) : null;
+}
+
 const SIDES: ReadonlyArray<{ dx: number; dy: number }> = [
   { dx: 0, dy: -1 },
   { dx: 1, dy: 0 },
@@ -191,11 +204,14 @@ export function buildHighlights(
       depthWrite: false,
     });
     const tileGeo = new PlaneGeometry(style.size, style.size).rotateX(-Math.PI / 2);
-    for (const c of layer.tiles) {
-      const m = new Mesh(tileGeo, mat);
-      m.position.copy(top(c)).add(new Vector3(0, lift, 0));
-      group.add(m);
-    }
+    const fills = layer.tiles.map((c) => {
+      const p = top(c);
+      return tileGeo.clone().translate(p.x, p.y + lift, p.z);
+    });
+    tileGeo.dispose();
+    const fill = mergedMesh(fills, mat);
+    if (fill) group.add(fill);
+    else mat.dispose();
 
     if (style.edge) {
       const inSet = new Set(layer.tiles.map((c) => `${c.x},${c.y}`));
@@ -206,6 +222,8 @@ export function buildHighlights(
         depthWrite: false,
       });
       const light = new MeshBasicMaterial({ color: style.edge.color });
+      const darkPieces: BufferGeometry[] = [];
+      const lightPieces: BufferGeometry[] = [];
       const pieces = style.edge.dashed ? 3 : 1;
       const len = 1 / pieces;
       const dash = style.edge.dashed ? len * 0.6 : len;
@@ -222,19 +240,30 @@ export function buildHighlights(
                 horizontal ? s.dy * (0.5 - edgeW / 2) : along,
               ),
             );
-            const geoDark = new BoxGeometry(
-              horizontal ? dash + 0.02 : edgeW + 0.03,
-              0.012,
-              horizontal ? edgeW + 0.03 : dash + 0.02,
+            darkPieces.push(
+              new BoxGeometry(
+                horizontal ? dash + 0.02 : edgeW + 0.03,
+                0.012,
+                horizontal ? edgeW + 0.03 : dash + 0.02,
+              ).translate(base.x, base.y, base.z),
             );
-            const under = new Mesh(geoDark, dark);
-            under.position.copy(base);
-            const geo = new BoxGeometry(horizontal ? dash : edgeW, 0.02, horizontal ? edgeW : dash);
-            const over = new Mesh(geo, light);
-            over.position.copy(base).add(new Vector3(0, 0.006, 0));
-            group.add(under, over);
+            lightPieces.push(
+              new BoxGeometry(
+                horizontal ? dash : edgeW,
+                0.02,
+                horizontal ? edgeW : dash,
+              ).translate(base.x, base.y + 0.006, base.z),
+            );
           }
         }
+      }
+      for (const [list, material] of [
+        [darkPieces, dark],
+        [lightPieces, light],
+      ] as const) {
+        const edges = mergedMesh(list, material);
+        if (edges) group.add(edges);
+        else material.dispose();
       }
     }
 
@@ -249,15 +278,16 @@ export function buildHighlights(
           [darkMat, w + 0.04, 0],
           [frameMat, w, 0.008],
         ] as const) {
-          for (const s of SIDES) {
+          const bars = SIDES.map((s) => {
             const horizontal = s.dy !== 0;
-            const bar = new Mesh(
-              new BoxGeometry(horizontal ? 1 : width, 0.02, horizontal ? width : 1),
-              mat,
+            return new BoxGeometry(horizontal ? 1 : width, 0.02, horizontal ? width : 1).translate(
+              s.dx * (0.5 - width / 2),
+              y,
+              s.dy * (0.5 - width / 2),
             );
-            bar.position.set(s.dx * (0.5 - width / 2), y, s.dy * (0.5 - width / 2));
-            f.add(bar);
-          }
+          });
+          const frame = mergedMesh(bars, mat);
+          if (frame) f.add(frame);
         }
         group.add(f);
         pulsing.push(f);
