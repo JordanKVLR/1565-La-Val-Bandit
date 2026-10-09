@@ -1,0 +1,44 @@
+{
+  "id": "a6-sick-tents",
+  "name": "Hospital Tents at the Marsa",
+  "legend": {
+    "~": "sea",
+    "w": "shallows",
+    "s": "sand",
+    "p": "plain",
+    "r": "road",
+    "f": "field",
+    "g": "scrub",
+    "x": "rubble",
+    "#": "rampart",
+    "_": "floor",
+    "W": "wall",
+    "d": "deck",
+    "t": "trench",
+    "b": "ruin"
+  },
+  "terrain": [
+    "ggppppsswww~",
+    "ggpprpppsww~",
+    "gpprr_WW_sw~",
+    "ppr_______s~",
+    "rrr__WW_WW_s",
+    "ppr_______pp",
+    "gpr__WW_WW_p",
+    "ggrp______pf",
+    "gggrrppppfff",
+    "ggggprrppfff"
+  ],
+  "height": [
+    "221111100000",
+    "221111110000",
+    "211111221100",
+    "111111111100",
+    "111112212210",
+    "111111111111",
+    "211112212211",
+    "221111111111",
+    "222111111111",
+    "222211111111"
+  ]
+}
