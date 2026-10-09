@@ -48,4 +48,6 @@ open http://localhost:5173/?battle=<id>    # jump straight into any battle
 - Every rules change comes with Vitest tests in `packages/core/test`.
 - Tuning numbers belong in content data, not in magic constants in code.
 - Landscape only; touch first; buttons ≥44px; respect safe-area insets.
+- UI text goes in `apps/game/src/i18n/en.ts` (ESLint blocks hard-coded strings in TSX); story text
+  stays in Ink and names/descriptions in content JSON. See `docs/I18N.md`.
 - Record significant technical decisions as ADRs in `docs/adr/`.
