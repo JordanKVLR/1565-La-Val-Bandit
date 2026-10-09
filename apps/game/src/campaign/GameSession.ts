@@ -1,5 +1,5 @@
-import type { BattleSetup, BattleState, Facing, StatName } from '@m1565/core';
-import { deserializeBattle } from '@m1565/core';
+import type { BattleSetup, BattleState, Difficulty, Facing, StatName } from '@m1565/core';
+import { DEFAULT_DIFFICULTY, deserializeBattle, difficultyMods, scaleScudi } from '@m1565/core';
 import type { Library, ShopItem } from '@m1565/content';
 import { battleSalvage, isBattleId, loadBattle } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
@@ -16,11 +16,14 @@ import { StoryRunner } from '../story/StoryRunner';
 import type { Holdings, ItemKind, Stores } from './inventory';
 import { addItem, buy, equip, release, sell, swap } from './inventory';
 import { migrateCampaign } from './migrate';
+import type { NewGameOptions } from './newGamePlus';
+import { refitKit } from './newGamePlus';
 import { applyBattleResults, newRosterEntry, raiseRosterStat, withProgress } from './progression';
 import type {
   CampaignSave,
   ChapterInfo,
   CharacterProgress,
+  Loadout,
   RosterEntry,
   StageState,
 } from './types';
@@ -57,6 +60,13 @@ export interface SessionView {
   /** Progress of named allies who haven't joined the company yet. */
   readonly veterans: Readonly<Record<string, CharacterProgress>>;
   readonly completedBattles: readonly string[];
+  readonly difficulty: Difficulty;
+  /** New Game+ cycle (0 = first playthrough). */
+  readonly ngPlus: number;
+  /** Route of the ending reached in this playthrough, if any. */
+  readonly ending: string | null;
+  /** New Game+: gear carried-over pilots get back when they rejoin. */
+  readonly kit: Readonly<Record<string, Loadout>>;
 }
 
 const FACINGS: readonly Facing[] = ['north', 'east', 'south', 'west'];
@@ -74,20 +84,30 @@ export class GameSession {
   private playMsBefore = 0;
   private lastStep: StoryStep | null = null;
 
+  /**
+   * Resumes `save`, or starts a new playthrough with `start` (difficulty, and for New Game+ the
+   * cycle and what carries over).
+   */
   constructor(
     private readonly lib: Library,
     save?: CampaignSave,
+    start?: NewGameOptions,
   ) {
     this.runner = new StoryRunner(storyJson, save?.ink);
+    const carry = save ? undefined : start?.carry;
     this.view = new Store<SessionView>({
       screen: { kind: 'title' },
       stage: save?.stage ?? EMPTY_STAGE,
       chapter: save?.chapter ?? { title: '', subtitle: '' },
       roster: (save?.roster ?? []).map((r) => normalizeEntry(lib, r)),
-      scudi: save?.scudi ?? 0,
-      stores: save?.stores ?? {},
-      veterans: save?.veterans ?? {},
+      scudi: save?.scudi ?? carry?.scudi ?? 0,
+      stores: save?.stores ?? carry?.stores ?? {},
+      veterans: save?.veterans ?? carry?.veterans ?? {},
       completedBattles: save?.completedBattles ?? [],
+      difficulty: save?.difficulty ?? start?.difficulty ?? DEFAULT_DIFFICULTY,
+      ngPlus: save?.ngPlus ?? start?.ngPlus ?? 0,
+      ending: save?.ending ?? null,
+      kit: save?.kit ?? carry?.kit ?? {},
     });
     if (save) {
       this.playMsBefore = save.playMs;
@@ -161,6 +181,8 @@ export class GameSession {
     }
     if (outcome === 'defeat') {
       // Giving up after a defeat returns to the title; the autosave still holds the battle start.
+      // On an easy difficulty the company keeps the experience it earned before losing.
+      if (this.keepDefeatXp(state)) this.write('auto', { id: screen.battleId });
       this.show({ kind: 'title' });
       return;
     }
@@ -175,10 +197,11 @@ export class GameSession {
     const b = this.lib.balance;
     const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
     const noLosses = !state.units.some((u) => u.side === 'player' && u.defeated);
-    const reward =
+    const reward = this.scudiIncome(
       b.rewardVictory +
-      fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
-      (noLosses ? b.rewardNoLosses : 0);
+        fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
+        (noLosses ? b.rewardNoLosses : 0),
+    );
     const firstWin = !this.state.completedBattles.includes(screen.battleId);
     const completedBattles = firstWin
       ? [...this.state.completedBattles, screen.battleId]
@@ -204,6 +227,31 @@ export class GameSession {
       battleId: screen.battleId,
       lines: [`+${reward} scudi`, ...salvaged, ...lines],
     });
+    this.autosave();
+  }
+
+  /**
+   * "Retry battle" after a defeat: the battle starts again from the beginning. On a difficulty
+   * where defeat keeps experience (Squire), the company first keeps what it earned in the lost
+   * attempt, so retrying costs nothing; otherwise that attempt's experience is lost.
+   */
+  retryBattle(state: BattleState): void {
+    const screen = this.state.screen;
+    if (screen.kind !== 'battle') return;
+    this.keepDefeatXp(state);
+    this.startBattle(screen.battleId);
+    this.autosave();
+  }
+
+  /** Whether losing a battle keeps the experience earned in it on the current difficulty. */
+  get defeatKeepsXp(): boolean {
+    return difficultyMods(this.lib.balance, this.state.difficulty).defeatKeepsXp;
+  }
+
+  /** Changes the difficulty; it applies from the next battle (or retry) onwards. */
+  setDifficulty(difficulty: Difficulty): void {
+    if (difficulty === this.state.difficulty) return;
+    this.patch({ difficulty });
     this.autosave();
   }
 
@@ -336,24 +384,46 @@ export class GameSession {
         const [id, frame, weapon] = args;
         if (!id || this.state.roster.some((r) => r.characterId === id)) return false;
         // New pilots arrive with their own armatura and weapon fitted, and keep any level and
-        // XP they earned fighting alongside the company before joining.
+        // XP they earned fighting alongside the company before joining (or in an earlier
+        // playthrough, for New Game+).
         const entry = withProgress(
           newRosterEntry(this.lib, id, frame, weapon),
           this.state.veterans[id],
         );
         const veterans = { ...this.state.veterans };
         delete veterans[id];
-        this.patch({ roster: [...this.state.roster, entry], veterans });
+        let h: Holdings = { ...this.holdings(), roster: [...this.state.roster, entry] };
+        // New Game+: they take back the gear they had fitted last time, if it's in the stores.
+        const kit = { ...this.state.kit };
+        const carried = kit[id];
+        if (carried) {
+          h = refitKit(this.lib, h, id, carried);
+          delete kit[id];
+        }
+        this.patch({ roster: h.roster, stores: h.stores, veterans, kit });
         return false;
       }
       case 'leave': {
         let h = this.holdings();
-        for (const id of args) h = release(this.lib, h, id);
-        this.patch({ roster: h.roster, stores: h.stores });
+        // A pilot who leaves keeps their progress, should they fight for the company again.
+        const veterans = { ...this.state.veterans };
+        for (const id of args) {
+          const r = h.roster.find((e) => e.characterId === id);
+          if (r) {
+            veterans[id] = {
+              level: r.level,
+              xp: r.xp,
+              stats: r.stats,
+              statPoints: r.statPoints ?? 0,
+            };
+          }
+          h = release(this.lib, h, id);
+        }
+        this.patch({ roster: h.roster, stores: h.stores, veterans });
         return false;
       }
       case 'scudi':
-        this.patch({ scudi: this.state.scudi + Number(args[0] ?? 0) });
+        this.patch({ scudi: this.state.scudi + this.scudiIncome(Number(args[0] ?? 0)) });
         return false;
       case 'battle': {
         const id = args[0] ?? '';
@@ -368,11 +438,15 @@ export class GameSession {
       case 'save':
         this.autosave();
         return false;
-      case 'end':
-        unlockAchievement(ENDING_ACHIEVEMENTS[String(this.runner.getVar('route'))]);
+      case 'end': {
+        // Every ending counts on every cycle and difficulty; reaching one offers New Game+.
+        const route = String(this.runner.getVar('route'));
+        unlockAchievement(ENDING_ACHIEVEMENTS[route]);
+        this.patch({ ending: route });
         this.show({ kind: 'end' });
         this.autosave();
         return true;
+      }
       default:
         console.warn(`Unknown story command "${name}"`);
         return false;
@@ -388,7 +462,11 @@ export class GameSession {
     } catch {
       initial = undefined;
     }
-    const setup = loadBattle(id, this.lib, this.state.roster, this.state.veterans);
+    const { difficulty, ngPlus } = this.state;
+    const setup = loadBattle(id, this.lib, this.state.roster, this.state.veterans, {
+      difficulty,
+      ngPlus,
+    });
     this.battleCounter += 1;
     this.show({
       kind: 'battle',
@@ -397,6 +475,27 @@ export class GameSession {
       ...(initial ? { initial } : {}),
       key: this.battleCounter,
     });
+  }
+
+  /** Scudi after the difficulty's multiplier. */
+  private scudiIncome(amount: number): number {
+    return scaleScudi(amount, this.lib.balance, this.state.difficulty);
+  }
+
+  /**
+   * On a difficulty where defeat keeps experience, records the levels and XP earned in a lost
+   * battle. Returns whether it did.
+   */
+  private keepDefeatXp(state: BattleState): boolean {
+    if (!this.defeatKeepsXp) return false;
+    const { roster, veterans } = applyBattleResults(
+      this.lib,
+      this.state.roster,
+      state,
+      this.state.veterans,
+    );
+    this.patch({ roster, veterans });
+    return true;
   }
 
   private currentLine(): Extract<StoryStep, { kind: 'line' }> | null {
@@ -428,6 +527,10 @@ export class GameSession {
       battle,
       savedAt: Date.now(),
       playMs: this.playMsBefore + (Date.now() - this.startedAt),
+      difficulty: s.difficulty,
+      ngPlus: s.ngPlus,
+      ending: s.ending,
+      ...(Object.keys(s.kit).length ? { kit: s.kit } : {}),
     };
     return writeSave(slot, save);
   }

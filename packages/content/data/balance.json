@@ -62,5 +62,19 @@
   "rewardPerEnemy": 60,
   "rewardPerEnemyLevel": 15,
   "rewardNoLosses": 100,
-  "armouryConfirmFraction": 0.5
+  "armouryConfirmFraction": 0.5,
+  "squireEnemyLevel": -1,
+  "squireEnemyStats": 0.85,
+  "squireScudi": 1.5,
+  "squireDefeatKeepsXp": 1,
+  "knightEnemyLevel": 0,
+  "knightEnemyStats": 1,
+  "knightScudi": 1,
+  "knightDefeatKeepsXp": 0,
+  "grandMasterEnemyLevel": 2,
+  "grandMasterEnemyStats": 1.15,
+  "grandMasterScudi": 0.75,
+  "grandMasterDefeatKeepsXp": 0,
+  "ngPlusEnemyLevelPerCycle": 6,
+  "ngPlusEnemyStatsPerCycle": 0.2
 }

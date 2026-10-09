@@ -1,6 +1,7 @@
 import type {
   Attack,
   BalanceConfig,
+  Difficulty,
   PilotStats,
   BattleMap,
   BattleSetup,
@@ -11,7 +12,14 @@ import type {
   UnitSpec,
   Weapon,
 } from '@m1565/core';
-import { getTile, techniqueCost, validateMap } from '@m1565/core';
+import {
+  enemyScaling,
+  getTile,
+  scaleEnemyLevel,
+  scaleEnemyStats,
+  techniqueCost,
+  validateMap,
+} from '@m1565/core';
 import armourerData from '../data/armourers.json';
 import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
@@ -221,16 +229,27 @@ function resolveStats(
   return out;
 }
 
+/** How hard the playthrough is: enemies are scaled for the difficulty and New Game+ cycle. */
+export interface BattleOptions {
+  readonly difficulty?: Difficulty;
+  /** Completed playthroughs before this one (0 = first). */
+  readonly ngPlus?: number;
+}
+
 /**
  * Resolves a battle's references (map, frames, weapons, characters) into a core BattleSetup.
  * Named player characters found in `roster` fight with their saved level, stats and loadout.
+ * Enemies are scaled for the difficulty and New Game+ cycle in `options` (Knight, first
+ * playthrough, leaves them exactly as authored).
  */
 export function buildBattle(
   source: BattleSource,
   lib: Library = loadLibrary(),
   roster: readonly RosterEntry[] = [],
   progress: Readonly<Record<string, CharacterProgress>> = {},
+  options: BattleOptions = {},
 ): BattleSetup {
+  const scaling = enemyScaling(lib.balance, options.difficulty ?? 'knight', options.ngPlus ?? 0);
   const saved = new Map(roster.map((r) => [r.characterId, r]));
   const where = `battle ${source.id}`;
   const mapSource = mapSources[source.map];
@@ -247,7 +266,9 @@ export function buildBattle(
       ? { ...u0, level: r.level, stats: r.stats, frame: r.frame, weapon: r.weapon }
       : veteran
         ? { ...u0, level: veteran.level, stats: veteran.stats }
-        : u0;
+        : u0.side === 'enemy'
+          ? { ...u0, level: scaleEnemyLevel(u0.level, scaling) }
+          : u0;
     const character = u.character
       ? need(lib.characters, u.character, 'character', where)
       : undefined;
@@ -268,6 +289,8 @@ export function buildBattle(
     const key = `${at.x},${at.y}`;
     if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
     occupied.add(key);
+    // Without a saved roster entry, a named character arrives at the level the battle expects.
+    const stats = resolveStats(u.stats, character, u.level, frame.class, u.side, lib);
     return {
       id: u.id,
       ...(u.character ? { characterId: u.character } : {}),
@@ -277,8 +300,8 @@ export function buildBattle(
       controller: u.controller,
       ...(u.ai ? { ai: u.ai } : {}),
       level: u.level,
-      // Without a saved roster entry, a named character arrives at the level the battle expects.
-      stats: resolveStats(u.stats, character, u.level, frame.class, u.side, lib),
+      // Enemies are scaled for the difficulty and New Game+ cycle.
+      stats: u.side === 'enemy' ? scaleEnemyStats(stats, scaling, lib.balance.statMax) : stats,
       frame,
       weapon,
       ...(charm ? { charm } : {}),
@@ -324,8 +347,9 @@ export function loadBattle(
   lib: Library = loadLibrary(),
   roster: readonly RosterEntry[] = [],
   progress: Readonly<Record<string, CharacterProgress>> = {},
+  options: BattleOptions = {},
 ): BattleSetup {
-  return buildBattle(BattleSourceSchema.parse(battleSources[id]), lib, roster, progress);
+  return buildBattle(BattleSourceSchema.parse(battleSources[id]), lib, roster, progress, options);
 }
 
 export function isBattleId(id: string): id is BattleId {

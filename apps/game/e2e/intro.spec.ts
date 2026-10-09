@@ -8,6 +8,7 @@ test('a new game opens on the cinematic, which plays to the song and can be skip
   const song = page.waitForResponse((r) => /under-the-red-sun\.mp3/.test(r.url()));
   await page.goto('./');
   await page.getByRole('button', { name: 'New Game' }).click();
+  await page.getByRole('button', { name: /^Knight/ }).click();
   await expect(page.getByRole('region', { name: 'Opening cinematic' })).toBeVisible();
   expect([200, 206]).toContain((await song).status());
   const film = page.frameLocator('iframe[title="Opening cinematic"]');
@@ -39,6 +40,7 @@ test('the cinematic still plays once the offline service worker controls the pag
   await page.reload();
   expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
   await page.getByRole('button', { name: 'New Game' }).click();
+  await page.getByRole('button', { name: /^Knight/ }).click();
   await expect(page.locator('.intro-loading')).toBeHidden({ timeout: 15000 });
   await expect(page.getByRole('region', { name: 'Opening cinematic' })).toBeVisible();
   const film = page.frame({ url: /intro\/index\.html/ });

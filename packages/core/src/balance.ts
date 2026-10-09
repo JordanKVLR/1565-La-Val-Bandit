@@ -100,6 +100,32 @@ export interface BalanceConfig {
   /** On success the attacker takes this multiple of the blow; on failure the defender does. */
   readonly counterReflectMult: number;
   readonly counterFailMult: number;
+  /**
+   * Difficulty (chosen per playthrough, see difficulty.ts). Enemies built from content gain
+   * `…EnemyLevel` levels (never below 1) and have every attribute multiplied by `…EnemyStats`;
+   * all scudi income is multiplied by `…Scudi`. `…DefeatKeepsXp` = 1 means a lost battle keeps
+   * the experience the company earned in it (retrying costs nothing); 0 means that attempt's
+   * experience is lost. Knight is the reference balance and stays neutral (0, 1, 1).
+   */
+  readonly squireEnemyLevel: number;
+  readonly squireEnemyStats: number;
+  readonly squireScudi: number;
+  readonly squireDefeatKeepsXp: number;
+  readonly knightEnemyLevel: number;
+  readonly knightEnemyStats: number;
+  readonly knightScudi: number;
+  readonly knightDefeatKeepsXp: number;
+  readonly grandMasterEnemyLevel: number;
+  readonly grandMasterEnemyStats: number;
+  readonly grandMasterScudi: number;
+  readonly grandMasterDefeatKeepsXp: number;
+  /**
+   * New Game+: every completed cycle stacks this many enemy levels and this share of the enemy
+   * attribute multiplier on top of the difficulty (cycle n: level + n × levels, attributes ×
+   * (1 + n × share)).
+   */
+  readonly ngPlusEnemyLevelPerCycle: number;
+  readonly ngPlusEnemyStatsPerCycle: number;
 }
 
 export const DEFAULT_BALANCE: BalanceConfig = {
@@ -167,6 +193,20 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   counterMaxChance: 35,
   counterReflectMult: 1.25,
   counterFailMult: 1.25,
+  squireEnemyLevel: -1,
+  squireEnemyStats: 0.85,
+  squireScudi: 1.5,
+  squireDefeatKeepsXp: 1,
+  knightEnemyLevel: 0,
+  knightEnemyStats: 1,
+  knightScudi: 1,
+  knightDefeatKeepsXp: 0,
+  grandMasterEnemyLevel: 2,
+  grandMasterEnemyStats: 1.15,
+  grandMasterScudi: 0.75,
+  grandMasterDefeatKeepsXp: 0,
+  ngPlusEnemyLevelPerCycle: 6,
+  ngPlusEnemyStatsPerCycle: 0.2,
 };
 
 /** Attack styles that strike from range (guns and grenades): they pay extra FP. */
