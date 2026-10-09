@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { music } from '../platform/audio';
 import { settings } from '../state/settings';
-import { usePressWord } from './KeyHint';
+import { t } from '../i18n';
+import { usePrompt } from './KeyHint';
 import { introFinished, introScale, introTime, introVolume } from './intro';
 
 type IntroWindow = Window & { ready?: Promise<void>; renderFrame?: (t: number) => Promise<void> };
@@ -28,7 +29,7 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
     onDone();
   };
 
-  const pressWord = usePressWord();
+  const prompt = usePrompt();
   const scale = introScale(window.innerWidth, window.innerHeight, window.devicePixelRatio || 1);
   const src = `${import.meta.env.BASE_URL}intro/index.html?scale=${scale}`;
 
@@ -121,16 +122,16 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
   }, []);
 
   return (
-    <div class="intro-screen" role="region" aria-label="Opening cinematic">
-      <iframe ref={frame} src={src} title="Opening cinematic" tabIndex={-1} />
-      {!loaded && <p class="intro-loading">Loading…</p>}
+    <div class="intro-screen" role="region" aria-label={t('intro.title')}>
+      <iframe ref={frame} src={src} title={t('intro.title')} tabIndex={-1} />
+      {!loaded && <p class="intro-loading">{t('common.loading')}</p>}
       {loaded && blocked && (
         <button type="button" class="intro-begin" onClick={() => unblock.current()}>
-          {pressWord} to begin
+          {prompt('begin')}
         </button>
       )}
       <button type="button" class="btn ghost intro-skip" onClick={finish}>
-        Skip
+        {t('common.skip')}
       </button>
     </div>
   );

@@ -1,19 +1,18 @@
+import { t } from '../i18n';
+
 export function EndScreen({ onTitle }: { onTitle: () => void }) {
   return (
     <main class="end-screen">
-      <h2>Armatura 1565</h2>
-      <p>Thank you for playing.</p>
+      <h2>{t('app.title')}</h2>
+      <p>{t('end.thanks')}</p>
       <p class="credits">
-        Design, code and story: the Armatura 1565 team.
+        {t('end.credits')}
         <br />
-        Placeholder art and sound throughout; final assets to come.
+        {t('end.placeholder')}
       </p>
-      <p class="end-ngplus">
-        New Game+ is now open on the title screen: begin again with your company, against a stronger
-        enemy.
-      </p>
+      <p class="end-ngplus">{t('end.ngPlus')}</p>
       <button type="button" class="btn" onClick={onTitle}>
-        Return to title
+        {t('end.returnToTitle')}
       </button>
     </main>
   );

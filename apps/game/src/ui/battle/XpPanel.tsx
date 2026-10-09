@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { NewSkills } from '../SkillList';
+import { t } from '../../i18n';
 
 export interface XpGain {
   readonly unitId: string;
@@ -34,9 +35,9 @@ export function XpPanel({
   }, []);
   const pct = (xp: number) => `${Math.min(100, (xp / xpPerLevel) * 100)}%`;
   return (
-    <div class="modal xp-modal" role="dialog" aria-label="Experience" onClick={onDone}>
+    <div class="modal xp-modal" role="dialog" aria-label={t('xp.title')} onClick={onDone}>
       <div class="modal-box xp-panel" data-testid="xp-panel">
-        <h2>Experience</h2>
+        <h2>{t('xp.title')}</h2>
         <ul class="xp-gains">
           {gains.map((g) => {
             const levelled = g.levelAfter > g.levelBefore;
@@ -44,7 +45,7 @@ export function XpPanel({
               <li key={g.unitId}>
                 <div class="xp-head">
                   <strong>{g.name}</strong>
-                  <span class="xp-plus">+{g.xp} XP</span>
+                  <span class="xp-plus">{t('xp.gain', { n: g.xp })}</span>
                 </div>
                 <span class="xp-track wide" aria-hidden="true">
                   <span
@@ -57,12 +58,16 @@ export function XpPanel({
                 <small>
                   {levelled ? (
                     <b class="xp-level">
-                      LEVEL UP! Lv {g.levelBefore} → {g.levelAfter}
+                      {t('xp.levelUp', { from: g.levelBefore, to: g.levelAfter })}
                     </b>
                   ) : (
-                    `Lv ${g.levelAfter}`
+                    t('unit.lv', { n: g.levelAfter })
                   )}{' '}
-                  · {g.xpAfter}/{xpPerLevel} XP · {xpPerLevel - g.xpAfter} to next level
+                  {t('xp.progress', {
+                    xp: g.xpAfter,
+                    max: xpPerLevel,
+                    left: xpPerLevel - g.xpAfter,
+                  })}
                 </small>
                 <NewSkills names={g.newSkills ?? []} />
               </li>
@@ -70,7 +75,7 @@ export function XpPanel({
           })}
         </ul>
         <button type="button" class="btn go" data-testid="xp-continue" onClick={onDone}>
-          Continue
+          {t('common.continue')}
         </button>
       </div>
     </div>

@@ -8,8 +8,9 @@ known ones, not official requirement IDs or wording. Before submission, check th
 current official documents.
 
 Design notes: [ADR 0011](adr/0011-console-readiness-saves-lifecycle-trophies.md) (saves,
-suspend, controller loss, trophies) and [ADR 0009](adr/0009-gamepad-keyboard-and-spatial-focus.md)
-(gamepad and focus navigation).
+suspend, controller loss, trophies), [ADR 0009](adr/0009-gamepad-keyboard-and-spatial-focus.md)
+(gamepad and focus navigation) and [ADR 0012](adr/0012-ui-string-table.md) (the UI string table;
+translating is described in [I18N.md](I18N.md)).
 
 **Key:** ✅ done in code and tested · 🟡 partly done · ⬜ needs the console SDK, a devkit or a
 porting partner
@@ -115,12 +116,12 @@ Either way the work listed as ⬜ below lives in new adapter files, not in game 
 
 ### Other system features
 
-| Status | Item                                                                                                           |
-| ------ | -------------------------------------------------------------------------------------------------------------- |
-| ✅     | Fully offline: no network features, chat or user-generated content.                                            |
-| ⬜     | Rich presence or activity cards ("Chapter 6: Three Roads"); the chapter title is already in the session state. |
-| ⬜     | Localisation. The game is English only today; i18n is planned (PLAN §5.1).                                     |
-| ⬜     | Crash and memory budgets measured on devkits.                                                                  |
+| Status | Item                                                                                                                                                                                                                |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ✅     | Fully offline: no network features, chat or user-generated content.                                                                                                                                                 |
+| ⬜     | Rich presence or activity cards ("Chapter 6: Three Roads"); the chapter title is already in the session state.                                                                                                      |
+| 🟡     | Localisation. English only today, but every UI string goes through one typed table ([ADR 0012](adr/0012-ui-string-table.md), [docs/I18N.md](I18N.md)). Story (Ink) and content data still need per-language tables. |
+| ⬜     | Crash and memory budgets measured on devkits.                                                                                                                                                                       |
 
 ## Trophy and achievement table
 

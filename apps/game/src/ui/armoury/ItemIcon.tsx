@@ -1,4 +1,5 @@
 import type { JSX } from 'preact';
+import { t } from '../../i18n';
 
 /**
  * Original inline-SVG icons for the armoury: weapons, frames (unit bodies), charms and amulets.
@@ -691,7 +692,13 @@ const AMULET_IDS = new Set([
 
 export function ItemIcon(props: ItemIconProps): JSX.Element {
   const { kind, variant, tier = 'common', size = 56, title } = props;
-  const label = title ?? `${tier} ${kind}: ${variant}`;
+  const label =
+    title ??
+    t('item.iconLabel', {
+      tier: t(`tierWord.${tier}`),
+      kind: t(`item.kindLower.${kind}`),
+      variant,
+    });
   let body: JSX.Element;
   if (kind === 'weapon') body = <Weapon type={variant} />;
   else if (kind === 'frame') body = <Frame model={variant} />;

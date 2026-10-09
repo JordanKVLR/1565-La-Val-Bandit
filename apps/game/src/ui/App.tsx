@@ -13,6 +13,7 @@ import { flushStorage, readSave } from '../platform/storage';
 import { gameplayPause } from '../state/pause';
 import { settings } from '../state/settings';
 import { useStore } from '../state/store';
+import { t } from '../i18n';
 import { ArmouryScreen } from './armoury/ArmouryScreen';
 import { ControllerNotice } from './ControllerNotice';
 import { BattleScreen } from './BattleScreen';
@@ -79,11 +80,7 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
           {...(screen.initial ? { initial: screen.initial } : {})}
           onExit={(outcome, state: BattleState) => session.finishBattle(outcome, state)}
           onRetry={(state) => session.retryBattle(state)}
-          retryNote={
-            session.defeatKeepsXp
-              ? 'Your pilots keep the experience they earned.'
-              : 'The battle restarts; experience from this attempt is lost.'
-          }
+          retryNote={session.defeatKeepsXp ? t('battle.retryKeepsXp') : t('battle.retryLosesXp')}
           onStateChange={(state) => session.saveBattleProgress(state)}
         />
       )}

@@ -3,13 +3,10 @@ import { settings } from '../state/settings';
 import { useStore } from '../state/store';
 import { installApp, installOffer, isIos, isStandalone } from '../platform/fullscreen';
 import type { DisplaySetting } from '../platform/displayMode';
+import { t, tRich } from '../i18n';
 
 /** Layout choices (ADR 0010): Auto picks TV for a gamepad on a big screen. */
-const DISPLAY_CHOICES: readonly (readonly [DisplaySetting, string])[] = [
-  ['auto', 'Auto'],
-  ['handheld', 'Handheld'],
-  ['tv', 'TV'],
-];
+const DISPLAY_CHOICES: readonly DisplaySetting[] = ['auto', 'handheld', 'tv'];
 
 function OnOff({
   value,
@@ -28,7 +25,7 @@ function OnOff({
         aria-pressed={value}
         onClick={() => onChange(true)}
       >
-        On
+        {t('common.on')}
       </button>
       <button
         type="button"
@@ -36,7 +33,7 @@ function OnOff({
         aria-pressed={!value}
         onClick={() => onChange(false)}
       >
-        Off
+        {t('common.off')}
       </button>
     </div>
   );
@@ -55,14 +52,14 @@ export function SettingsPanel({
   const offer = useStore(installOffer);
   const standalone = isStandalone();
   return (
-    <div class="modal" role="dialog" aria-label="Settings">
+    <div class="modal" role="dialog" aria-label={t('common.settings')}>
       <div class="modal-box">
-        <h2>Settings</h2>
+        <h2>{t('common.settings')}</h2>
         {!standalone && (
           <div class="setting">
-            <span>Full screen</span>
+            <span>{t('settings.fullscreen')}</span>
             <OnOff
-              label="Full screen"
+              label={t('settings.fullscreen')}
               value={s.fullscreen}
               onChange={(v) => set({ fullscreen: v })}
             />
@@ -70,20 +67,16 @@ export function SettingsPanel({
         )}
         {!standalone && offer && (
           <div class="setting">
-            <span>Play as an app, without browser bars</span>
+            <span>{t('settings.installPrompt')}</span>
             <button type="button" class="btn" onClick={() => void installApp()}>
-              Install app
+              {t('settings.install')}
             </button>
           </div>
         )}
-        {!standalone && isIos() && (
-          <p class="setting-hint">
-            On iPhone, tap Share, then <b>Add to Home Screen</b> to play full screen.
-          </p>
-        )}
+        {!standalone && isIos() && <p class="setting-hint">{tRich('settings.iosHint')}</p>}
         <div class="setting">
-          <span>Battle speed</span>
-          <div class="seg" role="group" aria-label="Battle speed">
+          <span>{t('settings.battleSpeed')}</span>
+          <div class="seg" role="group" aria-label={t('settings.battleSpeed')}>
             {([1, 2, 4] as const).map((v) => (
               <button
                 type="button"
@@ -98,23 +91,23 @@ export function SettingsPanel({
           </div>
         </div>
         <div class="setting">
-          <span>High-contrast map</span>
+          <span>{t('settings.highContrast')}</span>
           <OnOff
-            label="High-contrast map"
+            label={t('settings.highContrast')}
             value={s.highContrast}
             onChange={(v) => set({ highContrast: v })}
           />
         </div>
         <div class="setting">
-          <span>Duel close-ups</span>
-          <div class="seg" role="group" aria-label="Duel close-ups">
+          <span>{t('settings.closeUps')}</span>
+          <div class="seg" role="group" aria-label={t('settings.closeUps')}>
             <button
               type="button"
               class={`btn tab ${s.closeUps ? 'on' : ''}`}
               aria-pressed={s.closeUps}
               onClick={() => set({ closeUps: true })}
             >
-              On
+              {t('common.on')}
             </button>
             <button
               type="button"
@@ -122,20 +115,20 @@ export function SettingsPanel({
               aria-pressed={!s.closeUps}
               onClick={() => set({ closeUps: false })}
             >
-              Off
+              {t('common.off')}
             </button>
           </div>
         </div>
         <div class="setting">
-          <span>Text size</span>
-          <div class="seg" role="group" aria-label="Text size">
+          <span>{t('settings.textSize')}</span>
+          <div class="seg" role="group" aria-label={t('settings.textSize')}>
             <button
               type="button"
               class={`btn tab ${s.textSize === 'normal' ? 'on' : ''}`}
               aria-pressed={s.textSize === 'normal'}
               onClick={() => set({ textSize: 'normal' })}
             >
-              Normal
+              {t('settings.textSize.normal')}
             </button>
             <button
               type="button"
@@ -143,14 +136,14 @@ export function SettingsPanel({
               aria-pressed={s.textSize === 'large'}
               onClick={() => set({ textSize: 'large' })}
             >
-              Large
+              {t('settings.textSize.large')}
             </button>
           </div>
         </div>
         <div class="setting">
-          <span>Display</span>
-          <div class="seg" role="group" aria-label="Display">
-            {DISPLAY_CHOICES.map(([v, label]) => (
+          <span>{t('settings.display')}</span>
+          <div class="seg" role="group" aria-label={t('settings.display')}>
+            {DISPLAY_CHOICES.map((v) => (
               <button
                 type="button"
                 key={v}
@@ -159,16 +152,14 @@ export function SettingsPanel({
                 data-testid={`display-${v}`}
                 onClick={() => set({ display: v })}
               >
-                {label}
+                {t(`settings.display.${v}`)}
               </button>
             ))}
           </div>
         </div>
-        <p class="setting-hint">
-          Auto uses the TV layout when you play with a controller on a big screen.
-        </p>
+        <p class="setting-hint">{t('settings.displayHint')}</p>
         <label class="setting">
-          <span>Music</span>
+          <span>{t('settings.music')}</span>
           <input
             id="music-volume"
             type="range"
@@ -180,7 +171,7 @@ export function SettingsPanel({
           />
         </label>
         <label class="setting">
-          <span>Sound effects</span>
+          <span>{t('settings.sfx')}</span>
           <input
             id="sfx-volume"
             type="range"
@@ -193,14 +184,14 @@ export function SettingsPanel({
         </label>
         {onWatchIntro && (
           <div class="setting">
-            <span>Opening cinematic</span>
+            <span>{t('settings.intro')}</span>
             <button type="button" class="btn ghost" onClick={onWatchIntro}>
-              Watch intro
+              {t('settings.watchIntro')}
             </button>
           </div>
         )}
         <button type="button" class="btn" data-nav-back onClick={onClose}>
-          Done
+          {t('common.done')}
         </button>
       </div>
     </div>

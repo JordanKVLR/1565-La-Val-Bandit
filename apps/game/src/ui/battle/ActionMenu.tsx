@@ -1,4 +1,5 @@
 import type { BattleController } from '../../scenes/BattleController';
+import { t } from '../../i18n';
 import { KeyHint } from '../KeyHint';
 
 /**
@@ -9,7 +10,7 @@ export function ActionMenu({ ctl, moving = false }: { ctl: BattleController; mov
   const unit = ctl.active();
   if (!unit) return null;
   return (
-    <nav class="action-menu" aria-label="Actions">
+    <nav class="action-menu" aria-label={t('battle.actions')}>
       <div class="action-title">{unit.name}</div>
       <button
         type="button"
@@ -17,9 +18,9 @@ export function ActionMenu({ ctl, moving = false }: { ctl: BattleController; mov
         aria-pressed={moving}
         disabled={!ctl.canMove()}
         onClick={() => ctl.chooseMove()}
-        title={moving ? 'Tap a blue tile to see the route, again to move' : undefined}
+        title={moving ? t('battle.moveTip') : undefined}
       >
-        Move <KeyHint action="move" />
+        {t('battle.action.move')} <KeyHint action="move" />
       </button>
       <button
         type="button"
@@ -27,15 +28,15 @@ export function ActionMenu({ ctl, moving = false }: { ctl: BattleController; mov
         disabled={!ctl.canAttack()}
         onClick={() => ctl.chooseAttack()}
       >
-        Attack <KeyHint action="attack" />
+        {t('battle.action.attack')} <KeyHint action="attack" />
       </button>
       {ctl.canUndo() && (
         <button type="button" class="btn action" onClick={() => ctl.undoMove()}>
-          Undo <KeyHint action="undo" />
+          {t('battle.action.undo')} <KeyHint action="undo" />
         </button>
       )}
       <button type="button" class="btn action end" onClick={() => ctl.chooseEndTurn()}>
-        End Turn <KeyHint action="endTurn" />
+        {t('battle.action.endTurn')} <KeyHint action="endTurn" />
       </button>
     </nav>
   );
@@ -61,7 +62,7 @@ export function SubModeBar({
         </button>
       )}
       <button type="button" class="btn ghost" onClick={onCancel}>
-        Back <KeyHint action="back" />
+        {t('common.back')} <KeyHint action="back" />
       </button>
     </div>
   );

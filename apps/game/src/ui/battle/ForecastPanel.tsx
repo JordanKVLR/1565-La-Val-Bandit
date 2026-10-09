@@ -7,18 +7,14 @@ import {
   forecastAttack,
 } from '@m1565/core';
 import { useState } from 'preact/hooks';
+import { t } from '../../i18n';
 import { attackTags } from './attackText';
+import { reasonText } from './reasons';
 import { Portrait } from './StatBars';
 import { AssistGrid, frameName, pad2, portraitIdFor, VbBars } from './vb';
 
-/** Command names, as in the classic reaction menu. */
-const REACTION_LABEL: Record<Reaction, string> = {
-  defend: 'Defend',
-  avoid: 'Avoid',
-  attackBack: 'Attack',
-  counter: 'Counter',
-  none: 'Do nothing',
-};
+/** Command names, as in the classic reaction menu ("Attack" is Attack back). */
+const reactionLabel = (r: Reaction): string => t(`reaction.${r}`);
 
 interface Props {
   state: BattleState;
@@ -73,7 +69,7 @@ function Side({
         <div class="vb-row">
           <span class="vb-name">{unit.name}</span>
           <span>
-            <small>LV</small> {unit.level}
+            <small>{t('forecast.lv')}</small> {unit.level}
           </span>
         </div>
         <div class="vb-row">
@@ -81,11 +77,11 @@ function Side({
           <AssistGrid center={assist.center} allies={assist.allies} />
         </div>
         <div class="vb-row">
-          <span>Assist +{pad2(assist.bonus)}%</span>
+          <span>{t('forecast.assist', { n: pad2(assist.bonus) })}</span>
         </div>
         <div class="vb-row vb-action">
           <span class="vb-name">{line}</span>
-          <span>{odds} %</span>
+          <span>{t('forecast.odds', { n: odds })}</span>
         </div>
         <div class="vb-detail">{detail}</div>
       </div>
@@ -126,27 +122,41 @@ export function ForecastPanel({
       : 'defend';
   const times = f.hits > 1 ? ` ×${f.hits}` : '';
   const tags = attackTags(f.attack);
-  const zone = f.zone === 'front' ? '' : ` · ${f.zone}`;
   const attackDetail =
     reaction === 'counter' && f.counter
-      ? `${f.damage.counter}${times} dmg, or ${f.counter.reflect} back to you`
-      : `${f.damage[reaction]}${times} dmg${zone}${tags.length ? ` · ${tags.join(', ')}` : ''}`;
+      ? t('forecast.counterDamage', {
+          damage: `${f.damage.counter}${times}`,
+          reflect: f.counter.reflect,
+        })
+      : [
+          t('forecast.damage', { damage: `${f.damage[reaction]}${times}` }),
+          f.zone === 'front' ? null : t(`forecast.zone.${f.zone}`),
+          tags.length ? tags.join(t('common.listSep')) : null,
+        ]
+          .filter((p) => p !== null)
+          .join(t('common.sep'));
   const choice = choices?.find((c) => c.reaction === reaction);
   const defenderDetail =
     reaction === 'attackBack' && back
-      ? `strikes back for ${back.damage}${back.hits > 1 ? ` ×${back.hits}` : ''}`
+      ? t('forecast.strikesBack', {
+          damage: `${back.damage}${back.hits > 1 ? ` ×${back.hits}` : ''}`,
+        })
       : reaction === 'counter' && f.counter
-        ? `reflects ${f.counter.reflect} on success`
+        ? t('forecast.reflects', { n: f.counter.reflect })
         : reaction === 'defend'
-          ? 'halves the blow'
+          ? t('forecast.halves')
           : reaction === 'avoid'
-            ? 'tries to dodge'
-            : 'takes the blow';
+            ? t('forecast.dodges')
+            : t('forecast.takes');
   const atkAssist = { ...assistFor(state, attacker, defender.pos), center: defender.pos };
   const defAssist = { ...assistFor(state, defender, attacker.pos), center: attacker.pos };
 
   return (
-    <div class={`vb-forecast${choices ? ' react' : ''}`} role="dialog" aria-label="Combat forecast">
+    <div
+      class={`vb-forecast${choices ? ' react' : ''}`}
+      role="dialog"
+      aria-label={t('forecast.label')}
+    >
       <div class="vb-sides">
         <Side
           unit={attacker}
@@ -161,7 +171,7 @@ export function ForecastPanel({
           unit={defender}
           state={state}
           assist={defAssist}
-          line={reaction === 'attackBack' && back ? back.attackName : REACTION_LABEL[reaction]}
+          line={reaction === 'attackBack' && back ? back.attackName : reactionLabel(reaction)}
           odds={reaction === 'attackBack' && back ? `${back.hitChance}` : defenderOdds(f, reaction)}
           detail={defenderDetail}
           {...(choice
@@ -169,10 +179,13 @@ export function ForecastPanel({
             : {})}
         />
       </div>
-      <nav class="vb-commands" aria-label={choices ? 'Reactions' : 'Attack'}>
+      <nav
+        class="vb-commands"
+        aria-label={choices ? t('forecast.reactions') : t('battle.action.attack')}
+      >
         {choices && pickingBack ? (
           <>
-            <div class="vb-cmd-head">Strike back with</div>
+            <div class="vb-cmd-head">{t('forecast.strikeBackWith')}</div>
             {backOptions.map((o) => {
               const r = o.available ? backForecast(o.attack.id) : undefined;
               return (
@@ -182,7 +195,7 @@ export function ForecastPanel({
                   class={`vb-cmd fc-choice${o.attack.id === backId ? ' on' : ''}`}
                   disabled={!o.available}
                   aria-pressed={o.attack.id === backId}
-                  title={o.reason}
+                  title={o.reason ? reasonText(o.reason) : undefined}
                   onClick={() => {
                     setBackId(o.attack.id);
                     setPickingBack(false);
@@ -191,17 +204,20 @@ export function ForecastPanel({
                   <span>{o.attack.name}</span>
                   {r ? (
                     <small>
-                      FP {o.fpCost} · {r.hitChance}% · {r.damage}
-                      {r.hits > 1 ? `×${r.hits}` : ''} dmg
+                      {t('forecast.backOption', {
+                        fp: o.fpCost,
+                        hit: r.hitChance,
+                        damage: `${r.damage}${r.hits > 1 ? `×${r.hits}` : ''}`,
+                      })}
                     </small>
                   ) : (
-                    <small class="why">{o.reason}</small>
+                    <small class="why">{o.reason ? reasonText(o.reason) : ''}</small>
                   )}
                 </button>
               );
             })}
             <button type="button" class="vb-cmd" onClick={() => setPickingBack(false)}>
-              Back
+              {t('common.back')}
             </button>
           </>
         ) : choices ? (
@@ -212,7 +228,7 @@ export function ForecastPanel({
               data-testid="react-go"
               onClick={() => onReact?.(picked, picked === 'attackBack' ? backId : undefined)}
             >
-              Go!
+              {t('forecast.go')}
             </button>
             {choices.map((c) => (
               <button
@@ -221,23 +237,23 @@ export function ForecastPanel({
                 class={`vb-cmd fc-choice${c.reaction === picked ? ' on' : ''}`}
                 disabled={!c.available}
                 aria-pressed={c.reaction === picked}
-                title={c.reason}
+                title={c.reason ? reasonText(c.reason) : undefined}
                 onClick={() => {
                   setPicked(c.reaction);
                   if (c.reaction === 'attackBack') setPickingBack(true);
                 }}
               >
-                <span>{REACTION_LABEL[c.reaction]}</span>
+                <span>{reactionLabel(c.reaction)}</span>
                 {c.available ? (
                   c.reaction === 'attackBack' && back ? (
                     <small>
-                      {back.attackName} · FP {back.fpCost}
+                      {t('forecast.backChoice', { attack: back.attackName, fp: back.fpCost })}
                     </small>
                   ) : (
-                    c.fpCost > 0 && <small>FP {c.fpCost}</small>
+                    c.fpCost > 0 && <small>{t('forecast.fp', { n: c.fpCost })}</small>
                   )
                 ) : (
-                  <small class="why">{c.reason}</small>
+                  <small class="why">{c.reason ? reasonText(c.reason) : ''}</small>
                 )}
               </button>
             ))}
@@ -245,10 +261,10 @@ export function ForecastPanel({
         ) : (
           <>
             <button type="button" class="vb-cmd go" onClick={onConfirm}>
-              Go!
+              {t('forecast.go')}
             </button>
             <button type="button" class="vb-cmd" onClick={onCancel}>
-              Back
+              {t('common.back')}
             </button>
           </>
         )}

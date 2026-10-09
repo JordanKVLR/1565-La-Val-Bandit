@@ -10,11 +10,3 @@ export interface TerrainType {
   /** Units cannot enter impassable tiles (deep water, sheer walls). */
   readonly impassable?: boolean;
 }
-
-/** HUD terrain readout in the form `<height>H <avoid>% <name>`, e.g. "1H 5% Plain". */
-export function formatTerrainLabel(
-  height: number,
-  terrain: Pick<TerrainType, 'avoid' | 'name'>,
-): string {
-  return `${height}H ${terrain.avoid}% ${terrain.name}`;
-}

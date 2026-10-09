@@ -2,6 +2,7 @@ import type { CodexEntry } from '@m1565/content';
 import { codexUnlocked, loadCodex } from '@m1565/content';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import type { CampaignSave } from '../campaign/types';
+import { t, tParts } from '../i18n';
 import { noteCodexRead } from '../platform/achievements';
 import { readSave, SLOTS } from '../platform/storage';
 import { KeyHint } from './KeyHint';
@@ -9,11 +10,9 @@ import './codex.css';
 
 type Filter = 'all' | CodexEntry['kind'];
 
-const FILTERS: readonly { id: Filter; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'historical', label: 'Historical' },
-  { id: 'fiction', label: 'Fiction' },
-];
+const FILTERS: readonly Filter[] = ['all', 'historical', 'fiction'];
+
+const filterLabel = (f: Filter) => (f === 'all' ? t('codex.filter.all') : t(`codex.kind.${f}`));
 
 /** Battles won in any save, so notes unlocked in one playthrough stay readable from the title. */
 export function battlesWonInSaves(): string[] {
@@ -43,7 +42,7 @@ function KindBadge({ kind }: { kind: CodexEntry['kind'] }) {
   return (
     <span class={`cx-badge ${kind}`}>
       <KindIcon kind={kind} />
-      {kind === 'historical' ? 'Historical' : 'Fiction'}
+      {t(`codex.kind.${kind}`)}
     </span>
   );
 }
@@ -76,34 +75,35 @@ export function CodexScreen({
   }, [selected, codex]);
 
   return (
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Historical notes">
+    <div class="modal" role="dialog" aria-modal="true" aria-label={t('codex.title')}>
       <div class="modal-box codex" data-testid="codex">
         <header class="cx-head">
-          <h2>Historical notes</h2>
-          <div class="cx-tabs" role="tablist" aria-label="Show">
+          <h2>{t('codex.title')}</h2>
+          <div class="cx-tabs" role="tablist" aria-label={t('codex.show')}>
             {FILTERS.map((f) => (
               <button
                 type="button"
-                key={f.id}
+                key={f}
                 role="tab"
-                aria-selected={filter === f.id}
-                tabIndex={filter === f.id ? 0 : -1}
-                class={`btn tab${filter === f.id ? ' on' : ''}`}
-                onClick={() => setFilter(f.id)}
+                aria-selected={filter === f}
+                tabIndex={filter === f ? 0 : -1}
+                class={`btn tab${filter === f ? ' on' : ''}`}
+                onClick={() => setFilter(f)}
               >
-                {f.id !== 'all' && <KindIcon kind={f.id} />}
-                {f.label}
+                {f !== 'all' && <KindIcon kind={f} />}
+                {filterLabel(f)}
               </button>
             ))}
           </div>
         </header>
         <p class="cx-intro">
-          Armatura 1565 is set during a real siege. Entries marked <KindBadge kind="historical" />{' '}
-          describe real people, places and events; entries marked <KindBadge kind="fiction" />{' '}
-          describe what the game invents.
+          {tParts('codex.intro', {
+            historical: <KindBadge kind="historical" />,
+            fiction: <KindBadge kind="fiction" />,
+          })}
         </p>
         <div class="cx-body">
-          <ul class="cx-list" aria-label="Entries">
+          <ul class="cx-list" aria-label={t('codex.entries')}>
             {open.map((e) => (
               <li key={e.id}>
                 <button
@@ -123,8 +123,7 @@ export function CodexScreen({
             {locked > 0 && (
               <li class="cx-locked">
                 <KindIcon kind="locked" />
-                {locked} more {locked === 1 ? 'entry unlocks' : 'entries unlock'} as the story
-                reaches {locked === 1 ? 'it' : 'them'}.
+                {t('codex.locked', { n: locked })}
               </li>
             )}
           </ul>
@@ -147,7 +146,7 @@ export function CodexScreen({
           )}
         </div>
         <button type="button" class="btn cx-close" data-nav-back onClick={onClose}>
-          Close <KeyHint action="back" context="menu" />
+          {t('common.close')} <KeyHint action="back" context="menu" />
         </button>
       </div>
     </div>

@@ -2,6 +2,38 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
+/**
+ * Selectors for user-facing text written straight into JSX: text children, string children
+ * (`{'Text'}`, `{ok ? 'Yes' : 'No'}`, template literals) and the attributes people read. A string
+ * counts as text when it has a Latin letter, so glyphs (×, ▲, ◆, ·, ☰, Ⓐ) and numbers pass.
+ * Strings passed to a call, such as `t('common.menu')`, are never matched.
+ */
+function hardCodedUiText() {
+  const word = '/[A-Za-z]/';
+  const attrs =
+    'aria-label|aria-description|aria-valuetext|aria-roledescription|title|placeholder|alt|label';
+  const message = 'Hard-coded UI text: put it in apps/game/src/i18n/en.ts and use t() (ADR 0012).';
+  const attr = `JSXAttribute[name.name=/^(${attrs})$/]`;
+  const holders = [
+    `${attr} > Literal`,
+    `${attr} > JSXExpressionContainer > Literal`,
+    `${attr} > JSXExpressionContainer > ConditionalExpression > Literal.consequent`,
+    `${attr} > JSXExpressionContainer > ConditionalExpression > Literal.alternate`,
+    `${attr} > JSXExpressionContainer > LogicalExpression > Literal.right`,
+    'JSXElement > JSXExpressionContainer > Literal',
+    'JSXFragment > JSXExpressionContainer > Literal',
+    'JSXElement > JSXExpressionContainer > ConditionalExpression > Literal.consequent',
+    'JSXElement > JSXExpressionContainer > ConditionalExpression > Literal.alternate',
+    'JSXElement > JSXExpressionContainer > LogicalExpression > Literal.right',
+  ].map((s) => ({ selector: `${s}[value=${word}]`, message }));
+  const templates = [
+    `${attr} > JSXExpressionContainer > TemplateLiteral`,
+    'JSXElement > JSXExpressionContainer > TemplateLiteral',
+    'JSXFragment > JSXExpressionContainer > TemplateLiteral',
+  ].map((s) => ({ selector: `${s} > TemplateElement[value.raw=${word}]`, message }));
+  return [{ selector: `JSXText[value=${word}]`, message }, ...holders, ...templates];
+}
+
 export default tseslint.config(
   {
     ignores: [
@@ -40,6 +72,14 @@ export default tseslint.config(
         'error',
         { patterns: ['three', 'preact', 'preact/*', '@m1565/game*'] },
       ],
+    },
+  },
+  {
+    // UI strings go through the string table (ADR 0012, docs/I18N.md): no words written straight
+    // into JSX text or into the attributes people read. Glyphs and numbers are fine.
+    files: ['apps/game/src/**/*.tsx'],
+    rules: {
+      'no-restricted-syntax': ['error', ...hardCodedUiText()],
     },
   },
   {
