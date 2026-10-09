@@ -8,7 +8,9 @@ import displayData from '../data/display.json';
 export const DisplayConfigSchema = z
   .object({
     /** Auto picks TV only on a viewport at least this large (CSS px) and after a gamepad input. */
-    tvAuto: z.object({ minWidth: z.number().positive(), minHeight: z.number().positive() }).strict(),
+    tvAuto: z
+      .object({ minWidth: z.number().positive(), minHeight: z.number().positive() })
+      .strict(),
     tv: z
       .object({
         /**

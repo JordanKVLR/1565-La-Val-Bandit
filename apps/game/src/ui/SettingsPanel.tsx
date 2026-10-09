@@ -164,7 +164,9 @@ export function SettingsPanel({
             ))}
           </div>
         </div>
-        <p class="setting-hint">Auto uses the TV layout when you play with a controller on a big screen.</p>
+        <p class="setting-hint">
+          Auto uses the TV layout when you play with a controller on a big screen.
+        </p>
         <label class="setting">
           <span>Music</span>
           <input

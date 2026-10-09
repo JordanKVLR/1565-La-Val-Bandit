@@ -91,12 +91,12 @@ Measurements (ms per rendered frame incl. `readPixels` sync, 10-frame mean, Swif
 shared 4-CPU container, two runs; only the ratios mean anything — a real GPU is far faster and
 less fill-bound):
 
-| Screen / buffer                | Draw calls before → after | Frame time                |
-| ------------------------------ | ------------------------- | ------------------------- |
-| Deck 1280×800                  | 153 → 30                  | 63–131 ms                 |
-| 1080p 1920×1080                | 153 → 30                  | 112–126 ms                |
-| 4K native 3840×2160 (old)      | 153 → 30                  | 386–625 ms                |
-| 4K capped 2560×1440 (new)      | 153 → 30                  | 178–319 ms                |
+| Screen / buffer           | Draw calls before → after | Frame time |
+| ------------------------- | ------------------------- | ---------- |
+| Deck 1280×800             | 153 → 30                  | 63–131 ms  |
+| 1080p 1920×1080           | 153 → 30                  | 112–126 ms |
+| 4K native 3840×2160 (old) | 153 → 30                  | 386–625 ms |
+| 4K capped 2560×1440 (new) | 153 → 30                  | 178–319 ms |
 
 Rendering cost here scales with pixels, so the cap cuts 4K fill work by about 2.25×. The
 headless numbers cannot show GPU frame time, vsync or thermal limits; profile on target

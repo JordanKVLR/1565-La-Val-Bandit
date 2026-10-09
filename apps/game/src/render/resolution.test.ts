@@ -3,13 +3,17 @@ import { describe, expect, it } from 'vitest';
 import { renderPixelRatio } from './resolution';
 
 const cfg = loadDisplayConfig().render;
-const buffer = (w: number, h: number, ratio: number) => Math.round(w * ratio) * Math.round(h * ratio);
+const buffer = (w: number, h: number, ratio: number) =>
+  Math.round(w * ratio) * Math.round(h * ratio);
 
 describe('render pixel ratio', () => {
   it('leaves phones, the Steam Deck and 1080p as before (density capped at 2)', () => {
     // Pixel 6a landscape: 2.625 density, capped at 2 as the renderer always did.
     expect(
-      renderPixelRatio({ cssWidth: 915, cssHeight: 412, cssScale: 1, devicePixelRatio: 2.625 }, cfg),
+      renderPixelRatio(
+        { cssWidth: 915, cssHeight: 412, cssScale: 1, devicePixelRatio: 2.625 },
+        cfg,
+      ),
     ).toBe(2);
     expect(
       renderPixelRatio({ cssWidth: 1280, cssHeight: 800, cssScale: 1, devicePixelRatio: 1 }, cfg),

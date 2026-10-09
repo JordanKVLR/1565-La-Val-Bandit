@@ -248,11 +248,11 @@ export function buildHighlights(
               ).translate(base.x, base.y, base.z),
             );
             lightPieces.push(
-              new BoxGeometry(
-                horizontal ? dash : edgeW,
-                0.02,
-                horizontal ? edgeW : dash,
-              ).translate(base.x, base.y + 0.006, base.z),
+              new BoxGeometry(horizontal ? dash : edgeW, 0.02, horizontal ? edgeW : dash).translate(
+                base.x,
+                base.y + 0.006,
+                base.z,
+              ),
             );
           }
         }

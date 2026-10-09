@@ -50,8 +50,8 @@ function ControlsPage() {
         <span class="pointer-only">
           With a mouse, hovering a blue tile shows the route and one click moves.
         </span>{' '}
-        On a gamepad, the cursor arrows follow the camera: ↑ steps up-right on the map, → down-right. Ⓐ on your own
-        unit opens Move.
+        On a gamepad, the cursor arrows follow the camera: ↑ steps up-right on the map, →
+        down-right. Ⓐ on your own unit opens Move.
       </p>
     </div>
   );
