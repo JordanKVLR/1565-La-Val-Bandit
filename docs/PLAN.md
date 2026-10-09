@@ -376,7 +376,7 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
 | Branching dialogue     | **Ink** (inkjs)                                                                 | Industry standard; writers use the free Inky editor            |
 | Maps                   | **Tiled** (.tmj) → importer → JSON                                              | Standard editor; layers for height/terrain/spawns/triggers     |
 | Audio                  | Howler.js                                                                       | Handles mobile audio unlock quirks                             |
-| i18n                   | i18next (+ Ink string tables)                                                   | Standard, plural/format support                                |
+| i18n                   | In-house typed string table, `Intl` plurals (ADR 0012) (+ Ink string tables)    | ~1 KB gzipped, type-checked keys; see docs/I18N.md             |
 | Storage                | Platform adapter (IndexedDB / Capacitor Filesystem / Electron fs + Steam Cloud) | One API, per-platform backends                                 |
 | PWA                    | vite-plugin-pwa (Workbox)                                                       | Offline play, installable                                      |
 | Mobile stores          | Capacitor 7                                                                     | Wraps the same web build; native plugins for purchases/haptics |
