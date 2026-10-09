@@ -22,6 +22,8 @@ Tactical RPG set during the Great Siege of Malta, 1565. The design and roadmap l
   `data/battles/<id>.json`, then reference it from the story with `>>> battle <id>`. Files are
   picked up automatically. Named characters use `character`; give them the level they should have
   reached at that point in the story.
+- Achievements/trophies: add an entry to `data/achievements.json` (stable `ACH_*` id, grade,
+  trigger). The game reports events, never ids; see `docs/CONSOLE.md`.
 - The content tests check every story line for unknown battles, maps, cast and commands, play each
   route to its ending, and simulate every battle AI-vs-AI (it must be winnable).
 

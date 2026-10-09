@@ -50,14 +50,17 @@ One codebase, four destinations. Everything below starts from a clean `main`, wi
 ## Steam (needs Steamworks, $100 per app)
 
 1. Create the app in Steamworks and note its **App ID**.
-2. Create achievements with these API names: `ACH_FIRST_STAND`, `ACH_OTHER_SHORE`,
-   `ACH_ST_ELMO`, `ACH_ENDING_CROSS`, `ACH_ENDING_ISLAND`, `ACH_ENDING_CRESCENT`.
+2. Create one achievement per entry in `packages/content/data/achievements.json`, using its `id`
+   as the API name and its name, description and hidden flag (38 entries, including
+   `ACH_PLATINUM`; the table is in [CONSOLE.md](CONSOLE.md#trophy-and-achievement-table)).
 3. Run **Actions → Desktop builds (Steam) → Run workflow**, download each OS folder, and upload
    them as depots with SteamPipe (`steamcmd` + `app_build` scripts).
 4. Set the launch options to the executable in each folder. Enable Steam Cloud for the
-   `armatura.save.*` data once cloud saves are wired (see "Next steps").
-5. Steam Deck: the game is landscape, 1280×800-friendly and touch/mouse driven. Gamepad input is
-   still to do before applying for "Deck Verified".
+   `armatura.save.*` and `armatura.profile.v1` data once cloud saves are wired (see "Next
+   steps").
+5. Steam Deck: the game is landscape and fits 1280×800. It plays fully with the gamepad
+   (ADR 0009, `e2e/controller-only.spec.ts`). It also saves and pauses on sleep, and shows a
+   notice if the controller disconnects (ADR 0011).
 6. Local test: `cd apps/desktop && node node_modules/electron/install.js && pnpm start`
    (`STEAM_APP_ID=<id>` with Steam running enables achievements).
 
@@ -78,5 +81,6 @@ The game calls `ads.maybeShowInterstitial('chapter_end')` style hooks through
   a proper icon and store artwork. The renderer takes `Sprite`s and portraits are one component,
   so swapping art needs no rules changes.
 - Music and sound recordings to replace the generated placeholders in `platform/audio.ts`.
-- Gamepad controls (Steam Deck), Steam Cloud and Play Games / Game Center save sync.
+- Steam Cloud and Play Games / Game Center save sync. Console readiness (Xbox, PlayStation) is
+  tracked in [CONSOLE.md](CONSOLE.md).
 - A historical accuracy pass on dates and events (see PLAN §3.2).

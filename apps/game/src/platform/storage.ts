@@ -11,7 +11,7 @@
  * kill interrupts, a read still finds a whole copy: an interrupted tmp leaves the primary as it
  * was; an interrupted primary leaves the new copy complete in tmp; a primary that is damaged in
  * any other way falls back to the backup. The primary key keeps the plain JSON format older
- * builds wrote, so existing saves load unchanged (see docs/adr/0011-console-readiness.md).
+ * builds wrote, so existing saves load unchanged (see docs/adr/0011-console-readiness-saves-lifecycle-trophies.md).
  *
  * The backend is localStorage today. Native adapters (Capacitor Filesystem, Electron fs + Steam
  * Cloud, a console SDK's save-data API) implement `KeyValueBackend` and plug in with
