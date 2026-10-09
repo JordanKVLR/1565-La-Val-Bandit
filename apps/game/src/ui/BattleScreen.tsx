@@ -154,7 +154,10 @@ export function BattleScreen({
       // by a click is not, so Enter still acts on the map.
       const button = target?.closest<HTMLElement>('button, a, [role="button"]');
       if (confirm && button && (inDialog || button.matches(':focus-visible'))) return;
-      if (confirm) used();
+      // In the attack menu and facing picker, Enter with nothing focused is left to the generic
+      // fallback (ui/input.ts), which focuses the dialog's default choice: Ⓐ always does
+      // something, and a second Ⓐ presses it.
+      if (confirm && m.kind !== 'attackMenu' && m.kind !== 'facing') used();
       switch (e.key) {
         case 'm':
         case 'M':
