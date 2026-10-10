@@ -101,17 +101,6 @@ body,
   width: 100%;
   height: 100%;
 }
-/* Bottom-left terrain readout, e.g. "1H 5% Plain". */
-.terrain-label {
-  align-self: flex-start;
-  padding: 0.25em 1.1em;
-  background: #000;
-  color: #fff;
-  border-radius: 999px;
-  font-size: 1.4rem;
-  font-weight: bold;
-  letter-spacing: 0.02em;
-}
 
 .rotate-overlay {
   display: none;
@@ -294,46 +283,6 @@ body,
   background: linear-gradient(#b8452f, #7a1f16);
   font-weight: bold;
   font-size: 1.3rem;
-}
-
-.action-menu {
-  position: absolute;
-  right: max(12px, env(safe-area-inset-right));
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 140px;
-  padding: 8px;
-  background: var(--panel);
-  border: 2px solid var(--gold);
-  border-radius: 8px;
-}
-.action-title {
-  text-align: center;
-  font-variant: small-caps;
-  color: var(--gold);
-}
-.btn.action {
-  padding: 0.3em 1em;
-}
-.btn.action.end {
-  background: var(--panel);
-}
-/* Bottom-right, so it never covers the unit card and terrain readout on the left. */
-.submode {
-  position: absolute;
-  right: max(12px, env(safe-area-inset-right));
-  bottom: max(12px, env(safe-area-inset-bottom));
-  max-width: min(520px, 55 * var(--vw));
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 6px 6px 14px;
-  background: var(--panel);
-  border: 1px solid var(--gold);
-  border-radius: 8px;
 }
 
 /* Reaction prompt: a title over the forecast. */
@@ -777,11 +726,6 @@ body,
   }
   .cu-stage {
     padding-bottom: 2%;
-  }
-  .action-menu {
-    min-width: 120px;
-    gap: 4px;
-    padding: 6px;
   }
 }
 
@@ -1233,8 +1177,7 @@ input[type='range'] {
 :root[data-text-size='large'] .dlg-text {
   font-size: 1.4rem;
 }
-:root[data-text-size='large'] .fc-rows,
-:root[data-text-size='large'] .unit-card {
+:root[data-text-size='large'] .fc-rows {
   font-size: 1.05rem;
 }
 
@@ -1370,12 +1313,7 @@ input[type='range'] {
   margin: 0;
   color: #f5d77a;
 }
-.xp-line {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-}
+
 .xp-track {
   display: inline-block;
   flex: 1;
@@ -1663,52 +1601,9 @@ input[type='range'] {
   outline: 2px solid #ffd76a;
   outline-offset: -2px;
 }
-.vb-cmd.mini {
-  min-height: 36px;
-  padding: 0 8px;
-  font-size: 1.05rem;
-  border: 1px solid var(--vb-line);
-  background: rgba(70, 26, 18, 0.9);
-}
 
-/* Unit card (bottom left). */
-.unit-card {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  width: min(250px, 38 * var(--vw));
-  padding: 6px 8px;
-  font-size: 0.85rem;
-}
-.uc-top {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.uc-top .portrait {
-  width: 44px;
-  height: 44px;
-  font-size: 1.4rem;
-  border-color: var(--vb-line);
-}
-.uc-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.uc-head strong {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 1.15rem;
-}
-
-/* Action menu, technique list, sub-mode bar and facing picker in the same frames. */
-.action-menu,
+/* Technique list, facing picker and battle dialogs in the same frames. */
 .attack-menu,
-.submode,
 .facing-picker,
 .battle-screen .modal-box {
   background: var(--vb-panel);
@@ -1719,12 +1614,7 @@ input[type='range'] {
     0 4px 14px rgba(0, 0, 0, 0.5);
   color: var(--vb-text);
 }
-.action-menu {
-  background: linear-gradient(rgba(70, 26, 18, 0.92), rgba(34, 12, 8, 0.92));
-  gap: 0;
-  padding: 4px;
-}
-.action-title,
+
 .battle-screen .modal-box h2,
 .am-name {
   font-family: var(--font-vb);
@@ -1735,124 +1625,11 @@ input[type='range'] {
 .battle-screen .modal-box h2 {
   font-size: 1.7rem;
 }
-.btn.action {
-  justify-content: flex-start;
-  font-family: var(--font-vb);
-  font-size: 1.45rem;
-  background: transparent;
-  border: 0;
-  text-align: left;
-  text-shadow:
-    0 2px 0 #000,
-    0 0 3px #000;
-}
-.btn.action:not(:disabled):active,
-.btn.action:focus-visible {
-  color: #ffd76a;
-  background: linear-gradient(90deg, rgba(255, 215, 106, 0.22), transparent);
-}
-.btn.action.end {
-  background: transparent;
-}
+
 .am-name {
   font-size: 1.3rem;
 }
 
-/* Unit details: figure and equipment left, portrait, attributes and level right. */
-.vbd-sheet {
-  display: grid;
-  grid-template-columns: minmax(170px, 0.8fr) 1.6fr;
-  gap: 0;
-  width: min(820px, 100%);
-  max-height: calc(100 * var(--vh) - 24px);
-}
-.vbd-left {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  padding: 6px;
-}
-.vbd-figure {
-  flex: 1;
-  width: 100%;
-  min-height: 140px;
-}
-.vbd-equip {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-vb);
-  font-size: 1.2rem;
-}
-.vbd-equip li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.eq-icon {
-  width: 16px;
-  height: 16px;
-  flex: none;
-  border: 1px solid var(--vb-line);
-}
-.eq-icon.frame {
-  background: #5b7bb8;
-  border-radius: 8px 8px 3px 3px;
-}
-.eq-icon.weapon {
-  background: linear-gradient(135deg, transparent 40%, #d8dbe4 40% 60%, transparent 60%);
-}
-.eq-icon.item {
-  border-radius: 50%;
-  background: #7a5a3a;
-}
-.vbd-right {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-  padding: 8px 10px;
-  overflow-y: auto;
-}
-.vbd-top {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) 1.1fr;
-  gap: 10px;
-}
-.vbd-portrait {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-.vbd-portrait .portrait {
-  width: 60px;
-  height: 60px;
-  border-color: var(--vb-line);
-}
-.vbd-attrs {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.vbd-attr {
-  display: grid;
-  grid-template-columns: 2.4em 3.8em minmax(0, 1fr);
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  font-variant-numeric: tabular-nums;
-}
-.vbd-attr .lbl {
-  font-weight: bold;
-}
-.vbd-attr b {
-  text-align: right;
-}
-.vbd-gear {
-  margin-left: 2px;
-  color: var(--gold);
-  font-size: 0.85em;
-}
 .vb-ticks {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
@@ -1866,31 +1643,7 @@ input[type='range'] {
 .vb-ticks i.on {
   background: #5b9cff;
 }
-.vbd-name {
-  margin: 2px 0 0;
-  font-size: 1.7rem;
-  line-height: 1.1;
-}
-.vbd-list {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  margin: 0;
-  font-family: var(--font-vb);
-  font-size: 1.15rem;
-  line-height: 1.25;
-}
-.vbd-list dd {
-  margin: 0;
-  font-family: var(--font-display);
-  font-variant-numeric: tabular-nums;
-}
-.vbd-actions {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: auto;
-}
+
 .vb-cmd-head {
   grid-column: 1 / -1;
   padding: 2px 12px;
@@ -1899,20 +1652,8 @@ input[type='range'] {
   color: var(--vb-text);
   opacity: 0.8;
 }
-.vbd-actions .vb-cmd {
-  border: 1px solid var(--vb-line);
-  background: rgba(70, 26, 18, 0.9);
-  font-size: 1.2rem;
-}
+
 @media (max-height: 460px) {
-  .vbd-name {
-    font-size: 1.35rem;
-  }
-  .vbd-list {
-    grid-template-columns: 1fr auto 1fr auto;
-    column-gap: 10px;
-    font-size: 1rem;
-  }
   .vb-rows {
     font-size: 0.85rem;
   }
@@ -2025,10 +1766,6 @@ input[type='range'] {
   .key {
     display: inline-block;
   }
-}
-.btn.action.on {
-  outline: 3px solid #fff;
-  outline-offset: -3px;
 }
 
 /* Technique cards: description, plain-language effects and every number. */

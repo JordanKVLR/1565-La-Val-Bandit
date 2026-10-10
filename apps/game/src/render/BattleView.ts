@@ -143,6 +143,7 @@ export class BattleView {
   private pinchDistance = 0;
   private frameRequested = false;
   private disposed = false;
+  private readonly frameListeners = new Set<() => void>();
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -196,6 +197,7 @@ export class BattleView {
   dispose(): void {
     this.disposed = true;
     this.tweens.clear();
+    this.frameListeners.clear();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
@@ -386,6 +388,16 @@ export class BattleView {
     });
   }
 
+  /**
+   * Runs `listener` after every rendered frame (camera moves, zoom, resize, animations), so
+   * DOM pieces pinned to the map, such as the action bar beside a unit, can follow it. Returns
+   * the unsubscribe function.
+   */
+  onFrame(listener: () => void): () => void {
+    this.frameListeners.add(listener);
+    return () => this.frameListeners.delete(listener);
+  }
+
   /** Screen-space position (CSS pixels, relative to the canvas) of a tile's centre. */
   tileScreenPosition(c: Coord): { x: number; y: number } {
     const p = this.tileTop(c).project(this.camera);
@@ -571,6 +583,7 @@ export class BattleView {
       if (this.disposed) return;
       for (const t of [...this.tweens]) if (t(now)) this.tweens.delete(t);
       this.renderer.render(this.scene, this.camera);
+      for (const listener of this.frameListeners) listener();
       if (this.tweens.size) this.requestRender();
     });
   }

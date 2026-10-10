@@ -46,9 +46,6 @@
   min-height: 44px;
   height: 44px;
 }
-.vb-cmd.mini {
-  min-height: 44px;
-}
 
 /* Small print readable on the dark ground (contrast ≥ 4.5:1). */
 .build-note,
