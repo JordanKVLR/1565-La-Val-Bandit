@@ -1,24 +1,32 @@
+import type { JSX } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import type { ItemKind } from '../../campaign/inventory';
 import { t } from '../../i18n';
+import { Meter } from '../design';
 import type { Tier } from './ItemIcon';
 
 const PIPS: Record<Tier, number> = { common: 1, fine: 2, masterwork: 3 };
 
-/** Quality tier, readable without colour: a label, pips and a border style. */
+/**
+ * Quality tier, readable without colour: filled pips out of three, the word, and (on cards) the
+ * frame style.
+ */
 export function TierBadge({ tier, size = 'sm' }: { tier: Tier; size?: 'sm' | 'md' }) {
   return (
-    <span class={`tier-badge t-${tier} s-${size}`} title={t(`tier.${tier}`)}>
-      <span class="pips" aria-hidden="true">
-        {'◆'.repeat(PIPS[tier])}
+    <span class={`ar-tier t-${tier} s-${size}`} title={t(`tier.${tier}`)}>
+      <span class="ar-tier__pips" aria-hidden="true">
+        {[1, 2, 3].map((n) => (
+          <i key={n} class={n <= PIPS[tier] ? 'on' : ''} />
+        ))}
       </span>
-      {size === 'md' || tier !== 'common' ? <span class="tl">{t(`tier.${tier}`)}</span> : null}
+      <span class="ar-tier__word">{t(`tier.${tier}`)}</span>
     </span>
   );
 }
 
 /**
- * One before → after row: a bar with the gain solid (▲, +) or the loss hatched (▼, −), so the
- * direction never depends on colour.
+ * One before → after row, on the design system's meter: the gain is hatched in, the loss is cut
+ * out (hollow), and the number says ▲ +n or ▼ −n, so the direction never depends on colour.
  */
 export function StatDelta({
   id,
@@ -34,40 +42,24 @@ export function StatDelta({
   after: number;
   max: number;
 }) {
-  const pct = (v: number) => `${Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100))}%`;
-  const lo = Math.min(before, after);
-  const hi = Math.max(before, after);
   const diff = after - before;
+  const sentence = t(
+    diff > 0 ? 'armoury.deltaUp' : diff < 0 ? 'armoury.deltaDown' : 'armoury.deltaSame',
+    { stat: label, before, after, n: Math.abs(diff) },
+  );
+  const mark = diff > 0 ? ` ▲ +${diff}` : diff < 0 ? ` ▼ −${-diff}` : '';
   return (
-    <div
-      class={`stat-delta${diff > 0 ? ' up' : diff < 0 ? ' down' : ''}`}
-      role="img"
-      aria-label={t(
-        diff > 0 ? 'armoury.deltaUp' : diff < 0 ? 'armoury.deltaDown' : 'armoury.deltaSame',
-        {
-          stat: label,
-          before,
-          after,
-          n: Math.abs(diff),
-        },
-      )}
-      data-testid={`stat-delta-${id}`}
-    >
-      <span class="sd-label">{label}</span>
-      <span class="sd-track">
-        <span class="sd-fill" style={{ width: pct(lo) }} />
-        {diff !== 0 && (
-          <span
-            class={`sd-change ${diff > 0 ? 'gain' : 'loss'}`}
-            style={{ left: pct(lo), width: `calc(${pct(hi)} - ${pct(lo)})` }}
-          />
-        )}
-      </span>
-      <span class="sd-num">
-        {before}→{after}
-        {diff !== 0 && <b> {diff > 0 ? `+${diff} ▲` : `−${-diff} ▼`}</b>}
-      </span>
-    </div>
+    <Meter
+      label={label}
+      value={before}
+      max={Math.max(1, max, before, after)}
+      delta={diff}
+      kind="neutral"
+      valueText={`${before}→${after}${mark}`}
+      title={sentence}
+      class={`ar-delta${diff > 0 ? ' is-up' : diff < 0 ? ' is-down' : ''}`}
+      testId={`stat-delta-${id}`}
+    />
   );
 }
 
@@ -104,12 +96,16 @@ export function ScudiCounter({ value }: { value: number }) {
     return () => cancelAnimationFrame(frame);
   }, [value]);
   return (
-    <span class="scudi-counter" data-testid="scudi" aria-label={t('armoury.scudi', { n: value })}>
+    <span class="ar-purse" data-testid="scudi" aria-label={t('armoury.scudi', { n: value })}>
       <CoinGlyph />
       <b>{shown.toLocaleString()}</b>
-      <span class="visually-hidden">{t('armoury.scudi', { n: value })}</span>
+      <span class="ds-visually-hidden">{t('armoury.scudi', { n: value })}</span>
       {float && (
-        <span key={float.n} class={`scudi-float ${float.up ? 'up' : 'down'}`} aria-hidden="true">
+        <span
+          key={float.n}
+          class={`ar-purse__float ${float.up ? 'up' : 'down'}`}
+          aria-hidden="true"
+        >
           {float.text}
         </span>
       )}
@@ -117,11 +113,12 @@ export function ScudiCounter({ value }: { value: number }) {
   );
 }
 
+/** A scudo: a gold disc with a small cross, coloured by the stylesheet (tokens only). */
 export function CoinGlyph() {
   return (
-    <svg class="coin" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
-      <circle cx="10" cy="10" r="8.5" fill="#d6b25e" stroke="#6b4e1c" stroke-width="1.5" />
-      <path d="M10 5 L11 9 L15 10 L11 11 L10 15 L9 11 L5 10 L9 9 Z" fill="#7a5a22" />
+    <svg class="ar-coin" viewBox="0 0 20 20" width="1em" height="1em" aria-hidden="true">
+      <circle class="ar-coin__disc" cx="10" cy="10" r="8.25" />
+      <path class="ar-coin__mark" d="M10 5.2 11 9 14.8 10 11 11 10 14.8 9 11 5.2 10 9 9Z" />
     </svg>
   );
 }
@@ -129,27 +126,52 @@ export function CoinGlyph() {
 /** The armourer's sign: an anvil under a Maltese cross, or under a crescent for the Porte. */
 export function ArmourerEmblem({ side }: { side: 'malta' | 'ottoman' }) {
   return (
-    <svg class="armourer-emblem" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true">
+    <svg class="ar-emblem" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true">
       <path
-        d="M24 3 L44 10 V26 C44 37 34 43 24 46 C14 43 4 37 4 26 V10 Z"
-        fill="#1d1712"
-        stroke="#c9a45c"
-        stroke-width="2"
+        class="ar-emblem__shield"
+        d="M24 3.5 43.5 10v15.5C43.5 36.5 34 42.5 24 45.5 14 42.5 4.5 36.5 4.5 25.5V10Z"
       />
       {side === 'malta' ? (
         <path
-          d="M24 8 L27 14 L24 13 L21 14 Z M30 17 L36 14 L35 17 L36 20 Z M24 26 L21 20 L24 21 L27 20 Z M18 17 L12 20 L13 17 L12 14 Z"
-          fill="#f4ead2"
+          class="ar-emblem__sign"
+          d="M24 19 21.2 11.2 24 12.8l2.8-1.6ZM24 19l7.8-2.8-1.6 2.8 1.6 2.8ZM24 19l2.8 7.8-2.8-1.6-2.8 1.6ZM24 19l-7.8 2.8 1.6-2.8-1.6-2.8Z"
         />
       ) : (
-        <path d="M27 9 A8 8 0 1 0 27 25 A6.2 6.2 0 1 1 27 9 Z" fill="#f4ead2" />
+        <path class="ar-emblem__sign" d="M27 11a7.6 7.6 0 1 0 0 15.2A6 6 0 1 1 27 11Z" />
       )}
-      <path
-        d="M12 31 H34 L31 34 H27 L28 38 H32 V40 H16 V38 H20 L21 34 H15 Z"
-        fill="#9aa1ab"
-        stroke="#2a2d33"
-        stroke-width="1"
-      />
+      <path class="ar-emblem__anvil" d="M14 31h20l-3 2.6h-3.4l1 3.9H32V39H16v-1.5h3.4l1-3.9H17Z" />
+    </svg>
+  );
+}
+
+/**
+ * The shelf glyphs, drawn on the design system's grid (24 units, 1.75 stroke, round caps) so
+ * they sit beside its icons: a sword, a cut gem, a medal on a ribbon and a helm.
+ */
+const KIND_GLYPH: Record<ItemKind, string> = {
+  weapon: 'M19.5 4.5 18.3 8.7 10 17M19.5 4.5l-4.2 1.2L7 14M6 12.5l5.5 5.5M8.5 15.5l-4 4',
+  charm: 'M8 4.5h8l3 4.5-7 10.5L5 9ZM5 9h14M10.5 4.5 9.5 9l2.5 10.5L14.5 9l-1-4.5',
+  amulet:
+    'M8.5 3.5 12 9.5l3.5-6M12 21a5.75 5.75 0 1 0 0-11.5A5.75 5.75 0 0 0 12 21ZM12 13v5M9.5 15.5h5',
+  frame: 'M5 19.5V12.5a7 7 0 0 1 14 0v7ZM5 13.5h14M12 13.5v6M9.5 16.5h5M12 5.5V3.5',
+};
+
+export function KindGlyph({ kind }: { kind: ItemKind }): JSX.Element {
+  return (
+    <svg
+      class="ds-icon ar-kind"
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <path d={KIND_GLYPH[kind]} />
     </svg>
   );
 }
