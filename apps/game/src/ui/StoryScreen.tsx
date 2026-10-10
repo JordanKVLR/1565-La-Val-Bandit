@@ -7,6 +7,7 @@ import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
 import { t } from '../i18n';
+import { Button, cx, Divider, Icon } from './design';
 import { usePrompt } from './KeyHint';
 
 type StoryScreenState = Extract<Screen, { kind: 'story' }>;
@@ -79,11 +80,17 @@ function prefersReducedMotion(): boolean {
   }
 }
 
+/**
+ * The story: the diorama fills the screen, a slim glass dialogue box sits at the bottom with the
+ * speaker's portrait, name and title, and choices rise above it. Chapter cards dim the scene
+ * behind a centred title.
+ */
 export function StoryScreen({ session, lib, onMenu }: Props) {
   const view = useStore(session.view);
   const screen = view.screen as StoryScreenState;
   const line = screen.line;
-  const [text, done, finish] = useTypewriter(line?.text ?? '');
+  const full = line?.text ?? '';
+  const [text, done, finish] = useTypewriter(full);
   const speaker = line?.speaker
     ? [...lib.cast.values()].find((c) => c.speaker === line.speaker)
     : undefined;
@@ -122,71 +129,92 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
     return () => document.removeEventListener('keydown', onKey);
   }, [onMenu, screen.choices]);
 
+  const portrait = speaker ? portraitUrl(speaker.id) : undefined;
+
   return (
-    <main class="story-screen" onClick={onTap} data-testid="story-screen">
+    <main class="fe-story" onClick={onTap} data-testid="story-screen">
       <Stage stage={view.stage} lib={lib} />
-      <div class="story-controls" onClick={(e) => e.stopPropagation()}>
-        <button type="button" class="btn icon" aria-label={t('common.menu')} onClick={onMenu}>
-          ☰
-        </button>
+      <div class="fe-story__shade" aria-hidden="true" />
+      <div class="fe-story__menu" onClick={(e) => e.stopPropagation()}>
+        <Button iconOnly icon="menu" label={t('common.menu')} onClick={onMenu} />
       </div>
 
       {screen.card && (
-        <div class="chapter-card" data-testid="chapter-card">
-          <h2>{screen.card.title}</h2>
-          <p>{screen.card.subtitle}</p>
-          <span class="tap-hint">{prompt('continue')}</span>
+        <div class="chapter-card fe-card" data-testid="chapter-card">
+          <div class="fe-card__inner">
+            <Divider glyph="cross" class="fe-card__rule" />
+            <h2 class="fe-card__title">{screen.card.title}</h2>
+            {screen.card.subtitle && <p class="fe-card__subtitle">{screen.card.subtitle}</p>}
+            <Divider class="fe-card__rule fe-card__rule--end" />
+          </div>
+          <span class="fe-card__hint">{prompt('continue')}</span>
         </div>
       )}
 
-      {line && !screen.card && (
-        <section class={`dialogue ${speaker ? '' : 'narration'}`} aria-live="polite">
-          {speaker && (
-            <div class="dlg-portrait" style={{ background: speaker.color }} aria-hidden="true">
-              {portraitUrl(speaker.id) ? (
-                <img src={portraitUrl(speaker.id)} alt="" />
-              ) : (
-                speaker.name.replace(/^(Fra|La) /, '').charAt(0)
-              )}
+      {!screen.card && (line || screen.choices) && (
+        <div class="fe-story__stack">
+          {screen.choices && (
+            <div
+              class="fe-choices"
+              role="group"
+              aria-label={t('story.choices')}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {screen.choices.map((c, i) => (
+                <button
+                  type="button"
+                  class="fe-choice"
+                  key={i}
+                  data-nav-default={i === 0 || undefined}
+                  onClick={() => session.choose(i)}
+                >
+                  <Icon name="diamond" class="fe-choice__mark" />
+                  <span class="fe-choice__text">{c}</span>
+                </button>
+              ))}
             </div>
           )}
-          <div class="dlg-body">
-            {speaker && (
-              <div class="dlg-name">
-                {speaker.name}
-                {speaker.title && <small>{speaker.title}</small>}
-              </div>
-            )}
-            <p class="dlg-text" data-testid="dialogue-text">
-              {text}
-            </p>
-          </div>
-          {done && !screen.choices && (
-            <span class="dlg-next" aria-hidden="true">
-              ▼
-            </span>
-          )}
-        </section>
-      )}
-
-      {screen.choices && (
-        <div
-          class="choices"
-          role="group"
-          aria-label={t('story.choices')}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {screen.choices.map((c, i) => (
-            <button
-              type="button"
-              class="btn choice"
-              key={i}
-              data-nav-default={i === 0 || undefined}
-              onClick={() => session.choose(i)}
+          {line && (
+            <section
+              class={cx('fe-dialogue', !speaker && 'is-narration', portrait && 'has-portrait')}
+              aria-live="polite"
             >
-              {c}
-            </button>
-          ))}
+              {speaker && (
+                <div
+                  class="fe-dialogue__portrait"
+                  style={{ backgroundColor: speaker.color }}
+                  aria-hidden="true"
+                >
+                  {portrait ? (
+                    <img src={portrait} alt="" />
+                  ) : (
+                    speaker.name.replace(/^(Fra|La) /, '').charAt(0)
+                  )}
+                </div>
+              )}
+              <div class="fe-dialogue__body">
+                {speaker && (
+                  <header class="fe-dialogue__speaker">
+                    <span class="fe-dialogue__name">{speaker.name}</span>
+                    {speaker.title && <span class="fe-dialogue__role">{speaker.title}</span>}
+                  </header>
+                )}
+                {/* The rest of the line is laid out unseen, so the box never grows as it types. */}
+                <p class="fe-dialogue__text">
+                  <span data-testid="dialogue-text">{text}</span>
+                  <span class="fe-dialogue__rest" aria-hidden="true">
+                    {full.slice(text.length)}
+                  </span>
+                </p>
+              </div>
+              {done && !screen.choices && (
+                <span class="dlg-next fe-dialogue__next" aria-hidden="true">
+                  <span class="fe-dialogue__prompt">{prompt('continue')}</span>
+                  <Icon name="chevronRight" class="fe-dialogue__chev" />
+                </span>
+              )}
+            </section>
+          )}
         </div>
       )}
     </main>

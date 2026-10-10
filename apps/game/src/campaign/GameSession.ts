@@ -382,6 +382,40 @@ export class GameSession {
     this.show({ kind: 'prep' });
   }
 
+  /**
+   * `?results` / `?end` (testing and design): the victory summary after a battle, with a level
+   * gained and points to spend, or the ending screen.
+   */
+  openScreenDemo(kind: 'results' | 'end'): void {
+    if (kind === 'end') {
+      this.show({ kind: 'end' });
+      return;
+    }
+    const per = this.lib.balance.xpPerLevel;
+    const roster = [
+      { ...newRosterEntry(this.lib, 'ninu'), level: 3, xp: Math.round(per * 0.4), statPoints: 2 },
+      { ...newRosterEntry(this.lib, 'kateri'), level: 2, xp: Math.round(per * 0.75) },
+    ];
+    this.patch({ roster, scudi: 640 });
+    const name = (id: string) => this.lib.characters.get(id)?.name ?? id;
+    this.show({
+      kind: 'results',
+      battleId: 'b1-marsaxlokk',
+      lines: [
+        { kind: 'scudi', amount: 240 },
+        { kind: 'salvage', frame: this.lib.frames.get('moschetta')?.name ?? 'moschetta' },
+        ...roster.map((r, i) => ({
+          kind: 'pilot' as const,
+          name: name(r.characterId),
+          levels: i === 0 ? 1 : 0,
+          level: r.level,
+          xp: r.xp,
+          xpPerLevel: per,
+        })),
+      ],
+    });
+  }
+
   /** Keeps a mid-battle snapshot so Continue resumes exactly where the player left off. */
   saveBattleProgress(state: BattleState): void {
     const screen = this.state.screen;
