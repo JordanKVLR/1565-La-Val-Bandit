@@ -72,26 +72,6 @@ export function strokes(c: Ctx, lines: readonly (readonly [number, number][])[],
 
 /** The white eight-pointed Cross of the Order, centred at (x, y). */
 export function maltese(c: Ctx, x: number, y: number, s: number, fill = '#f4efe3', line = 2): void {
-  const arm = (a: number): PathFn => (cc) => {
-    cc.save();
-    cc.translate(x, y);
-    cc.rotate(a);
-    cc.moveTo(0, -s * 0.12);
-    cc.lineTo(-s * 0.32, -s * 0.5);
-    cc.lineTo(-s * 0.2, -s * 0.62);
-    cc.lineTo(0, -s * 0.5 + 0);
-    cc.restore();
-  };
-  void arm;
-  const pts: [number, number][] = [];
-  const outer = s * 0.62;
-  const notch = s * 0.34;
-  const inner = s * 0.18;
-  for (let i = 0; i < 4; i++) {
-    const a = (i * Math.PI) / 2 - Math.PI / 2;
-    const at = (r: number, da: number): [number, number] => [x + Math.cos(a + da) * r, y + Math.sin(a + da) * r];
-    pts.push(at(inner, -0.7), at(outer, -0.2), at(notch, 0), at(outer, 0.2), at(inner, 0.7));
-  }
   const path: PathFn = (cc) => {
     // each arm: two points with a notch between them, then the inner corner
     const arms: [number, number][][] = [];
@@ -109,7 +89,6 @@ export function maltese(c: Ctx, x: number, y: number, s: number, fill = '#f4efe3
       }
     cc.closePath();
   };
-  void pts;
   paint(c, path, fill, { line, shade: '#cfc8b6', sh: [-1.2, -1.2] });
 }
 

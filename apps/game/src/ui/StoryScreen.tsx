@@ -6,6 +6,9 @@ import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
+import { settings } from '../state/settings';
+import { Portrait } from '../render2d/portraits/Portrait';
+import { expressionForLine, hasPortrait, isExpression } from '../render2d/portraits';
 import { t } from '../i18n';
 import { usePrompt } from './KeyHint';
 
@@ -84,9 +87,17 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
   const screen = view.screen as StoryScreenState;
   const line = screen.line;
   const [text, done, finish] = useTypewriter(line?.text ?? '');
+  const render2d = useStore(settings).renderMode === '2d';
   const speaker = line?.speaker
     ? [...lib.cast.values()].find((c) => c.speaker === line.speaker)
     : undefined;
+
+  // The Ink script has no mood tags yet; a `mood` on the line (if the runner ever adds one) wins.
+  const mood = (line as { mood?: unknown } | null | undefined)?.mood;
+  const expression = useMemo(
+    () => (isExpression(mood) ? mood : expressionForLine(line?.text ?? '', speaker?.id)),
+    [mood, line?.text, speaker?.id],
+  );
 
   const onTap = () => {
     if (screen.choices) return;
@@ -143,7 +154,9 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
         <section class={`dialogue ${speaker ? '' : 'narration'}`} aria-live="polite">
           {speaker && (
             <div class="dlg-portrait" style={{ background: speaker.color }} aria-hidden="true">
-              {portraitUrl(speaker.id) ? (
+              {render2d && hasPortrait(speaker.id) ? (
+                <Portrait castId={speaker.id} expression={expression} animated />
+              ) : portraitUrl(speaker.id) ? (
                 <img src={portraitUrl(speaker.id)} alt="" />
               ) : (
                 speaker.name.replace(/^(Fra|La) /, '').charAt(0)
