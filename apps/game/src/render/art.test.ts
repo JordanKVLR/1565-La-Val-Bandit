@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadLibrary } from '@m1565/content';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import castData from '../../../../packages/content/data/cast.json';
 import { genericPortraitId } from './art';
 
@@ -37,5 +37,26 @@ describe('portraits', () => {
       );
       if (id) expect(manifest.portraits[id], f.id).toBeDefined();
     }
+  });
+});
+
+describe('art manifest', () => {
+  it('tells subscribers when it arrives, so portraits drawn before it can draw again', async () => {
+    vi.resetModules();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ ok: true, json: async () => ({ portraits: { ninu: 'ninu.webp' } }) })),
+    );
+    const art = await import('./art');
+    expect(art.artRevision()).toBe(0);
+    expect(art.portraitUrl('ninu')).toBeUndefined();
+    const heard = vi.fn();
+    const off = art.onArtChange(heard);
+    await art.loadArtManifest();
+    expect(heard).toHaveBeenCalledTimes(1);
+    expect(art.artRevision()).toBe(1);
+    expect(art.portraitUrl('ninu')).toMatch(/art\/ninu\.webp$/);
+    off();
+    vi.unstubAllGlobals();
   });
 });
