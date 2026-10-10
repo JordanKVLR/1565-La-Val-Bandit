@@ -5,7 +5,7 @@ import type { CampaignSave } from '../campaign/types';
 import { t, tParts } from '../i18n';
 import { noteCodexRead } from '../platform/achievements';
 import { readSave, SLOTS } from '../platform/storage';
-import { KeyHint } from './KeyHint';
+import { cx, Sheet } from './design';
 import './codex.css';
 
 type Filter = 'all' | CodexEntry['kind'];
@@ -32,15 +32,16 @@ function KindIcon({ kind }: { kind: CodexEntry['kind'] | 'locked' }) {
     locked: 'M6 8V6a4 4 0 0 1 8 0v2h1.5v10h-11V8zm2 0h4V6a2 2 0 0 0-4 0zm1 4v3h2v-3z',
   } as const;
   return (
-    <svg class="cx-icon" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+    <svg class="cx-icon" viewBox="0 0 20 20" width="1em" height="1em" aria-hidden="true">
       <path d={paths[kind]} fill="currentColor" fill-rule="evenodd" />
     </svg>
   );
 }
 
+/** Historical: a solid frame, a column and the word; Fiction: a dashed frame, a quill and the word. */
 function KindBadge({ kind }: { kind: CodexEntry['kind'] }) {
   return (
-    <span class={`cx-badge ${kind}`}>
+    <span class={`cx-badge cx-badge--${kind}`}>
       <KindIcon kind={kind} />
       {t(`codex.kind.${kind}`)}
     </span>
@@ -75,80 +76,84 @@ export function CodexScreen({
   }, [selected, codex]);
 
   return (
-    <div class="modal" role="dialog" aria-modal="true" aria-label={t('codex.title')}>
-      <div class="modal-box codex" data-testid="codex">
-        <header class="cx-head">
-          <h2>{t('codex.title')}</h2>
-          <div class="cx-tabs" role="tablist" aria-label={t('codex.show')}>
-            {FILTERS.map((f) => (
-              <button
-                type="button"
-                key={f}
-                role="tab"
-                aria-selected={filter === f}
-                tabIndex={filter === f ? 0 : -1}
-                class={`btn tab${filter === f ? ' on' : ''}`}
-                onClick={() => setFilter(f)}
-              >
-                {f !== 'all' && <KindIcon kind={f} />}
-                {filterLabel(f)}
-              </button>
-            ))}
-          </div>
-        </header>
+    <Sheet
+      label={t('codex.title')}
+      placement="center"
+      size="lg"
+      ornament="cross"
+      closeLabel={t('common.close')}
+      onClose={onClose}
+      class="fe-sheet cx-sheet"
+      testId="codex"
+    >
+      <div class="cx-top">
+        {/* Filters: the ds tab style, with each kind's icon beside its word. */}
+        <div class="ds-tabs cx-tabs" role="tablist" aria-label={t('codex.show')}>
+          {FILTERS.map((f) => (
+            <button
+              type="button"
+              key={f}
+              role="tab"
+              aria-selected={filter === f}
+              tabIndex={filter === f ? 0 : -1}
+              class={cx('ds-tab', filter === f && 'is-selected')}
+              onClick={() => setFilter(f)}
+            >
+              {f !== 'all' && <KindIcon kind={f} />}
+              {filterLabel(f)}
+            </button>
+          ))}
+        </div>
         <p class="cx-intro">
           {tParts('codex.intro', {
             historical: <KindBadge kind="historical" />,
             fiction: <KindBadge kind="fiction" />,
           })}
         </p>
-        <div class="cx-body">
-          <ul class="cx-list" aria-label={t('codex.entries')}>
-            {open.map((e) => (
-              <li key={e.id}>
-                <button
-                  type="button"
-                  class={`cx-item${e.id === selected?.id ? ' on' : ''}`}
-                  aria-current={e.id === selected?.id ? 'true' : undefined}
-                  data-nav-default={e.id === selected?.id || undefined}
-                  data-testid={`codex-${e.id}`}
-                  onClick={() => setSelectedId(e.id)}
-                  onFocus={() => setSelectedId(e.id)}
-                >
-                  <span class="cx-item-title">{e.title}</span>
-                  <KindBadge kind={e.kind} />
-                </button>
-              </li>
-            ))}
-            {locked > 0 && (
-              <li class="cx-locked">
-                <KindIcon kind="locked" />
-                {t('codex.locked', { n: locked })}
-              </li>
-            )}
-          </ul>
-          {selected && (
-            <article
-              class="cx-entry"
-              tabIndex={0}
-              aria-labelledby="cx-entry-title"
-              data-testid="codex-entry"
-            >
-              <h3 id="cx-entry-title">{selected.title}</h3>
-              <div class="cx-meta">
-                <KindBadge kind={selected.kind} />
-                {selected.when && <span>{selected.when}</span>}
-              </div>
-              {selected.text.split('\n\n').map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </article>
-          )}
-        </div>
-        <button type="button" class="btn cx-close" data-nav-back onClick={onClose}>
-          {t('common.close')} <KeyHint action="back" context="menu" />
-        </button>
       </div>
-    </div>
+      <div class="cx-body">
+        <ul class="cx-list" aria-label={t('codex.entries')}>
+          {open.map((e) => (
+            <li key={e.id}>
+              <button
+                type="button"
+                class={cx('cx-item', e.id === selected?.id && 'is-current')}
+                aria-current={e.id === selected?.id ? 'true' : undefined}
+                data-nav-default={e.id === selected?.id || undefined}
+                data-testid={`codex-${e.id}`}
+                onClick={() => setSelectedId(e.id)}
+                onFocus={() => setSelectedId(e.id)}
+              >
+                <span class="cx-item-title">{e.title}</span>
+                <KindBadge kind={e.kind} />
+              </button>
+            </li>
+          ))}
+          {locked > 0 && (
+            <li class="cx-locked">
+              <KindIcon kind="locked" />
+              {t('codex.locked', { n: locked })}
+            </li>
+          )}
+        </ul>
+        {selected && (
+          <article
+            class="cx-entry"
+            tabIndex={0}
+            aria-labelledby="cx-entry-title"
+            data-testid="codex-entry"
+          >
+            <h3 id="cx-entry-title">{selected.title}</h3>
+            <div class="cx-meta">
+              <KindBadge kind={selected.kind} />
+              {selected.when && <span class="cx-when">{selected.when}</span>}
+            </div>
+            {selected.text.split('\n\n').map((p, i) => (
+              <p key={i}>{p}</p>
+            ))}
+          </article>
+        )}
+      </div>
+    </Sheet>
   );
 }

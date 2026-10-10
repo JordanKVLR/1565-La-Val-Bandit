@@ -98,7 +98,6 @@ export const en = {
   'difficulty.tagline.squire': 'For the story.',
   'difficulty.tagline.knight': 'The intended challenge.',
   'difficulty.tagline.grandMaster': 'For veterans of the siege.',
-  'difficulty.recommended': '(recommended)',
   'difficulty.current': 'current',
   'difficulty.enemies': 'Enemies {changes}',
   'difficulty.enemiesAsWritten': 'Enemies as written',
@@ -666,4 +665,26 @@ export const en = {
   'action.buyEquip': 'Buy & equip · {n}',
   'action.buy': 'Buy · {n}',
   'action.remove': 'Remove',
+
+  // ── Front-end screens on the design system (title, story, menus, results) ───────────
+  /** The title screen's list of actions, for assistive tech. */
+  'fe.title.menu': 'Main menu',
+  /** A tag on the difficulty card the game suggests. */
+  'fe.difficulty.recommended': 'Recommended',
+  /** Heading over the save slots in the in-game menu. */
+  'fe.menu.save': 'Save game',
+  /** The in-game menu's other actions (settings, notes, title screen), for assistive tech. */
+  'fe.menu.more': 'More',
+  'fe.settings.screen': 'Screen',
+  'fe.settings.battle': 'Battle',
+  'fe.settings.sound': 'Sound',
+  /** A volume, e.g. "70%". */
+  'fe.settings.percent': '{n}%',
+  /** Battle speed choice, e.g. "×2". */
+  'fe.settings.speed': '×{n}',
+  'fe.results.spoils': 'Spoils',
+  'fe.results.company': 'The company',
+  'fe.results.levelUp': 'Level up',
+  /** Opens the sheet where a pilot's unspent attribute points are spent. */
+  'fe.results.raise': 'Raise attributes',
 } as const satisfies MessageTable;

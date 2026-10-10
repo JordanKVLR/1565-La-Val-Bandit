@@ -13,6 +13,8 @@ export { Icon, ICON_NAMES } from './Icon';
 export type { IconName } from './Icon';
 export { Meter } from './Meter';
 export type { MeterKind, MeterProps } from './Meter';
+export { Segmented, Slider, Switch } from './Controls';
+export type { SegmentOption } from './Controls';
 export { Divider, Panel } from './Panel';
 export type { Elevation, PanelProps } from './Panel';
 export { Sheet } from './Sheet';

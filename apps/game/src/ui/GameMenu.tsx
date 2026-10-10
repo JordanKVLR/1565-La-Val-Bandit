@@ -6,8 +6,10 @@ import { t, tParts } from '../i18n';
 import type { SlotId } from '../platform/storage';
 import { readSave } from '../platform/storage';
 import { useStore } from '../state/store';
-import { difficultyName, DifficultyPicker, SaveBadges } from './difficulty';
 import { battlesWonInSaves, CodexScreen } from './CodexScreen';
+import { Button, Chip, Hint, Sheet } from './design';
+import { difficultyName, DifficultyPicker, DifficultyPips } from './difficulty';
+import { SlotButton, SlotList } from './SaveSlots';
 import { SettingsPanel } from './SettingsPanel';
 
 const MANUAL: readonly SlotId[] = ['slot1', 'slot2', 'slot3'];
@@ -42,89 +44,115 @@ export function GameMenu({
   if (showSettings) return <SettingsPanel onClose={() => setShowSettings(false)} />;
   if (changing)
     return (
-      <div
-        class="modal"
-        role="dialog"
-        aria-label={t('difficulty.title')}
-        onClick={(e) => e.stopPropagation()}
+      <Sheet
+        label={t('difficulty.title')}
+        placement="center"
+        size="lg"
+        ornament="cross"
+        closeLabel={t('common.back')}
+        onClose={() => setChanging(false)}
+        class="fe-sheet"
       >
-        <div class="modal-box difficulty-box">
-          <h2>{t('difficulty.title')}</h2>
-          <p class="modal-hint">{t('menu.difficultyHint')}</p>
-          <DifficultyPicker
-            balance={lib.balance}
-            value={difficulty}
-            onPick={(d) => {
-              session.setDifficulty(d);
-              setMessage(t('menu.difficultySet', { name: difficultyName(d) }));
-              setChanging(false);
-            }}
-          />
-          <button type="button" class="btn ghost" data-nav-back onClick={() => setChanging(false)}>
-            {t('common.back')}
-          </button>
-        </div>
-      </div>
+        <Hint text={t('menu.difficultyHint')} class="fe-sheet__hint" />
+        <DifficultyPicker
+          balance={lib.balance}
+          value={difficulty}
+          onPick={(d) => {
+            session.setDifficulty(d);
+            setMessage(t('menu.difficultySet', { name: difficultyName(d) }));
+            setChanging(false);
+          }}
+        />
+      </Sheet>
     );
   if (showCodex) {
     const won = new Set([...battlesWonInSaves(), ...session.view.get().completedBattles]);
     return <CodexScreen completedBattles={[...won]} onClose={() => setShowCodex(false)} />;
   }
   return (
-    <div
-      class="modal"
-      role="dialog"
-      aria-label={t('common.menu')}
-      onClick={(e) => e.stopPropagation()}
+    <Sheet
+      label={t('common.menu')}
+      placement="center"
+      ornament="cross"
+      closeLabel={t('common.close')}
+      onClose={onClose}
+      class="fe-sheet fe-menu"
+      footer={
+        <Button
+          variant="primary"
+          label={t('common.resume')}
+          navDefault
+          keyHint="back"
+          keyContext="menu"
+          onClick={onClose}
+        />
+      }
     >
-      <div class="modal-box">
-        <h2>{t('common.menu')}</h2>
-        <div class="setting" data-testid="menu-difficulty">
-          <span>
-            {tParts('menu.difficulty', { name: <strong>{difficultyName(difficulty)}</strong> })}
-            {ngPlus > 0 && <span class="badge ngplus">{t('ngPlus.badge', { n: ngPlus })}</span>}
-          </span>
-          <button type="button" class="btn tab" onClick={() => setChanging(true)}>
-            {t('menu.change')}
-          </button>
-        </div>
-        <div class="slots">
-          {MANUAL.map((slot, i) => (
-            <button
-              type="button"
-              class="btn slot"
-              key={slot}
-              onClick={() => {
-                setMessage(
-                  session.saveTo(slot) ? t('menu.savedToSlot', { n: i + 1 }) : t('menu.saveFailed'),
-                );
-                refresh((n) => n + 1);
-              }}
-            >
-              <span>{t('menu.saveToSlot', { n: i + 1 })}</span>
-              <span class="slot-detail">
-                <small>{describeSave(readSave<CampaignSave>(slot))}</small>
-                <SaveBadges save={readSave<CampaignSave>(slot)} />
-              </span>
-            </button>
-          ))}
-        </div>
-        {message && <p class="menu-msg">{message}</p>}
-        <div class="menu-row">
-          <button type="button" class="btn ghost" onClick={() => setShowSettings(true)}>
-            {t('common.settings')}
-          </button>
-          <button type="button" class="btn ghost" onClick={() => setShowCodex(true)}>
-            {t('codex.title')}
-          </button>
-          <button type="button" class="btn ghost" onClick={onQuit}>
-            {t('menu.titleScreen')}
-          </button>
-          <button type="button" class="btn" data-nav-back data-nav-default onClick={onClose}>
-            {t('common.resume')}
-          </button>
-        </div>
+      <div class="fe-menu__grid">
+        <section class="fe-menu__main">
+          <div class="fe-menu__difficulty" data-testid="menu-difficulty">
+            <DifficultyPips d={difficulty} />
+            <span class="fe-menu__difficulty-text">
+              {tParts('menu.difficulty', { name: <strong>{difficultyName(difficulty)}</strong> })}
+            </span>
+            {ngPlus > 0 && (
+              <Chip tone="gold" icon="cross" label={t('ngPlus.badge', { n: ngPlus })} />
+            )}
+            <Button
+              size="sm"
+              class="fe-menu__change"
+              label={t('menu.change')}
+              onClick={() => setChanging(true)}
+            />
+          </div>
+          <h3 class="fe-label">{t('fe.menu.save')}</h3>
+          <SlotList>
+            {MANUAL.map((slot, i) => {
+              const save = readSave<CampaignSave>(slot);
+              return (
+                <SlotButton
+                  key={slot}
+                  name={t('menu.saveToSlot', { n: i + 1 })}
+                  detail={describeSave(save)}
+                  save={save}
+                  onClick={() => {
+                    setMessage(
+                      session.saveTo(slot)
+                        ? t('menu.savedToSlot', { n: i + 1 })
+                        : t('menu.saveFailed'),
+                    );
+                    refresh((n) => n + 1);
+                  }}
+                />
+              );
+            })}
+          </SlotList>
+          <p class="fe-menu__msg" role="status">
+            {message}
+          </p>
+        </section>
+        <nav class="fe-menu__more" aria-label={t('fe.menu.more')}>
+          <Button
+            variant="ghost"
+            block
+            label={t('common.settings')}
+            onClick={() => setShowSettings(true)}
+          />
+          <Button
+            variant="ghost"
+            block
+            label={t('codex.title')}
+            onClick={() => setShowCodex(true)}
+          />
+          <Button
+            variant="ghost"
+            block
+            icon="back"
+            label={t('menu.titleScreen')}
+            onClick={onQuit}
+          />
+        </nav>
       </div>
-    </div>
+    </Sheet>
   );
 }
