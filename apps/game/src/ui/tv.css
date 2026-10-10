@@ -124,12 +124,6 @@
   flex: 0 0 44px;
 }
 
-/* The smallest print (under 12 px before the zoom) is raised to stay readable from the sofa. */
-:root[data-display='tv'] .facing-now,
-:root[data-display='tv'] .vb-cmd small.why {
-  font-size: 0.75rem;
-}
-
 /* The duel close-up's scene runs out to the edges too (its dialogue bar stays inside). */
 :root[data-display='tv'] .cu-canvas {
   top: calc(-1 * var(--tv-safe-y));

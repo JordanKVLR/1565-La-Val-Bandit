@@ -1,0 +1,1440 @@
+/*
+ * Battle overlays on the design system (docs/DESIGN.md, ADR 0013): the technique list, the
+ * combat forecast and reaction picker, the facing picker, the duel close-up's HUD, the
+ * experience and level-up sheets, the end of battle, the battle menu, log and help.
+ * One family: glass panels and sheets, primary on the right or at the bottom, Back as a ghost,
+ * labels in small capitals, numbers in tabular lining figures. Tokens only (overlays.test.ts).
+ */
+
+/* ── Shared pieces ────────────────────────────────────────────────────── */
+.ov-panel,
+.ov-sheet .ds-sheet__panel,
+.closeup,
+.ov-end {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.ov-title {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: var(--ds-track-caps);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+}
+.ov-sub {
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-3);
+}
+/* Small spaced capitals over a list ("Your answer", "Strike back with"). */
+.ov-label {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-gold);
+}
+.ov-head {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+}
+.ov-head__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ov-rule {
+  margin: var(--ds-space-1) 0 var(--ds-space-1);
+}
+.ov-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-1);
+}
+.ov-chips .ds-chip {
+  min-height: 22px;
+  font-size: var(--ds-text-2xs);
+}
+
+/* A scrolling list says so: its clipped edge fades and a gold chevron points on. */
+.ov-scrollwrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.ov-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ds-hairline) transparent;
+  touch-action: pan-y;
+}
+.ov-scrollwrap[data-more~='below'] > .ov-scroll,
+.ov-sheet .ds-sheet__body[data-more~='below'] {
+  -webkit-mask-image: linear-gradient(180deg, var(--ds-ink-0) calc(100% - 36px), transparent);
+  mask-image: linear-gradient(180deg, var(--ds-ink-0) calc(100% - 36px), transparent);
+}
+.ov-scrollwrap[data-more~='above'] > .ov-scroll,
+.ov-sheet .ds-sheet__body[data-more~='above'] {
+  -webkit-mask-image: linear-gradient(0deg, var(--ds-ink-0) calc(100% - 28px), transparent);
+  mask-image: linear-gradient(0deg, var(--ds-ink-0) calc(100% - 28px), transparent);
+}
+.ov-scrollwrap[data-more~='above'][data-more~='below'] > .ov-scroll,
+.ov-sheet .ds-sheet__body[data-more~='above'][data-more~='below'] {
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent,
+    var(--ds-ink-0) 28px,
+    var(--ds-ink-0) calc(100% - 36px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent,
+    var(--ds-ink-0) 28px,
+    var(--ds-ink-0) calc(100% - 36px),
+    transparent
+  );
+}
+.ov-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--ds-gold);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) rotate(90deg);
+  transition: opacity var(--ds-dur-fast) var(--ds-ease-out);
+}
+.ov-scrollwrap[data-more~='below'] > .ov-cue {
+  opacity: 1;
+}
+
+/* ── Technique list (beside the unit, where the action bar stood) ─────── */
+.ov-attack {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(400px, 46 * var(--vw));
+  max-height: calc(100% - 96px);
+  padding: var(--ds-space-2) var(--ds-space-2) var(--ds-space-2) var(--ds-space-3);
+  /* It follows the camera: fade in place, never slide (useAnchor owns the transform). */
+  animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.ov-attack.is-docked,
+.ov-facing.is-docked {
+  top: auto;
+  left: auto;
+  right: calc(max(var(--ds-edge), env(safe-area-inset-right)) + var(--tv-safe-x));
+  bottom: calc(max(var(--ds-edge), env(safe-area-inset-bottom)) + var(--tv-safe-y));
+  animation-name: ds-rise-in;
+}
+.ov-attack.is-docked {
+  width: min(410px, 50 * var(--vw));
+  max-height: calc(100% - 2 * var(--ds-edge) - 60px - var(--tv-safe-y));
+}
+.ov-attack .ov-title {
+  font-size: var(--ds-text-md);
+}
+.ov-techs {
+  margin: 0;
+  padding: 0 0 var(--ds-space-2);
+  list-style: none;
+}
+.ov-tech + .ov-tech {
+  border-top: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.ov-tech__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+}
+.ov-tech__info {
+  flex: none;
+}
+.ov-tech.is-open .ov-tech__info {
+  color: var(--ds-gold-bright);
+  background: var(--ds-gold-wash);
+}
+.am-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  min-height: var(--ds-hit-lg);
+  margin: 2px 0;
+  padding: var(--ds-space-1) var(--ds-space-2);
+  font: inherit;
+  text-align: left;
+  color: var(--ds-text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--ds-radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ds-dur-fast) var(--ds-ease-out),
+    transform var(--ds-dur-press) var(--ds-ease-out);
+}
+@media (hover: hover) {
+  .am-item:not(:disabled):hover {
+    background: var(--ds-wash-hover);
+  }
+}
+.am-item:not(:disabled):active {
+  transform: translateY(1px);
+  background: var(--ds-wash-press);
+}
+.am-item:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: 0;
+}
+.am-item:disabled {
+  cursor: default;
+}
+.am-item:disabled .am-name,
+.am-item:disabled .ov-nums {
+  opacity: 0.5;
+}
+.am-name {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.03em;
+  line-height: var(--ds-leading-tight);
+}
+.am-reason {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-2);
+}
+.am-reason__icon {
+  color: var(--ds-danger);
+}
+.ov-tech__more {
+  padding: 0 var(--ds-space-2) var(--ds-space-2);
+  animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+
+/* Technique numbers: POW · HIT · RNG, then the costs (AP · FP) set apart on the right. */
+.ov-nums {
+  display: grid;
+  grid-template-columns: repeat(3, auto) 1px repeat(2, auto);
+  justify-content: start;
+  align-items: end;
+  gap: 0 var(--ds-space-4);
+  margin: 0;
+}
+.ov-nums::before {
+  content: '';
+  grid-column: 4;
+  grid-row: 1;
+  align-self: stretch;
+  background: var(--ds-hairline-soft);
+}
+.ov-num {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ov-num dt {
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  color: var(--ds-text-3);
+}
+.ov-num dd {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-medium);
+  white-space: nowrap;
+}
+.ov-nums--inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--ds-space-3);
+}
+.ov-nums--inline::before {
+  content: none;
+}
+.ov-nums--inline .ov-num {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--ds-space-1);
+}
+.ov-nums--inline .ov-num:not(.ov-num--cost) + .ov-num--cost {
+  margin-left: auto;
+}
+
+/* ── Technique card (unit details sheet) ──────────────────────────────── */
+.tech-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+}
+.ov-tc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-3) var(--ds-space-4);
+  background: var(--ds-glass-1);
+  border: var(--ds-border) solid var(--ds-hairline-soft);
+  border-radius: var(--ds-radius-md);
+}
+.ov-tc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+}
+.ov-tc__name {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.03em;
+}
+.ov-tc__style {
+  text-transform: capitalize;
+}
+.ov-tc__desc {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  font-style: italic;
+  line-height: var(--ds-leading);
+  color: var(--ds-text-2);
+}
+.ov-tc__req {
+  margin: 0;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-3);
+}
+.ov-effects {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: var(--ds-space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text);
+}
+.ov-effects li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ds-space-2);
+}
+.ov-effects__mark {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  color: var(--ds-gold);
+  transform: translateY(-1px);
+}
+
+/* ── Combat forecast and reactions ────────────────────────────────────── */
+.ov-forecast {
+  position: absolute;
+  top: max(var(--ds-edge), env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  z-index: var(--ds-z-popover);
+  width: min(880px, 100% - 2 * var(--ds-edge));
+  margin: 0 auto;
+  padding: var(--ds-space-3) var(--ds-space-4);
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.ov-forecast__heading {
+  margin: 0 0 var(--ds-space-3);
+  padding-bottom: var(--ds-space-2);
+  text-align: center;
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.ov-forecast__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+  gap: var(--ds-space-4);
+  min-height: 0;
+}
+.ov-forecast.is-react .ov-forecast__body {
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 290px);
+}
+.ov-duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--ds-space-3);
+  min-width: 0;
+}
+.ov-vs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-1);
+}
+.ov-vs__rule {
+  flex: 1;
+  margin: 0;
+}
+.ov-vs__mark {
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  color: var(--ds-gold);
+  border: var(--ds-border) solid var(--ds-hairline);
+  border-radius: 50%;
+}
+.ov-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+  min-width: 0;
+}
+.ov-side__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  min-width: 0;
+}
+.ov-side .bhud-avatar {
+  width: 44px;
+  height: 44px;
+}
+.ov-side__id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ov-side__name {
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.03em;
+  line-height: var(--ds-leading-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-side__line {
+  overflow: hidden;
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  color: var(--ds-text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-side__verb {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  letter-spacing: var(--ds-track-caps);
+  color: var(--ds-text-2);
+}
+.ov-side__verb > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-side__verb-icon {
+  flex: none;
+  color: var(--ds-gold);
+}
+.ov-odds {
+  display: flex;
+  gap: var(--ds-space-5);
+  margin: 0;
+}
+.ov-odd {
+  display: flex;
+  flex-direction: column;
+}
+.ov-odd dt {
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  color: var(--ds-text-3);
+}
+.ov-odd dd {
+  margin: 0;
+  font-size: var(--ds-text-xl);
+  font-weight: var(--ds-weight-bold);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+/* The hit chance is the number that matters most. */
+.ov-odd--hit dd {
+  color: var(--ds-gold-bright);
+}
+.ov-odd dd.is-none {
+  color: var(--ds-text-3);
+}
+.ov-side__meters {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ov-side__note {
+  margin: 0;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-3);
+}
+
+.ov-forecast__actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--ds-space-2);
+  min-height: 0;
+  padding-left: var(--ds-space-4);
+  border-left: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.ov-forecast:not(.is-react) .ov-forecast__actions {
+  justify-content: center;
+}
+.is-react .ov-forecast__actions {
+  justify-content: flex-start;
+  gap: var(--ds-space-1);
+}
+.ov-forecast__actions .ov-go {
+  justify-content: center;
+}
+.ov-forecast__actions .ds-btn--ghost.ds-btn--block {
+  justify-content: center;
+}
+.ov-options .ov-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+/* One reaction (or strike-back technique): shape, name, cost, and why not when it can't. */
+.ov-option {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'icon name meta' 'icon reason reason';
+  align-items: center;
+  flex: none;
+  min-height: var(--ds-hit);
+  padding: var(--ds-space-1) var(--ds-space-3);
+  font: inherit;
+  text-align: left;
+  color: var(--ds-text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--ds-radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--ds-dur-fast) var(--ds-ease-out);
+}
+@media (hover: hover) {
+  .ov-option:not(:disabled):hover {
+    background: var(--ds-wash-hover);
+  }
+}
+.ov-option:not(:disabled):active {
+  background: var(--ds-wash-press);
+}
+.ov-option:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: 0;
+}
+.ov-option__icon {
+  grid-area: icon;
+  width: 18px;
+  height: 18px;
+  margin-right: var(--ds-space-2);
+  color: var(--ds-text-2);
+}
+.ov-option__name {
+  grid-area: name;
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-option__meta {
+  grid-area: meta;
+  margin-left: var(--ds-space-2);
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-3);
+  white-space: nowrap;
+}
+.ov-option__reason {
+  grid-area: reason;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+  font-size: var(--ds-text-xs);
+  line-height: 1.25;
+  color: var(--ds-text-2);
+}
+.ov-option__reason-icon {
+  flex: none;
+  color: var(--ds-danger);
+}
+/* Picked: gold wash, gold text and a gold rule (never the hue alone). */
+.ov-option.is-pressed {
+  color: var(--ds-gold-bright);
+  background: var(--ds-gold-wash);
+}
+.ov-option.is-pressed .ov-option__icon,
+.ov-option.is-pressed .ov-option__meta {
+  color: var(--ds-gold);
+}
+.ov-option.is-pressed::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--ds-gold);
+}
+.ov-option:disabled {
+  cursor: default;
+}
+.ov-option:disabled .ov-option__icon,
+.ov-option:disabled .ov-option__name {
+  opacity: 0.5;
+}
+.ov-go {
+  margin-top: var(--ds-space-1);
+}
+
+/* ── Facing picker ────────────────────────────────────────────────────── */
+.ov-facing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-1);
+  animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.ov-facing__q {
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-2);
+}
+.ov-facing__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 56px);
+  gap: var(--ds-space-2);
+}
+.ov-facing .ov-facing__btn {
+  flex-direction: column;
+  gap: 0;
+  width: 56px;
+  height: 56px;
+}
+.ov-facing__btn .ds-btn__icon {
+  width: 1.7em;
+  height: 1.7em;
+}
+.ov-facing__btn--upLeft .ds-btn__icon {
+  transform: rotate(-45deg);
+}
+.ov-facing__btn--upRight .ds-btn__icon {
+  transform: rotate(45deg);
+}
+.ov-facing__btn--downLeft .ds-btn__icon {
+  transform: rotate(-135deg);
+}
+.ov-facing__btn--downRight .ds-btn__icon {
+  transform: rotate(135deg);
+}
+.ov-facing__btn.is-pressed::before {
+  left: 24%;
+  right: 24%;
+  top: auto;
+  bottom: 3px;
+  width: auto;
+  height: 2px;
+}
+.ov-facing__now {
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.ov-facing__unit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: var(--ds-ink-1);
+  border: var(--ds-border) solid var(--ds-hairline);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.ov-facing__unit .ds-side-mark {
+  width: 12px;
+  height: 12px;
+}
+.ov-facing__back {
+  justify-content: center;
+}
+
+/* ── Duel close-up ────────────────────────────────────────────────────── */
+.closeup {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ds-z-actionbar);
+  display: flex;
+  flex-direction: column;
+  color: var(--ds-text);
+  font-family: var(--ds-font-body);
+  background: var(--ds-ink-1);
+  animation: ov-cut-in var(--ds-dur-base) var(--ds-ease-out);
+}
+@keyframes ov-cut-in {
+  from {
+    clip-path: inset(45% 0 45% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+.cu-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.cu-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cu-top {
+  position: absolute;
+  top: max(var(--ds-edge), env(safe-area-inset-top));
+  left: max(var(--ds-edge), env(safe-area-inset-left));
+  right: max(var(--ds-edge), env(safe-area-inset-right));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--ds-space-3);
+  pointer-events: none;
+}
+.cu-plate {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+  width: min(300px, 100%);
+  padding: var(--ds-space-2) var(--ds-space-3);
+  background: var(--ds-sheen), var(--ds-glass-2);
+  border: var(--ds-border) solid var(--ds-hairline);
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-inner-light), var(--ds-shadow-2);
+  -webkit-backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+}
+.cu-plate--right {
+  justify-self: end;
+}
+.cu-plate__id {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  min-width: 0;
+}
+.cu-plate__id .ds-side-mark {
+  flex: none;
+  width: 12px;
+  height: 12px;
+}
+.cu-plate__name {
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cu-plate__weapon {
+  flex: none;
+  margin-left: auto;
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  color: var(--ds-text-3);
+}
+.cu-plate__hp .ds-meter__track {
+  height: 8px;
+}
+/* HP drains slowly enough to watch. */
+.cu-plate__hp .ds-meter__fill {
+  transition-duration: var(--ds-dur-slow);
+}
+.cu-attack {
+  margin-top: var(--ds-space-1);
+  padding: var(--ds-space-1) var(--ds-space-4);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-lg);
+  letter-spacing: var(--ds-track-caps);
+  white-space: nowrap;
+  color: var(--ds-gold-bright);
+  background: var(--ds-sheen), var(--ds-glass-2);
+  border: var(--ds-border) solid var(--ds-hairline-strong);
+  border-radius: var(--ds-radius-sm);
+  box-shadow: var(--ds-shadow-2);
+}
+/* Numbers rising over the fighters: size and words tell them apart, not colour. */
+.cu-pop {
+  position: absolute;
+  top: 30%;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display);
+  font-weight: var(--ds-weight-bold);
+  line-height: 1;
+  color: var(--ds-text);
+  text-shadow:
+    0 2px 0 var(--ds-ink-0),
+    0 0 18px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  animation: ov-pop 1.3s var(--ds-ease-out) forwards;
+}
+.cu-pop.left {
+  left: 22%;
+}
+.cu-pop.right {
+  right: 22%;
+}
+.cu-pop.miss {
+  font-size: var(--ds-text-2xl);
+  font-style: italic;
+  font-weight: var(--ds-weight-regular);
+  color: var(--ds-text-2);
+}
+.cu-pop.xp {
+  top: 20%;
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-lg);
+  color: var(--ds-gold);
+}
+.cu-pop.level {
+  top: 12%;
+  font-size: var(--ds-text-xl);
+  letter-spacing: var(--ds-track-caps);
+  color: var(--ds-gold-bright);
+}
+@keyframes ov-pop {
+  from {
+    opacity: 0;
+    transform: translateY(var(--ds-rise)) scale(0.7);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(-6 * var(--ds-rise)));
+  }
+}
+.cu-skip {
+  position: absolute;
+  left: 50%;
+  bottom: var(--ds-space-3);
+  margin: 0;
+  padding: 2px var(--ds-space-3);
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-2);
+  background: var(--ds-glass-1);
+  border-radius: var(--ds-radius-pill);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.cu-lines {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ds-space-4);
+  padding: var(--ds-space-2) max(var(--ds-edge), env(safe-area-inset-right))
+    max(var(--ds-space-2), env(safe-area-inset-bottom))
+    max(var(--ds-edge), env(safe-area-inset-left));
+  background: var(--ds-sheen), var(--ds-glass-3);
+  border-top: var(--ds-border) solid var(--ds-hairline);
+}
+.cu-line {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  min-width: 0;
+  min-height: 56px;
+}
+.cu-line.right {
+  justify-content: flex-end;
+  text-align: right;
+}
+.cu-line p {
+  margin: 0;
+  font-size: var(--ds-text-md);
+  font-style: italic;
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+}
+.cu-line p.is-speaking {
+  animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.cu-avatar {
+  width: 44px;
+  height: 44px;
+}
+.cu-avatar .portrait {
+  display: grid;
+  place-items: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .closeup,
+  .cu-pop {
+    animation: none !important;
+  }
+}
+
+/* ── Sheets: experience, level up, menu, log, help ────────────────────── */
+/* Dialogs whose own action closes them (Continue, Resume) draw no ✕. */
+.ov-sheet--noclose .ds-sheet__close {
+  display: none;
+}
+.ov-sheet--noclose .ds-sheet__head {
+  min-height: var(--ds-hit);
+  padding: var(--ds-space-2) var(--ds-space-5) 0;
+}
+.ov-sheet--noclose .ds-sheet__title {
+  text-align: center;
+}
+.ov-sheet .ds-sheet__foot {
+  position: relative;
+  align-items: center;
+}
+/* The scroll cue for a sheet's body: a chevron on the footer's edge, or at the bottom. */
+.ov-sheet .ds-sheet__body[data-more~='below'] + .ds-sheet__foot::before,
+.ov-sheet .ds-sheet__panel:not(:has(.ds-sheet__foot)):has(.ds-sheet__body[data-more~='below'])::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 1.5px solid var(--ds-gold);
+  border-bottom: 1.5px solid var(--ds-gold);
+  transform: translateX(-50%) rotate(45deg);
+  pointer-events: none;
+}
+.ov-sheet .ds-sheet__body[data-more~='below'] + .ds-sheet__foot::before {
+  top: -14px;
+}
+.ov-sheet
+  .ds-sheet__panel:not(:has(.ds-sheet__foot)):has(.ds-sheet__body[data-more~='below'])::after {
+  bottom: 10px;
+}
+
+/* Experience */
+.ov-xp__gains {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-xp__gain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+}
+.ov-xp__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+}
+.ov-xp__name {
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-xp__plus {
+  flex: none;
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-bold);
+  color: var(--ds-gold-bright);
+}
+.ov-xp__meter {
+  grid-template-columns: 2.4em minmax(0, 1fr) auto;
+}
+/* The bar fills slowly from where it was. */
+.ov-xp__meter .ds-meter__fill {
+  transition-duration: calc(3 * var(--ds-dur-slow));
+}
+.ov-xp__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-1) var(--ds-space-2);
+}
+.ov-xp__progress {
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-3);
+}
+.ov-newskills {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-newskills li {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-2);
+}
+.ov-newskills b {
+  color: var(--ds-gold-bright);
+}
+.ov-newskills__mark {
+  flex: none;
+  color: var(--ds-gold-bright);
+}
+
+/* Level up */
+.ov-levelup__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-2) var(--ds-space-4);
+  margin-bottom: var(--ds-space-3);
+}
+.ov-levelup__top .ds-chip {
+  min-height: 28px;
+  font-size: var(--ds-text-sm);
+}
+.ov-attrs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-space-2) var(--ds-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-attr {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  min-width: 0;
+}
+.ov-attr__text {
+  flex: 1;
+  min-width: 0;
+}
+.ov-attr__text .ds-meter {
+  grid-template-columns: 2.7em minmax(0, 1fr) auto;
+  font-size: var(--ds-text-sm);
+}
+.ov-attr__help {
+  display: block;
+  margin-top: 1px;
+  overflow: hidden;
+  font-size: var(--ds-text-2xs);
+  color: var(--ds-text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ov-attr__raise {
+  flex: none;
+}
+.ov-levelup .ds-sheet__foot {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: var(--ds-space-4);
+}
+.ov-levelup__hint {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--ds-text-xs);
+}
+
+/* Battle menu */
+.ov-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+}
+.ov-menu__list .ds-btn {
+  justify-content: center;
+}
+.ov-menu__list .ds-btn .key {
+  position: absolute;
+  right: var(--ds-space-3);
+}
+.ov-menu__saved {
+  justify-content: center;
+  margin-top: var(--ds-space-3);
+  font-size: var(--ds-text-xs);
+  text-align: center;
+}
+
+/* Battle log */
+.ov-log .ds-sheet__panel {
+  height: 100%;
+}
+.ov-log__lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ov-log__lines li {
+  padding: var(--ds-space-2) 0;
+  font-size: var(--ds-text-sm);
+  line-height: var(--ds-leading);
+  color: var(--ds-text-2);
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.ov-log__lines li.is-latest {
+  color: var(--ds-text);
+}
+.ov-log__latest {
+  display: block;
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-gold);
+}
+.ov-log__empty {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-2);
+}
+
+/* How to play */
+.ov-help .ds-sheet__panel {
+  height: 100%;
+}
+.ov-help__tabs {
+  position: sticky;
+  top: calc(-1 * var(--ds-space-3));
+  z-index: 1;
+  margin-top: calc(-1 * var(--ds-space-3));
+  padding-top: var(--ds-space-1);
+  background: var(--ds-ink-1);
+}
+.ov-help__rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-space-4) var(--ds-space-6);
+  margin: 0;
+}
+.ov-help__rule dt {
+  margin-bottom: var(--ds-space-1);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+  color: var(--ds-gold);
+}
+.ov-help__rule dd {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  line-height: var(--ds-leading);
+  color: var(--ds-text-2);
+}
+.ov-help__rule b {
+  color: var(--ds-text);
+}
+.ov-help__controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+.ov-help__caption {
+  margin: 0 0 var(--ds-space-1);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+  text-align: left;
+  color: var(--ds-gold);
+}
+.ov-help__touch {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--ds-space-1) var(--ds-space-4);
+  margin: 0;
+  font-size: var(--ds-text-sm);
+}
+.ov-help__touch > div {
+  display: contents;
+}
+.ov-help__touch dt {
+  font-weight: var(--ds-weight-bold);
+}
+.ov-help__touch dd {
+  margin: 0;
+  color: var(--ds-text-2);
+}
+.ov-keys {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ds-text-sm);
+}
+.ov-keys th,
+.ov-keys td {
+  padding: var(--ds-space-1) var(--ds-space-2);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.ov-keys th:first-child,
+.ov-keys td:first-child {
+  padding-left: 0;
+}
+.ov-keys thead th {
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+}
+.ov-keys tbody th {
+  font-weight: var(--ds-weight-regular);
+  color: var(--ds-text-2);
+}
+.ov-kbd {
+  display: inline-block;
+  padding: 0 var(--ds-space-2);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-xs);
+  font-weight: var(--ds-weight-medium);
+  line-height: 1.6;
+  color: var(--ds-text);
+  background: var(--ds-glass-1);
+  border: var(--ds-border) solid var(--ds-hairline-soft);
+  border-radius: var(--ds-radius-xs);
+}
+.ov-kbd--pad {
+  border-radius: var(--ds-radius-pill);
+}
+.ov-help__hint {
+  display: block;
+  font-size: var(--ds-text-xs);
+}
+
+/* ── End of battle ────────────────────────────────────────────────────── */
+.ov-end {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ds-z-modal);
+  display: grid;
+  place-items: center;
+  padding: max(var(--ds-edge), env(safe-area-inset-top))
+    max(var(--ds-edge), env(safe-area-inset-right))
+    max(var(--ds-edge), env(safe-area-inset-bottom))
+    max(var(--ds-edge), env(safe-area-inset-left));
+  background: radial-gradient(ellipse at center, rgba(6, 5, 8, 0.5), rgba(6, 5, 8, 0.88) 75%);
+  animation: ds-fade-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.ov-end__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-2);
+  max-width: 100%;
+  text-align: center;
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.ov-end__title {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: calc(1.5 * var(--ds-text-display));
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: 0.14em;
+  line-height: 1;
+  color: var(--ds-text);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.7);
+}
+.ov-end--victory .ov-end__title {
+  color: var(--ds-gold-bright);
+  text-shadow:
+    0 0 28px rgba(212, 178, 106, 0.35),
+    0 2px 18px rgba(0, 0, 0, 0.7);
+}
+.ov-end__rule {
+  width: min(440px, 70 * var(--vw));
+}
+.ov-end__line {
+  margin: 0;
+  font-size: var(--ds-text-lg);
+  font-style: italic;
+  color: var(--ds-text-2);
+}
+.ov-end__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--ds-space-3);
+  margin-top: var(--ds-space-4);
+}
+.ov-end__note {
+  margin-top: var(--ds-space-1);
+  font-size: var(--ds-text-sm);
+}
+
+/* ── Phones in landscape ──────────────────────────────────────────────── */
+@media (max-height: 520px) {
+  .ov-attack {
+    padding: var(--ds-space-1) var(--ds-space-1) var(--ds-space-1) var(--ds-space-2);
+  }
+  .ov-attack.is-docked {
+    max-height: calc(100% - 2 * var(--ds-edge) - 52px);
+  }
+  .am-item {
+    min-height: var(--ds-hit);
+  }
+  .am-name {
+    font-size: var(--ds-text-sm);
+  }
+  .ov-forecast {
+    top: max(6px, env(safe-area-inset-top));
+    width: calc(100% - 16px);
+    max-height: calc(100% - 12px);
+    padding: var(--ds-space-2) var(--ds-space-3);
+    display: flex;
+    flex-direction: column;
+  }
+  .ov-forecast__heading {
+    margin-bottom: var(--ds-space-2);
+    padding-bottom: var(--ds-space-1);
+  }
+  .ov-forecast__heading .ov-title {
+    font-size: var(--ds-text-md);
+  }
+  .ov-forecast__body,
+  .ov-forecast.is-react .ov-forecast__body {
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr) minmax(170px, 30%);
+    gap: var(--ds-space-3);
+  }
+  .ov-forecast.is-react .ov-forecast__body {
+    grid-template-columns: minmax(0, 1fr) minmax(210px, 36%);
+  }
+  .ov-forecast__actions {
+    padding-left: var(--ds-space-3);
+  }
+  .ov-duel {
+    gap: var(--ds-space-2);
+  }
+  .ov-side {
+    gap: var(--ds-space-1);
+  }
+  .ov-side__head {
+    gap: var(--ds-space-2);
+  }
+  .ov-side .bhud-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  .ov-side .bhud-avatar .ds-side-mark {
+    width: 12px;
+    height: 12px;
+    right: -4px;
+    bottom: -4px;
+  }
+  .ov-side__name {
+    font-size: var(--ds-text-sm);
+  }
+  .ov-odd dd {
+    font-size: var(--ds-text-lg);
+  }
+  .ov-side__meters {
+    gap: 1px;
+  }
+  .ov-vs__mark {
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+  }
+  .ov-option {
+    padding: 2px var(--ds-space-2);
+  }
+  .ov-forecast__actions .ov-go {
+    min-height: var(--ds-hit);
+  }
+  .cu-plate {
+    padding: var(--ds-space-1) var(--ds-space-2);
+  }
+  .cu-plate__name {
+    font-size: var(--ds-text-sm);
+  }
+  .cu-attack {
+    font-size: var(--ds-text-md);
+  }
+  .cu-pop {
+    font-size: var(--ds-text-2xl);
+  }
+  .cu-pop.miss {
+    font-size: var(--ds-text-xl);
+  }
+  .cu-line {
+    min-height: 44px;
+  }
+  .cu-line p {
+    font-size: var(--ds-text-sm);
+  }
+  .cu-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  .ov-attrs {
+    column-gap: var(--ds-space-4);
+  }
+  .ov-help__rules {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ov-end__title {
+    font-size: var(--ds-text-display);
+  }
+}

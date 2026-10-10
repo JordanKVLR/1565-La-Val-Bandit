@@ -96,7 +96,7 @@ export function XpPanel({
                   />
                 )}
                 <small class="ov-xp__progress">
-                  {t('xp.progress', { xp: g.xpAfter, max: xpPerLevel, left: xpPerLevel - g.xpAfter })}
+                  {t('overlay.xp.progress', { xp: g.xpAfter, max: xpPerLevel, left: xpPerLevel - g.xpAfter })}
                 </small>
               </div>
               <NewSkillLines names={g.newSkills ?? []} />

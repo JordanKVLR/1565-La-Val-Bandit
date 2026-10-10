@@ -195,7 +195,9 @@ export function BattleScreen({
       }
       if (!confirm) return;
       if (ctl.confirmCursor()) return;
-      if (m.kind === 'xp') ctl.finishXp();
+      // Go! (Enter / Ⓐ) strikes even when the tile cursor is not in use.
+      if (m.kind === 'forecast') ctl.confirmAttack();
+      else if (m.kind === 'xp') ctl.finishXp();
       else if (m.kind === 'closeUp') ctl.finishCloseUp();
       else if (m.kind === 'levelUp') ctl.finishLevelUp();
       else if (m.kind === 'reaction')
@@ -354,6 +356,17 @@ export function BattleScreen({
         {(mode.kind === 'command' || mode.kind === 'move') && panel === 'none' && (
           <ActionMenu ctl={ctl} moving={mode.kind === 'move'} anchor={anchor} />
         )}
+        {/* The technique list and the facing picker open where the action bar stood. */}
+        {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} anchor={anchor} />}
+        {mode.kind === 'facing' && active && (
+          <FacingPicker
+            corners={facingCorners()}
+            current={active.facing}
+            onPick={(f) => ctl.chooseFacing(f)}
+            onCancel={() => ctl.cancel()}
+            anchor={anchor}
+          />
+        )}
       </div>
       {mode.kind === 'move' && mode.pending && (
         <SubModeBar
@@ -363,7 +376,6 @@ export function BattleScreen({
           onConfirm={() => ctl.confirmMove()}
         />
       )}
-      {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
         <SubModeBar
           label={prompt('pickEnemy', {
@@ -388,14 +400,6 @@ export function BattleScreen({
           onDone={() => ctl.finishLevelUp()}
         />
       )}
-      {mode.kind === 'facing' && active && (
-        <FacingPicker
-          corners={facingCorners()}
-          current={active.facing}
-          onPick={(f) => ctl.chooseFacing(f)}
-          onCancel={() => ctl.cancel()}
-        />
-      )}
       {mode.kind === 'forecast' && active && (
         <ForecastPanel
           key={`${mode.targetId}:${mode.attackId}`}
@@ -408,20 +412,16 @@ export function BattleScreen({
         />
       )}
       {mode.kind === 'reaction' && (
-        <div class="reaction-wrap">
-          <div class="reaction-title">
-            {t('battle.reactionTitle', { name: findUnit(state, mode.attackerId)!.name })}
-          </div>
-          <ForecastPanel
-            key={`${mode.attackerId}>${mode.defenderId}`}
-            state={state}
-            attacker={findUnit(state, mode.attackerId)!}
-            defender={findUnit(state, mode.defenderId)!}
-            forecast={mode.forecast}
-            choices={mode.choices}
-            onReact={(r, backAttackId) => ctl.chooseReaction(r, backAttackId)}
-          />
-        </div>
+        <ForecastPanel
+          key={`${mode.attackerId}>${mode.defenderId}`}
+          state={state}
+          attacker={findUnit(state, mode.attackerId)!}
+          defender={findUnit(state, mode.defenderId)!}
+          forecast={mode.forecast}
+          choices={mode.choices}
+          onReact={(r, backAttackId) => ctl.chooseReaction(r, backAttackId)}
+          heading={t('battle.reactionTitle', { name: findUnit(state, mode.attackerId)!.name })}
+        />
       )}
       {mode.kind === 'closeUp' && <CloseUp data={mode.data} onDone={() => ctl.finishCloseUp()} />}
       {panel === 'menu' && (

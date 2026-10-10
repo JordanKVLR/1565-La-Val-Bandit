@@ -1,4 +1,7 @@
+import { useRef } from 'preact/hooks';
 import { t } from '../../i18n';
+import { Button, Hint, Sheet } from '../design';
+import { useSheetScrollCue } from './ScrollArea';
 
 interface Props {
   onResume: () => void;
@@ -8,48 +11,68 @@ interface Props {
   onQuit: () => void;
 }
 
-/** The ☰ menu in battle. Progress is saved automatically, so quitting keeps your place. */
+/**
+ * The battle menu: Resume first (it is also how the menu closes, so the sheet draws no ✕), then
+ * the log, help and settings, and Save & quit. Progress is saved after every action, so quitting
+ * keeps your place and needs no confirmation.
+ */
 export function BattleMenu({ onResume, onLog, onHelp, onSettings, onQuit }: Props) {
   return (
-    <div class="modal" role="dialog" aria-label={t('battle.menu')} onClick={onResume}>
-      <div class="modal-box menu-box" onClick={(e) => e.stopPropagation()}>
-        <h2>{t('common.menu')}</h2>
-        <button type="button" class="btn" data-nav-back onClick={onResume}>
-          {t('common.resume')}
-        </button>
-        <button type="button" class="btn ghost" onClick={onLog}>
-          {t('battle.log')}
-        </button>
-        <button type="button" class="btn ghost" onClick={onHelp}>
-          {t('battle.howToPlay')}
-        </button>
-        <button type="button" class="btn ghost" onClick={onSettings}>
-          {t('common.settings')}
-        </button>
-        <button type="button" class="btn ghost" onClick={onQuit}>
-          {t('battle.saveQuit')}
-        </button>
+    <Sheet
+      label={t('battle.menu')}
+      title={t('common.menu')}
+      closeLabel={t('common.resume')}
+      onClose={onResume}
+      placement="center"
+      size="sm"
+      ornament="cross"
+      class="ov-sheet ov-sheet--noclose ov-menu"
+    >
+      <div class="ov-menu__list">
+        <Button
+          variant="primary"
+          block
+          label={t('common.resume')}
+          keyHint="back"
+          keyContext="menu"
+          navBack
+          onClick={onResume}
+        />
+        <Button block label={t('battle.log')} onClick={onLog} />
+        <Button block label={t('battle.howToPlay')} icon="info" onClick={onHelp} />
+        <Button block label={t('common.settings')} onClick={onSettings} />
+        <Button block variant="ghost" icon="back" label={t('battle.saveQuit')} onClick={onQuit} />
       </div>
-    </div>
+      <Hint class="ov-menu__saved" text={t('overlay.menu.saved')} />
+    </Sheet>
   );
 }
 
+/** The battle log, newest first, in a side sheet over the map. */
 export function LogPanel({ log, onClose }: { log: readonly string[]; onClose: () => void }) {
+  const inner = useRef<HTMLOListElement>(null);
+  useSheetScrollCue(inner);
   return (
-    <div class="modal" role="dialog" aria-label={t('battle.log')} onClick={onClose}>
-      <div class="modal-box log-box" onClick={(e) => e.stopPropagation()}>
-        <h2>{t('battle.log')}</h2>
-        <div class="log-lines">
-          {log.length === 0 ? (
-            <p class="empty">{t('battle.logEmpty')}</p>
-          ) : (
-            [...log].reverse().map((l, i) => <p key={i}>{l}</p>)
-          )}
-        </div>
-        <button type="button" class="btn" data-nav-back onClick={onClose}>
-          {t('common.close')}
-        </button>
-      </div>
-    </div>
+    <Sheet
+      label={t('battle.log')}
+      closeLabel={t('common.close')}
+      onClose={onClose}
+      placement="side"
+      size="md"
+      class="ov-sheet ov-log"
+    >
+      {log.length === 0 ? (
+        <p class="ov-log__empty">{t('battle.logEmpty')}</p>
+      ) : (
+        <ol class="ov-log__lines" ref={inner}>
+          {[...log].reverse().map((l, i) => (
+            <li key={log.length - i} class={i === 0 ? 'is-latest' : undefined}>
+              {i === 0 && <span class="ov-log__latest">{t('overlay.log.latest')}</span>}
+              {l}
+            </li>
+          ))}
+        </ol>
+      )}
+    </Sheet>
   );
 }

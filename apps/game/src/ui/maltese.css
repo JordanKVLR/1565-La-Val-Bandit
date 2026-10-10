@@ -48,14 +48,13 @@
 }
 
 /* ── Gallarija: command lists and menus ─────────────────────────────────── */
-/* Already absolutely placed: .action-menu, .vb-commands. The rest become the anchor here. */
+/* Already absolutely placed: .action-menu. The rest become the anchor here. */
 .gallarija,
 .title-menu {
   position: relative;
 }
 .gallarija,
-.title-menu,
-.vb-commands {
+.title-menu {
   background:
     repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 22px),
     repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 6px),
@@ -68,8 +67,7 @@
 }
 /* The moulded cornice sits a little wider than the balcony... */
 .gallarija::before,
-.title-menu::before,
-.vb-commands::before {
+.title-menu::before {
   content: '';
   position: absolute;
   left: -6px;
@@ -83,8 +81,7 @@
 }
 /* ...and carved limestone corbels hold it up. */
 .gallarija::after,
-.title-menu::after,
-.vb-commands::after {
+.title-menu::after {
   content: '';
   position: absolute;
   left: 0;
@@ -98,33 +95,12 @@
 .title-menu {
   padding: 12px;
 }
-.vb-commands {
-  bottom: max(26px, calc(env(safe-area-inset-bottom) + 24px));
-  /* No scrolling: it would clip the cornice and corbels. The list is laid out to fit. */
-  max-height: none;
-  overflow: visible;
-}
-.vb-cmd.on {
-  color: #ffe08a;
-  background: linear-gradient(90deg, rgba(227, 178, 60, 0.3), transparent);
-}
-.vb-cmd.on::before {
-  content: '';
-  width: 18px;
-  height: 18px;
-  margin-right: -2px;
-  flex: none;
-  align-self: center;
-  background: var(--mt-cross-gold) center / contain no-repeat;
-}
 
 /* ── Bizzilla lace edging on framed panels ──────────────────────────────── */
 /* .dialogue is absolutely placed already, which anchors its lace too. */
-.vb-panel,
 .modal-box {
   position: relative;
 }
-.vb-panel::before,
 .modal-box::before,
 .dialogue::before {
   content: '';
@@ -137,13 +113,6 @@
   background-size: 54px 12px;
   opacity: 0.85;
   pointer-events: none;
-}
-.vb-panel {
-  background: linear-gradient(rgba(14, 22, 36, 0.97), rgba(10, 14, 24, 0.97));
-  border-color: var(--mt-cream);
-}
-.vb-side-top {
-  padding-top: 9px;
 }
 .modal-box {
   max-height: calc(100 * var(--dvh) - 24px);
@@ -282,35 +251,6 @@
   }
 }
 
-/* Short phone screens: the reaction list becomes two columns under a full-width Go!, so all
-   six choices fit, and the two panels make room for it. */
-@media (max-height: 520px) {
-  .vb-forecast.react .vb-commands {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: min(330px, 42 * var(--vw));
-  }
-  .vb-forecast.react .vb-cmd.go {
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
-  .vb-forecast.react .vb-cmd {
-    padding: 0 8px;
-    font-size: 1.2rem;
-  }
-  .vb-forecast.react .vb-cmd small.why {
-    display: none;
-  }
-  .vb-forecast.react .vb-sides {
-    right: calc(max(12px, env(safe-area-inset-right)) + min(330px, 42 * var(--vw)) + 10px);
-  }
-  .vb-forecast.react .vb-side-top .portrait {
-    width: 44px;
-    height: 44px;
-    font-size: 1.3rem;
-  }
-}
-
 /* Legibility over the tiles. */
 .build-note,
 .tap-hint {
@@ -319,43 +259,8 @@
   text-shadow: 0 1px 2px #000;
 }
 /* Inscriptional capitals read best a touch smaller and spaced. */
-.vb-cmd,
-.vb-name,
-.battle-screen .modal-box h2,
-.am-name,
-.reaction-title {
+.battle-screen .modal-box h2 {
   letter-spacing: 0.03em;
-}
-.vb-cmd {
-  font-size: 1.2rem;
-  font-weight: 700;
-}
-
-/* On short phones the reaction list shows each reason small under its name. */
-@media (max-height: 520px) {
-  .vb-forecast.react .vb-cmd:not(.go) {
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 1px;
-    font-size: 1.02rem;
-  }
-  .vb-forecast.react .vb-cmd small.why {
-    display: block;
-    max-width: none;
-    text-align: left;
-    font-size: 0.62rem;
-  }
-  .vb-forecast.react .vb-cmd.on::before {
-    position: absolute;
-    left: 2px;
-    width: 12px;
-    height: 12px;
-  }
-  .vb-forecast.react .vb-cmd {
-    position: relative;
-    padding-left: 16px;
-  }
 }
 @media (min-height: 600px) {
   .objective {

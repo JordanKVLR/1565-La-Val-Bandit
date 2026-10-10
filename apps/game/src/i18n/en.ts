@@ -361,8 +361,6 @@ export const en = {
 
   // ── Battle overlays: technique list, forecast, reactions, dialogs ──────────────────
   'overlay.attack.heading': 'Techniques',
-  /** The unit's weapon and AP left, under the technique list's heading. */
-  'overlay.attack.sub': '{weapon} · {ap} AP left',
   'overlay.tech.more': 'About {name}',
   'overlay.num.pow': 'POW',
   'overlay.num.range': 'RNG',
@@ -392,6 +390,7 @@ export const en = {
   'overlay.end.defeatLine': 'The line has broken.',
   'overlay.end.giveUpConfirm': 'Give up? Press again',
   'overlay.log.latest': 'Latest',
+  'overlay.xp.progress': '{xp}/{max} XP · {left} to next level',
 
   // ── Unit card and details sheet ─────────────────────────────────────────────────────
   'unit.detailsFor': 'Details for {name}',

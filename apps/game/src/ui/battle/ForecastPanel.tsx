@@ -85,11 +85,15 @@ function SideColumn({
       <dl class="ov-odds">
         <div class="ov-odd ov-odd--hit">
           <dt>{t('stat.hit')}</dt>
-          <dd>{side.hit === null ? '—' : pct(side.hit)}</dd>
+          <dd class={side.hit === null ? 'is-none' : undefined}>
+            {side.hit === null ? '—' : pct(side.hit)}
+          </dd>
         </div>
         <div class="ov-odd">
           <dt>{t('stat.dmg')}</dt>
-          <dd>{side.damage === null ? '—' : times(side.damage, side.hits)}</dd>
+          <dd class={side.damage === null ? 'is-none' : undefined}>
+            {side.damage === null ? '—' : times(side.damage, side.hits)}
+          </dd>
         </div>
       </dl>
       <div class="ov-side__meters" title={t('overlay.forecast.ifHit')}>
@@ -279,7 +283,6 @@ export function ForecastPanel({
                 size="sm"
                 icon="back"
                 label={t('common.back')}
-                keyHint="back"
                 block
                 onClick={() => setPickingBack(false)}
               />
