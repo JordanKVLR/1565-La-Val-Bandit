@@ -59,7 +59,7 @@ function foot(lib: Library, e: ShelfEntry, mode: Mode) {
     return (
       <span class="ic-price">
         <CoinGlyph />
-        {e.sellPrice ?? 0}
+        {t('shelf.sellPrice', { n: e.sellPrice ?? 0 })}
       </span>
     );
   switch (e.source) {

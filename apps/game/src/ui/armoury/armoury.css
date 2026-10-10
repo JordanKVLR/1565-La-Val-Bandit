@@ -1085,16 +1085,6 @@
   flex-direction: column;
   min-width: 0;
 }
-.tr-pilot__id strong {
-  overflow: hidden;
-  font-family: var(--ds-font-display);
-  font-size: var(--ds-text-md);
-  font-weight: var(--ds-weight-bold);
-  letter-spacing: var(--ds-track-caps);
-  line-height: var(--ds-leading-tight);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 .tr-pilot__lv {
   font-size: var(--ds-text-2xs);
   font-weight: var(--ds-weight-bold);

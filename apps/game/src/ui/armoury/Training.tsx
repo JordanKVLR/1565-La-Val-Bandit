@@ -44,6 +44,7 @@ export function TrainingSheet({
   return (
     <Sheet
       label={t('armoury.training')}
+      title={t('armoury.trainingTitle', { name })}
       closeLabel={t('common.close')}
       onClose={onClose}
       placement="center"
@@ -81,7 +82,6 @@ export function TrainingSheet({
             )}
             <PilotFace lib={lib} entry={entry} />
             <div class="tr-pilot__id">
-              <strong>{name}</strong>
               <span class="tr-pilot__lv">{t('unit.lvUpper', { n: entry.level })}</span>
             </div>
             {points > 0 ? (
