@@ -349,9 +349,9 @@ Prologue ─ Act I: St Elmo (secret revealed) ─┬─ Route A "Cross"     embr
   Maltese limestone, garigue scrub, terraced fields, sea.
 - **Sprites:** 2 drawn facings (front-¾, back-¾), mirrored to make 4. Atlas-packed.
   Idle/walk/attack/hit/KO.
-- **UI:** a DOM overlay for crisp text, accessibility and i18n, styled with a 16th-century
-  printed-page / illuminated look (blackletter headings, parchment panels).
-  Portrait dialogue box at the bottom.
+- **UI:** a DOM overlay for crisp text, accessibility and i18n, drawn with one design system:
+  dark translucent glass over the map, gold hairlines, Cinzel headings, Alegreya Sans body
+  (`docs/DESIGN.md`, ADR 0013). Portrait dialogue box at the bottom.
 - **Audio:** two recorded, looping tracks: _Gentle Piano_ outside battle and _Thunderous
   Charge_ in battle, crossfading, streamed then cached (ADR 0004). Sound effects are
   synthesised; generated Maltese-folk themes are the fallback if a track can't load.
@@ -559,7 +559,11 @@ Status (2026-09-30): M0–M7 complete. The whole campaign is playable on web and
 
 ## 12. Visual theme
 
-The interface is framed in Maltese motifs (see `apps/game/src/ui/maltese.css`):
+The interface is moving to the dark-glass design system in `docs/DESIGN.md` (ADR 0013): calm,
+map-first, one gold accent, hairlines instead of frames. The Maltese motifs below survive only
+as restraint (a cross on a divider, a faint madum ground behind a full-screen page) and their
+frames are removed screen by screen. Until a screen is converted it is framed in Maltese motifs
+(see `apps/game/src/ui/maltese.css`):
 
 - **Madum:** the patterned cement floor tile, behind full-screen pages.
 - **Bizzilla:** lace edging along panel tops and dividers.

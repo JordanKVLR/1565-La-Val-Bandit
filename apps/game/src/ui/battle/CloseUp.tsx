@@ -5,6 +5,7 @@ import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
 import { settings } from '../../state/settings';
 import { t } from '../../i18n';
 import { usePrompt } from '../KeyHint';
+import { Meter, SideMark } from '../design';
 
 interface Props {
   data: CloseUpData;
@@ -20,7 +21,8 @@ interface Popup {
 
 /**
  * Cinematic duel: a 3D stage with both pilots as stick figures, animated by the attack style
- * and the defender's reaction. Tap anywhere to skip.
+ * and the defender's reaction. Glass name plates with HP meters frame the top, the technique in
+ * play sits between them, and the numbers rise over the fighters. Tap anywhere to skip.
  */
 export function CloseUp({ data, onDone }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -112,20 +114,25 @@ export function CloseUp({ data, onDone }: Props) {
     };
   }, [data]);
 
-  const bar = (s: CloseUpSide) => {
+  const plate = (s: CloseUpSide, at: 'left' | 'right') => {
     const now = hp[s.id] ?? s.hpBefore;
     return (
-      <div class="cu-status">
-        <strong>{s.name}</strong>
-        <div class="cu-hp">
-          <span style={{ width: `${(now / s.maxHp) * 100}%` }} />
+      <div class={`cu-plate cu-plate--${at}`}>
+        <div class="cu-plate__id">
+          <SideMark side={s.side} label={t(`unit.side.${s.side}`)} />
+          <strong class="cu-plate__name">{s.name}</strong>
+          <span class="cu-plate__weapon">{s.weapon}</span>
         </div>
-        <span class="cu-hp-num">
-          {now}/{s.maxHp}
-        </span>
+        <Meter label={t('stat.hp')} kind="hp" value={now} max={s.maxHp} class="cu-plate__hp" />
       </div>
     );
   };
+  const speaker = (s: CloseUpSide) => (
+    <div class={`bhud-avatar cu-avatar side-${s.side}`} aria-hidden="true">
+      <div class={`portrait portrait-${s.side}`}>{s.initial}</div>
+      <SideMark side={s.side} />
+    </div>
+  );
 
   return (
     <div
@@ -138,27 +145,27 @@ export function CloseUp({ data, onDone }: Props) {
       <div class="cu-stage">
         <canvas ref={canvasRef} class="cu-canvas" aria-hidden="true" />
         <div class="cu-top">
-          {bar(data.left)}
+          {plate(data.left, 'left')}
           <div class="cu-attack">{title}</div>
-          {bar(data.right)}
+          {plate(data.right, 'right')}
         </div>
         {popups.map((p) => (
           <div key={p.key} class={`cu-pop ${p.side} ${p.kind}`}>
             {p.text}
           </div>
         ))}
+        <p class="cu-skip">{prompt('skip')}</p>
       </div>
       <div class="cu-lines">
         <div class={`cu-line ${data.left.side}`}>
-          <div class={`portrait portrait-${data.left.side}`}>{data.left.initial}</div>
-          <p>{lines.left}</p>
+          {speaker(data.left)}
+          <p class={lines.left ? 'is-speaking' : ''}>{lines.left}</p>
         </div>
         <div class={`cu-line right ${data.right.side}`}>
-          <p>{lines.right}</p>
-          <div class={`portrait portrait-${data.right.side}`}>{data.right.initial}</div>
+          <p class={lines.right ? 'is-speaking' : ''}>{lines.right}</p>
+          {speaker(data.right)}
         </div>
       </div>
-      <div class="cu-skip">{prompt('skip')}</div>
     </div>
   );
 }

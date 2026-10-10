@@ -1,55 +1,121 @@
 import { attackFpCost } from '@m1565/core';
+import { useRef, useState } from 'preact/hooks';
 import type { BattleController } from '../../scenes/BattleController';
 import { t } from '../../i18n';
-import { attackStats, techniqueEffects } from './attackText';
-import { KeyHint } from '../KeyHint';
+import type { AnchorSource } from '../design';
+import { Button, Divider, Icon, PHONE_QUERY, useAnchor, useMediaQuery } from '../design';
+import { anchorInsets } from './anchoring';
+import { ScrollArea } from './ScrollArea';
+import { TechniqueEffects, techniqueEffects, TechniqueNumbers } from './TechniqueCard';
 
-/** The active unit's learned techniques; locked ones stay hidden until unlocked. */
-export function AttackMenu({ ctl }: { ctl: BattleController }) {
+/**
+ * The active unit's learned techniques (locked ones stay hidden until unlocked), in the place
+ * the action bar stood: beside the unit on wide screens, docked bottom right on phones. Each row
+ * gives the name and every number; the description is one tap away (ⓘ). A technique that can't
+ * be used says why.
+ */
+export function AttackMenu({
+  ctl,
+  anchor,
+}: {
+  ctl: BattleController;
+  /** Where the active unit is on screen; without it the list docks like on a phone. */
+  anchor?: AnchorSource | null;
+}) {
+  const panel = useRef<HTMLElement>(null);
+  const docked = useMediaQuery(PHONE_QUERY) || !anchor;
+  useAnchor(panel, anchor ?? null, !docked, anchorInsets, { gap: 48, lift: 28 });
+  const [open, setOpen] = useState<string | null>(null);
   const unit = ctl.active();
   if (!unit) return null;
   // Only techniques the pilot has learned are listed; discovering new ones is part of the game.
   const options = ctl.attackOptions().filter((o) => o.unlocked);
   return (
-    <div class="attack-menu" role="dialog" aria-label={t('attackMenu.label')}>
-      <header class="am-head">
-        <strong>{unit.name}</strong>
-        <span>{t('attackMenu.ap', { ap: unit.ap, weapon: unit.weapon.name })}</span>
-        <button type="button" class="btn ghost" onClick={() => ctl.cancel()}>
-          {t('common.back')} <KeyHint action="back" />
-        </button>
+    <section
+      ref={panel}
+      class={`ds-panel ds-elev-2 ds-outlined ov-panel ov-attack${docked ? ' is-docked' : ''}`}
+      role="dialog"
+      aria-label={t('attackMenu.label')}
+    >
+      <header class="ov-head">
+        <div class="ov-head__text">
+          <h2 class="ov-title">{t('overlay.attack.heading')}</h2>
+          <span class="ov-sub">
+            {t('attackMenu.ap', { ap: unit.ap, weapon: unit.weapon.name })}
+          </span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon="back"
+          label={t('common.back')}
+          keyHint="back"
+          navBack
+          onClick={() => ctl.cancel()}
+        />
       </header>
-      <ul class="am-list">
-        {options.map(({ attack, affordable, targets }) => {
-          const usable = affordable && targets.length > 0;
-          const reason = !affordable
-            ? t('attackMenu.noAp')
-            : !targets.length
-              ? t('attackMenu.noTarget')
-              : '';
-          return (
-            <li key={attack.id}>
-              <button
-                type="button"
-                class="am-item"
-                disabled={!usable}
-                data-nav-default={usable || undefined}
-                onClick={() => ctl.chooseTechnique(attack.id)}
-              >
-                <span class="am-name">{attack.name}</span>
-                <span class="am-stats">
-                  {attackStats(attack, unit.weapon, attackFpCost(ctl.state, unit, attack))}
-                </span>
-                {attack.description && <span class="am-desc">{attack.description}</span>}
-                {techniqueEffects(attack).length > 0 && (
-                  <span class="am-tags">{techniqueEffects(attack).join(t('common.sep'))}</span>
+      <Divider class="ov-rule" />
+      <ScrollArea class="ov-attack__scroll">
+        <ul class="ov-techs">
+          {options.map(({ attack, affordable, targets }) => {
+            const usable = affordable && targets.length > 0;
+            const reason = !affordable
+              ? t('attackMenu.noAp')
+              : !targets.length
+                ? t('attackMenu.noTarget')
+                : '';
+            const expanded = open === attack.id;
+            const moreId = `tech-more-${attack.id}`;
+            const hasMore = !!attack.description || techniqueEffects(attack).length > 0;
+            return (
+              <li key={attack.id} class={`ov-tech${expanded ? ' is-open' : ''}`}>
+                <div class="ov-tech__row">
+                  <button
+                    type="button"
+                    class="am-item"
+                    disabled={!usable}
+                    data-nav-default={usable || undefined}
+                    onClick={() => ctl.chooseTechnique(attack.id)}
+                  >
+                    <span class="am-name">{attack.name}</span>
+                    <TechniqueNumbers
+                      attack={attack}
+                      weapon={unit.weapon}
+                      fpCost={attackFpCost(ctl.state, unit, attack)}
+                      inline
+                    />
+                    {reason && (
+                      <span class="am-reason">
+                        <Icon name="warning" class="am-reason__icon" />
+                        {reason}
+                      </span>
+                    )}
+                  </button>
+                  {hasMore && (
+                    <Button
+                      class="ov-tech__info"
+                      variant="ghost"
+                      size="sm"
+                      icon="info"
+                      iconOnly
+                      label={t('overlay.tech.more', { name: attack.name })}
+                      aria-expanded={expanded}
+                      aria-controls={moreId}
+                      onClick={() => setOpen(expanded ? null : attack.id)}
+                    />
+                  )}
+                </div>
+                {expanded && (
+                  <div class="ov-tech__more" id={moreId}>
+                    {attack.description && <p class="ov-tc__desc">{attack.description}</p>}
+                    <TechniqueEffects attack={attack} />
+                  </div>
                 )}
-                {reason && <span class="am-reason">{reason}</span>}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+              </li>
+            );
+          })}
+        </ul>
+      </ScrollArea>
+    </section>
   );
 }

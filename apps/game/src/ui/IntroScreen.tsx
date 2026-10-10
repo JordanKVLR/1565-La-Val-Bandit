@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { music } from '../platform/audio';
 import { settings } from '../state/settings';
 import { t } from '../i18n';
+import { Button, Icon } from './design';
 import { usePrompt } from './KeyHint';
 import { introFinished, introScale, introTime, introVolume } from './intro';
 
@@ -124,15 +125,26 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
   return (
     <div class="intro-screen" role="region" aria-label={t('intro.title')}>
       <iframe ref={frame} src={src} title={t('intro.title')} tabIndex={-1} />
-      {!loaded && <p class="intro-loading">{t('common.loading')}</p>}
+      {!loaded && (
+        <p class="intro-loading" role="status">
+          <Icon name="cross" class="intro-loading__mark" />
+          {t('common.loading')}
+        </p>
+      )}
       {loaded && blocked && (
         <button type="button" class="intro-begin" onClick={() => unblock.current()}>
-          {prompt('begin')}
+          <span class="intro-begin__text">{prompt('begin')}</span>
         </button>
       )}
-      <button type="button" class="btn ghost intro-skip" onClick={finish}>
-        {t('common.skip')}
-      </button>
+      <Button
+        class="intro-skip"
+        variant="ghost"
+        label={t('common.skip')}
+        icon="chevronRight"
+        keyHint="back"
+        keyContext="menu"
+        onClick={finish}
+      />
     </div>
   );
 }

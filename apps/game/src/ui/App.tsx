@@ -50,6 +50,16 @@ function debugArmoury(): boolean {
   }
 }
 
+/** `?results` or `?end` opens that screen with a demo company (for testing and design). */
+function debugScreen(): 'results' | 'end' | null {
+  try {
+    const q = new URLSearchParams(location.search);
+    return q.has('results') ? 'results' : q.has('end') ? 'end' : null;
+  } catch {
+    return null;
+  }
+}
+
 function SessionView({ session, onTitle }: { session: GameSession; onTitle: () => void }) {
   const lib = useMemo(() => loadLibrary(), []);
   const view = useStore(session.view);
@@ -106,9 +116,11 @@ function SessionView({ session, onTitle }: { session: GameSession; onTitle: () =
 export function App() {
   const lib = useMemo(() => loadLibrary(), []);
   const [session, setSession] = useState<GameSession | null>(() => {
-    if (!debugArmoury()) return null;
+    const demoScreen = debugScreen();
+    if (!debugArmoury() && !demoScreen) return null;
     const demo = new GameSession(lib);
-    demo.openArmouryDemo();
+    if (demoScreen) demo.openScreenDemo(demoScreen);
+    else demo.openArmouryDemo();
     return demo;
   });
   const [debugBattle, setDebugBattle] = useState(debugBattleId);

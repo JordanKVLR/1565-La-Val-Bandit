@@ -21,9 +21,12 @@ import { settings } from '../state/settings';
 import { LevelUpPanel } from './battle/LevelUpPanel';
 import { XpPanel } from './battle/XpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
-import { describeObjectives, terrainLabel } from './battle/objectives';
+import { terrainLabel } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
+import { BattleBrief, MapControls, RoundBanner, Toasts } from './battle/BattleChrome';
 import { usePrompt } from './KeyHint';
+import type { AnchorSource } from './design';
+import { Chip, PHONE_QUERY, useMediaQuery } from './design';
 
 interface Props {
   setup: BattleSetup;
@@ -74,6 +77,8 @@ export function BattleScreen({
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewRef = useRef<BattleView | null>(null);
+  // The renderer as state too, so pieces pinned to the map (the action bar) re-render once it exists.
+  const [view, setView] = useState<BattleView | null>(null);
   const ctl = useMemo(
     () => new BattleController(setup, lib, undefined, initial),
     [setup, lib, initial],
@@ -83,6 +88,7 @@ export function BattleScreen({
   const [panel, setPanel] = useState<Panel>('none');
   const close = () => setPanel('none');
   const prompt = usePrompt();
+  const phone = useMediaQuery(PHONE_QUERY);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -92,6 +98,7 @@ export function BattleScreen({
       onCancel: () => ctl.cancel(),
     });
     viewRef.current = view;
+    setView(view);
     view.setHighContrast(settings.get().highContrast);
     const unsubscribe = settings.subscribe(() => view.setHighContrast(settings.get().highContrast));
     ctl.attach(view);
@@ -100,6 +107,7 @@ export function BattleScreen({
       unsubscribe();
       ctl.dispose();
       view.dispose();
+      setView(null);
       delete window.__battle;
     };
     // Runs once per controller: the map never changes mid-battle, and state flows through ctl.
@@ -189,7 +197,9 @@ export function BattleScreen({
       }
       if (!confirm) return;
       if (ctl.confirmCursor()) return;
-      if (m.kind === 'xp') ctl.finishXp();
+      // Go! (Enter / Ⓐ) strikes even when the tile cursor is not in use.
+      if (m.kind === 'forecast') ctl.confirmAttack();
+      else if (m.kind === 'xp') ctl.finishXp();
       else if (m.kind === 'closeUp') ctl.finishCloseUp();
       else if (m.kind === 'levelUp') ctl.finishLevelUp();
       else if (m.kind === 'reaction')
@@ -209,6 +219,8 @@ export function BattleScreen({
   }, [state]);
 
   const active = ctl.active();
+  // The forecast and the reaction prompt take the whole screen's attention: the chrome steps back.
+  const inDuel = mode.kind === 'forecast' || mode.kind === 'reaction';
   const tile = inspected && getTile(state.map, inspected);
   const terrain = inspected && terrainAt(state, inspected);
   const inspectedUnit = inspected && unitAt(state, inspected);
@@ -225,6 +237,34 @@ export function BattleScreen({
     }
     return undefined;
   })();
+  // The action bar stands beside the active unit and follows the camera (ui/design/useAnchor).
+  const anchor = useMemo<AnchorSource | null>(
+    () =>
+      view && {
+        point: () => {
+          const unit = ctl.active();
+          return unit ? view.tileScreenPosition(unit.pos) : null;
+        },
+        subscribe: (onChange) => view.onFrame(onChange),
+        // The other units (where they stand, above their tiles) stay uncovered when possible.
+        avoid: () => {
+          const id = ctl.active()?.id;
+          return ctl.state.units
+            .filter((u) => !u.defeated && u.id !== id)
+            .map((u) => {
+              const p = view.tileScreenPosition(u.pos);
+              return { x: p.x, y: p.y - 24 };
+            });
+        },
+      },
+    [view, ctl],
+  );
+  // The tapped unit's card, unless it is the unit being planned (its own card shows that).
+  const showInspected =
+    !!inspectedUnit &&
+    !BUSY_MODES.includes(mode.kind) &&
+    !(planning && inspectedUnit.id === active?.id);
+  // Phones show one card at a time, the tapped unit's first, so the map keeps its height.
   const [detailsFor, setDetailsFor] = useState<string | null>(null);
   const detailsUnit = detailsFor ? findUnit(state, detailsFor) : undefined;
 
@@ -240,75 +280,28 @@ export function BattleScreen({
     <main class="battle-screen">
       <canvas ref={canvasRef} class="battle-canvas" aria-label={t('battle.mapLabel', { title })} />
 
-      <header class="hud-top" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
-        <div class="map-name">{title}</div>
-        {active && state.outcome === 'ongoing' && (
-          <div class="turn-banner" data-testid="turn-banner">
-            {t('battle.turnBanner', { round: state.round, name: active.name })}
-          </div>
-        )}
-        {state.outcome === 'ongoing' && (
-          <div class="objective" data-testid="objective">
-            <span>{t('battle.win', { objectives: describeObjectives(state).win })}</span>
-            <span class="lose">
-              {t('battle.lose', { conditions: describeObjectives(state).lose })}
-            </span>
-          </div>
-        )}
-      </header>
+      <BattleBrief title={title} state={state} active={active} hidden={inDuel} />
       {!BUSY_MODES.includes(mode.kind) && <TurnQueue state={state} />}
-
-      <div class="hud-controls" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
-        <button
-          type="button"
-          class="btn icon pointer-only"
-          aria-label={t('battle.rotateLeft')}
-          onClick={() => viewRef.current?.rotate(-1)}
-        >
-          ⟲
-        </button>
-        <button
-          type="button"
-          class="btn icon pointer-only"
-          aria-label={t('battle.rotateRight')}
-          onClick={() => viewRef.current?.rotate(1)}
-        >
-          ⟳
-        </button>
-        <button
-          type="button"
-          class="btn icon"
-          aria-label={t('common.menu')}
-          onClick={() => setPanel('menu')}
-        >
-          ☰
-        </button>
-      </div>
-
-      {notices.length > 0 && (
-        <div class="notices" role="status">
-          {notices.map((n) => (
-            <div class="notice" key={n.id}>
-              {n.text}
-            </div>
-          ))}
-        </div>
-      )}
+      <MapControls
+        hidden={inDuel}
+        onRotate={(d) => viewRef.current?.rotate(d)}
+        onMenu={() => setPanel('menu')}
+      />
+      <RoundBanner round={state.round} enabled={state.outcome === 'ongoing'} />
+      <Toasts notices={notices} />
 
       <div class="hud-bottom-left">
-        {inspectedUnit &&
-          !BUSY_MODES.includes(mode.kind) &&
-          !(planning && inspectedUnit.id === active?.id) && (
-            <UnitCard
-              unit={inspectedUnit}
-              state={state}
-              onDetails={() => {
-                setDetailsFor(inspectedUnit.id);
-                setPanel('unit');
-              }}
-            />
-          )}
-        {planning && active && (
+        {showInspected && (
+          <UnitCard
+            unit={inspectedUnit}
+            state={state}
+            onDetails={() => {
+              setDetailsFor(inspectedUnit.id);
+              setPanel('unit');
+            }}
+          />
+        )}
+        {planning && active && !(phone && showInspected) && (
           <UnitCard
             unit={active}
             state={state}
@@ -321,15 +314,35 @@ export function BattleScreen({
           />
         )}
         {tile && terrain && (
-          <div class="terrain-label" data-testid="terrain-label">
-            {terrainLabel(tile.height, terrain)}
-          </div>
+          <Chip
+            class="bhud-terrain"
+            icon={null}
+            testId="terrain-label"
+            label={terrainLabel(tile.height, terrain)}
+          />
         )}
       </div>
 
-      {(mode.kind === 'command' || mode.kind === 'move') && panel === 'none' && (
-        <ActionMenu ctl={ctl} moving={mode.kind === 'move'} />
-      )}
+      {/* Covers the map exactly (in TV mode too), so map positions are layer positions. */}
+      <div class="bhud-layer">
+        {(mode.kind === 'command' || mode.kind === 'move') &&
+          panel === 'none' &&
+          // On a phone the route prompt takes the docked bar's place, so the map stays clear.
+          !(phone && mode.kind === 'move' && mode.pending) && (
+            <ActionMenu ctl={ctl} moving={mode.kind === 'move'} anchor={anchor} />
+          )}
+        {/* The technique list and the facing picker open where the action bar stood. */}
+        {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} anchor={anchor} />}
+        {mode.kind === 'facing' && active && (
+          <FacingPicker
+            corners={facingCorners()}
+            current={active.facing}
+            onPick={(f) => ctl.chooseFacing(f)}
+            onCancel={() => ctl.cancel()}
+            anchor={anchor}
+          />
+        )}
+      </div>
       {mode.kind === 'move' && mode.pending && (
         <SubModeBar
           label={prompt('moveAgain', { cost: mode.pending.cost })}
@@ -338,7 +351,6 @@ export function BattleScreen({
           onConfirm={() => ctl.confirmMove()}
         />
       )}
-      {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} />}
       {mode.kind === 'target' && (
         <SubModeBar
           label={prompt('pickEnemy', {
@@ -363,14 +375,6 @@ export function BattleScreen({
           onDone={() => ctl.finishLevelUp()}
         />
       )}
-      {mode.kind === 'facing' && active && (
-        <FacingPicker
-          corners={facingCorners()}
-          current={active.facing}
-          onPick={(f) => ctl.chooseFacing(f)}
-          onCancel={() => ctl.cancel()}
-        />
-      )}
       {mode.kind === 'forecast' && active && (
         <ForecastPanel
           key={`${mode.targetId}:${mode.attackId}`}
@@ -383,20 +387,16 @@ export function BattleScreen({
         />
       )}
       {mode.kind === 'reaction' && (
-        <div class="reaction-wrap">
-          <div class="reaction-title">
-            {t('battle.reactionTitle', { name: findUnit(state, mode.attackerId)!.name })}
-          </div>
-          <ForecastPanel
-            key={`${mode.attackerId}>${mode.defenderId}`}
-            state={state}
-            attacker={findUnit(state, mode.attackerId)!}
-            defender={findUnit(state, mode.defenderId)!}
-            forecast={mode.forecast}
-            choices={mode.choices}
-            onReact={(r, backAttackId) => ctl.chooseReaction(r, backAttackId)}
-          />
-        </div>
+        <ForecastPanel
+          key={`${mode.attackerId}>${mode.defenderId}`}
+          state={state}
+          attacker={findUnit(state, mode.attackerId)!}
+          defender={findUnit(state, mode.defenderId)!}
+          forecast={mode.forecast}
+          choices={mode.choices}
+          onReact={(r, backAttackId) => ctl.chooseReaction(r, backAttackId)}
+          heading={t('battle.reactionTitle', { name: findUnit(state, mode.attackerId)!.name })}
+        />
       )}
       {mode.kind === 'closeUp' && <CloseUp data={mode.data} onDone={() => ctl.finishCloseUp()} />}
       {panel === 'menu' && (

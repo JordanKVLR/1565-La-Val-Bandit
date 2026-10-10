@@ -71,10 +71,8 @@ test('title: scaled-up menu inside the safe area, readable from the sofa', async
   await page.getByRole('button', { name: 'Settings' }).click();
   const tvChoice = page.getByTestId('display-tv');
   await expect(tvChoice).toHaveAttribute('aria-pressed', 'true');
-  await expectInSafeArea(
-    page,
-    page.getByRole('dialog', { name: 'Settings' }).locator('.modal-box'),
-  );
+  // The design-system Sheet puts role="dialog" on the visible panel itself (no .modal-box).
+  await expectInSafeArea(page, page.getByRole('dialog', { name: 'Settings' }));
   await page.getByTestId('display-handheld').click();
   await expect(page.locator('html')).toHaveAttribute('data-display', 'handheld');
   await page.getByTestId('display-tv').click();

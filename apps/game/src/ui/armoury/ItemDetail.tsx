@@ -5,11 +5,13 @@ import { equipped } from '../../campaign/inventory';
 import { t, tParts } from '../../i18n';
 import { rangeText } from '../battle/attackText';
 import { STAT_INFO } from '../battle/statInfo';
+import { Button, Chip, Divider, Hint, Icon, Panel, Stat, StatGrid } from '../design';
 import { usePrompt } from '../KeyHint';
+import { Padlock } from '../SkillList';
 import { ItemIcon } from './ItemIcon';
 import type { Action, ActionId, Mode, ShelfEntry } from './model';
 import { actionsFor, iconVariant, itemDescription, itemName, nameOf, previewFor } from './model';
-import { StatDelta, TierBadge } from './parts';
+import { ArmourerEmblem, StatDelta, TierBadge } from './parts';
 
 function subLine(lib: Library, e: ShelfEntry): string {
   const sep = t('common.sep');
@@ -35,7 +37,10 @@ function subLine(lib: Library, e: ShelfEntry): string {
   return t(`item.kind.${e.kind}`);
 }
 
-/** Before → after for the pilot: changed rows as bars, the rest summed up in one line. */
+/**
+ * Before → after for the pilot: the changed numbers as meters (gain hatched, loss cut out,
+ * ▲/▼ with the difference), techniques learned or lost as chips, the rest summed up in a line.
+ */
 function Comparison({
   lib,
   before,
@@ -85,45 +90,59 @@ function Comparison({
   const lost = before.techniques.filter((name) => !after.techniques.includes(name));
   return (
     <div class="cmp-block">
-      {changed.length === 0 && <p class="cmp-none">{t('armoury.noChange')}</p>}
-      {changed.map((r) => (
-        <StatDelta
-          key={r.id}
-          id={r.id}
-          label={r.label}
-          before={r.a}
-          after={r.b}
-          max={Math.round(r.max)}
-        />
-      ))}
+      {changed.length === 0 && <Hint class="cmp-none" text={t('armoury.noChange')} />}
+      {changed.length > 0 && (
+        <div class="cmp-rows">
+          {changed.map((r) => (
+            <StatDelta
+              key={r.id}
+              id={r.id}
+              label={r.label}
+              before={r.a}
+              after={r.b}
+              max={Math.round(r.max)}
+            />
+          ))}
+        </div>
+      )}
       {before.reach !== after.reach && (
-        <p class="cmp-reach">
+        <p class="cmp-line">
           {tParts('armoury.reach', { before: before.reach, after: <b>{after.reach}</b> })}
         </p>
       )}
       {gained.length > 0 && (
         <p class="cmp-tech gained" data-testid="technique-gained">
-          <span class="ct-h">{t('armoury.learns')}</span>
+          <span class="ar-label">{t('armoury.learns')}</span>
           {gained.map((name) => (
-            <b key={name}>+ {name}</b>
+            <Chip key={name} tone="gold" icon="plus" label={name} />
           ))}
         </p>
       )}
       {lost.length > 0 && (
         <p class="cmp-tech lost" data-testid="technique-lost">
-          <span class="ct-h">{t('armoury.loses')}</span>
+          <span class="ar-label">{t('armoury.loses')}</span>
           {lost.map((name) => (
-            <s key={name}>− {name}</s>
+            <Chip key={name} icon={null} class="is-lost">
+              <s>− {name}</s>
+            </Chip>
           ))}
         </p>
       )}
       {changed.length > 0 && same.length > 0 && (
-        <p class="cmp-same">{t('armoury.unchanged', { list: same.join(t('common.sep')) })}</p>
+        <Hint
+          class="cmp-same"
+          text={t('armoury.unchanged', { list: same.join(t('common.sep')) })}
+        />
       )}
     </div>
   );
 }
 
+/**
+ * The chosen item: what it is, what it does to this pilot (before → after) and what can be done
+ * with it. Buy & equip is the primary action; a purchase of more than the confirm share of the
+ * purse turns into a danger button that asks for a second press.
+ */
 export function ItemDetail({
   lib,
   pilot,
@@ -183,9 +202,10 @@ export function ItemDetail({
     share: share === 50 ? t('armoury.shareHalf') : t('armoury.sharePercent', { n: share }),
   });
   return (
-    <section
+    <Panel
+      as="section"
       class="ar-panel item-detail"
-      data-testid="item-detail"
+      testId="item-detail"
       role="region"
       aria-label={t('armoury.itemDetails', { name: entry.name })}
     >
@@ -194,7 +214,7 @@ export function ItemDetail({
           kind={entry.kind}
           variant={iconVariant(lib, entry.kind, entry.id)}
           tier={entry.tier ?? 'common'}
-          size={44}
+          size={48}
           title=""
         />
         <div class="id-title">
@@ -204,16 +224,17 @@ export function ItemDetail({
             <span>{subLine(lib, entry)}</span>
           </div>
         </div>
-        <button
-          type="button"
+        <Button
           class="id-close"
-          aria-label={t('common.back')}
-          data-testid="item-detail-close"
+          label={t('common.back')}
+          icon="back"
+          iconOnly
+          variant="ghost"
+          testId="item-detail-close"
           onClick={onClose}
-        >
-          ‹
-        </button>
+        />
       </header>
+      <Divider class="id-rule" />
       <div class="id-body">
         {description && (
           <p
@@ -225,18 +246,19 @@ export function ItemDetail({
           </p>
         )}
         {mode === 'sell' ? (
-          <dl class="id-sell">
-            <dt>{t('armoury.inStores')}</dt>
-            <dd>×{entry.owned}</dd>
-            <dt>{t('armoury.armourerPays')}</dt>
-            <dd>{t('armoury.scudi', { n: entry.sellPrice ?? 0 })}</dd>
-            <dt>{t('armoury.fittedTo')}</dt>
-            <dd>{t('armoury.nobodySpares')}</dd>
-          </dl>
+          <StatGrid columns={1} class="id-sell">
+            <Stat label={t('armoury.inStores')} value={`×${entry.owned}`} />
+            <Stat
+              label={t('armoury.armourerPays')}
+              value={t('armoury.scudi', { n: entry.sellPrice ?? 0 })}
+              emphasis
+            />
+            <Stat label={t('armoury.fittedTo')} value={t('armoury.nobodySpares')} />
+          </StatGrid>
         ) : (
           <>
             {pilot && (
-              <h4 class="id-for">
+              <h4 class="ar-label id-for">
                 {entry.source === 'fitted'
                   ? removePreview
                     ? t('armoury.withoutIt', { pilot: pilotName })
@@ -245,15 +267,19 @@ export function ItemDetail({
               </h4>
             )}
             {entry.source === 'pilot' && entry.holderId && (
-              <p class="id-note">
-                {slotItem
-                  ? t('armoury.exchange', {
-                      holder: nameOf(lib, entry.holderId),
-                      pilot: pilotName,
-                      item: itemName(lib, entry.kind, slotItem),
-                    })
-                  : t('armoury.takenFrom', { holder: nameOf(lib, entry.holderId) })}
-              </p>
+              <Hint
+                class="id-note"
+                icon="info"
+                text={
+                  slotItem
+                    ? t('armoury.exchange', {
+                        holder: nameOf(lib, entry.holderId),
+                        pilot: pilotName,
+                        item: itemName(lib, entry.kind, slotItem),
+                      })
+                    : t('armoury.takenFrom', { holder: nameOf(lib, entry.holderId) })
+                }
+              />
             )}
             {preview && <Comparison lib={lib} before={preview.before} after={preview.after} />}
             {removePreview && (
@@ -262,46 +288,60 @@ export function ItemDetail({
           </>
         )}
       </div>
-      {reason && (
-        <p class="id-reason" data-testid="action-reason" role="status">
-          {reason}
-        </p>
+      {(reason || confirming || actions.length > 0) && (
+        <footer class="id-foot">
+          {reason && (
+            <p
+              class={`id-reason${error ? ' is-error' : ''}`}
+              data-testid="action-reason"
+              role="status"
+            >
+              {error ? <Icon name="warning" /> : <Padlock size={13} />}
+              <span>{reason}</span>
+            </p>
+          )}
+          {confirming && (
+            <p class="id-confirm" id="confirm-note">
+              <Icon name="warning" />
+              <span>{confirmText}</span>
+            </p>
+          )}
+          {actions.length > 0 && (
+            <div class="id-actions">
+              {actions.map((a) => {
+                const blocked = blockedFor(a);
+                const isConfirm = confirming === a.id;
+                return (
+                  <Button
+                    key={a.id}
+                    class={`id-action${a.primary ? ' is-main' : ''}${isConfirm ? ' is-armed' : ''}`}
+                    variant={isConfirm ? 'danger' : a.primary ? 'primary' : 'secondary'}
+                    label={isConfirm ? t('armoury.confirm', { action: a.label }) : a.label}
+                    disabled={!!blocked}
+                    testId={isConfirm ? 'action-confirm' : `action-${a.id}`}
+                    {...(isConfirm ? { 'aria-describedby': 'confirm-note' } : {})}
+                    onClick={() => onAction(a)}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </footer>
       )}
-      {confirming && (
-        <p class="id-confirm" id="confirm-note">
-          {confirmText}
-        </p>
-      )}
-      {actions.length > 0 && (
-        <div class="id-actions">
-          {actions.map((a) => {
-            const blocked = blockedFor(a);
-            const isConfirm = confirming === a.id;
-            return (
-              <button
-                key={a.id}
-                type="button"
-                class={`btn ${a.primary ? 'primary' : 'ghost'}${isConfirm ? ' confirming' : ''}`}
-                disabled={!!blocked}
-                data-testid={isConfirm ? 'action-confirm' : `action-${a.id}`}
-                {...(isConfirm ? { 'aria-describedby': 'confirm-note' } : {})}
-                onClick={() => onAction(a)}
-              >
-                {isConfirm ? t('armoury.confirm', { action: a.label }) : a.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </section>
+    </Panel>
   );
 }
 
-/** The detail column's resting state on wide screens. */
-export function DetailEmpty() {
+/** The detail column's resting state on wide screens: the armourer's sign and a hint. */
+export function DetailEmpty({ side }: { side: 'malta' | 'ottoman' }) {
   return (
-    <section class="ar-panel item-detail empty" aria-label={t('armoury.detailsEmptyLabel')}>
-      <p class="id-empty">{t('armoury.detailsEmpty')}</p>
-    </section>
+    <Panel
+      as="section"
+      class="ar-panel item-detail empty"
+      aria-label={t('armoury.detailsEmptyLabel')}
+    >
+      <ArmourerEmblem side={side} />
+      <Hint class="id-empty" text={t('armoury.detailsEmpty')} />
+    </Panel>
   );
 }

@@ -18,3 +18,16 @@ export const OKABE = {
 export const SIDE_COLORS = { player: '#1f6fb5', enemy: '#d0700a' } as const;
 /** Lighter tints for the facing arrows on the map. */
 export const ARROW_COLORS = { player: '#7cc4f5', enemy: '#ffb340' } as const;
+
+/**
+ * The map's own ink, light and accent, matching the HUD tokens (ui/design/tokens.css:
+ * --ds-ink-0, --ds-text, --ds-gold, --ds-gold-bright): dark rims under every line, the
+ * warm-white route and outlines, and the gold of the selected tile, the active unit and the
+ * goal tiles.
+ */
+export const MAP_INK = '#0b0a0e';
+export const MAP_LIGHT = '#f4eedf';
+export const MAP_GOLD = '#d4b26a';
+export const MAP_GOLD_BRIGHT = '#f0d48e';
+/** HP on the unit badges: the HUD's HP meter colour, and the danger tone when low (≤ 25%). */
+export const MAP_HP = { ok: '#3eb489', low: '#e27a62' } as const;
