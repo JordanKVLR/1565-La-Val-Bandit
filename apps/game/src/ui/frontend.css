@@ -364,10 +364,10 @@
 }
 
 /* ── Story: the diorama breathes, the words sit low ───────────────────── */
+/* No overflow clipping: in TV mode the diorama bleeds into the screen's border (tv.css). */
 .fe-story {
   position: relative;
   height: 100%;
-  overflow: hidden;
   cursor: pointer;
   background: var(--ds-ink-0);
 }
@@ -1087,6 +1087,26 @@
     line-height: 1.4;
     color: var(--ds-text-2);
   }
+}
+
+/* TV mode lays the page out about 960×540 before its zoom: settings take two columns. */
+:root[data-display='tv'] .fe-settings .ds-sheet__panel {
+  --ds-sheet-w: 820px;
+}
+:root[data-display='tv'] .fe-settings__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  column-gap: var(--ds-space-6);
+}
+:root[data-display='tv'] .fe-settings__group:first-child {
+  grid-row: 1 / span 2;
+}
+:root[data-display='tv'] .fe-settings__group + .fe-settings__group {
+  margin-top: 0;
+}
+:root[data-display='tv'] .fe-setting__control .ds-slider {
+  width: 180px;
 }
 
 /* ── Short phones in landscape (360–430 px tall) ──────────────────────── */
