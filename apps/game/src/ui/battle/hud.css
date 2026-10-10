@@ -38,18 +38,26 @@
 }
 
 /* ── Step prompt (route preview, picking a target) ────────────────────── */
+/*
+ * Centred in the space right of the unit card (bottom left, at most 320 px or 42% wide), so it
+ * never covers the card: near the middle on the Deck, further right on a TV's narrower page.
+ */
 .bhud-submode {
+  --bhud-card-room: calc(min(320px, 42 * var(--vw)) + 2 * var(--ds-edge));
   position: absolute;
-  left: 50%;
+  left: calc((100% + var(--bhud-card-room)) / 2);
   bottom: max(var(--ds-edge), env(safe-area-inset-bottom));
   z-index: var(--ds-z-actionbar);
   display: flex;
   align-items: center;
   gap: var(--ds-space-2);
-  max-width: min(600px, 60 * var(--vw));
+  max-width: min(600px, 100% - var(--bhud-card-room) - var(--ds-edge));
   padding: var(--ds-space-1) var(--ds-space-1) var(--ds-space-1) var(--ds-space-4);
   transform: translateX(-50%);
   animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.bhud-submode > .ds-btn {
+  flex: none;
 }
 .bhud-submode__text {
   flex: 1 1 auto;

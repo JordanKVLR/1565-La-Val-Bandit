@@ -265,6 +265,39 @@ Rules for all of them:
 - Danger: a warning glyph and a confirm step, never just the danger tone.
 - Low HP: ▼ and bold, as well as the danger tone.
 
+## Battle chrome and map language
+
+The top of the battle screen is three pieces on one 12 px edge line: the **brief** (top left:
+battle name in small gold capitals, `Round n · Name` with the side's mark, and the win condition
+on one line that opens to the full win and loss conditions on a tap, or on hover and pad focus),
+the **turn queue** (top centre: portrait tokens in the side's shape, the unit acting now larger,
+gold-ringed and pointed at by a caret, then a hairline) and the **map buttons** (top right:
+rotate and menu in one glass group). A round banner fades in and out when a round begins;
+announcements are glass toasts under the queue. Code: `ui/battle/BattleChrome.tsx`,
+`ui/battle/TurnQueue.tsx`, `ui/battle/chrome.css`. On phones only one unit card shows (the
+tapped unit's first), and the route prompt takes the docked action bar's place.
+
+The map (`render/highlights.ts`, `render/unitSprite.ts`, `BattleView`) speaks the same
+language: soft fills, fine patterns, thin warm-white or gold lines over a faint dark rim, and
+every kind is told apart by pattern or shape as well as colour:
+
+| Kind          | Drawing                                                                |
+| ------------- | ---------------------------------------------------------------------- |
+| Move range    | soft blue wash, a fine inner line per tile, one solid warm-white line  |
+| Attack range  | fine orange hairline stripes inside a dashed orange line               |
+| Targets       | small yellow reticle, four corner brackets that breathe                |
+| Route         | gold ribbon from the unit, stepping down cliffs, ending in a ring      |
+| Selected tile | faint gold wash in a thin gold frame with firmer corners               |
+| Goal tiles    | gold chequer in a gold line                                            |
+| Unit marker   | thin ring round the feet (circle: yours, diamond: enemy) and a dart    |
+|               | pointing the way the unit faces; gold rim for the unit acting          |
+| Unit badge    | side-coloured token in the side's shape, Cinzel initial, thin HP line; |
+|               | the unit acting gets a gold ring and a chevron                         |
+
+High contrast thickens every line, raises the fills and dims the map behind them. Each layer
+is merged into one mesh per material (a pair for lines with rims), so a highlight costs a
+draw call or two whatever its size.
+
 ## Migrating a screen
 
 Convert a whole surface at a time, keep every `data-testid`, role and accessible name the e2e
