@@ -359,6 +359,40 @@ export const en = {
   'levelUp.hint': 'New techniques unlock as your attributes grow. Experiment to find them.',
   'levelUp.saveForLater': 'Save points for later',
 
+  // ── Battle overlays: technique list, forecast, reactions, dialogs ──────────────────
+  'overlay.attack.heading': 'Techniques',
+  /** The unit's weapon and AP left, under the technique list's heading. */
+  'overlay.attack.sub': '{weapon} · {ap} AP left',
+  'overlay.tech.more': 'About {name}',
+  'overlay.num.pow': 'POW',
+  'overlay.num.range': 'RNG',
+  /** A percentage, e.g. "81%". */
+  'overlay.pct': '{n}%',
+  /** A signed modifier, e.g. "+10%" or "−25%". */
+  'overlay.pctSigned': '{sign}{n}%',
+  /** Damage per strike and the number of strikes, e.g. "16 ×2". */
+  'overlay.times': '{damage} ×{n}',
+  'overlay.forecast.versus': 'versus',
+  'overlay.forecast.ifHit': 'If every blow lands',
+  'overlay.forecast.mayFall': 'Could fall',
+  'overlay.mod.side': 'Side attack',
+  'overlay.mod.rear': 'Rear attack',
+  'overlay.mod.high': 'High ground +{n}',
+  'overlay.mod.low': 'Low ground −{n}',
+  'overlay.mod.assist': 'Assist +{n}%',
+  'overlay.reaction.pick': 'Your answer',
+  'overlay.reaction.backPick': 'Change technique',
+  'overlay.unitLine': 'Lv {level} · {frame}',
+  'overlay.levelUp.pointsLeft': {
+    one: '{n} point left',
+    other: '{n} points left',
+  },
+  'overlay.menu.saved': 'Progress is saved after every action.',
+  'overlay.end.victoryLine': 'The field is yours.',
+  'overlay.end.defeatLine': 'The line has broken.',
+  'overlay.end.giveUpConfirm': 'Give up? Press again',
+  'overlay.log.latest': 'Latest',
+
   // ── Unit card and details sheet ─────────────────────────────────────────────────────
   'unit.detailsFor': 'Details for {name}',
   'unit.points': '+{n} pts',

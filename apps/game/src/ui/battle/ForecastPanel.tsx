@@ -1,98 +1,139 @@
 import type { AttackForecast, BattleState, Reaction, ReactionChoice, UnitState } from '@m1565/core';
-import {
-  assistFor,
-  attackBackOptions,
-  attackFpCost,
-  chooseReaction,
-  forecastAttack,
-} from '@m1565/core';
+import { attackBackOptions, chooseReaction, forecastAttack } from '@m1565/core';
 import { useState } from 'preact/hooks';
 import { t } from '../../i18n';
+import type { IconName } from '../design';
+import { Button, Chip, Divider, Icon, Meter, SideMark } from '../design';
 import { attackTags } from './attackText';
+import type { ForecastSide } from './forecastModel';
+import { forecastModel } from './forecastModel';
 import { reasonText } from './reasons';
+import { ScrollArea } from './ScrollArea';
 import { Portrait } from './StatBars';
-import { AssistGrid, frameName, pad2, portraitIdFor, VbBars } from './vb';
+import { frameName, portraitIdFor } from './vb';
 
 /** Command names, as in the classic reaction menu ("Attack" is Attack back). */
 const reactionLabel = (r: Reaction): string => t(`reaction.${r}`);
+
+/** A shape for each reaction, so the list scans without reading (and never by colour). */
+const REACTION_ICON: Record<Reaction, IconName> = {
+  defend: 'shield',
+  avoid: 'dodge',
+  attackBack: 'attack',
+  counter: 'counter',
+  none: 'dash',
+};
 
 interface Props {
   state: BattleState;
   attacker: UnitState;
   defender: UnitState;
   forecast: AttackForecast;
-  /** The full reaction menu when the player is the defender; unusable ones are greyed out. */
+  /** The full reaction menu when the player is the defender; unusable ones say why. */
   choices?: readonly ReactionChoice[];
   /** With Attack back, also the technique chosen to strike back with. */
   onReact?: (r: Reaction, backAttackId?: string) => void;
   onConfirm?: () => void;
   onCancel?: () => void;
+  /** A heading over the comparison ("Levend attacks! How do you respond?"). */
+  heading?: string;
 }
 
-/** The hit chance the defender's panel shows for its reaction: its own strike, or "---". */
-function defenderOdds(f: AttackForecast, r: Reaction): string {
-  if (r === 'attackBack' && f.retaliation) return `${f.retaliation.hitChance}`;
-  if (r === 'counter' && f.counter) return `${f.counter.chance}`;
-  return '---';
-}
+const pct = (n: number) => t('overlay.pct', { n: Math.max(0, Math.round(n)) });
+const times = (damage: number, hits: number) =>
+  hits > 1 ? t('overlay.times', { damage, n: hits }) : `${damage}`;
 
-function Side({
-  unit,
+/** One side of the comparison: who, what it does, its odds and its meters after the exchange. */
+function SideColumn({
+  side,
   state,
-  assist,
-  line,
-  odds,
-  detail,
-  ap,
-  fp,
+  verb,
+  verbIcon,
+  note,
+  chips,
+  mayFall,
+  role,
 }: {
-  unit: UnitState;
+  side: ForecastSide;
   state: BattleState;
-  assist: {
-    bonus: number;
-    allies: readonly { x: number; y: number }[];
-    center: { x: number; y: number };
-  };
-  line: string;
-  odds: string;
-  detail: string;
-  ap?: number;
-  fp?: number;
+  verb: string;
+  verbIcon: IconName;
+  note?: string | undefined;
+  chips: readonly string[];
+  mayFall: boolean;
+  role: 'attacker' | 'defender';
 }) {
+  const u = side.unit;
   return (
-    <section class={`vb-panel vb-side fc-${unit.side}`}>
-      <div class="vb-side-top">
-        <Portrait name={unit.name} side={unit.side} castId={portraitIdFor(unit)} />
-        <VbBars unit={unit} balance={state.balance} ap={ap ?? 0} fp={fp ?? 0} />
-      </div>
-      <div class="vb-rows">
-        <div class="vb-row">
-          <span class="vb-name">{unit.name}</span>
-          <span>
-            <small>{t('forecast.lv')}</small> {unit.level}
+    <section class={`ov-side ov-side--${role}`} aria-label={u.name}>
+      <header class="ov-side__head">
+        <div class={`bhud-avatar side-${u.side}`}>
+          <Portrait name={u.name} side={u.side} castId={portraitIdFor(u)} />
+          <SideMark side={u.side} label={t(`unit.side.${u.side}`)} />
+        </div>
+        <div class="ov-side__id">
+          <strong class="ov-side__name">{u.name}</strong>
+          <span class="ov-side__line">
+            {t('overlay.unitLine', { level: u.level, frame: frameName(u) })}
           </span>
         </div>
-        <div class="vb-row">
-          <span>{frameName(unit)}</span>
-          <AssistGrid center={assist.center} allies={assist.allies} />
+      </header>
+      <p class="ov-side__verb">
+        <Icon name={verbIcon} class="ov-side__verb-icon" />
+        <span>{verb}</span>
+      </p>
+      <dl class="ov-odds">
+        <div class="ov-odd ov-odd--hit">
+          <dt>{t('stat.hit')}</dt>
+          <dd>{side.hit === null ? '—' : pct(side.hit)}</dd>
         </div>
-        <div class="vb-row">
-          <span>{t('forecast.assist', { n: pad2(assist.bonus) })}</span>
+        <div class="ov-odd">
+          <dt>{t('stat.dmg')}</dt>
+          <dd>{side.damage === null ? '—' : times(side.damage, side.hits)}</dd>
         </div>
-        <div class="vb-row vb-action">
-          <span class="vb-name">{line}</span>
-          <span>{t('forecast.odds', { n: odds })}</span>
-        </div>
-        <div class="vb-detail">{detail}</div>
+      </dl>
+      <div class="ov-side__meters" title={t('overlay.forecast.ifHit')}>
+        <Meter
+          label={t('stat.hp')}
+          kind="hp"
+          value={u.hp}
+          max={u.maxHp}
+          delta={side.hpAfter - u.hp}
+        />
+        <Meter
+          label={t('stat.ap')}
+          kind="ap"
+          value={u.ap}
+          max={state.balance.apMax}
+          delta={-side.apCost}
+        />
+        <Meter
+          label={t('stat.fp')}
+          kind="fp"
+          value={u.fp}
+          max={state.balance.fpMax}
+          delta={side.fpGain}
+        />
       </div>
+      {note && <p class="ov-side__note">{note}</p>}
+      {(chips.length > 0 || mayFall) && (
+        <div class="ov-chips">
+          {mayFall && <Chip tone="danger" label={t('overlay.forecast.mayFall')} />}
+          {chips.map((c) => (
+            <Chip key={c} icon={null} label={c} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }
 
 /**
- * Combat forecast in the classic layout: attacker and defender panels side by side, and a
- * command list. For the player's own attack it shows the enemy's intended reaction (Go / Back);
- * when the player is attacked, picking a command previews it and Go! confirms.
+ * The combat forecast: attacker against defender, side by side, with HP before → after as
+ * meter previews, the odds and damage of each, and the modifiers as chips. For the player's own
+ * attack it shows the enemy's intended reaction and Go! / Back; when the player is attacked,
+ * the reactions list each option with its FP cost (or why it can't be chosen), picking one
+ * previews it, and Go! confirms.
  */
 export function ForecastPanel({
   state,
@@ -103,6 +144,7 @@ export function ForecastPanel({
   onReact,
   onConfirm,
   onCancel,
+  heading,
 }: Props) {
   const firstChoice =
     choices?.find((c) => c.available && c.reaction !== 'none')?.reaction ?? 'none';
@@ -120,27 +162,29 @@ export function ForecastPanel({
     : defender.controller === 'ai'
       ? chooseReaction(state, defender.id, attacker.id, f.attack.id)
       : 'defend';
-  const times = f.hits > 1 ? ` ×${f.hits}` : '';
-  const tags = attackTags(f.attack);
-  const attackDetail =
+  const choice = choices?.find((c) => c.reaction === reaction);
+  const m = forecastModel({ state, attacker, defender, forecast: f, reaction, back, choice });
+
+  const attackChips = [
+    f.zone === 'front' ? null : t(`overlay.mod.${f.zone}`),
+    f.heightDiff > 0 ? t('overlay.mod.high', { n: f.heightDiff }) : null,
+    f.heightDiff < 0 ? t('overlay.mod.low', { n: -f.heightDiff }) : null,
+    m.attacker.assist > 0 ? t('overlay.mod.assist', { n: m.attacker.assist }) : null,
+    // Several strikes already show beside the damage.
+    ...attackTags(f.attack).slice(f.hits > 1 ? 1 : 0),
+  ].filter((c): c is string => c !== null);
+  const defenderChips =
+    m.defender.assist > 0 ? [t('overlay.mod.assist', { n: m.defender.assist })] : [];
+  const attackNote =
     reaction === 'counter' && f.counter
       ? t('forecast.counterDamage', {
-          damage: `${f.damage.counter}${times}`,
+          damage: times(f.damage.counter, f.hits),
           reflect: f.counter.reflect,
         })
-      : [
-          t('forecast.damage', { damage: `${f.damage[reaction]}${times}` }),
-          f.zone === 'front' ? null : t(`forecast.zone.${f.zone}`),
-          tags.length ? tags.join(t('common.listSep')) : null,
-        ]
-          .filter((p) => p !== null)
-          .join(t('common.sep'));
-  const choice = choices?.find((c) => c.reaction === reaction);
-  const defenderDetail =
+      : undefined;
+  const defenderNote =
     reaction === 'attackBack' && back
-      ? t('forecast.strikesBack', {
-          damage: `${back.damage}${back.hits > 1 ? ` ×${back.hits}` : ''}`,
-        })
+      ? t('forecast.strikesBack', { damage: times(back.damage, back.hits) })
       : reaction === 'counter' && f.counter
         ? t('forecast.reflects', { n: f.counter.reflect })
         : reaction === 'defend'
@@ -148,127 +192,175 @@ export function ForecastPanel({
           : reaction === 'avoid'
             ? t('forecast.dodges')
             : t('forecast.takes');
-  const atkAssist = { ...assistFor(state, attacker, defender.pos), center: defender.pos };
-  const defAssist = { ...assistFor(state, defender, attacker.pos), center: attacker.pos };
 
   return (
-    <div
-      class={`vb-forecast${choices ? ' react' : ''}`}
+    <section
+      class={`ds-panel ds-elev-3 ds-outlined ov-panel ov-forecast${choices ? ' is-react' : ''}`}
       role="dialog"
       aria-label={t('forecast.label')}
     >
-      <div class="vb-sides">
-        <Side
-          unit={attacker}
-          state={state}
-          assist={atkAssist}
-          line={f.attack.name}
-          odds={pad2(f.hitChance[reaction])}
-          detail={attackDetail}
-          {...(choices ? {} : { ap: f.attack.apCost, fp: attackFpCost(state, attacker, f.attack) })}
-        />
-        <Side
-          unit={defender}
-          state={state}
-          assist={defAssist}
-          line={reaction === 'attackBack' && back ? back.attackName : reactionLabel(reaction)}
-          odds={reaction === 'attackBack' && back ? `${back.hitChance}` : defenderOdds(f, reaction)}
-          detail={defenderDetail}
-          {...(choice
-            ? { fp: reaction === 'attackBack' && back ? back.fpCost : choice.fpCost }
-            : {})}
-        />
+      {heading && (
+        <header class="ov-forecast__heading">
+          <h2 class="ov-title">{heading}</h2>
+        </header>
+      )}
+      <div class="ov-forecast__body">
+        <div class="ov-duel">
+          <SideColumn
+            role="attacker"
+            side={m.attacker}
+            state={state}
+            verb={f.attack.name}
+            verbIcon="attack"
+            note={attackNote}
+            chips={attackChips}
+            mayFall={m.attackerMayFall}
+          />
+          <div class="ov-vs">
+            <Divider vertical class="ov-vs__rule" />
+            <Icon name="attack" class="ov-vs__mark" label={t('overlay.forecast.versus')} />
+            <Divider vertical class="ov-vs__rule" />
+          </div>
+          <SideColumn
+            role="defender"
+            side={m.defender}
+            state={state}
+            verb={m.defender.techniqueName ?? reactionLabel(reaction)}
+            verbIcon={REACTION_ICON[reaction]}
+            note={defenderNote}
+            chips={defenderChips}
+            mayFall={m.defenderMayFall}
+          />
+        </div>
+        <nav
+          class="ov-forecast__actions"
+          aria-label={choices ? t('forecast.reactions') : t('battle.action.attack')}
+        >
+          {choices && pickingBack ? (
+            <>
+              <span class="ov-label">{t('forecast.strikeBackWith')}</span>
+              <ScrollArea class="ov-options">
+                {backOptions.map((o) => {
+                  const r = o.available ? backForecast(o.attack.id) : undefined;
+                  const on = o.attack.id === backId;
+                  return (
+                    <button
+                      type="button"
+                      key={o.attack.id}
+                      class={`ov-option fc-choice${on ? ' is-pressed' : ''}`}
+                      disabled={!o.available}
+                      aria-pressed={on}
+                      onClick={() => {
+                        setBackId(o.attack.id);
+                        setPickingBack(false);
+                      }}
+                    >
+                      <span class="ov-option__name">{o.attack.name}</span>
+                      {r ? (
+                        <small class="ov-option__meta">
+                          {t('forecast.backOption', {
+                            fp: o.fpCost,
+                            hit: r.hitChance,
+                            damage: times(r.damage, r.hits),
+                          })}
+                        </small>
+                      ) : (
+                        <small class="ov-option__reason">
+                          <Icon name="warning" class="ov-option__reason-icon" />
+                          {o.reason ? reasonText(o.reason) : ''}
+                        </small>
+                      )}
+                    </button>
+                  );
+                })}
+              </ScrollArea>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon="back"
+                label={t('common.back')}
+                keyHint="back"
+                block
+                onClick={() => setPickingBack(false)}
+              />
+            </>
+          ) : choices ? (
+            <>
+              <span class="ov-label">{t('overlay.reaction.pick')}</span>
+              <ScrollArea class="ov-options">
+                {choices.map((c) => {
+                  const on = c.reaction === picked;
+                  return (
+                    <button
+                      type="button"
+                      key={c.reaction}
+                      class={`ov-option fc-choice${on ? ' is-pressed' : ''}`}
+                      disabled={!c.available}
+                      aria-pressed={on}
+                      onClick={() => {
+                        setPicked(c.reaction);
+                        if (c.reaction === 'attackBack') setPickingBack(true);
+                      }}
+                    >
+                      <Icon name={REACTION_ICON[c.reaction]} class="ov-option__icon" />
+                      <span class="ov-option__name">{reactionLabel(c.reaction)}</span>
+                      {c.available ? (
+                        c.reaction === 'attackBack' && back ? (
+                          <small class="ov-option__meta">
+                            {t('forecast.backChoice', { attack: back.attackName, fp: back.fpCost })}
+                          </small>
+                        ) : (
+                          c.fpCost > 0 && (
+                            <small class="ov-option__meta">{t('forecast.fp', { n: c.fpCost })}</small>
+                          )
+                        )
+                      ) : (
+                        <small class="ov-option__reason">
+                          <Icon name="warning" class="ov-option__reason-icon" />
+                          {c.reason ? reasonText(c.reason) : ''}
+                        </small>
+                      )}
+                    </button>
+                  );
+                })}
+              </ScrollArea>
+              <Button
+                variant="primary"
+                size="lg"
+                label={t('forecast.go')}
+                icon="confirm"
+                keyHint="confirm"
+                testId="react-go"
+                block
+                class="ov-go"
+                onClick={() => onReact?.(picked, picked === 'attackBack' ? backId : undefined)}
+              />
+            </>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                label={t('common.back')}
+                icon="back"
+                keyHint="back"
+                navBack
+                block
+                onClick={onCancel}
+              />
+              <Button
+                variant="primary"
+                size="lg"
+                label={t('forecast.go')}
+                icon="confirm"
+                keyHint="confirm"
+                block
+                class="ov-go"
+                onClick={onConfirm}
+              />
+            </>
+          )}
+        </nav>
       </div>
-      <nav
-        class="vb-commands"
-        aria-label={choices ? t('forecast.reactions') : t('battle.action.attack')}
-      >
-        {choices && pickingBack ? (
-          <>
-            <div class="vb-cmd-head">{t('forecast.strikeBackWith')}</div>
-            {backOptions.map((o) => {
-              const r = o.available ? backForecast(o.attack.id) : undefined;
-              return (
-                <button
-                  type="button"
-                  key={o.attack.id}
-                  class={`vb-cmd fc-choice${o.attack.id === backId ? ' on' : ''}`}
-                  disabled={!o.available}
-                  aria-pressed={o.attack.id === backId}
-                  title={o.reason ? reasonText(o.reason) : undefined}
-                  onClick={() => {
-                    setBackId(o.attack.id);
-                    setPickingBack(false);
-                  }}
-                >
-                  <span>{o.attack.name}</span>
-                  {r ? (
-                    <small>
-                      {t('forecast.backOption', {
-                        fp: o.fpCost,
-                        hit: r.hitChance,
-                        damage: `${r.damage}${r.hits > 1 ? `×${r.hits}` : ''}`,
-                      })}
-                    </small>
-                  ) : (
-                    <small class="why">{o.reason ? reasonText(o.reason) : ''}</small>
-                  )}
-                </button>
-              );
-            })}
-            <button type="button" class="vb-cmd" onClick={() => setPickingBack(false)}>
-              {t('common.back')}
-            </button>
-          </>
-        ) : choices ? (
-          <>
-            <button
-              type="button"
-              class="vb-cmd go"
-              data-testid="react-go"
-              onClick={() => onReact?.(picked, picked === 'attackBack' ? backId : undefined)}
-            >
-              {t('forecast.go')}
-            </button>
-            {choices.map((c) => (
-              <button
-                type="button"
-                key={c.reaction}
-                class={`vb-cmd fc-choice${c.reaction === picked ? ' on' : ''}`}
-                disabled={!c.available}
-                aria-pressed={c.reaction === picked}
-                title={c.reason ? reasonText(c.reason) : undefined}
-                onClick={() => {
-                  setPicked(c.reaction);
-                  if (c.reaction === 'attackBack') setPickingBack(true);
-                }}
-              >
-                <span>{reactionLabel(c.reaction)}</span>
-                {c.available ? (
-                  c.reaction === 'attackBack' && back ? (
-                    <small>
-                      {t('forecast.backChoice', { attack: back.attackName, fp: back.fpCost })}
-                    </small>
-                  ) : (
-                    c.fpCost > 0 && <small>{t('forecast.fp', { n: c.fpCost })}</small>
-                  )
-                ) : (
-                  <small class="why">{c.reason ? reasonText(c.reason) : ''}</small>
-                )}
-              </button>
-            ))}
-          </>
-        ) : (
-          <>
-            <button type="button" class="vb-cmd go" onClick={onConfirm}>
-              {t('forecast.go')}
-            </button>
-            <button type="button" class="vb-cmd" onClick={onCancel}>
-              {t('common.back')}
-            </button>
-          </>
-        )}
-      </nav>
-    </div>
+    </section>
   );
 }

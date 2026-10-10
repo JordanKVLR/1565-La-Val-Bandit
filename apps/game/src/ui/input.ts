@@ -96,7 +96,8 @@ function scrollScope(dir: -1 | 1, from: Element | null): boolean {
 export function moveFocus(dir: NavDir): boolean {
   const scope = focusScope();
   const current = document.activeElement as HTMLElement | null;
-  if (!current || current === document.body || !scope.contains(current)) {
+  // A dialog that took focus itself (a Sheet focuses its panel) counts as nothing focused yet.
+  if (!current || current === document.body || current === scope || !scope.contains(current)) {
     const first = defaultIn(scope);
     if (first) focusEl(first);
     return !!first;
@@ -186,7 +187,7 @@ function onFallbackKey(e: KeyboardEvent): void {
     case 'Enter':
     case ' ': {
       const active = document.activeElement;
-      if (active && active !== document.body && scope.contains(active)) return;
+      if (active && active !== document.body && active !== scope && scope.contains(active)) return;
       const first = defaultIn(scope);
       if (first) {
         e.preventDefault();

@@ -24,18 +24,25 @@ const PATHS = {
   warning: 'M12 4 2.8 19.5h18.4ZM12 10v4.5M12 17.25h.01',
   chevronRight: 'M9.5 5.5 16 12l-6.5 6.5',
   plus: 'M12 5v14M5 12h14',
+  // Battle overlays: facing, reactions
+  arrowUp: 'M12 19.5V5M6 11l6-6 6 6',
+  shield: 'M12 3.5 19 6v5.5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6Z',
+  dodge: 'M4.5 12h6M7.5 9l-3 3 3 3M13.5 12h6M16.5 9l3 3-3 3',
+  counter: 'M4.5 4.5l6 6M4.5 4.5v5M4.5 4.5h5M19.5 19.5l-6-6M19.5 19.5v-5M19.5 19.5h-5',
+  dash: 'M6.5 12h11',
   // Ornaments (period flavour through restraint)
   cross:
     'M12 12 8.3 3.5 12 5.6l3.7-2.1ZM12 12l8.5-3.7-2.1 3.7 2.1 3.7ZM12 12l3.7 8.5-3.7-2.1-3.7 2.1ZM12 12 3.5 15.7 5.6 12 3.5 8.3Z',
   crescent: 'M15.5 4.2a8.2 8.2 0 1 0 0 15.6 6.6 6.6 0 1 1 0-15.6Z',
   diamond: 'M12 4.5 19.5 12 12 19.5 4.5 12Z',
   circle: 'M12 19.5a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z',
+  star: 'M12 2.5 14.2 9.8 21.5 12 14.2 14.2 12 21.5 9.8 14.2 2.5 12 9.8 9.8Z',
 } as const;
 
 export type IconName = keyof typeof PATHS;
 
 /** Glyphs drawn filled rather than stroked (the ornaments and side marks). */
-const FILLED: ReadonlySet<IconName> = new Set(['cross', 'crescent', 'diamond', 'circle']);
+const FILLED: ReadonlySet<IconName> = new Set(['cross', 'crescent', 'diamond', 'circle', 'star']);
 
 export function Icon({
   name,
