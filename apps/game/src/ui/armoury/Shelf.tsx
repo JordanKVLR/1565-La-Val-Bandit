@@ -12,8 +12,8 @@ import { CoinGlyph, KindGlyph, TierBadge } from './parts';
 /** The shelf tabs, in order (names: `shelf.tab.<kind>`, short ones `shelf.tabShort.<kind>`). */
 export const TABS: readonly ItemKind[] = ['weapon', 'charm', 'amulet', 'frame'];
 
-/** Phones and narrow windows: short tab names and a short sell toggle (see armoury.css). */
-const NARROW_QUERY = '(max-width: 900px)';
+/** Phones, the Deck and small windows, where the shelf is narrow: a short sell toggle. */
+const NARROW_QUERY = '(max-width: 1500px)';
 
 /** The test id part of an entry: pilot-held items are distinct per holder. */
 export const cardId = (e: Pick<ShelfEntry, 'kind' | 'id' | 'holderId'>) =>

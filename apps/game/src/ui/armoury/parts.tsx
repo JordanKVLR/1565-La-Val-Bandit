@@ -101,7 +101,11 @@ export function ScudiCounter({ value }: { value: number }) {
       <b>{shown.toLocaleString()}</b>
       <span class="ds-visually-hidden">{t('armoury.scudi', { n: value })}</span>
       {float && (
-        <span key={float.n} class={`ar-purse__float ${float.up ? 'up' : 'down'}`} aria-hidden="true">
+        <span
+          key={float.n}
+          class={`ar-purse__float ${float.up ? 'up' : 'down'}`}
+          aria-hidden="true"
+        >
           {float.text}
         </span>
       )}
@@ -145,10 +149,10 @@ export function ArmourerEmblem({ side }: { side: 'malta' | 'ottoman' }) {
  * they sit beside its icons: a sword, a cut gem, a medal on a ribbon and a helm.
  */
 const KIND_GLYPH: Record<ItemKind, string> = {
-  weapon:
-    'M19.5 4.5 18.3 8.7 10 17M19.5 4.5l-4.2 1.2L7 14M6 12.5l5.5 5.5M8.5 15.5l-4 4',
+  weapon: 'M19.5 4.5 18.3 8.7 10 17M19.5 4.5l-4.2 1.2L7 14M6 12.5l5.5 5.5M8.5 15.5l-4 4',
   charm: 'M8 4.5h8l3 4.5-7 10.5L5 9ZM5 9h14M10.5 4.5 9.5 9l2.5 10.5L14.5 9l-1-4.5',
-  amulet: 'M8.5 3.5 12 9.5l3.5-6M12 21a5.75 5.75 0 1 0 0-11.5A5.75 5.75 0 0 0 12 21ZM12 13v5M9.5 15.5h5',
+  amulet:
+    'M8.5 3.5 12 9.5l3.5-6M12 21a5.75 5.75 0 1 0 0-11.5A5.75 5.75 0 0 0 12 21ZM12 13v5M9.5 15.5h5',
   frame: 'M5 19.5V12.5a7 7 0 0 1 14 0v7ZM5 13.5h14M12 13.5v6M9.5 16.5h5M12 5.5V3.5',
 };
 

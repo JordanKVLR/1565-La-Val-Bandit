@@ -535,9 +535,7 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
               <span class="ds-badge" aria-hidden="true">
                 {pending}
               </span>
-              <span class="ds-visually-hidden">
-                {t('roster.pointsToSpend', { n: pending })}
-              </span>
+              <span class="ds-visually-hidden">{t('roster.pointsToSpend', { n: pending })}</span>
             </>
           )}
         </Button>

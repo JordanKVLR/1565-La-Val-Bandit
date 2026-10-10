@@ -27,8 +27,7 @@
   font-variant-numeric: lining-nums;
   line-height: var(--ds-leading);
   background:
-    radial-gradient(ellipse 70% 80% at 32% 45%, var(--ds-ink-2), transparent 75%),
-    var(--ds-ink-0);
+    radial-gradient(ellipse 70% 80% at 32% 45%, var(--ds-ink-2), transparent 75%), var(--ds-ink-0);
 }
 /* A madum floor, barely there (DESIGN.md: motifs only as full-screen grounds, under a scrim). */
 .armoury::before {
@@ -351,12 +350,14 @@
   min-height: 0;
   min-width: 0;
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
 }
 .ar-detail {
   grid-area: detail;
 }
 .pilot-stage.ds-panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: var(--ds-space-1);
   padding: var(--ds-space-2) var(--ds-space-2) var(--ds-space-2);
@@ -479,10 +480,12 @@
   display: flex;
   align-items: center;
   gap: 3px;
+  overflow: hidden;
   font-size: var(--ds-text-2xs);
   font-weight: var(--ds-weight-bold);
-  letter-spacing: var(--ds-track-label);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--ds-text-3);
 }
 .slot-text b {
@@ -504,8 +507,11 @@
 .shelf.ds-panel {
   grid-area: shelf;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
   padding: 0;
+  /* Tab names shorten by the shelf's own width (the Deck's shelf is narrower than a phone's). */
+  container: ar-shelf / inline-size;
 }
 .shelf-head {
   display: flex;
@@ -528,6 +534,12 @@
   gap: var(--ds-space-1);
   min-width: var(--ds-hit);
   padding: 0 var(--ds-space-2);
+  overflow: hidden;
+}
+.shelf-tab :is(.tl-long, .tl-short) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .shelf-tab .ar-kind {
   width: 1.15em;
@@ -866,8 +878,10 @@
 /* ── Item detail ──────────────────────────────────────────────────────── */
 .item-detail.ds-panel {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   min-height: 0;
+  min-width: 0;
   padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-2);
   animation: ds-rise-in var(--ds-dur-base) var(--ds-ease-out);
 }
@@ -1021,14 +1035,17 @@
   display: flex;
   gap: var(--ds-space-2);
 }
+/* The main action takes the room; the second one keeps to its label. */
 .id-action.ds-btn {
-  flex: 1 1 0;
+  flex: 0 1 auto;
   justify-content: center;
   min-width: 0;
-  padding: 0 var(--ds-space-2);
+  padding: 0 var(--ds-space-3);
+  letter-spacing: 0.03em;
 }
-.id-action.is-main {
-  flex-grow: 1.6;
+.id-action.is-main,
+.id-action.is-armed {
+  flex: 1 1 auto;
 }
 .item-detail.empty.ds-panel {
   display: flex;
@@ -1092,7 +1109,7 @@
   font-size: var(--ds-text-xs);
   color: var(--ds-text-3);
 }
-.tr-next {
+.tr-pilot .tr-next {
   margin-left: auto;
 }
 .tr-attrs {
@@ -1266,6 +1283,19 @@
     display: inline;
   }
 }
+@container ar-shelf (max-width: 700px) {
+  .tl-long {
+    display: none;
+  }
+  .tl-short {
+    display: inline;
+  }
+  .shelf-tab.ds-tab {
+    gap: 3px;
+    padding: 0 var(--ds-space-1);
+    font-size: var(--ds-text-xs);
+  }
+}
 
 /* ── Phones in landscape ──────────────────────────────────────────────── */
 @media (max-height: 520px) {
@@ -1313,7 +1343,9 @@
     padding: var(--ds-space-1) var(--ds-space-2) var(--ds-space-2);
   }
   .id-action.ds-btn {
-    font-size: var(--ds-text-xs);
+    padding: 0 var(--ds-space-2);
+    font-size: var(--ds-text-2xs);
+    letter-spacing: 0.02em;
   }
   .shelf-tab.ds-tab {
     padding: 0 var(--ds-space-1);
@@ -1419,9 +1451,29 @@
   min-height: 92px;
   padding: var(--ds-space-2) var(--ds-space-2) var(--ds-space-1);
 }
+/* The stage column is narrow here: one slot per row, so every item name reads in full. */
+:root[data-display='tv'] .armoury.wide .ps-slots {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ds-space-1);
+}
 :root[data-display='tv'] .armoury.wide .slot-btn {
   min-height: var(--ds-hit);
 }
-:root[data-display='tv'] .armoury.wide .shelf-tab:not(.on) {
+:root[data-display='tv'] .armoury.wide .slot-text {
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--ds-space-2);
+}
+:root[data-display='tv'] .armoury.wide .id-action.ds-btn {
+  padding: 0 var(--ds-space-2);
+  font-size: var(--ds-text-xs);
+}
+/* Only the open tab is labelled on a TV (tv.css); the others are glyphs, with their names. */
+:root[data-display='tv'] .armoury.wide .shelf-tab.ds-tab:not(.on) {
+  flex: 0 0 40px;
+  min-width: 40px;
   padding: 0;
+}
+:root[data-display='tv'] .armoury.wide .shelf-mode .ar-coin {
+  display: none;
 }
