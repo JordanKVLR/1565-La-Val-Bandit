@@ -945,7 +945,8 @@
 }
 /* The scroll cue for a sheet's body: a chevron on the footer's edge, or at the bottom. */
 .ov-sheet .ds-sheet__body[data-more~='below'] + .ds-sheet__foot::before,
-.ov-sheet .ds-sheet__panel:not(:has(.ds-sheet__foot)):has(.ds-sheet__body[data-more~='below'])::after {
+.ov-sheet
+  .ds-sheet__panel:not(:has(.ds-sheet__foot)):has(.ds-sheet__body[data-more~='below'])::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -1270,8 +1271,7 @@
   display: grid;
   place-items: center;
   padding: max(var(--ds-edge), env(safe-area-inset-top))
-    max(var(--ds-edge), env(safe-area-inset-right))
-    max(var(--ds-edge), env(safe-area-inset-bottom))
+    max(var(--ds-edge), env(safe-area-inset-right)) max(var(--ds-edge), env(safe-area-inset-bottom))
     max(var(--ds-edge), env(safe-area-inset-left));
   background: radial-gradient(ellipse at center, rgba(6, 5, 8, 0.5), rgba(6, 5, 8, 0.88) 75%);
   animation: ds-fade-in var(--ds-dur-slow) var(--ds-ease-out);

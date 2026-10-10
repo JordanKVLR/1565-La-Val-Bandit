@@ -40,7 +40,10 @@ export function TechniqueNumbers({
       {cell(
         t('overlay.num.pow'),
         hits > 1
-          ? t('overlay.times', { damage: t('overlay.pct', { n: Math.round(attack.power * 100) }), n: hits })
+          ? t('overlay.times', {
+              damage: t('overlay.pct', { n: Math.round(attack.power * 100) }),
+              n: hits,
+            })
           : t('overlay.pct', { n: Math.round(attack.power * 100) }),
         false,
         t('tech.power'),

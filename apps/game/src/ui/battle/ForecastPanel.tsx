@@ -314,7 +314,9 @@ export function ForecastPanel({
                           </small>
                         ) : (
                           c.fpCost > 0 && (
-                            <small class="ov-option__meta">{t('forecast.fp', { n: c.fpCost })}</small>
+                            <small class="ov-option__meta">
+                              {t('forecast.fp', { n: c.fpCost })}
+                            </small>
                           )
                         )
                       ) : (

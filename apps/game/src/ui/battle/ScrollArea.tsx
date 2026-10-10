@@ -7,10 +7,7 @@ import { cx, Icon } from '../design';
  * it current, so CSS can fade the clipped edge and show a chevron: lists that scroll say so
  * (overlays.css). `marker` is the element that carries the attribute (default: the box).
  */
-export function useScrollCue(
-  box: RefObject<HTMLElement>,
-  marker?: RefObject<HTMLElement>,
-): void {
+export function useScrollCue(box: RefObject<HTMLElement>, marker?: RefObject<HTMLElement>): void {
   // Re-run after every render: expanding a row changes the content height, not the box's.
   useLayoutEffect(() => {
     const el = box.current;

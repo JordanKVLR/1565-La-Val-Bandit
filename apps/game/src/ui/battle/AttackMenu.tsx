@@ -40,7 +40,9 @@ export function AttackMenu({
       <header class="ov-head">
         <div class="ov-head__text">
           <h2 class="ov-title">{t('overlay.attack.heading')}</h2>
-          <span class="ov-sub">{t('attackMenu.ap', { ap: unit.ap, weapon: unit.weapon.name })}</span>
+          <span class="ov-sub">
+            {t('attackMenu.ap', { ap: unit.ap, weapon: unit.weapon.name })}
+          </span>
         </div>
         <Button
           variant="ghost"
