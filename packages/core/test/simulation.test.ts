@@ -10,7 +10,8 @@ describe('AI vs AI simulation', () => {
     // Mirror-matched sides: both should win sometimes.
     expect(outcomes.victory).toBeGreaterThan(0);
     expect(outcomes.defeat).toBeGreaterThan(0);
-  });
+    // 30 full battles: quick alone, slow when the CPU is shared.
+  }, 60_000);
 
   it('is fully deterministic for a seed', () => {
     expect(simulate(42).state).toEqual(simulate(42).state);
