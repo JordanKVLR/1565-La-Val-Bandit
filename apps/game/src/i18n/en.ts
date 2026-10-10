@@ -655,6 +655,8 @@ export const en = {
   'shelf.cardSellsFor': 'sells for {n} scudi',
   'shelf.cardFitted': 'fitted',
   'shelf.cardUnavailable': 'unavailable: {reason}',
+  /** The sell toggle's label on narrow phones, where the shelf tabs need the room. */
+  'shelf.sellShort': 'Sell',
   'action.sell': 'Sell · {n}',
   'action.equip': 'Equip',
   'action.swap': 'Swap',
