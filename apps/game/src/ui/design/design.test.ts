@@ -3,6 +3,7 @@ import { join, relative } from 'node:path';
 import type { VNode } from 'preact';
 import { describe, expect, it } from 'vitest';
 import { Chip, SideMark } from './Chip';
+import { Segmented, Switch } from './Controls';
 import { ICON_NAMES } from './Icon';
 import { Meter } from './Meter';
 import { Divider } from './Panel';
@@ -65,8 +66,10 @@ describe('design tokens', () => {
   });
 
   it('are the only colours in the converted screen styles', () => {
-    const hud = readFileSync(join(UI, 'battle/hud.css'), 'utf8');
-    expect(hud.match(/#[0-9a-fA-F]{3,8}\b/g)).toBeNull();
+    for (const sheet of ['battle/hud.css', 'frontend.css', 'codex.css', 'design/controls.css']) {
+      const css = readFileSync(join(UI, sheet), 'utf8');
+      expect(css.match(/#[0-9a-fA-F]{3,8}\b/g), sheet).toBeNull();
+    }
   });
 });
 
@@ -99,6 +102,32 @@ describe('components', () => {
     const path = (v: VNode) => walk((v.props as { children: unknown }).children)[0]!.props;
     expect(path(player)).not.toEqual(path(enemy));
     expect(byClass(walk(Chip({ tone: 'enemy', label: 'Enemy' })), 'ds-chip__icon')).toHaveLength(1);
+  });
+
+  it('Switch and Segmented say their state in words and shape, not colour alone', () => {
+    const on = walk(
+      Switch({ checked: true, onChange: () => {}, label: 'Music', onText: 'On', offText: 'Off' }),
+    );
+    expect(on[0]!.props).toMatchObject({
+      role: 'switch',
+      'aria-checked': true,
+      'aria-label': 'Music',
+    });
+    expect(on.some((n) => (n.props as { children?: unknown }).children === 'On')).toBe(true);
+    const seg = walk(
+      Segmented({
+        label: 'Speed',
+        value: 2,
+        onChange: () => {},
+        options: [
+          { value: 1, label: '×1' },
+          { value: 2, label: '×2' },
+        ],
+      }),
+    );
+    const pressed = seg.filter((n) => (n.props as { 'aria-pressed'?: boolean })['aria-pressed']);
+    expect(pressed).toHaveLength(1);
+    expect(byClass(seg, 'ds-segmented__check')).toHaveLength(1);
   });
 
   it('Divider is a separator, and every icon has a path', () => {

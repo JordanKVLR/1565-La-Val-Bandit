@@ -23,7 +23,7 @@ export function ControllerNotice() {
   if (!open) return null;
   return (
     <div
-      class="ds-sheet ds-sheet--center fe-notice controller-notice"
+      class="ds-sheet ds-sheet--center fe-notice"
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="controller-notice-title"

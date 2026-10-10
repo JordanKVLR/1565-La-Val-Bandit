@@ -48,13 +48,8 @@
 }
 
 /* Small print readable on the dark ground (contrast ≥ 4.5:1). */
-.build-note,
 .log-lines .empty {
   opacity: 0.8;
-}
-.tap-hint,
-.dlg-name small {
-  opacity: 0.85;
 }
 
 /* Help: Rules / Controls pages. */
@@ -104,11 +99,6 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* The controller disconnect notice sits above every screen and overlay while gameplay waits. */
-.controller-notice {
-  z-index: 120;
 }
 /* Suspended (app in the background): CSS animations hold still with the game. */
 :root[data-suspended] *,

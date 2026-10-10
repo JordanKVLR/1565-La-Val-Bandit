@@ -46,15 +46,6 @@
   outline: 2px solid var(--mt-yellow);
   outline-offset: 2px;
 }
-
-/* ── Gallarija: command lists and menus ─────────────────────────────────── */
-/* Already absolutely placed: .action-menu, .vb-commands. The rest become the anchor here. */
-.gallarija,
-.title-menu {
-  position: relative;
-}
-.gallarija,
-.title-menu,
 .vb-commands {
   background:
     repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 22px),
@@ -67,8 +58,6 @@
     0 6px 16px rgba(0, 0, 0, 0.5);
 }
 /* The moulded cornice sits a little wider than the balcony... */
-.gallarija::before,
-.title-menu::before,
 .vb-commands::before {
   content: '';
   position: absolute;
@@ -82,8 +71,6 @@
   pointer-events: none;
 }
 /* ...and carved limestone corbels hold it up. */
-.gallarija::after,
-.title-menu::after,
 .vb-commands::after {
   content: '';
   position: absolute;
@@ -94,9 +81,6 @@
   background: var(--mt-corbels) repeat-x center top;
   background-size: 120px 24px;
   pointer-events: none;
-}
-.title-menu {
-  padding: 12px;
 }
 .vb-commands {
   bottom: max(26px, calc(env(safe-area-inset-bottom) + 24px));
@@ -125,8 +109,7 @@
   position: relative;
 }
 .vb-panel::before,
-.modal-box::before,
-.dialogue::before {
+.modal-box::before {
   content: '';
   position: absolute;
   left: 10px;
@@ -172,98 +155,6 @@
   background: rgba(10, 8, 6, 0.84);
 }
 
-/* ── Madum floors behind full-screen pages ──────────────────────────────── */
-.title-screen,
-.results-screen,
-.prep-screen,
-.end-screen,
-.chapter-card,
-.stage-blank {
-  background:
-    radial-gradient(ellipse at 50% 45%, rgba(26, 21, 18, 0.62), rgba(26, 21, 18, 0.94) 80%),
-    var(--mt-madum);
-  background-size:
-    auto,
-    176px 176px;
-}
-
-/* Title: a Maltese-cross emblem over the name, a lace rule under the subtitle. */
-.title-screen h1 {
-  color: var(--mt-lime);
-  text-shadow:
-    0 3px 0 #000,
-    0 0 18px rgba(0, 0, 0, 0.8);
-}
-.title-screen h1::before {
-  content: '';
-  display: block;
-  width: 1.2em;
-  height: 1.2em;
-  margin: 0 auto 0.12em;
-  font-size: 0.6em;
-  background: var(--mt-badge) center / contain no-repeat;
-  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.7));
-}
-.title-screen .subtitle {
-  position: relative;
-  padding-bottom: 14px;
-  color: var(--mt-cream);
-}
-.title-screen .subtitle::after {
-  content: '';
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  bottom: 0;
-  height: 12px;
-  background: var(--mt-lace) repeat-x;
-  background-size: 54px 12px;
-}
-
-/* Chapter cards: luzzu stripes above and below the title. */
-.chapter-card h2 {
-  color: var(--mt-lime);
-  padding: 8px 0;
-  border-image: var(--mt-luzzu) 1;
-  border-top: 4px solid;
-  border-bottom: 4px solid;
-}
-
-/* Dialogue: lace along the top and a rosette in the corner. */
-.dialogue {
-  background: linear-gradient(rgba(20, 28, 40, 0.94), rgba(14, 18, 28, 0.94));
-  border: 3px solid var(--mt-cream);
-  box-shadow: inset 0 0 0 2px var(--mt-blue);
-  padding-top: 14px;
-}
-.dialogue.narration {
-  background: linear-gradient(rgba(38, 30, 20, 0.94), rgba(26, 21, 18, 0.94));
-  box-shadow: inset 0 0 0 2px var(--mt-lime-dark);
-}
-.dialogue::after {
-  content: '';
-  position: absolute;
-  right: 6px;
-  top: 6px;
-  width: 30px;
-  height: 30px;
-  background: var(--mt-rosette) center / contain no-repeat;
-  opacity: 0.55;
-  pointer-events: none;
-}
-.dlg-name {
-  color: var(--mt-lime);
-}
-.dlg-portrait {
-  border: 3px solid var(--mt-cream);
-  box-shadow: 0 0 0 2px var(--mt-green);
-}
-.btn.choice {
-  background: linear-gradient(rgba(20, 28, 40, 0.95), rgba(14, 18, 28, 0.95));
-  border: 2px solid var(--mt-cream);
-  box-shadow: inset 0 0 0 2px var(--mt-blue);
-}
-
 /* Map name and turn banner: limestone plaques with a luzzu stripe. */
 .map-name {
   color: var(--mt-cream);
@@ -274,12 +165,6 @@
 }
 .portrait {
   border-color: var(--mt-cream);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dialogue::after {
-    opacity: 0.4;
-  }
 }
 
 /* Short phone screens: the reaction list becomes two columns under a full-width Go!, so all
@@ -309,14 +194,6 @@
     height: 44px;
     font-size: 1.3rem;
   }
-}
-
-/* Legibility over the tiles. */
-.build-note,
-.tap-hint {
-  color: var(--mt-cream);
-  opacity: 0.85;
-  text-shadow: 0 1px 2px #000;
 }
 /* Inscriptional capitals read best a touch smaller and spaced. */
 .vb-cmd,

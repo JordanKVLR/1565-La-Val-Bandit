@@ -14,7 +14,7 @@
   background:
     radial-gradient(ellipse 70% 80% at 32% 42%, rgba(212, 178, 106, 0.1), transparent 70%),
     radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(6, 5, 8, 0.82) 100%),
-    linear-gradient(rgba(11, 10, 14, 0.9), rgba(11, 10, 14, 0.9)),
+    linear-gradient(rgba(11, 10, 14, 0.92), rgba(11, 10, 14, 0.92)),
     var(--mt-madum) center / 176px 176px,
     var(--ds-ink-0);
 }
@@ -314,7 +314,10 @@
   padding-bottom: var(--ds-space-2);
 }
 .fe-title__continue .ds-btn__detail {
+  overflow: hidden;
   font-size: var(--ds-text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .fe-title__continue .fe-badges {
   margin-left: auto;
@@ -1197,15 +1200,27 @@
     --ds-sheet-w: 820px;
   }
   .fe-settings__groups {
-    column-count: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
     column-gap: var(--ds-space-6);
   }
-  .fe-settings__group {
-    break-inside: avoid;
+  .fe-settings__group:first-child {
+    grid-row: 1 / span 2;
   }
   .fe-settings__group + .fe-settings__group {
     margin-top: 0;
-    padding-top: var(--ds-space-3);
+  }
+  .fe-settings__group + .fe-settings__group + .fe-settings__group {
+    padding-top: var(--ds-space-2);
+  }
+  .fe-setting {
+    min-height: 0;
+    padding: 2px 0;
+  }
+  /* The close button in the header and Esc / Ⓑ close it: the height goes to the settings. */
+  .fe-settings .ds-sheet__foot {
+    display: none;
   }
   .fe-setting__control .ds-slider {
     width: min(200px, 26 * var(--vw));
