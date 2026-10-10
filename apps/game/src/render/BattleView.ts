@@ -82,18 +82,18 @@ function markerShapes(enemy: boolean, pad: number): Shape[] {
   const hole = new Path();
   const width = 0.045;
   if (enemy) {
-    // A diamond reads smaller than a circle of the same radius: make it a little larger.
-    const r = 0.39 + pad * Math.SQRT2;
-    const inner = 0.39 - width * Math.SQRT2 - pad * Math.SQRT2;
-    ring.moveTo(0, r);
-    ring.lineTo(r, 0);
-    ring.lineTo(0, -r);
-    ring.lineTo(-r, 0);
+    // Square to the tile, so the isometric camera shows it as a diamond, like the HUD's mark.
+    const r = 0.29 + pad;
+    const inner = 0.29 - width - pad;
+    ring.moveTo(-r, -r);
+    ring.lineTo(r, -r);
+    ring.lineTo(r, r);
+    ring.lineTo(-r, r);
     ring.closePath();
-    hole.moveTo(0, inner);
-    hole.lineTo(-inner, 0);
-    hole.lineTo(0, -inner);
-    hole.lineTo(inner, 0);
+    hole.moveTo(-inner, -inner);
+    hole.lineTo(-inner, inner);
+    hole.lineTo(inner, inner);
+    hole.lineTo(inner, -inner);
     hole.closePath();
   } else {
     const r = 0.33;

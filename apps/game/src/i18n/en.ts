@@ -251,6 +251,13 @@ export const en = {
   'objective.unitFalls': '{name} falls',
   /** Joins alternative objectives: "Defeat Mustafa or Hold out for 5 rounds". */
   'objective.or': ' or ',
+  /** Battle HUD chrome (ui/battle/BattleChrome.tsx): objectives toggle, queue, map buttons. */
+  'battleHud.objectives': 'Objectives',
+  'battleHud.mapControls': 'Map controls',
+  'battleHud.queueUnit': '{name}, {side}',
+  'battleHud.queueNow': '{name}, {side}, acting now',
+  'battleHud.round': 'Round {n}',
+  'battleHud.notices': 'Announcements',
   'facing.choose': 'Choose facing',
   'facing.question': 'Face which way?',
   'facing.face.north': 'Face north',

@@ -20,7 +20,7 @@ const H = 128;
 const CX = W / 2;
 const CY = 66;
 /** The initial's typeface: Cinzel, as in the HUD (falls back until the web font loads). */
-export const BADGE_FONT = '600 34px Cinzel, Georgia, serif';
+export const BADGE_FONT = '700 32px Cinzel, Georgia, serif';
 
 /**
  * Unit badge floating over its head: a token in the side's colour and shape (circle: yours,
@@ -37,7 +37,7 @@ export function createUnitSprite(look: UnitLook): Sprite {
   const sprite = new Sprite(
     new SpriteMaterial({ map: texture, transparent: true, depthTest: true }),
   );
-  sprite.scale.set(0.7, 0.7, 1);
+  sprite.scale.set(0.8, 0.8, 1);
   sprite.center.set(0.5, 0);
   drawUnit(sprite, look);
   return sprite;

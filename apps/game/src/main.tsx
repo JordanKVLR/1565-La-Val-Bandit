@@ -17,6 +17,7 @@ import './ui/maltese.css';
 import './ui/input.css';
 import './ui/design/components.css';
 import './ui/battle/hud.css';
+import './ui/battle/chrome.css';
 import './ui/tv.css';
 
 registerSW({ immediate: true });

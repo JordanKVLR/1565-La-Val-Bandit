@@ -267,13 +267,25 @@
   .bhud-meters {
     gap: 1px;
   }
-  /* The prompt sits above the docked bar, on the right. */
+  /*
+   * The prompt takes the docked bar's place in the bottom-right corner (the bar steps aside
+   * while it shows, see BattleScreen), so the map above stays clear; it never reaches the
+   * unit card (at most 36% of the width) on the left.
+   */
   .bhud-submode {
     left: auto;
     right: max(var(--ds-edge), env(safe-area-inset-right));
-    bottom: calc(max(var(--ds-edge), env(safe-area-inset-bottom)) + var(--ds-hit) + 18px);
-    max-width: min(520px, 62 * var(--vw));
+    bottom: max(var(--ds-edge), env(safe-area-inset-bottom));
+    max-width: calc(64 * var(--vw) - 3 * var(--ds-edge));
+    padding-left: var(--ds-space-3);
     transform: none;
+  }
+  .bhud-submode__text {
+    font-size: var(--ds-text-xs);
+  }
+  .bhud-submode .ds-btn {
+    padding: 0 var(--ds-space-3);
+    font-size: var(--ds-text-xs);
   }
   .bhud-figure {
     height: 120px;

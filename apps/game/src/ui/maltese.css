@@ -264,14 +264,6 @@
   box-shadow: inset 0 0 0 2px var(--mt-blue);
 }
 
-/* Map name and turn banner: limestone plaques with a luzzu stripe. */
-.map-name {
-  color: var(--mt-cream);
-  background: linear-gradient(rgba(26, 21, 18, 0.9), rgba(26, 21, 18, 0.9));
-  border: 2px solid var(--mt-lime);
-  border-left: 12px solid;
-  border-image: var(--mt-luzzu) 0 0 0 1;
-}
 .portrait {
   border-color: var(--mt-cream);
 }
@@ -357,12 +349,6 @@
     padding-left: 16px;
   }
 }
-@media (min-height: 600px) {
-  .objective {
-    font-size: 0.9rem;
-  }
-}
-
 /* Long dialogs scroll on short phones; keep their closing button in reach. */
 .modal-box > .btn:last-child {
   position: sticky;

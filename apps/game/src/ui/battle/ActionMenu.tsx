@@ -20,7 +20,15 @@ function layerInsets(layer: HTMLElement): Insets {
   const safeX = Math.max(0, -layer.offsetLeft);
   const safeY = Math.max(0, -layer.offsetTop);
   const edge = 12;
-  return { top: safeY + 64, right: safeX + edge, bottom: safeY + edge, left: safeX + edge };
+  // Clear of the brief in the top-left corner (the tallest piece of the top chrome).
+  const brief = layer.parentElement?.querySelector<HTMLElement>('.bhud-top');
+  const chrome = brief ? brief.offsetTop + brief.offsetHeight - layer.offsetTop + 8 : 0;
+  return {
+    top: Math.max(safeY + 64, chrome),
+    right: safeX + edge,
+    bottom: safeY + edge,
+    left: safeX + edge,
+  };
 }
 
 /**

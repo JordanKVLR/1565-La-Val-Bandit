@@ -65,8 +65,10 @@ describe('design tokens', () => {
   });
 
   it('are the only colours in the converted screen styles', () => {
-    const hud = readFileSync(join(UI, 'battle/hud.css'), 'utf8');
-    expect(hud.match(/#[0-9a-fA-F]{3,8}\b/g)).toBeNull();
+    for (const sheet of ['battle/hud.css', 'battle/chrome.css']) {
+      const css = readFileSync(join(UI, sheet), 'utf8');
+      expect(css.match(/#[0-9a-fA-F]{3,8}\b/g), sheet).toBeNull();
+    }
   });
 });
 

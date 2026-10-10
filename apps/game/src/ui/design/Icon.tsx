@@ -24,6 +24,8 @@ const PATHS = {
   warning: 'M12 4 2.8 19.5h18.4ZM12 10v4.5M12 17.25h.01',
   chevronRight: 'M9.5 5.5 16 12l-6.5 6.5',
   plus: 'M12 5v14M5 12h14',
+  // Battle HUD: objectives (a pennant on a staff)
+  flag: 'M6 20.5v-16M6 4.5h11l-2.75 4.25L17 13H6',
   // Ornaments (period flavour through restraint)
   cross:
     'M12 12 8.3 3.5 12 5.6l3.7-2.1ZM12 12l8.5-3.7-2.1 3.7 2.1 3.7ZM12 12l3.7 8.5-3.7-2.1-3.7 2.1ZM12 12 3.5 15.7 5.6 12 3.5 8.3Z',

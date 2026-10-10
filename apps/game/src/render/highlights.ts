@@ -39,7 +39,7 @@ interface Style {
  * outlines, each kind told apart by its pattern and outline as well as its colour
  * (colour-blind safe):
  * - move: a soft blue wash with a fine inner line per tile, in one solid outline;
- * - path: a warm-white ribbon from the unit to a ring on the chosen tile;
+ * - path: a gold ribbon from the unit to a ring on the chosen tile (the chosen route);
  * - range: fine orange diagonal hairlines inside a dashed orange outline;
  * - target: a small yellow reticle framed by corner brackets that breathe;
  * - danger: black-and-white hatching; goal: a gold chequer (the "gold tiles") in a gold line.
@@ -53,10 +53,10 @@ const STYLES: Record<HighlightKind, Style> = {
     size: 1,
     edge: { color: MAP_LIGHT },
   },
-  path: { fill: MAP_LIGHT, opacity: 1, pattern: 'none', size: 1, route: MAP_LIGHT },
+  path: { fill: MAP_GOLD_BRIGHT, opacity: 1, pattern: 'none', size: 1, route: MAP_GOLD_BRIGHT },
   range: {
     fill: OKABE.orange,
-    opacity: 0.8,
+    opacity: 0.62,
     pattern: 'stripes',
     size: 1,
     edge: { color: OKABE.orange, dashed: true },
@@ -311,7 +311,7 @@ function buildRoute(
   strong: boolean,
 ): void {
   if (tiles.length < 2) return;
-  const w = strong ? 0.085 : 0.055;
+  const w = strong ? 0.1 : 0.07;
   const rim = strong ? 0.05 : 0.04;
   const points = tiles.map((c) => top(c).add(new Vector3(0, lift, 0)));
   const dark: BufferGeometry[] = [];
@@ -398,7 +398,7 @@ export function buildHighlights(
       else mat.dispose();
     }
 
-    if (style.route) buildRoute(group, layer.tiles, top, lift + 0.02, style.route, strong);
+    if (style.route) buildRoute(group, layer.tiles, top, lift + 0.045, style.route, strong);
 
     if (style.edge) {
       const inSet = new Set(layer.tiles.map((c) => `${c.x},${c.y}`));
@@ -428,11 +428,11 @@ export function buildHighlights(
               ).translate(base.x, base.y, base.z),
             );
             lightPieces.push(
-              new BoxGeometry(horizontal ? dash : edgeW, 0.016, horizontal ? edgeW : dash).translate(
-                base.x,
-                base.y + 0.005,
-                base.z,
-              ),
+              new BoxGeometry(
+                horizontal ? dash : edgeW,
+                0.016,
+                horizontal ? edgeW : dash,
+              ).translate(base.x, base.y + 0.005, base.z),
             );
           }
         }
@@ -463,11 +463,7 @@ export function buildHighlights(
           for (const sx of [-1, 1])
             for (const sz of [-1, 1]) {
               bars.push(
-                new BoxGeometry(arm, 0.016, width).translate(
-                  sx * (0.47 - arm / 2),
-                  y,
-                  sz * edge,
-                ),
+                new BoxGeometry(arm, 0.016, width).translate(sx * (0.47 - arm / 2), y, sz * edge),
                 new BoxGeometry(width, 0.016, arm - width).translate(
                   sx * edge,
                   y,
