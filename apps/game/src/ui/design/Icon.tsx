@@ -30,6 +30,8 @@ const PATHS = {
   dodge: 'M4.5 12h6M7.5 9l-3 3 3 3M13.5 12h6M16.5 9l3 3-3 3',
   counter: 'M4.5 4.5l6 6M4.5 4.5v5M4.5 4.5h5M19.5 19.5l-6-6M19.5 19.5v-5M19.5 19.5h-5',
   dash: 'M6.5 12h11',
+  // Battle HUD: objectives (a pennant on a staff)
+  flag: 'M6 20.5v-16M6 4.5h11l-2.75 4.25L17 13H6',
   // Ornaments (period flavour through restraint)
   cross:
     'M12 12 8.3 3.5 12 5.6l3.7-2.1ZM12 12l8.5-3.7-2.1 3.7 2.1 3.7ZM12 12l3.7 8.5-3.7-2.1-3.7 2.1ZM12 12 3.5 15.7 5.6 12 3.5 8.3Z',

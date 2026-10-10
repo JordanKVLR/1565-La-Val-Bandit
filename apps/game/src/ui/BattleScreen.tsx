@@ -21,11 +21,12 @@ import { settings } from '../state/settings';
 import { LevelUpPanel } from './battle/LevelUpPanel';
 import { XpPanel } from './battle/XpPanel';
 import { ForecastPanel } from './battle/ForecastPanel';
-import { describeObjectives, terrainLabel } from './battle/objectives';
+import { terrainLabel } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
+import { BattleBrief, MapControls, RoundBanner, Toasts } from './battle/BattleChrome';
 import { usePrompt } from './KeyHint';
 import type { AnchorSource } from './design';
-import { Button, Chip } from './design';
+import { Chip, PHONE_QUERY, useMediaQuery } from './design';
 
 interface Props {
   setup: BattleSetup;
@@ -87,6 +88,7 @@ export function BattleScreen({
   const [panel, setPanel] = useState<Panel>('none');
   const close = () => setPanel('none');
   const prompt = usePrompt();
+  const phone = useMediaQuery(PHONE_QUERY);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -217,6 +219,8 @@ export function BattleScreen({
   }, [state]);
 
   const active = ctl.active();
+  // The forecast and the reaction prompt take the whole screen's attention: the chrome steps back.
+  const inDuel = mode.kind === 'forecast' || mode.kind === 'reaction';
   const tile = inspected && getTile(state.map, inspected);
   const terrain = inspected && terrainAt(state, inspected);
   const inspectedUnit = inspected && unitAt(state, inspected);
@@ -255,6 +259,12 @@ export function BattleScreen({
       },
     [view, ctl],
   );
+  // The tapped unit's card, unless it is the unit being planned (its own card shows that).
+  const showInspected =
+    !!inspectedUnit &&
+    !BUSY_MODES.includes(mode.kind) &&
+    !(planning && inspectedUnit.id === active?.id);
+  // Phones show one card at a time, the tapped unit's first, so the map keeps its height.
   const [detailsFor, setDetailsFor] = useState<string | null>(null);
   const detailsUnit = detailsFor ? findUnit(state, detailsFor) : undefined;
 
@@ -270,66 +280,28 @@ export function BattleScreen({
     <main class="battle-screen">
       <canvas ref={canvasRef} class="battle-canvas" aria-label={t('battle.mapLabel', { title })} />
 
-      <header class="hud-top" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
-        <div class="map-name">{title}</div>
-        {active && state.outcome === 'ongoing' && (
-          <div class="turn-banner" data-testid="turn-banner">
-            {t('battle.turnBanner', { round: state.round, name: active.name })}
-          </div>
-        )}
-        {state.outcome === 'ongoing' && (
-          <div class="objective" data-testid="objective">
-            <span>{t('battle.win', { objectives: describeObjectives(state).win })}</span>
-            <span class="lose">
-              {t('battle.lose', { conditions: describeObjectives(state).lose })}
-            </span>
-          </div>
-        )}
-      </header>
+      <BattleBrief title={title} state={state} active={active} hidden={inDuel} />
       {!BUSY_MODES.includes(mode.kind) && <TurnQueue state={state} />}
-
-      <div class="hud-controls" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
-        <Button
-          class="pointer-only"
-          label={t('battle.rotateLeft')}
-          icon="rotateLeft"
-          iconOnly
-          onClick={() => viewRef.current?.rotate(-1)}
-        />
-        <Button
-          class="pointer-only"
-          label={t('battle.rotateRight')}
-          icon="rotateRight"
-          iconOnly
-          onClick={() => viewRef.current?.rotate(1)}
-        />
-        <Button label={t('common.menu')} icon="menu" iconOnly onClick={() => setPanel('menu')} />
-      </div>
-
-      {notices.length > 0 && (
-        <div class="notices" role="status">
-          {notices.map((n) => (
-            <div class="notice" key={n.id}>
-              {n.text}
-            </div>
-          ))}
-        </div>
-      )}
+      <MapControls
+        hidden={inDuel}
+        onRotate={(d) => viewRef.current?.rotate(d)}
+        onMenu={() => setPanel('menu')}
+      />
+      <RoundBanner round={state.round} enabled={state.outcome === 'ongoing'} />
+      <Toasts notices={notices} />
 
       <div class="hud-bottom-left">
-        {inspectedUnit &&
-          !BUSY_MODES.includes(mode.kind) &&
-          !(planning && inspectedUnit.id === active?.id) && (
-            <UnitCard
-              unit={inspectedUnit}
-              state={state}
-              onDetails={() => {
-                setDetailsFor(inspectedUnit.id);
-                setPanel('unit');
-              }}
-            />
-          )}
-        {planning && active && (
+        {showInspected && (
+          <UnitCard
+            unit={inspectedUnit}
+            state={state}
+            onDetails={() => {
+              setDetailsFor(inspectedUnit.id);
+              setPanel('unit');
+            }}
+          />
+        )}
+        {planning && active && !(phone && showInspected) && (
           <UnitCard
             unit={active}
             state={state}
@@ -353,9 +325,12 @@ export function BattleScreen({
 
       {/* Covers the map exactly (in TV mode too), so map positions are layer positions. */}
       <div class="bhud-layer">
-        {(mode.kind === 'command' || mode.kind === 'move') && panel === 'none' && (
-          <ActionMenu ctl={ctl} moving={mode.kind === 'move'} anchor={anchor} />
-        )}
+        {(mode.kind === 'command' || mode.kind === 'move') &&
+          panel === 'none' &&
+          // On a phone the route prompt takes the docked bar's place, so the map stays clear.
+          !(phone && mode.kind === 'move' && mode.pending) && (
+            <ActionMenu ctl={ctl} moving={mode.kind === 'move'} anchor={anchor} />
+          )}
         {/* The technique list and the facing picker open where the action bar stood. */}
         {mode.kind === 'attackMenu' && <AttackMenu ctl={ctl} anchor={anchor} />}
         {mode.kind === 'facing' && active && (

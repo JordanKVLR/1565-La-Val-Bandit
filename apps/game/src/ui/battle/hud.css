@@ -38,22 +38,32 @@
 }
 
 /* ── Step prompt (route preview, picking a target) ────────────────────── */
+/*
+ * Centred in the space right of the unit card (bottom left, at most 320 px or 42% wide), so it
+ * never covers the card: near the middle on the Deck, further right on a TV's narrower page.
+ */
 .bhud-submode {
+  --bhud-card-room: calc(min(320px, 42 * var(--vw)) + 2 * var(--ds-edge));
   position: absolute;
-  left: 50%;
+  left: calc((100% + var(--bhud-card-room)) / 2);
   bottom: max(var(--ds-edge), env(safe-area-inset-bottom));
   z-index: var(--ds-z-actionbar);
   display: flex;
   align-items: center;
   gap: var(--ds-space-2);
-  max-width: min(600px, 60 * var(--vw));
+  width: max-content;
+  max-width: min(600px, 100% - var(--bhud-card-room) - var(--ds-edge));
   padding: var(--ds-space-1) var(--ds-space-1) var(--ds-space-1) var(--ds-space-4);
   transform: translateX(-50%);
   animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
 }
+.bhud-submode > .ds-btn {
+  flex: none;
+}
 .bhud-submode__text {
+  /* Never crushed by the buttons: where the room beside the card is narrow (TV), it wraps. */
   flex: 1 1 auto;
-  min-width: 0;
+  min-width: 9em;
   font-size: var(--ds-text-sm);
   color: var(--ds-text-2);
 }
@@ -173,7 +183,6 @@
 }
 .bhud-details__top {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   column-gap: var(--ds-space-3);
   row-gap: var(--ds-space-2);
@@ -267,13 +276,25 @@
   .bhud-meters {
     gap: 1px;
   }
-  /* The prompt sits above the docked bar, on the right. */
+  /*
+   * The prompt takes the docked bar's place in the bottom-right corner (the bar steps aside
+   * while it shows, see BattleScreen), so the map above stays clear; it never reaches the
+   * unit card (at most 36% of the width) on the left.
+   */
   .bhud-submode {
     left: auto;
     right: max(var(--ds-edge), env(safe-area-inset-right));
-    bottom: calc(max(var(--ds-edge), env(safe-area-inset-bottom)) + var(--ds-hit) + 18px);
-    max-width: min(520px, 62 * var(--vw));
+    bottom: max(var(--ds-edge), env(safe-area-inset-bottom));
+    max-width: calc(64 * var(--vw) - 3 * var(--ds-edge));
+    padding-left: var(--ds-space-3);
     transform: none;
+  }
+  .bhud-submode__text {
+    font-size: var(--ds-text-xs);
+  }
+  .bhud-submode .ds-btn {
+    padding: 0 var(--ds-space-3);
+    font-size: var(--ds-text-xs);
   }
   .bhud-figure {
     height: 120px;

@@ -1,0 +1,412 @@
+/*
+ * Battle HUD chrome on the design system (docs/DESIGN.md): the brief (top left), the turn
+ * queue (top centre), the map buttons (top right), announcements and the round banner. One
+ * rhythm: every top piece starts at the same edge distance and the queue and map buttons
+ * share the 44 px height. Tokens only (design.test.ts checks for raw colours).
+ */
+
+/* ── Brief: battle name, round and turn, objectives ───────────────────── */
+.bhud-top {
+  position: absolute;
+  top: max(var(--ds-edge), env(safe-area-inset-top));
+  left: max(var(--ds-edge), env(safe-area-inset-left));
+  z-index: var(--ds-z-hud);
+  width: max-content;
+  max-width: min(340px, 30 * var(--vw));
+}
+.bhud-top[hidden] {
+  display: none;
+}
+.bhud-brief.ds-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-1);
+}
+.bhud-brief__title {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.12em;
+  line-height: var(--ds-leading-tight);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ds-gold);
+}
+.bhud-brief__turn {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  min-width: 0;
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text-3);
+  white-space: nowrap;
+}
+.bhud-brief__turn > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bhud-brief__turn .ds-side-mark {
+  width: 0.95em;
+  height: 0.95em;
+  stroke: var(--ds-ink-0);
+  stroke-width: 2px;
+  paint-order: stroke;
+}
+.bhud-brief__name {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.03em;
+  color: var(--ds-text);
+}
+
+/* Objectives: the win line always; the loss line on a tap, or hover and focus with a pointer. */
+.bhud-obj {
+  margin-top: var(--ds-space-1);
+  border-top: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.bhud-obj__toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  width: 100%;
+  min-height: 30px;
+  margin: 0;
+  padding: var(--ds-space-0) 0;
+  font: inherit;
+  font-size: var(--ds-text-xs);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text-2);
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: var(--ds-radius-xs);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* A 44 px hit area round the slim line. */
+.bhud-obj__toggle::after {
+  content: '';
+  position: absolute;
+  inset: calc((30px - var(--ds-hit)) / 2) calc(-1 * var(--ds-space-2));
+}
+.bhud-obj__toggle:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: var(--ds-focus-offset);
+}
+.bhud-obj__icon {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--ds-gold);
+}
+.bhud-obj__lose .bhud-obj__icon {
+  color: var(--ds-danger);
+}
+.bhud-obj__win {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bhud-obj__label {
+  color: var(--ds-text-3);
+}
+.bhud-obj__chevron {
+  width: 1em;
+  height: 1em;
+  color: var(--ds-text-3);
+  transition: transform var(--ds-dur-fast) var(--ds-ease-out);
+}
+.bhud-obj__lose {
+  display: none;
+  align-items: flex-start;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: var(--ds-space-1) 0 var(--ds-space-1);
+  font-size: var(--ds-text-xs);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text-2);
+  animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.bhud-obj.is-open .bhud-obj__lose,
+.bhud-obj:has(:focus-visible) .bhud-obj__lose {
+  display: flex;
+}
+.bhud-obj.is-open .bhud-obj__win,
+.bhud-obj:has(:focus-visible) .bhud-obj__win {
+  white-space: normal;
+}
+.bhud-obj.is-open .bhud-obj__chevron {
+  transform: rotate(90deg);
+}
+@media (hover: hover) {
+  .bhud-obj:hover .bhud-obj__lose {
+    display: flex;
+  }
+  .bhud-obj:hover .bhud-obj__win {
+    white-space: normal;
+  }
+  .bhud-obj__toggle:hover {
+    color: var(--ds-text);
+  }
+}
+
+/* ── Turn queue ───────────────────────────────────────────────────────── */
+.bhud-queue {
+  --bq-size: 24px;
+  --bq-now: 32px;
+  position: absolute;
+  top: max(var(--ds-edge), env(safe-area-inset-top));
+  left: 50%;
+  z-index: var(--ds-z-hud);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  height: var(--ds-hit);
+  margin: 0;
+  padding: 0 var(--ds-space-3);
+  list-style: none;
+  background: var(--ds-sheen), var(--ds-glass-1);
+  border: var(--ds-border) solid var(--ds-hairline-soft);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-1);
+  transform: translateX(-50%);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(var(--ds-blur));
+  backdrop-filter: blur(var(--ds-blur));
+}
+.bhud-queue__token {
+  --bq-side: var(--ds-side-player);
+  --bq-ring: var(--ds-side-player-text);
+  position: relative;
+  flex: none;
+  width: var(--bq-size);
+  height: var(--bq-size);
+}
+.bhud-queue__token.side-enemy {
+  --bq-side: var(--ds-side-enemy);
+  --bq-ring: var(--ds-side-enemy-text);
+  /* A diamond in the same box reads smaller than a circle: give it a little more room. */
+  width: calc(var(--bq-size) + 4px);
+  height: calc(var(--bq-size) + 4px);
+}
+.bhud-queue__face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  line-height: 1;
+  color: var(--ds-text);
+  background: var(--bq-side);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1.5px var(--bq-ring),
+    0 0 0 3px var(--ds-meter-track);
+}
+.bhud-queue__face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+/* Enemy: a diamond, its ring drawn by a slightly larger diamond behind it. */
+.side-enemy > .bhud-queue__face {
+  inset: 2px;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.side-enemy::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--bq-ring);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.side-enemy > .bhud-queue__face > span {
+  font-size: 0.9em;
+}
+/* The unit acting now: larger, a gold ring and a gold caret under it. */
+.bhud-queue__token.is-now {
+  --bq-ring: var(--ds-gold-bright);
+  width: var(--bq-now);
+  height: var(--bq-now);
+}
+.bhud-queue__token.is-now.side-enemy {
+  width: calc(var(--bq-now) + 6px);
+  height: calc(var(--bq-now) + 6px);
+}
+.bhud-queue__token.is-now > .bhud-queue__face {
+  font-size: var(--ds-text-sm);
+}
+.bhud-queue__token.is-now:not(.side-enemy) > .bhud-queue__face {
+  box-shadow:
+    0 0 0 2px var(--ds-gold-bright),
+    0 0 0 3.5px var(--ds-ink-0);
+}
+.bhud-queue__token.is-now::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  border-top-width: 0;
+  border-bottom: 4px solid var(--ds-gold-bright);
+  transform: translateX(-50%);
+}
+.bhud-queue__sep {
+  flex: none;
+  align-self: stretch;
+  width: 1px;
+  margin: var(--ds-space-2) var(--ds-space-0);
+  background: var(--ds-hairline);
+}
+
+/* ── Map buttons ──────────────────────────────────────────────────────── */
+.bhud-mapctl {
+  position: absolute;
+  top: max(var(--ds-edge), env(safe-area-inset-top));
+  right: max(var(--ds-edge), env(safe-area-inset-right));
+  z-index: var(--ds-z-hud);
+  display: flex;
+  align-items: center;
+  background: var(--ds-sheen), var(--ds-glass-1);
+  border: var(--ds-border) solid var(--ds-hairline-soft);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-1);
+  -webkit-backdrop-filter: blur(var(--ds-blur));
+  backdrop-filter: blur(var(--ds-blur));
+}
+.bhud-mapctl[hidden] {
+  display: none;
+}
+.bhud-mapctl__rotate {
+  display: flex;
+  align-items: center;
+  border-right: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.bhud-mapctl .ds-btn {
+  height: calc(var(--ds-hit) - 2px);
+  min-height: 0;
+  border-radius: calc(var(--ds-radius-lg) - 1px);
+}
+.bhud-mapctl .ds-btn--icon .ds-btn__icon {
+  width: 1.3em;
+  height: 1.3em;
+}
+
+/* ── Announcements ────────────────────────────────────────────────────── */
+.bhud-toasts {
+  position: absolute;
+  top: calc(max(var(--ds-edge), env(safe-area-inset-top)) + var(--ds-hit) + var(--ds-space-6));
+  left: 50%;
+  z-index: var(--ds-z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-2);
+  width: max-content;
+  max-width: min(560px, 60 * var(--vw));
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.bhud-toast.ds-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-2) var(--ds-space-4);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-medium);
+  line-height: var(--ds-leading-tight);
+  text-align: center;
+  animation: ds-rise-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.bhud-toast__glyph {
+  width: 0.9em;
+  height: 0.9em;
+  color: var(--ds-gold);
+}
+
+/* ── Round banner ─────────────────────────────────────────────────────── */
+.bhud-round {
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  z-index: var(--ds-z-toast);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-4);
+  padding: var(--ds-space-2) var(--ds-space-10);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-2xl);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+  color: var(--ds-gold-bright);
+  text-shadow: var(--ds-text-shadow);
+  /* A band of glass that fades out at both ends, between two fading gold hairlines. */
+  background:
+    linear-gradient(90deg, transparent, var(--ds-hairline-strong), transparent) top / 100% 1px
+      no-repeat,
+    linear-gradient(90deg, transparent, var(--ds-hairline-strong), transparent) bottom / 100% 1px
+      no-repeat,
+    linear-gradient(90deg, transparent, var(--ds-glass-2) 22%, var(--ds-glass-2) 78%, transparent);
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: bhud-round 1.7s var(--ds-ease-out) both;
+}
+.bhud-round__glyph {
+  width: 0.5em;
+  height: 0.5em;
+  color: var(--ds-gold);
+}
+@keyframes bhud-round {
+  0% {
+    opacity: 0;
+    translate: 0 var(--ds-rise);
+  }
+  14%,
+  78% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── Phones in landscape ──────────────────────────────────────────────── */
+@media (max-height: 520px) {
+  .bhud-top {
+    max-width: min(300px, 33 * var(--vw));
+  }
+  .bhud-brief.ds-compact {
+    padding: var(--ds-space-1) var(--ds-space-2) 0 var(--ds-space-3);
+  }
+  .bhud-queue {
+    --bq-size: 22px;
+    --bq-now: 28px;
+    gap: 6px;
+    padding: 0 var(--ds-space-2);
+  }
+  .bhud-round {
+    top: 28%;
+    font-size: var(--ds-text-xl);
+  }
+}

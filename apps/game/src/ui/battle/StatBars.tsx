@@ -1,6 +1,7 @@
 import type { BalanceConfig, PilotStats, StatName, UnitState } from '@m1565/core';
 import { t } from '../../i18n';
 import { portraitUrl } from '../../render/art';
+import { useArtRevision } from '../useArt';
 import { STAT_INFO } from './statInfo';
 
 /** Attributes top out at 32 (the classic cap), so a full bar means a maxed attribute. */
@@ -191,6 +192,8 @@ export function Portrait({
   side: UnitState['side'];
   castId?: string | null;
 }) {
+  // The first battle screen can render before the art manifest has loaded: draw again then.
+  useArtRevision();
   const url = portraitUrl(castId);
   return (
     <div class={`portrait portrait-${side}`} aria-hidden="true">

@@ -13,6 +13,9 @@ export interface ArtManifest {
 const EMPTY: ArtManifest = { portraits: {}, terrain: {}, terrainSides: {} };
 let manifest: Promise<ArtManifest> | null = null;
 let loaded: ArtManifest = EMPTY;
+/** Bumped whenever the manifest arrives, so pictures drawn before it can draw again. */
+let revision = 0;
+const listeners = new Set<() => void>();
 
 // The single-file build embeds its art (as data: URLs) because it has no folder to fetch from.
 const embedded = (globalThis as { __M1565_ART__?: Partial<ArtManifest> }).__M1565_ART__;
@@ -25,9 +28,29 @@ export function loadArtManifest(): Promise<ArtManifest> {
   if (embedded) return (manifest ??= Promise.resolve(loaded));
   manifest ??= fetch(artUrl('manifest.json'))
     .then((r) => (r.ok ? (r.json() as Promise<Partial<ArtManifest>>) : {}))
-    .then((m) => (loaded = { ...EMPTY, ...m }))
+    .then((m) => {
+      loaded = { ...EMPTY, ...m };
+      revision++;
+      for (const listener of [...listeners]) listener();
+      return loaded;
+    })
     .catch(() => EMPTY);
   return manifest;
+}
+
+/**
+ * How many times the art has changed (0 until the manifest arrives). The UI renders before the
+ * manifest is fetched, so a portrait reads this through `useArtRevision` (ui/useArt.ts) and
+ * draws its picture once it is known instead of keeping the letter stand-in.
+ */
+export function artRevision(): number {
+  return revision;
+}
+
+/** Calls `listener` whenever the art manifest arrives. Returns the unsubscribe function. */
+export function onArtChange(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
 }
 
 /**

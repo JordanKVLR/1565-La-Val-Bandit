@@ -20,6 +20,7 @@ import './ui/design/controls.css';
 import './ui/battle/hud.css';
 import './ui/frontend.css';
 import './ui/battle/overlays.css';
+import './ui/battle/chrome.css';
 import './ui/tv.css';
 
 registerSW({ immediate: true });
