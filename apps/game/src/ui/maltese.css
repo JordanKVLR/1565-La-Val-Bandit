@@ -55,7 +55,6 @@
 }
 .gallarija,
 .title-menu,
-.action-menu,
 .vb-commands {
   background:
     repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 22px),
@@ -70,7 +69,6 @@
 /* The moulded cornice sits a little wider than the balcony... */
 .gallarija::before,
 .title-menu::before,
-.action-menu::before,
 .vb-commands::before {
   content: '';
   position: absolute;
@@ -86,7 +84,6 @@
 /* ...and carved limestone corbels hold it up. */
 .gallarija::after,
 .title-menu::after,
-.action-menu::after,
 .vb-commands::after {
   content: '';
   position: absolute;
@@ -120,11 +117,6 @@
   align-self: center;
   background: var(--mt-cross-gold) center / contain no-repeat;
 }
-.vb-cmd.mini,
-.vbd-actions .vb-cmd {
-  background: linear-gradient(#c23b35, #8a211d);
-  border: 2px solid var(--mt-cream);
-}
 
 /* ── Bizzilla lace edging on framed panels ──────────────────────────────── */
 /* .dialogue is absolutely placed already, which anchors its lace too. */
@@ -150,9 +142,7 @@
   background: linear-gradient(rgba(14, 22, 36, 0.97), rgba(10, 14, 24, 0.97));
   border-color: var(--mt-cream);
 }
-.vb-side-top,
-.vbd-top,
-.uc-top {
+.vb-side-top {
   padding-top: 9px;
 }
 .modal-box {
@@ -292,13 +282,6 @@
   }
 }
 
-/* Action menu entries are text on the balcony, not separate painted buttons. */
-.btn.action {
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-}
-
 /* Short phone screens: the reaction list becomes two columns under a full-width Go!, so all
    six choices fit, and the two panels make room for it. */
 @media (max-height: 520px) {
@@ -337,24 +320,17 @@
 }
 /* Inscriptional capitals read best a touch smaller and spaced. */
 .vb-cmd,
-.btn.action,
 .vb-name,
-.vbd-equip,
-.vbd-list,
-.action-title,
 .battle-screen .modal-box h2,
 .am-name,
 .reaction-title {
   letter-spacing: 0.03em;
 }
-.vb-cmd,
-.btn.action {
+.vb-cmd {
   font-size: 1.2rem;
   font-weight: 700;
 }
-.vb-cmd.mini {
-  min-height: 44px;
-}
+
 /* On short phones the reaction list shows each reason small under its name. */
 @media (max-height: 520px) {
   .vb-forecast.react .vb-cmd:not(.go) {

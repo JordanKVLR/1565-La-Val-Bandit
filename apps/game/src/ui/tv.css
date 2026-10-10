@@ -57,14 +57,14 @@
   border-width: var(--tv-safe-y) var(--tv-safe-x);
   background-origin: border-box;
 }
-:root[data-display='tv'] :is(.battle-canvas, .stage-canvas) {
+:root[data-display='tv'] :is(.battle-canvas, .stage-canvas, .bhud-layer) {
   position: absolute;
   top: calc(-1 * var(--tv-safe-y));
   left: calc(-1 * var(--tv-safe-x));
   width: calc(100% + 2 * var(--tv-safe-x));
   height: calc(100% + 2 * var(--tv-safe-y));
 }
-:root[data-display='tv'] .modal {
+:root[data-display='tv'] :is(.modal, .ds-sheet) {
   inset: calc(-1 * var(--tv-safe-y)) calc(-1 * var(--tv-safe-x));
   padding: calc(var(--tv-safe-y) + 12px) calc(var(--tv-safe-x) + 12px);
 }

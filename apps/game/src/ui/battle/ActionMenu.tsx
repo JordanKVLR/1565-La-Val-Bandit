@@ -1,47 +1,93 @@
+import { useRef } from 'preact/hooks';
 import type { BattleController } from '../../scenes/BattleController';
 import { t } from '../../i18n';
-import { KeyHint } from '../KeyHint';
+import type { AnchorSource, Insets } from '../design';
+import {
+  ActionBar,
+  ActionBarSeparator,
+  Button,
+  Panel,
+  PHONE_QUERY,
+  useAnchor,
+  useMediaQuery,
+} from '../design';
 
 /**
- * The active unit's commands. While `moving`, its movement range is on the map (the default at
- * the start of a turn) and Move shows as selected.
+ * Margins the anchored bar keeps inside the anchor layer: the HUD along the top, the screen
+ * edge, and in TV mode the title-safe area (the layer reaches past it, like the canvas).
  */
-export function ActionMenu({ ctl, moving = false }: { ctl: BattleController; moving?: boolean }) {
+function layerInsets(layer: HTMLElement): Insets {
+  const safeX = Math.max(0, -layer.offsetLeft);
+  const safeY = Math.max(0, -layer.offsetTop);
+  const edge = 12;
+  return { top: safeY + 64, right: safeX + edge, bottom: safeY + edge, left: safeX + edge };
+}
+
+/**
+ * The active unit's commands as a slim bar. On wide screens (Deck, desktop, TV) it stands
+ * beside the unit on the map and follows the camera; on phones it docks to the bottom edge.
+ * While `moving`, the unit's movement range is on the map (the default at the start of a turn)
+ * and Move shows as pressed.
+ */
+export function ActionMenu({
+  ctl,
+  moving = false,
+  anchor,
+}: {
+  ctl: BattleController;
+  moving?: boolean;
+  /** Where the active unit is on screen; without it the bar docks like on a phone. */
+  anchor?: AnchorSource | null;
+}) {
+  const bar = useRef<HTMLElement>(null);
+  const docked = useMediaQuery(PHONE_QUERY) || !anchor;
+  useAnchor(bar, anchor ?? null, !docked, layerInsets, { gap: 48, lift: 28 });
   const unit = ctl.active();
   if (!unit) return null;
   return (
-    <nav class="action-menu" aria-label={t('battle.actions')}>
-      <div class="action-title">{unit.name}</div>
-      <button
-        type="button"
-        class={`btn action${moving ? ' on' : ''}`}
-        aria-pressed={moving}
+    <ActionBar
+      as="nav"
+      label={t('battle.actions')}
+      orientation={docked ? 'horizontal' : 'vertical'}
+      class={`bhud-actions${docked ? ' is-docked' : ''}`}
+      barRef={bar}
+    >
+      <Button
+        label={t('battle.action.move')}
+        icon="move"
+        keyHint="move"
+        pressed={moving}
         disabled={!ctl.canMove()}
         onClick={() => ctl.chooseMove()}
         title={moving ? t('battle.moveTip') : undefined}
-      >
-        {t('battle.action.move')} <KeyHint action="move" />
-      </button>
-      <button
-        type="button"
-        class="btn action"
+      />
+      <Button
+        label={t('battle.action.attack')}
+        icon="attack"
+        keyHint="attack"
         disabled={!ctl.canAttack()}
         onClick={() => ctl.chooseAttack()}
-      >
-        {t('battle.action.attack')} <KeyHint action="attack" />
-      </button>
+      />
       {ctl.canUndo() && (
-        <button type="button" class="btn action" onClick={() => ctl.undoMove()}>
-          {t('battle.action.undo')} <KeyHint action="undo" />
-        </button>
+        <Button
+          label={t('battle.action.undo')}
+          icon="undo"
+          keyHint="undo"
+          onClick={() => ctl.undoMove()}
+        />
       )}
-      <button type="button" class="btn action end" onClick={() => ctl.chooseEndTurn()}>
-        {t('battle.action.endTurn')} <KeyHint action="endTurn" />
-      </button>
-    </nav>
+      <ActionBarSeparator />
+      <Button
+        label={t('battle.action.endTurn')}
+        icon="endTurn"
+        keyHint="endTurn"
+        onClick={() => ctl.chooseEndTurn()}
+      />
+    </ActionBar>
   );
 }
 
+/** A slim prompt for a step in progress (route preview, picking a target), with its buttons. */
 export function SubModeBar({
   label,
   onCancel,
@@ -54,16 +100,24 @@ export function SubModeBar({
   onConfirm?: () => void;
 }) {
   return (
-    <div class="submode">
-      <span>{label}</span>
+    <Panel elevation={2} compact class="bhud-submode" role="group" aria-label={label}>
+      <span class="bhud-submode__text">{label}</span>
       {confirm && onConfirm && (
-        <button type="button" class="btn" onClick={onConfirm}>
-          {confirm} <KeyHint action="confirm" />
-        </button>
+        <Button
+          variant="primary"
+          label={confirm}
+          icon="confirm"
+          keyHint="confirm"
+          onClick={onConfirm}
+        />
       )}
-      <button type="button" class="btn ghost" onClick={onCancel}>
-        {t('common.back')} <KeyHint action="back" />
-      </button>
-    </div>
+      <Button
+        variant="ghost"
+        label={t('common.back')}
+        icon="back"
+        keyHint="back"
+        onClick={onCancel}
+      />
+    </Panel>
   );
 }

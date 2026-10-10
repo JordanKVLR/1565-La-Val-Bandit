@@ -24,6 +24,8 @@ import { ForecastPanel } from './battle/ForecastPanel';
 import { describeObjectives, terrainLabel } from './battle/objectives';
 import { TurnQueue } from './battle/TurnQueue';
 import { usePrompt } from './KeyHint';
+import type { AnchorSource } from './design';
+import { Button, Chip } from './design';
 
 interface Props {
   setup: BattleSetup;
@@ -74,6 +76,8 @@ export function BattleScreen({
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewRef = useRef<BattleView | null>(null);
+  // The renderer as state too, so pieces pinned to the map (the action bar) re-render once it exists.
+  const [view, setView] = useState<BattleView | null>(null);
   const ctl = useMemo(
     () => new BattleController(setup, lib, undefined, initial),
     [setup, lib, initial],
@@ -92,6 +96,7 @@ export function BattleScreen({
       onCancel: () => ctl.cancel(),
     });
     viewRef.current = view;
+    setView(view);
     view.setHighContrast(settings.get().highContrast);
     const unsubscribe = settings.subscribe(() => view.setHighContrast(settings.get().highContrast));
     ctl.attach(view);
@@ -100,6 +105,7 @@ export function BattleScreen({
       unsubscribe();
       ctl.dispose();
       view.dispose();
+      setView(null);
       delete window.__battle;
     };
     // Runs once per controller: the map never changes mid-battle, and state flows through ctl.
@@ -225,6 +231,28 @@ export function BattleScreen({
     }
     return undefined;
   })();
+  // The action bar stands beside the active unit and follows the camera (ui/design/useAnchor).
+  const anchor = useMemo<AnchorSource | null>(
+    () =>
+      view && {
+        point: () => {
+          const unit = ctl.active();
+          return unit ? view.tileScreenPosition(unit.pos) : null;
+        },
+        subscribe: (onChange) => view.onFrame(onChange),
+        // The other units (where they stand, above their tiles) stay uncovered when possible.
+        avoid: () => {
+          const id = ctl.active()?.id;
+          return ctl.state.units
+            .filter((u) => !u.defeated && u.id !== id)
+            .map((u) => {
+              const p = view.tileScreenPosition(u.pos);
+              return { x: p.x, y: p.y - 24 };
+            });
+        },
+      },
+    [view, ctl],
+  );
   const [detailsFor, setDetailsFor] = useState<string | null>(null);
   const detailsUnit = detailsFor ? findUnit(state, detailsFor) : undefined;
 
@@ -259,30 +287,21 @@ export function BattleScreen({
       {!BUSY_MODES.includes(mode.kind) && <TurnQueue state={state} />}
 
       <div class="hud-controls" hidden={mode.kind === 'forecast' || mode.kind === 'reaction'}>
-        <button
-          type="button"
-          class="btn icon pointer-only"
-          aria-label={t('battle.rotateLeft')}
+        <Button
+          class="pointer-only"
+          label={t('battle.rotateLeft')}
+          icon="rotateLeft"
+          iconOnly
           onClick={() => viewRef.current?.rotate(-1)}
-        >
-          ⟲
-        </button>
-        <button
-          type="button"
-          class="btn icon pointer-only"
-          aria-label={t('battle.rotateRight')}
+        />
+        <Button
+          class="pointer-only"
+          label={t('battle.rotateRight')}
+          icon="rotateRight"
+          iconOnly
           onClick={() => viewRef.current?.rotate(1)}
-        >
-          ⟳
-        </button>
-        <button
-          type="button"
-          class="btn icon"
-          aria-label={t('common.menu')}
-          onClick={() => setPanel('menu')}
-        >
-          ☰
-        </button>
+        />
+        <Button label={t('common.menu')} icon="menu" iconOnly onClick={() => setPanel('menu')} />
       </div>
 
       {notices.length > 0 && (
@@ -321,15 +340,21 @@ export function BattleScreen({
           />
         )}
         {tile && terrain && (
-          <div class="terrain-label" data-testid="terrain-label">
-            {terrainLabel(tile.height, terrain)}
-          </div>
+          <Chip
+            class="bhud-terrain"
+            icon={null}
+            testId="terrain-label"
+            label={terrainLabel(tile.height, terrain)}
+          />
         )}
       </div>
 
-      {(mode.kind === 'command' || mode.kind === 'move') && panel === 'none' && (
-        <ActionMenu ctl={ctl} moving={mode.kind === 'move'} />
-      )}
+      {/* Covers the map exactly (in TV mode too), so map positions are layer positions. */}
+      <div class="bhud-layer">
+        {(mode.kind === 'command' || mode.kind === 'move') && panel === 'none' && (
+          <ActionMenu ctl={ctl} moving={mode.kind === 'move'} anchor={anchor} />
+        )}
+      </div>
       {mode.kind === 'move' && mode.pending && (
         <SubModeBar
           label={prompt('moveAgain', { cost: mode.pending.cost })}

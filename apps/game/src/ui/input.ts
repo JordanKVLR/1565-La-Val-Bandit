@@ -252,7 +252,7 @@ export function dispatchPadInput(input: PadInput, context: ControlContext): void
 
 /** Which control table applies, from what is on screen. */
 export function currentContext(): ControlContext {
-  if (focusScope().closest('.modal')) return 'menu';
+  if (focusScope().closest('.modal, .ds-sheet')) return 'menu';
   if (document.querySelector('.armoury')) return 'armoury';
   if (document.querySelector('.battle-screen')) return 'battle';
   return 'menu';
