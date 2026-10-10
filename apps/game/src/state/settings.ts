@@ -15,7 +15,11 @@ export interface Settings {
   highContrast: boolean;
   /** Handheld or TV (10-foot) layout; Auto picks TV for a gamepad on a big screen (ADR 0010). */
   display: DisplaySetting;
+  /** How units, duels and story characters are drawn: hand-drawn 2D (default) or the 3D models. */
+  renderMode: RenderMode;
 }
+
+export type RenderMode = '2d' | '3d';
 
 const KEY = 'armatura.settings.v1';
 
@@ -28,6 +32,7 @@ const DEFAULTS: Settings = {
   fullscreen: true,
   highContrast: false,
   display: 'auto',
+  renderMode: '2d',
 };
 
 function load(): Settings {

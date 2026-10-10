@@ -31,6 +31,8 @@ export interface StrikePlay {
   readonly style: AttackStyle;
   /** Technique power (1 = plain Thrust); scales the wind-up, knockback and shake. */
   readonly power?: number;
+  /** The technique's id (used by the 2D stage to pick its own choreography and effects). */
+  readonly attackId?: string;
   /** Tiles the technique reaches (2 for Long Thrust: the fighters start further apart). */
   readonly reach?: number;
   readonly hit: boolean;

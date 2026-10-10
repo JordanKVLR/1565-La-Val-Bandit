@@ -81,6 +81,8 @@ export interface CloseUpStrike {
   /** Power and reach of the technique, so the duel can animate it to match. */
   readonly power: number;
   readonly reach: number;
+  /** The technique's id, so the 2D duel can play its own choreography and effects. */
+  readonly attackId?: string;
   readonly bark: string;
   readonly reply: string;
   /** Set when this strike levelled the striker up. */
@@ -925,6 +927,7 @@ export class BattleController {
     const [left, right] = a.side === 'player' ? [a, d] : [d, a];
     const repelled = ev.counter?.success === true;
     const used = (unit: UnitState, attack: Attack | undefined) => ({
+      ...(attack ? { attackId: attack.id } : {}),
       power: attack?.power ?? 1,
       reach: attack ? attackRange(attack, unit.weapon).max : 1,
     });

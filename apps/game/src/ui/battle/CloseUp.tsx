@@ -63,6 +63,7 @@ export function CloseUp({ data, onDone }: Props) {
           attacker: atkSide,
           style: s.style,
           power: s.power,
+          ...(s.attackId ? { attackId: s.attackId } : {}),
           reach: s.reach,
           hit: s.result.hit,
           defeated: s.result.defeated,

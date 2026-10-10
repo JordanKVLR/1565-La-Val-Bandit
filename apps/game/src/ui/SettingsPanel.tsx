@@ -99,6 +99,22 @@ export function SettingsPanel({
           />
         </div>
         <div class="setting">
+          <span>{t('settings.renderMode')}</span>
+          <div class="seg" role="group" aria-label={t('settings.renderMode')}>
+            {(['2d', '3d'] as const).map((m) => (
+              <button
+                type="button"
+                key={m}
+                class={`btn tab ${s.renderMode === m ? 'on' : ''}`}
+                aria-pressed={s.renderMode === m}
+                onClick={() => set({ renderMode: m })}
+              >
+                {t(`settings.renderMode.${m}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div class="setting">
           <span>{t('settings.closeUps')}</span>
           <div class="seg" role="group" aria-label={t('settings.closeUps')}>
             <button
