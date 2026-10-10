@@ -183,10 +183,6 @@
   flex-direction: column;
   gap: 2px;
 }
-.bhud-details__frame {
-  font-size: var(--ds-text-sm);
-  color: var(--ds-text-2);
-}
 /* Beside the portrait when there is room, under it otherwise. */
 .bhud-details__tabs {
   flex: 1 1 260px;

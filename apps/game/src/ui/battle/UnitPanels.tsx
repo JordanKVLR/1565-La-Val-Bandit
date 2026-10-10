@@ -182,7 +182,6 @@ export function UnitDetails({
         <Avatar unit={unit} />
         <div class="bhud-details__id">
           <span class="bhud-card__level">{t('unit.lvUpper', { n: unit.level })}</span>
-          <span class="bhud-details__frame">{frameName(unit)}</span>
         </div>
         <Tabs
           label={t('unit.tabs')}
