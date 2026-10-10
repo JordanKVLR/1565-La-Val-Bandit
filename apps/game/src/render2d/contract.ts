@@ -100,6 +100,10 @@ export interface Fx {
   wash(color: string, strength: number, life?: number): void;
   /** Slow motion factor for a window (0.2 = very slow). */
   slowmo(factor: number, life: number): void;
+  /** True the first time it is called with `key` in a strike (for one-shots inside per-frame hooks). */
+  once(key: string): boolean;
+  /** Runs `fn` after `delay` seconds of strike time. */
+  later(delay: number, fn: () => void): void;
   /** Free-form painter drawn under (`back`) or over (`front`) the fighters for `life` seconds. */
   layer(where: 'back' | 'front', life: number, paint: (ctx: CanvasRenderingContext2D, k: number) => void): void;
 }

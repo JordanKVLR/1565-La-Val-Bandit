@@ -2,14 +2,11 @@ import type { WeaponType } from '@m1565/core';
 import {
   BASE,
   HI,
-  LINE,
   OW,
   SHADE,
   blob,
   ell,
-  fillBlob,
   fillEll,
-  fillPoly,
   limb,
   line,
   poly,
@@ -160,31 +157,38 @@ const SABRE_BLADE = [
 const GUARD = [0.045, -0.13, 0.085, -0.13, 0.085, 0.13, 0.045, 0.13];
 const SABRE_GUARD = [0.04, -0.1, 0.075, -0.1, 0.075, 0.1, 0.04, 0.1];
 
-const SPEAR_HEAD = [1.32, -0.02, 1.38, -0.075, 1.5, -0.09, 1.68, 0, 1.5, 0.09, 1.38, 0.075, 1.32, 0.02];
-const PIKE_HEAD = [1.4, -0.02, 1.46, -0.05, 1.62, -0.055, 1.76, 0, 1.62, 0.055, 1.46, 0.05, 1.4, 0.02];
+const SPEAR_HEAD = [
+  1.32, -0.02, 1.38, -0.075, 1.5, -0.09, 1.68, 0, 1.5, 0.09, 1.38, 0.075, 1.32, 0.02,
+];
+const PIKE_HEAD = [
+  1.4, -0.02, 1.46, -0.05, 1.62, -0.055, 1.76, 0, 1.62, 0.055, 1.46, 0.05, 1.4, 0.02,
+];
 const LANCE_HEAD = [1.44, -0.035, 1.55, -0.04, 1.74, 0, 1.55, 0.04, 1.44, 0.035];
 const VAMPLATE = [0.16, -0.02, 0.27, -0.13, 0.31, -0.11, 0.31, 0.11, 0.27, 0.13, 0.16, 0.02];
-const BOARD_HEAD = [1.34, -0.02, 1.4, -0.06, 1.52, -0.07, 1.68, 0, 1.52, 0.07, 1.4, 0.06, 1.34, 0.02];
+const BOARD_HEAD = [
+  1.34, -0.02, 1.4, -0.06, 1.52, -0.07, 1.68, 0, 1.52, 0.07, 1.4, 0.06, 1.34, 0.02,
+];
 const BOARD_HOOK = [1.38, 0.05, 1.3, 0.16, 1.36, 0.26, 1.44, 0.21, 1.42, 0.12, 1.46, 0.06];
-const PENNON = [0, 0];
 
 const MACE_HEAD = [
-  0.5, 0.0, 0.54, 0.1, 0.6, 0.13, 0.66, 0.08, 0.7, 0.13, 0.76, 0.1, 0.74, 0.0, 0.76, -0.1, 0.7, -0.13,
-  0.66, -0.08, 0.6, -0.13, 0.54, -0.1,
+  0.5, 0.0, 0.54, 0.1, 0.6, 0.13, 0.66, 0.08, 0.7, 0.13, 0.76, 0.1, 0.74, 0.0, 0.76, -0.1, 0.7,
+  -0.13, 0.66, -0.08, 0.6, -0.13, 0.54, -0.1,
 ];
 const MAUL_HEAD = [0.38, -0.11, 0.66, -0.13, 0.66, 0.13, 0.38, 0.11];
 const CLUB_HEAD = [0.2, -0.04, 0.4, -0.08, 0.62, -0.12, 0.72, 0, 0.62, 0.12, 0.4, 0.08, 0.2, 0.04];
 const PISTON_HEAD = [0.48, -0.14, 0.78, -0.15, 0.8, 0.15, 0.48, 0.14];
 
 const STOCK = [
-  -0.34, 0.07, -0.28, -0.06, -0.12, -0.05, 0.06, -0.07, 0.38, -0.05, 0.5, -0.03, 0.5, 0.025, 0.1, 0.045,
-  -0.06, 0.09, -0.2, 0.1,
+  -0.34, 0.07, -0.28, -0.06, -0.12, -0.05, 0.06, -0.07, 0.38, -0.05, 0.5, -0.03, 0.5, 0.025, 0.1,
+  0.045, -0.06, 0.09, -0.2, 0.1,
 ];
 const MUSKET_STOCK = [
-  -0.36, 0.08, -0.3, -0.07, -0.12, -0.05, 0.06, -0.075, 0.5, -0.05, 0.7, -0.03, 0.7, 0.025, 0.1, 0.05,
-  -0.06, 0.1, -0.22, 0.11,
+  -0.36, 0.08, -0.3, -0.07, -0.12, -0.05, 0.06, -0.075, 0.5, -0.05, 0.7, -0.03, 0.7, 0.025, 0.1,
+  0.05, -0.06, 0.1, -0.22, 0.11,
 ];
-const BLUNDER_STOCK = [-0.3, 0.06, -0.25, -0.08, -0.08, -0.06, 0.1, -0.06, 0.36, -0.03, 0.4, 0.03, 0.05, 0.05, -0.1, 0.1];
+const BLUNDER_STOCK = [
+  -0.3, 0.06, -0.25, -0.08, -0.08, -0.06, 0.1, -0.06, 0.36, -0.03, 0.4, 0.03, 0.05, 0.05, -0.1, 0.1,
+];
 const FLARE = [0.62, -0.035, 0.86, -0.1, 0.86, 0.1, 0.62, 0.035];
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -192,10 +196,6 @@ const FLARE = [0.62, -0.035, 0.86, -0.1, 0.86, 0.1, 0.62, 0.035];
 function haft(f: F, x0: number, x1: number, w: number): void {
   const c = f.ctx;
   limb(c, f.p.wood, x0, 0, x1, 0, w, w, 0.012, OW * 0.8);
-}
-
-function metalBar(f: F, x0: number, x1: number, w: number): void {
-  limb(f.ctx, f.p.metal, x0, 0, x1, 0, w, w, 0.014, OW * 0.8);
 }
 
 function pommel(f: F, x: number, r: number): void {
@@ -226,7 +226,14 @@ function ember(f: F, x: number, y: number, r: number, phase: number): void {
   upDir(f, UP);
   for (let i = 0; i < 3; i++) {
     const ph = (f.t * 0.9 + i / 3 + phase * 0.1) % 1;
-    puff(c, SMOKE, x + UP.x * (0.05 + ph * 0.32) + Math.sin(f.t * 3 + i) * 0.02, y + UP.y * (0.05 + ph * 0.32), 0.016 + ph * 0.03, (1 - ph) * 0.5);
+    puff(
+      c,
+      SMOKE,
+      x + UP.x * (0.05 + ph * 0.32) + Math.sin(f.t * 3 + i) * 0.02,
+      y + UP.y * (0.05 + ph * 0.32),
+      0.016 + ph * 0.03,
+      (1 - ph) * 0.5,
+    );
   }
 }
 
@@ -238,7 +245,8 @@ function sword(f: F, sabre: boolean): void {
   // Grip, pommel, guard, blade.
   haft(f, -0.1, 0.06, 0.034);
   line(c, f.p.leather, BASE, 0.034, -0.08, 0, 0.05, 0);
-  for (let i = 0; i < 3; i++) line(c, f.p.dark, BASE, 0.01, -0.05 + i * 0.04, -0.03, -0.035 + i * 0.04, 0.03);
+  for (let i = 0; i < 3; i++)
+    line(c, f.p.dark, BASE, 0.01, -0.05 + i * 0.04, -0.03, -0.035 + i * 0.04, 0.03);
   pommel(f, -0.13, sabre ? 0.035 : 0.045);
   if (sabre) {
     poly(c, f.p.metal, SABRE_BLADE, 0.02, OW * 0.9);
@@ -264,21 +272,83 @@ function spear(f: F, style: 'spear' | 'pike' | 'lance' | 'boarding'): void {
     poly(c, f.p.cloth, VAMPLATE, 0.02, OW * 0.9);
     ell(c, f.p.trim, 0.2, 0, 0.018, 0.04, 0, 0.01, OW * 0.6);
     // Pennon in the side colour, snapping behind the head.
-    ribbon(c, f.acc, 1.42, 0.0, Math.PI * 0.98, 0.5, 0.2, 0.02, 0.28, f.t, 0.5, f.drag, 0.02, OW * 0.8);
-    ribbon(c, f.p.trim, 1.42, -0.02, Math.PI * 1.03, 0.36, 0.05, 0.02, 0.2, f.t, 1.4, f.drag, 0.01, OW * 0.7);
+    ribbon(
+      c,
+      f.acc,
+      1.42,
+      0.0,
+      Math.PI * 0.98,
+      0.5,
+      0.2,
+      0.02,
+      0.28,
+      f.t,
+      0.5,
+      f.drag,
+      0.02,
+      OW * 0.8,
+    );
+    ribbon(
+      c,
+      f.p.trim,
+      1.42,
+      -0.02,
+      Math.PI * 1.03,
+      0.36,
+      0.05,
+      0.02,
+      0.2,
+      f.t,
+      1.4,
+      f.drag,
+      0.01,
+      OW * 0.7,
+    );
     return;
   }
   if (style === 'pike') {
     // Long steel langets down the haft, a red tassel.
     limb(c, f.p.metal, 1.12, 0, 1.4, 0, 0.026, 0.026, 0.01, OW * 0.8);
     poly(c, f.p.metal, PIKE_HEAD, 0.016, OW * 0.9);
-    ribbon(c, f.acc, 1.15, 0, Math.PI * 1.0, 0.24, 0.1, 0.05, 0.3, f.t, 0.9, f.drag, 0.01, OW * 0.7, 5);
+    ribbon(
+      c,
+      f.acc,
+      1.15,
+      0,
+      Math.PI * 1.0,
+      0.24,
+      0.1,
+      0.05,
+      0.3,
+      f.t,
+      0.9,
+      f.drag,
+      0.01,
+      OW * 0.7,
+      5,
+    );
     return;
   }
   if (style === 'boarding') {
     poly(c, f.p.metal, BOARD_HEAD, 0.016, OW * 0.9);
     blob(c, f.p.metal, BOARD_HOOK, 0.012, OW * 0.9);
-    ribbon(c, f.acc, 1.3, 0, Math.PI * 1.02, 0.22, 0.08, 0.04, 0.35, f.t, 2.1, f.drag, 0.01, OW * 0.7, 5);
+    ribbon(
+      c,
+      f.acc,
+      1.3,
+      0,
+      Math.PI * 1.02,
+      0.22,
+      0.08,
+      0.04,
+      0.35,
+      f.t,
+      2.1,
+      f.drag,
+      0.01,
+      OW * 0.7,
+      5,
+    );
     return;
   }
   poly(c, f.p.metal, SPEAR_HEAD, 0.016, OW * 0.9);
@@ -286,7 +356,23 @@ function spear(f: F, style: 'spear' | 'pike' | 'lance' | 'boarding'): void {
   // Winged lugs and a binding.
   limb(c, f.p.metal, 1.3, -0.1, 1.3, 0.1, 0.014, 0.014, 0.008, OW * 0.7);
   fillEll(c, f.p.leather, BASE, 1.28, 0, 0.03, 0.04);
-  ribbon(c, f.acc, 1.22, 0.02, Math.PI * 1.02, 0.26, 0.1, 0.04, 0.3, f.t, 0.4, f.drag, 0.01, OW * 0.7, 5);
+  ribbon(
+    c,
+    f.acc,
+    1.22,
+    0.02,
+    Math.PI * 1.02,
+    0.26,
+    0.1,
+    0.04,
+    0.3,
+    f.t,
+    0.4,
+    f.drag,
+    0.01,
+    OW * 0.7,
+    5,
+  );
 }
 
 function mace(f: F, style: 'mace' | 'maul' | 'club' | 'piston'): void {
@@ -322,7 +408,14 @@ function mace(f: F, style: 'mace' | 'maul' | 'club' | 'piston'): void {
     upDir(f, UP);
     for (let i = 0; i < 3; i++) {
       const ph = (f.t * 1.2 + i / 3) % 1;
-      puff(c, SMOKE, 0.28 + UP.x * ph * 0.3 - ph * 0.04, 0.18 + UP.y * ph * 0.3, 0.025 + ph * 0.05, (1 - ph) * 0.7);
+      puff(
+        c,
+        SMOKE,
+        0.28 + UP.x * ph * 0.3 - ph * 0.04,
+        0.18 + UP.y * ph * 0.3,
+        0.025 + ph * 0.05,
+        (1 - ph) * 0.7,
+      );
     }
     return;
   }
@@ -340,7 +433,8 @@ function gun(f: F, style: 'arquebus' | 'musket' | 'blunderbuss' | 'steamgun'): v
   if (style === 'steamgun') {
     blob(c, f.p.dark, STOCK, 0.025, OW);
     limb(c, f.p.armour, 0.05, 0.02, 1.0, 0.02, 0.05, 0.04, 0.018, OW);
-    for (const x of [0.3, 0.6, 0.88]) limb(c, f.p.trim, x, -0.03, x, 0.07, 0.014, 0.014, 0.006, OW * 0.6);
+    for (const x of [0.3, 0.6, 0.88])
+      limb(c, f.p.trim, x, -0.03, x, 0.07, 0.014, 0.014, 0.006, OW * 0.6);
     // Pressure tank under the barrel with a little gauge.
     ell(c, f.p.armour, 0.38, -0.12, 0.17, 0.065, 0, 0.02, OW);
     fillEll(c, f.p.trim, BASE, 0.42, -0.12, 0.03, 0.03);
@@ -350,7 +444,14 @@ function gun(f: F, style: 'arquebus' | 'musket' | 'blunderbuss' | 'steamgun'): v
     upDir(f, UP);
     for (let i = 0; i < 3; i++) {
       const ph = (f.t * 1.4 + i / 3) % 1;
-      puff(c, SMOKE, 1.0 + 0.08 + ph * 0.12 + UP.x * ph * 0.1, 0.03 + UP.y * ph * 0.12 + ph * 0.02, 0.02 + ph * 0.045, (1 - ph) * 0.55);
+      puff(
+        c,
+        SMOKE,
+        1.0 + 0.08 + ph * 0.12 + UP.x * ph * 0.1,
+        0.03 + UP.y * ph * 0.12 + ph * 0.02,
+        0.02 + ph * 0.045,
+        (1 - ph) * 0.55,
+      );
     }
     return;
   }
@@ -361,12 +462,29 @@ function gun(f: F, style: 'arquebus' | 'musket' | 'blunderbuss' | 'steamgun'): v
   if (musket) {
     // Inlaid trim on the stock and a red tassel.
     for (const x of [0.2, 0.4, 0.6]) fillEll(c, f.p.trim, BASE, x, -0.01, 0.014, 0.014);
-    ribbon(c, f.acc, -0.3, -0.04, Math.PI * 1.05, 0.2, 0.06, 0.03, 0.3, f.t, 0.3, f.drag, 0.01, OW * 0.7, 4);
+    ribbon(
+      c,
+      f.acc,
+      -0.3,
+      -0.04,
+      Math.PI * 1.05,
+      0.2,
+      0.06,
+      0.03,
+      0.3,
+      f.t,
+      0.3,
+      f.drag,
+      0.01,
+      OW * 0.7,
+      4,
+    );
   }
   // Barrel with brass bands.
   const end = musket ? 1.16 : blunder ? 0.66 : 1.0;
   limb(c, f.p.metal, 0.08, 0.025, end, 0.03, 0.036, 0.03, 0.016, OW);
-  for (const x of musket ? [0.3, 0.6, 0.9] : blunder ? [0.25, 0.45] : [0.35, 0.7]) limb(c, f.p.trim, x, -0.012, x, 0.075, 0.012, 0.012, 0.005, OW * 0.5);
+  for (const x of musket ? [0.3, 0.6, 0.9] : blunder ? [0.25, 0.45] : [0.35, 0.7])
+    limb(c, f.p.trim, x, -0.012, x, 0.075, 0.012, 0.012, 0.005, OW * 0.5);
   if (blunder) poly(c, f.p.metal, FLARE, 0.02, OW);
   // Rear sight and lock.
   ell(c, f.p.trim, 0.08, 0.02, 0.035, 0.045, 0, 0.01, OW * 0.7);
@@ -376,7 +494,18 @@ function gun(f: F, style: 'arquebus' | 'musket' | 'blunderbuss' | 'steamgun'): v
   const sy = 0.12;
   line(c, f.p.dark, BASE, 0.026, 0.05, 0.05, sx, sy);
   const sway = Math.sin(f.t * 3) * 0.01;
-  trace(c, f.p.leather, BASE, 0.014, [sx, sy, sx - 0.06, sy + 0.04 + sway, sx - 0.1, sy - 0.04, sx - 0.18, sy - 0.1 + sway, sx - 0.28, sy - 0.08]);
+  trace(c, f.p.leather, BASE, 0.014, [
+    sx,
+    sy,
+    sx - 0.06,
+    sy + 0.04 + sway,
+    sx - 0.1,
+    sy - 0.04,
+    sx - 0.18,
+    sy - 0.1 + sway,
+    sx - 0.28,
+    sy - 0.08,
+  ]);
   ember(f, sx + 0.02, sy + 0.015, 0.022, 0);
 }
 
@@ -401,7 +530,13 @@ function explosive(f: F, style: 'grenade' | 'firepot' | 'bomb'): void {
     return;
   }
   // Fire-pot: a clay pot, wrapped in rope, with a rag blazing in the neck.
-  blob(c, f.p.wood, [0.02, 0.0, 0.06, -0.08, 0.2, -0.1, 0.3, 0.0, 0.28, 0.1, 0.2, 0.16, 0.1, 0.14, 0.04, 0.08], 0.03, OW);
+  blob(
+    c,
+    f.p.wood,
+    [0.02, 0.0, 0.06, -0.08, 0.2, -0.1, 0.3, 0.0, 0.28, 0.1, 0.2, 0.16, 0.1, 0.14, 0.04, 0.08],
+    0.03,
+    OW,
+  );
   fillEll(c, f.p.dark, BASE, 0.2, 0.14, 0.07, 0.025);
   line(c, f.p.leather, BASE, 0.02, 0.06, -0.06, 0.28, 0.06);
   line(c, f.p.leather, BASE, 0.02, 0.1, 0.06, 0.28, -0.04);
@@ -453,9 +588,4 @@ export function drawWeapon(f: F, style: WeaponStyle): void {
       break;
   }
   c.restore();
-  // keep unused statics referenced for the bundler
-  void PENNON;
-  void fillBlob;
-  void fillPoly;
-  void metalBar;
 }

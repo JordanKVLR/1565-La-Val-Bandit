@@ -168,8 +168,8 @@ function paintFortress(g: Ctx, W: number, H: number, p: Palette): void {
   const hy = H * 0.47;
   const seaB = H * 0.56;
   const base = hy + H * 0.045; // waterline of the headland
-  const lit = mix(p.stoneLit, p.haze, 0.3);
-  const shade = mix(p.stoneShade, p.haze, 0.42);
+  const lit = mix(p.stoneLit, p.haze, 0.12);
+  const shade = mix(p.stoneShade, p.haze, 0.2);
   const dark = mix('#5b4a38', p.haze, 0.45);
 
   // Rocky headland.
@@ -555,7 +555,7 @@ export function createBackdrop(groundColor: string): Backdrop {
   }
 
   function blit(ctx: Ctx, l: Layer, v: BackdropView, dx = 0): void {
-    const W = v.w * PAD;
+    const W = l === vignette ? v.w : v.w * PAD;
     const ox = -(W - v.w) / 2;
     const z = 1 + (v.zoom - 1) * Math.min(1, l.factor);
     ctx.save();

@@ -18,7 +18,11 @@ export function parse(hex: string): readonly [number, number, number] {
   if (v) return v;
   let h = hex.trim();
   if (h.startsWith('#')) h = h.slice(1);
-  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (h.length === 3)
+    h = h
+      .split('')
+      .map((ch) => ch + ch)
+      .join('');
   const n = h.length === 6 ? parseInt(h, 16) : NaN;
   v = Number.isFinite(n) ? [(n >> 16) & 255, (n >> 8) & 255, n & 255] : [128, 128, 128];
   RGB.set(hex, v);
@@ -245,7 +249,13 @@ export function poly(
 }
 
 /** Flat fills (details on top of shaded parts): no outline, no shading. */
-export function fillBlob(ctx: Ctx, s: Swatch, i: number, pts: readonly number[], n = pts.length >> 1): void {
+export function fillBlob(
+  ctx: Ctx,
+  s: Swatch,
+  i: number,
+  pts: readonly number[],
+  n = pts.length >> 1,
+): void {
   S.pts = pts;
   S.n = n;
   ctx.beginPath();
@@ -254,7 +264,13 @@ export function fillBlob(ctx: Ctx, s: Swatch, i: number, pts: readonly number[],
   ctx.fill();
 }
 
-export function fillPoly(ctx: Ctx, s: Swatch, i: number, pts: readonly number[], n = pts.length >> 1): void {
+export function fillPoly(
+  ctx: Ctx,
+  s: Swatch,
+  i: number,
+  pts: readonly number[],
+  n = pts.length >> 1,
+): void {
   S.pts = pts;
   S.n = n;
   ctx.beginPath();
@@ -300,7 +316,14 @@ export function line(
 }
 
 /** A smooth open stroke through the points. */
-export function trace(ctx: Ctx, s: Swatch, i: number, w: number, pts: readonly number[], n = pts.length >> 1): void {
+export function trace(
+  ctx: Ctx,
+  s: Swatch,
+  i: number,
+  w: number,
+  pts: readonly number[],
+  n = pts.length >> 1,
+): void {
   ctx.beginPath();
   ctx.moveTo(pts[0] as number, pts[1] as number);
   for (let k = 1; k < n - 1; k++) {
@@ -394,7 +417,6 @@ export function ribbon(
   const n = segs + 1;
   let x = x0;
   let y = y0;
-  let a = ang;
   const step = len / segs;
   // spine points
   const sx: number[] = SPX;
@@ -405,7 +427,7 @@ export function ribbon(
     sx[i] = x;
     sy[i] = y;
     nw[i] = (w0 + (w1 - w0) * k) / 2;
-    a = ang + Math.sin(t * 5 - i * 0.9 + phase) * amp * k + drag * k * 0.9;
+    const a = ang + Math.sin(t * 5 - i * 0.9 + phase) * amp * k + drag * k * 0.9;
     x += Math.cos(a) * step;
     y += Math.sin(a) * step;
   }

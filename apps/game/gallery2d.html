@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2D rig gallery</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        background: #2a3140;
+        color: #e8e0cc;
+        font:
+          12px/1.3 system-ui,
+          sans-serif;
+      }
+      h2 {
+        margin: 14px 12px 4px;
+        font-size: 14px;
+        text-transform: capitalize;
+      }
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 6px 12px;
+      }
+      figure {
+        margin: 0;
+        background: #3b4558;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      figcaption {
+        padding: 2px 6px;
+        font-size: 10px;
+        opacity: 0.8;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/render2d/gallery.ts"></script>
+  </body>
+</html>

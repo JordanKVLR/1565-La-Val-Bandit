@@ -536,8 +536,8 @@ function drawMarks(c: Ctx, f: FaceDef): void {
       case 'scar': {
         c.save();
         c.lineCap = 'round';
-        c.strokeStyle = alpha('#b4524e', 0.9);
-        c.lineWidth = 2;
+        c.strokeStyle = alpha('#b4524e', 0.7);
+        c.lineWidth = 1.6;
         c.beginPath();
         c.moveTo(12, f.eyeY - 13);
         c.lineTo(20, f.eyeY + 10);
@@ -582,9 +582,12 @@ function drawExtras(c: Ctx, f: FaceDef, e: ExprParams): void {
       paint(c, drop, '#cfeaff', { line: 1.6, shade: '#8fc2ea', sh: [-1.5, -1.5] });
     }
   }
+}
+
+function drawOutside(c: Ctx, f: FaceDef, e: ExprParams): void {
   if (e.sweat > 0.3) {
-    const x = f.headW * 0.84;
-    const y = -f.headH * 0.62;
+    const x = f.headW + 9;
+    const y = -f.headH * 0.3;
     const s = 0.7 + 0.3 * e.sweat;
     const drop: PathFn = (cc) => {
       cc.moveTo(x, y - 6 * s);
@@ -595,8 +598,8 @@ function drawExtras(c: Ctx, f: FaceDef, e: ExprParams): void {
     flat(c, ellipse(x - 1.6 * s, y + 1.4 * s, 0.9, 1.6, 0.3), '#ffffff');
   }
   if (e.vein > 0.3) {
-    const x = -f.headW * 0.66;
-    const y = -f.headH * 0.62;
+    const x = f.headW + 9;
+    const y = -f.headH * 0.7;
     c.save();
     c.lineCap = 'round';
     for (const col of [INK, '#e0412f']) {
@@ -624,11 +627,11 @@ function drawExtras(c: Ctx, f: FaceDef, e: ExprParams): void {
   }
 }
 
+
 /** Draws the bare face: ears, head, expression and features (hair and headgear come later). */
 export function drawFace(c: Ctx, f: FaceDef, e: ExprParams, blink = 0): void {
   const hp = headPath(f);
   const skin = f.skin;
-  // ears
   if (f.ear > 0) {
     for (const s of [-1, 1] as const) {
       const ear: PathFn = ellipse(s * (f.headW - 0.5), f.eyeY + 3.5, 4.4 * f.ear, 7 * f.ear, 0);
@@ -636,14 +639,13 @@ export function drawFace(c: Ctx, f: FaceDef, e: ExprParams, blink = 0): void {
       flat(c, ellipse(s * (f.headW + 0.2), f.eyeY + 4, 1.6 * f.ear, 3.6 * f.ear), alpha(skinShade(skin, 0.55), 0.8));
     }
   }
-  paint(c, hp, skin, { shade: skinShade(skin, 0.3), sh: [-4, -3], rim: lightOf(skin, 0.42), rimW: 2.6, line: 3.2 });
+  paint(c, hp, skin, { shade: skinShade(skin, 0.3), sh: [-2.6, -2], rim: lightOf(skin, 0.42), rimW: 2.6, line: 3.2 });
   clipped(c, hp, () => {
-    // soft cheek shade on the shadow side and under the brow ridge
     flat(c, ellipse(-0.5, f.eyeY - 7.5, f.headW * 0.9, 3.4), alpha(skinShade(skin, 0.55), 0.16));
     drawMarks(c, f);
     drawAge(c, f);
     if (f.stubble > 0) {
-      const sh = alpha('#3a2a2a', 0.2 + f.stubble * 0.28);
+      const sh = alpha('#3a2a2a', 0.06 + f.stubble * 0.2);
       clipped(c, lowerFace(f, f.noseY + 6), () => flat(c, hp, sh));
       c.save();
       c.fillStyle = alpha('#2a1d1d', 0.45 * f.stubble);
@@ -659,11 +661,11 @@ export function drawFace(c: Ctx, f: FaceDef, e: ExprParams, blink = 0): void {
     }
     drawExtras(c, f, e);
   });
+  drawOutside(c, f, e);
   drawNose(c, f);
   f.beard?.(c, f, e);
   drawMouth(c, f, e);
   f.stache?.(c, f, e);
   for (const s of [-1, 1] as const) drawEye(c, f, e, s, blink);
   for (const s of [-1, 1] as const) drawBrow(c, f, e, s);
-  ink(c, () => {}, 0);
 }

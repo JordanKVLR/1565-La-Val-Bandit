@@ -2,7 +2,8 @@ import type { ArmaturaModel } from '@m1565/content';
 import type { FigureSpec, Pose } from '../contract';
 import type { Ctx, Swatch } from './kit';
 
-export type Part = 'armour' | 'cloth' | 'trim' | 'skin' | 'dark' | 'hat' | 'leather' | 'metal' | 'wood';
+export type Part =
+  'armour' | 'cloth' | 'trim' | 'skin' | 'dark' | 'hat' | 'leather' | 'metal' | 'wood';
 export type Palette = Record<Part, Swatch>;
 export type { ArmaturaModel };
 

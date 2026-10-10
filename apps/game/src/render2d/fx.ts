@@ -27,6 +27,8 @@ export interface FxEngine extends Fx {
   readonly step: number;
   /** Camera offsets from shake and punch (world units / zoom). Read after `update`. */
   readonly cam: { dx: number; dy: number; roll: number; zoom: number; px: number; py: number };
+  ring(at: V2, o?: { color?: string; radius?: number; life?: number; width?: number; flat?: number }): void;
+  sprite(o: Parameters<Fx['sprite']>[0] & { onStep?: (p: V2, k: number) => void }): void;
   update(dt: number): void;
   drawWash(ctx: CanvasRenderingContext2D, w: number, h: number): void;
   drawBack(ctx: CanvasRenderingContext2D): void;
@@ -40,6 +42,8 @@ export interface FxEngine extends Fx {
   later(delay: number, fn: () => void): void;
   /** A high-contrast white frame with black radial wedges for `life` seconds (finishers). */
   impactFrame(life?: number): void;
+  /** Visible world rectangle (set by the stage each frame); words are kept inside it. */
+  readonly view: { minX: number; maxX: number; maxY: number };
   /** Fewer, cheaper particles (phones). */
   setLow(low: boolean): void;
   /** Number of live pooled effects, for tests and budgets. */
@@ -310,7 +314,6 @@ function alloc<T extends { alive: boolean }>(p: { items: T[]; cursor: number }):
 }
 
 const MAX_PARTS = 420;
-const MAX_PARTS_LOW = 200;
 
 // ───────────────────────────── the engine ─────────────────────────────
 
@@ -319,6 +322,7 @@ class FxImpl implements FxEngine {
   calm = false;
   step = 0;
   timeScale = 1;
+  readonly view = { minX: -4, maxX: 4, maxY: 3 };
   readonly cam = { dx: 0, dy: 0, roll: 0, zoom: 1, px: 0, py: 1 };
 
   private rng: () => number = makeRng(1565);
@@ -1081,8 +1085,6 @@ class FxImpl implements FxEngine {
   private arcPath(ctx: CanvasRenderingContext2D, a: Arc, tail: number, head: number, wScale: number): void {
     const N = 22;
     const span = a.to - a.from;
-    const ox = this.scratchX;
-    const oy = this.scratchY;
     // Outer edge forward, inner edge back: a crescent that is thick in the middle.
     ctx.beginPath();
     for (let i = 0; i <= N; i++) {
@@ -1103,8 +1105,6 @@ class FxImpl implements FxEngine {
       ctx.lineTo(a.x + Math.cos(ang) * ri, a.y + Math.sin(ang) * ri);
     }
     ctx.closePath();
-    void ox;
-    void oy;
   }
 
   private drawArc(ctx: CanvasRenderingContext2D, a: Arc): void {
@@ -1193,8 +1193,11 @@ class FxImpl implements FxEngine {
     const fade = u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3;
     if (fade <= 0 || pop <= 0) return;
     const sc = (w.size / 100) * pop * (1 + 0.06 * u);
+    const hw = w.text.length * 0.3 * w.size + 0.1;
+    const wx = Math.max(this.view.minX + hw, Math.min(this.view.maxX - hw, w.x));
+    const wy = Math.min(this.view.maxY - w.size * 0.7, w.y + u * 0.35);
     ctx.save();
-    ctx.translate(w.x, w.y + u * 0.35);
+    ctx.translate(wx, wy);
     ctx.rotate(w.rot);
     ctx.scale(sc, -sc); // un-flip the y-up world so the text reads normally
     ctx.globalAlpha = fade;
