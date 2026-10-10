@@ -3,6 +3,9 @@ import { expect, test } from '@playwright/test';
 test('new game plays through the prologue into the first battle, and Continue resumes it', async ({
   page,
 }) => {
+  // The whole prologue plus a battle load under software GL: ~29 s on a busy machine, so give it
+  // headroom like the other play-through specs (suspend, controller-only) do.
+  test.setTimeout(60_000);
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto('./');
