@@ -207,6 +207,7 @@ export class BattleView {
   /** Smoothed main-thread cost (ms) of one idle-only frame. */
   private idleCost = 0;
   private idleDue = 0;
+  private idlePaused = false;
   private readonly reduced = prefersReducedMotion();
   private readonly ppu = Math.min(140, Math.max(90, 72 * (window.devicePixelRatio || 1)));
   private readonly tweens = new Set<Tween>();
@@ -301,10 +302,21 @@ export class BattleView {
         IDLE_MAX_MS,
         Math.max(IDLE_MIN_MS, this.idleCost * IDLE_DUTY + (this.idleLate + this.idleWait) * 4),
       );
-      if (this.mode === '2d' && !this.reduced && this.units.size && !document.hidden)
+      if (
+        !this.idlePaused &&
+        this.mode === '2d' &&
+        !this.reduced &&
+        this.units.size &&
+        !document.hidden
+      )
         this.requestRender(true);
       this.scheduleIdle();
     }, this.idleMs);
+  }
+
+  /** Holds the idle breathing (the story screen does while its text is still typing). */
+  setIdlePaused(paused: boolean): void {
+    this.idlePaused = paused;
   }
 
   dispose(): void {

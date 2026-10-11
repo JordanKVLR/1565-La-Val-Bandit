@@ -22,7 +22,7 @@ interface Props {
 }
 
 /** Diorama: the stage map with characters standing on it. Remounts when the map changes. */
-function Stage({ stage, lib }: { stage: StageState; lib: Library }) {
+function Stage({ stage, lib, still }: { stage: StageState; lib: Library; still: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewRef = useRef<BattleView | null>(null);
   const map = useMemo(() => {
@@ -37,6 +37,10 @@ function Stage({ stage, lib }: { stage: StageState; lib: Library }) {
     viewRef.current = view;
     return () => view.dispose();
   }, [map]);
+
+  useEffect(() => {
+    viewRef.current?.setIdlePaused(still);
+  }, [still, map]);
 
   useEffect(() => {
     viewRef.current?.syncUnits(
@@ -144,7 +148,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
 
   return (
     <main class="fe-story" onClick={onTap} data-testid="story-screen">
-      <Stage stage={view.stage} lib={lib} />
+      <Stage stage={view.stage} lib={lib} still={!done} />
       <div class="fe-story__shade" aria-hidden="true" />
       <div class="fe-story__menu" onClick={(e) => e.stopPropagation()}>
         <Button iconOnly icon="menu" label={t('common.menu')} onClick={onMenu} />
@@ -201,7 +205,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
                   aria-hidden="true"
                 >
                   {art2d && speaker ? (
-                    <Portrait castId={speaker.id} expression={expression} animated />
+                    <Portrait castId={speaker.id} expression={expression} animated={done} />
                   ) : portrait ? (
                     <img src={portrait} alt="" />
                   ) : (
