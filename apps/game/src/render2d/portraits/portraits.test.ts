@@ -51,7 +51,8 @@ describe('portraits', () => {
 
   it('draws animated frames and blends expressions', () => {
     const { ctx } = mockCtx();
-    for (const t of [0, 0.5, 3.2, 17.9]) drawPortrait(ctx, 'kateri', 'happy', 0, 0, 96, { time: t });
+    for (const t of [0, 0.5, 3.2, 17.9])
+      drawPortrait(ctx, 'kateri', 'happy', 0, 0, 96, { time: t });
     drawPortrait(ctx, 'ninu', lerpExpr(EXPR.sad, EXPR.angry, 0.5));
     drawPortrait(ctx, 'unknown-id', 'neutral');
   });

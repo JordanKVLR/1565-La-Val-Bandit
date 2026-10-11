@@ -8,7 +8,8 @@ import { sfx } from '../../platform/audio';
 import { portraitUrl } from '../../render/art';
 import { figureSpec } from '../../render/Armatura';
 import { SIDE_COLORS } from '../../render/palette';
-import { UnitViewer } from '../../render/UnitViewer';
+import { createUnitViewer } from '../../render2d/stageFactory';
+import type { UnitViewerLike } from '../../render2d/stageFactory';
 import { useStore } from '../../state/store';
 import { RosterStats } from '../RosterStats';
 import { ItemIcon } from './ItemIcon';
@@ -80,9 +81,9 @@ function ArmaturaCanvas({
   useEffect(() => {
     if (!ref.current || !frame || !weapon) return;
     if (matchMedia('(max-height: 300px)').matches) return setFailed(true);
-    let viewer: UnitViewer | null = null;
+    let viewer: UnitViewerLike | null = null;
     try {
-      viewer = new UnitViewer(
+      viewer = createUnitViewer(
         ref.current,
         figureSpec(
           lib,

@@ -1,5 +1,4 @@
 /** Reusable pieces for building characters: torsos, hair, beards, headwear, props. */
-import type { ExprParams } from './expressions';
 import type { FaceDef } from './face';
 import { headPath } from './face';
 import {
@@ -48,14 +47,32 @@ export function neck(c: Ctx, skin: string, nw = 13, top = 100, bottom = 146): vo
   });
 }
 
-export function torso(c: Ctx, fill: string, w = 82, y = 132, nw = 15, o: { rim?: boolean; shade?: string } = {}): PathFn {
+export function torso(
+  c: Ctx,
+  fill: string,
+  w = 82,
+  y = 132,
+  nw = 15,
+  o: { rim?: boolean; shade?: string } = {},
+): PathFn {
   const p = torsoPath(w, y, nw);
-  paint(c, p, fill, { rim: o.rim === false ? false : lightOf(fill, 0.35), rimW: 2.4, sh: [-6, -5], ...(o.shade ? { shade: o.shade } : {}) });
+  paint(c, p, fill, {
+    rim: o.rim === false ? false : lightOf(fill, 0.35),
+    rimW: 2.4,
+    sh: [-6, -5],
+    ...(o.shade ? { shade: o.shade } : {}),
+  });
   return p;
 }
 
 /** Stitched lines, folds, seams: thin dark strokes. */
-export function strokes(c: Ctx, lines: readonly (readonly [number, number][])[], color: string, w = 1.6, smooth = true): void {
+export function strokes(
+  c: Ctx,
+  lines: readonly (readonly [number, number][])[],
+  color: string,
+  w = 1.6,
+  smooth = true,
+): void {
   c.save();
   c.strokeStyle = color;
   c.lineWidth = w;
@@ -77,8 +94,17 @@ export function maltese(c: Ctx, x: number, y: number, s: number, fill = '#f4efe3
     const arms: [number, number][][] = [];
     for (let i = 0; i < 4; i++) {
       const a = (i * Math.PI) / 2 - Math.PI / 2;
-      const p = (r: number, da: number): [number, number] => [x + Math.cos(a + da) * r, y + Math.sin(a + da) * r];
-      arms.push([p(s * 0.2, -0.78), p(s * 0.62, -0.3), p(s * 0.5, 0), p(s * 0.62, 0.3), p(s * 0.2, 0.78)]);
+      const p = (r: number, da: number): [number, number] => [
+        x + Math.cos(a + da) * r,
+        y + Math.sin(a + da) * r,
+      ];
+      arms.push([
+        p(s * 0.2, -0.78),
+        p(s * 0.62, -0.3),
+        p(s * 0.5, 0),
+        p(s * 0.62, 0.3),
+        p(s * 0.2, 0.78),
+      ]);
     }
     let first = true;
     for (const arm2 of arms)
@@ -135,9 +161,21 @@ export function hairCap(c: Ctx, f: FaceDef, col: string, o: CapOpts = {}): void 
   strokes(
     c,
     [
-      [[-4, -h - 1], [-8, -h * 0.78], [-15, -h * 0.58]],
-      [[4, -h - 1], [6, -h * 0.8], [12, -h * 0.62]],
-      [[-12, -h * 0.92], [-19, -h * 0.7], [-23, -h * 0.38]],
+      [
+        [-4, -h - 1],
+        [-8, -h * 0.78],
+        [-15, -h * 0.58],
+      ],
+      [
+        [4, -h - 1],
+        [6, -h * 0.8],
+        [12, -h * 0.62],
+      ],
+      [
+        [-12, -h * 0.92],
+        [-19, -h * 0.7],
+        [-23, -h * 0.38],
+      ],
     ],
     alpha(shadeOf(col, 0.55), 0.7),
     1.5,
@@ -165,7 +203,8 @@ export function curlsBack(c: Ctx, f: FaceDef, col: string, r = 8.5, extra = 0): 
 export function curlsFringe(c: Ctx, f: FaceDef, col: string, y = -f.headH * 0.58, r = 7): void {
   const w = f.headW;
   const cs: [number, number, number][] = [];
-  for (let i = -3; i <= 3; i++) cs.push([i * (w / 3.4), y - Math.abs(i) * 1.1 + (i % 2) * 2, r + (i % 2 ? 0 : 1)]);
+  for (let i = -3; i <= 3; i++)
+    cs.push([i * (w / 3.4), y - Math.abs(i) * 1.1 + (i % 2) * 2, r + (i % 2 ? 0 : 1)]);
   cs.push([-w, y + 7, r - 1], [w, y + 7, r - 1]);
   blobs(c, cs, col, { light: alpha(lightOf(col, 0.55), 0.8) });
 }
@@ -211,7 +250,14 @@ export function beard(o: BeardOpts): NonNullable<FaceDef['beard']> {
         cc.bezierCurveTo(-w + 3.5, top + (my - top) * 0.5, -mw - 9, my - 8, -mw, my - 5.5);
         cc.quadraticCurveTo(0, my - 8.5, mw, my - 5.5);
         cc.bezierCurveTo(mw + 9, my - 8, w - 3.5, top + (my - top) * 0.5, w - 0.5, top);
-        cc.bezierCurveTo(w + 4 * sp, my + 4, cw + 5 * sp, h * 0.9 + drop, (long ? 7 : 3) + flare * 3, h + len + drop);
+        cc.bezierCurveTo(
+          w + 4 * sp,
+          my + 4,
+          cw + 5 * sp,
+          h * 0.9 + drop,
+          (long ? 7 : 3) + flare * 3,
+          h + len + drop,
+        );
         if (long) {
           cc.quadraticCurveTo(0, h + len + 10 + drop, -7, h + len + drop);
         } else if (flare) {
@@ -230,9 +276,21 @@ export function beard(o: BeardOpts): NonNullable<FaceDef['beard']> {
     strokes(
       c,
       [
-        [[-8, my + 8], [-9, my + 14], [-7, h + len * 0.6]],
-        [[8, my + 8], [10, my + 14], [8, h + len * 0.6]],
-        [[0, my + 10], [0.5, h * 0.9], [0, h + len * 0.8]],
+        [
+          [-8, my + 8],
+          [-9, my + 14],
+          [-7, h + len * 0.6],
+        ],
+        [
+          [8, my + 8],
+          [10, my + 14],
+          [8, h + len * 0.6],
+        ],
+        [
+          [0, my + 10],
+          [0.5, h * 0.9],
+          [0, h + len * 0.8],
+        ],
       ],
       alpha(shadeOf(o.col, 0.6), 0.6),
       1.4,
@@ -258,9 +316,27 @@ export function stache(o: StacheOpts): NonNullable<FaceDef['stache']> {
       const thick = { thick: 8, thin: 3.4, walrus: 10, curl: 4.6 }[o.kind] * s;
       const reach = { thick: 13, thin: 11, walrus: 15, curl: 14 }[o.kind];
       const lift = o.kind === 'curl' ? -5 : 0;
-      taper(c, [side * 0.8, my + 1], [side * (mw * 0.55), my - 3.5 - thick * 0.2], [side * (mw + reach * 0.55), endY + lift], thick, thick * 0.3, o.col, 2);
+      taper(
+        c,
+        [side * 0.8, my + 1],
+        [side * (mw * 0.55), my - 3.5 - thick * 0.2],
+        [side * (mw + reach * 0.55), endY + lift],
+        thick,
+        thick * 0.3,
+        o.col,
+        2,
+      );
       if (o.kind === 'thick' || o.kind === 'walrus') {
-        taper(c, [side * 1, my + 0.5], [side * mw * 0.5, my + 1], [side * (mw + 4), endY - 1], thick * 0.5, 1, shadeOf(o.col, 0.4), 0);
+        taper(
+          c,
+          [side * 1, my + 0.5],
+          [side * mw * 0.5, my + 1],
+          [side * (mw + 4), endY - 1],
+          thick * 0.5,
+          1,
+          shadeOf(o.col, 0.4),
+          0,
+        );
       }
     }
   };
@@ -287,7 +363,16 @@ export function turban(c: Ctx, f: FaceDef, o: TurbanOpts): void {
   const cy = baseY - h * 0.42 * tall;
   const ry = h * 0.62 * tall;
   if (o.tail) {
-    const t: PathFn = spline([[w * 0.7, baseY - 2], [w * 1.5, baseY + 14], [w * 1.4, baseY + 36], [w * 1.15, baseY + 30], [w * 1.05, baseY + 8]], true);
+    const t: PathFn = spline(
+      [
+        [w * 0.7, baseY - 2],
+        [w * 1.5, baseY + 14],
+        [w * 1.4, baseY + 36],
+        [w * 1.15, baseY + 30],
+        [w * 1.05, baseY + 8],
+      ],
+      true,
+    );
     paint(c, t, o.col, { rim: lightOf(o.col, 0.4), sh: [-3, -2] });
   }
   const dome: PathFn = (cc) => {
@@ -303,10 +388,46 @@ export function turban(c: Ctx, f: FaceDef, o: TurbanOpts): void {
     for (let i = 0; i < 4; i++) {
       const y0 = baseY + 2 - i * (ry * 0.46);
       const a = (i % 2 ? 1 : -1) * 4;
-      strokes(c, [[[-rx, y0 + a], [-rx * 0.4, y0 - 3 - a * 0.4], [rx * 0.5, y0 - 2 + a * 0.5], [rx, y0 + 4 - a]]], o.fold, 2.2);
-      if (o.stripes) strokes(c, [[[-rx, y0 + a + 3], [-rx * 0.4, y0 - 0 - a * 0.4], [rx * 0.5, y0 + 1 + a * 0.5], [rx, y0 + 7 - a]]], o.stripes, 2.4);
+      strokes(
+        c,
+        [
+          [
+            [-rx, y0 + a],
+            [-rx * 0.4, y0 - 3 - a * 0.4],
+            [rx * 0.5, y0 - 2 + a * 0.5],
+            [rx, y0 + 4 - a],
+          ],
+        ],
+        o.fold,
+        2.2,
+      );
+      if (o.stripes)
+        strokes(
+          c,
+          [
+            [
+              [-rx, y0 + a + 3],
+              [-rx * 0.4, y0 - 0 - a * 0.4],
+              [rx * 0.5, y0 + 1 + a * 0.5],
+              [rx, y0 + 7 - a],
+            ],
+          ],
+          o.stripes,
+          2.4,
+        );
     }
-    strokes(c, [[[-rx * 0.5, baseY - 4], [-rx * 0.1, cy - ry * 0.5], [rx * 0.05, cy - ry * 1.05]]], alpha(o.fold, 0.8), 2);
+    strokes(
+      c,
+      [
+        [
+          [-rx * 0.5, baseY - 4],
+          [-rx * 0.1, cy - ry * 0.5],
+          [rx * 0.05, cy - ry * 1.05],
+        ],
+      ],
+      alpha(o.fold, 0.8),
+      2,
+    );
   });
   // band at the brow
   const band: PathFn = (cc) => {
@@ -316,9 +437,17 @@ export function turban(c: Ctx, f: FaceDef, o: TurbanOpts): void {
     cc.quadraticCurveTo(0, baseY + 3.4, -rx * 0.93, baseY + 8.4);
     cc.closePath();
   };
-  paint(c, band, o.band ?? shadeOf(o.col, 0.35), { rim: lightOf(o.band ?? o.col, 0.35), line: 2.6 });
+  paint(c, band, o.band ?? shadeOf(o.col, 0.35), {
+    rim: lightOf(o.band ?? o.col, 0.35),
+    line: 2.6,
+  });
   if (o.jewel) {
-    const jp: PathFn = poly([[0, baseY - 8], [6, baseY + 1], [0, baseY + 11], [-6, baseY + 1]]);
+    const jp: PathFn = poly([
+      [0, baseY - 8],
+      [6, baseY + 1],
+      [0, baseY + 11],
+      [-6, baseY + 1],
+    ]);
     paint(c, jp, '#e9b73a', { line: 2.4, sh: [-1.5, -1.5] });
     paint(c, circle(0, baseY + 1, 2.8), o.jewel, { line: 1.6, shade: false });
     flat(c, circle(-0.8, baseY + 0.2, 0.9), '#ffffff');
@@ -337,10 +466,24 @@ export function strawHat(c: Ctx, f: FaceDef, col: string, band: string): void {
   paint(c, crown, col, { rim: lightOf(col, 0.4), sh: [-5, -4] });
   const brim: PathFn = ellipse(0, cy + 1, w * 2.05, h * 0.36, 0);
   // underside shadow on the forehead
-  clipped(c, headPath(f), () => flat(c, ellipse(0, cy + 8, w * 2, h * 0.34), alpha('#3a1c20', 0.32)));
+  clipped(c, headPath(f), () =>
+    flat(c, ellipse(0, cy + 8, w * 2, h * 0.34), alpha('#3a1c20', 0.32)),
+  );
   paint(c, brim, mix(col, '#ffffff', 0.04), { rim: lightOf(col, 0.45), rimW: 3, sh: [-5, -5] });
   clipped(c, brim, () => {
-    for (let i = -7; i <= 7; i++) strokes(c, [[[i * 8, cy - 12], [i * 8 + 2, cy], [i * 8 + 4, cy + 12]]], alpha(shadeOf(col, 0.5), 0.55), 1.2);
+    for (let i = -7; i <= 7; i++)
+      strokes(
+        c,
+        [
+          [
+            [i * 8, cy - 12],
+            [i * 8 + 2, cy],
+            [i * 8 + 4, cy + 12],
+          ],
+        ],
+        alpha(shadeOf(col, 0.5), 0.55),
+        1.2,
+      );
   });
   const bandP: PathFn = (cc) => {
     cc.moveTo(-w * 0.99, cy - 0.5);
@@ -353,7 +496,13 @@ export function strawHat(c: Ctx, f: FaceDef, col: string, band: string): void {
 }
 
 /** Kerchief tied over the hair, with a knot and tails at one side. */
-export function kerchief(c: Ctx, f: FaceDef, col: string, pat: string, o: { side?: 1 | -1; hairY?: number } = {}): void {
+export function kerchief(
+  c: Ctx,
+  f: FaceDef,
+  col: string,
+  pat: string,
+  o: { side?: 1 | -1; hairY?: number } = {},
+): void {
   const s = o.side ?? 1;
   const hy = o.hairY ?? -f.headH * 0.5;
   const w = f.headW;
@@ -381,10 +530,27 @@ export function kerchief(c: Ctx, f: FaceDef, col: string, pat: string, o: { side
     c.fillStyle = pat;
     for (let i = 0; i < 18; i++) {
       c.beginPath();
-      c.arc(-26 + (i % 6) * 10.4 + (Math.floor(i / 6) % 2) * 5, -h + 3 + Math.floor(i / 6) * 11, 1.5, 0, 6.3);
+      c.arc(
+        -26 + (i % 6) * 10.4 + (Math.floor(i / 6) % 2) * 5,
+        -h + 3 + Math.floor(i / 6) * 11,
+        1.5,
+        0,
+        6.3,
+      );
       c.fill();
     }
-    strokes(c, [[[-w * 0.2, -h - 2], [-w * 0.3, -h * 0.7], [-w * 0.6, hy]]], alpha(shadeOf(col, 0.5), 0.8), 1.6);
+    strokes(
+      c,
+      [
+        [
+          [-w * 0.2, -h - 2],
+          [-w * 0.3, -h * 0.7],
+          [-w * 0.6, hy],
+        ],
+      ],
+      alpha(shadeOf(col, 0.5), 0.8),
+      1.6,
+    );
   });
   const knot: PathFn = ellipse(s * (w - 1), -h * 0.28, 5.2, 4.6, 0.4);
   paint(c, knot, col, { sh: [-2, -2], line: 2.6 });
@@ -431,7 +597,8 @@ export function morion(c: Ctx, f: FaceDef, plume: string): void {
   };
   // plume first (behind the comb)
   const pl: [number, number, number][] = [];
-  for (let i = 0; i < 6; i++) pl.push([-8 + i * 7.2, -h * 1.34 - 6 + Math.sin(i * 0.9) * 3 + i * 1.4, 7.5 - i * 0.2]);
+  for (let i = 0; i < 6; i++)
+    pl.push([-8 + i * 7.2, -h * 1.34 - 6 + Math.sin(i * 0.9) * 3 + i * 1.4, 7.5 - i * 0.2]);
   blobs(c, pl, plume, { light: alpha(lightOf(plume, 0.5), 0.8) });
   const bowl: PathFn = (cc) => {
     cc.moveTo(-w * 1.04, by - 2);
@@ -448,7 +615,18 @@ export function morion(c: Ctx, f: FaceDef, plume: string): void {
     cc.closePath();
   };
   paint(c, comb, '#c3cbd6', { line: 2.6, sh: [-2, -2], shade: '#7c879b' });
-  strokes(c, [[[-w * 0.6, -h * 1.0], [-w * 0.3, -h * 1.25], [-4, -h * 1.34]]], 'rgba(255,255,255,0.8)', 2.2);
+  strokes(
+    c,
+    [
+      [
+        [-w * 0.6, -h * 1.0],
+        [-w * 0.3, -h * 1.25],
+        [-4, -h * 1.34],
+      ],
+    ],
+    'rgba(255,255,255,0.8)',
+    2.2,
+  );
   paint(c, brim, '#8f99aa', { line: 3, rim: '#e8eef6', sh: [-3, -3], shade: '#5d677c' });
   for (const s of [-1, 1]) flat(c, circle(s * w * 0.8, by - 4, 1.5), '#e9b73a');
 }
@@ -468,7 +646,19 @@ export function borkHat(c: Ctx, f: FaceDef): void {
   };
   paint(c, body, felt, { rim: '#ffffff', rimW: 3, sh: [-7, -5], shade: '#cfc7b3' });
   clipped(c, body, () => {
-    for (let i = 0; i < 4; i++) strokes(c, [[[-w * 1.1 + i * 3, base - 6 - i * 16], [0, base - 12 - i * 16], [w * 1.1, base - 6 - i * 16 - 6]]], 'rgba(160,150,125,0.5)', 1.4);
+    for (let i = 0; i < 4; i++)
+      strokes(
+        c,
+        [
+          [
+            [-w * 1.1 + i * 3, base - 6 - i * 16],
+            [0, base - 12 - i * 16],
+            [w * 1.1, base - 6 - i * 16 - 6],
+          ],
+        ],
+        'rgba(160,150,125,0.5)',
+        1.4,
+      );
   });
   const rim: PathFn = (cc) => {
     cc.moveTo(-w * 1.06, base + 7);
@@ -479,7 +669,11 @@ export function borkHat(c: Ctx, f: FaceDef): void {
   };
   paint(c, rim, '#b73a34', { line: 2.8, rim: '#e5766b', sh: [-2, -3] });
   // spoon holder
-  paint(c, roundRect(-4.5, base - 22, 9, 17, 4), '#e9b73a', { line: 2.6, shade: '#b78a1f', sh: [-2, -2] });
+  paint(c, roundRect(-4.5, base - 22, 9, 17, 4), '#e9b73a', {
+    line: 2.6,
+    shade: '#b78a1f',
+    sh: [-2, -2],
+  });
   paint(c, ellipse(0, base - 13, 2.3, 4.4), '#9a7416', { line: 1.4, shade: false });
   void ink;
 }
@@ -495,7 +689,15 @@ export function headband(c: Ctx, f: FaceDef, col: string): void {
     cc.closePath();
   };
   paint(c, band, col, { rim: lightOf(col, 0.4), sh: [-2, -3], line: 2.8 });
-  const t: PathFn = spline([[w + 1, y - 2], [w + 10, y - 4], [w + 12, y + 8], [w + 5, y + 5]], true);
+  const t: PathFn = spline(
+    [
+      [w + 1, y - 2],
+      [w + 10, y - 4],
+      [w + 12, y + 8],
+      [w + 5, y + 5],
+    ],
+    true,
+  );
   paint(c, t, col, { line: 2.4, sh: [-2, -2] });
 }
 

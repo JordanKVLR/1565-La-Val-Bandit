@@ -26,7 +26,13 @@ const TWEEN = 0.18;
  * A vector portrait on a canvas. Decorative: always aria-hidden (the dialogue text carries the
  * meaning). Expression changes blend over a moment; when animated it breathes and blinks.
  */
-export function Portrait({ castId, expression = 'neutral', animated = false, size, class: cls }: Props) {
+export function Portrait({
+  castId,
+  expression = 'neutral',
+  animated = false,
+  size,
+  class: cls,
+}: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
   const cur = useRef<ExprParams>(EXPR[expression]);
   const from = useRef<ExprParams>(EXPR[expression]);

@@ -13,7 +13,6 @@ import { eng, face, hitPoint, outcomeOf } from './styleDefaults';
 const TAU = Math.PI * 2;
 const GOLD = '#ffd35a';
 const CRIMSON = '#e0283a';
-const BLUE = '#2a56c8';
 
 // ───────────────────────────── move editing ─────────────────────────────
 
@@ -54,18 +53,6 @@ const OFF = 0.46;
 const X0 = (OFF * OFF + 1 - BITE * BITE) / (2 * OFF);
 const TH = Math.acos(X0);
 const PSI = Math.atan2(-Math.sin(TH), X0 - OFF);
-
-/** Adds a crescent (opening toward +x, radius r) to the current path. */
-function crescentPath(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, rot: number): void {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.rotate(rot);
-  ctx.beginPath();
-  ctx.arc(0, 0, r, TH, TAU - TH, false);
-  ctx.arc(OFF * r, 0, BITE * r, PSI, -PSI, true);
-  ctx.closePath();
-  ctx.restore();
-}
 
 function fillCrescent(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, rot: number, color: string, alpha: number): void {
   if (alpha <= 0.01) return;
@@ -674,7 +661,6 @@ const sultansEdge: AttackScript = {
       fx.punch(p, 1.18, 0.55);
     } else if (o === 'block') {
       guardCrack(c, '#fff0b8', GOLD);
-      fx.sparkleDummy?.();
     } else {
       const ang = face(0.42, c.dir);
       fx.layer('front', 0.4, (ctx, k) => {

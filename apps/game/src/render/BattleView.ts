@@ -36,6 +36,15 @@ import { bakeFigure } from './Armatura';
 import type { UnitLook } from './unitSprite';
 import { createUnitSprite, drawUnit } from './unitSprite';
 import { measureCanvas, renderPixelRatio } from './resolution';
+import { settings } from '../state/settings';
+import {
+  FIGURE_UNIT,
+  MapFigure,
+  cameraFacing,
+  disposeRingTextures,
+  ringTexture,
+  storyFigureSpec,
+} from '../render2d/mapSprite';
 
 /** World units per height step. Tiles are 1×1 on the ground plane. */
 const STEP = 0.35;
@@ -68,6 +77,9 @@ const LABEL_OFFSET = new Vector3(0, 0.42, 0);
 const FIGURE_LABEL_OFFSET = new Vector3(0, 1.15, 0);
 const FIGURE_SCALE = 0.5;
 const ARROW_OFFSET = new Vector3(0, 0.1, 0);
+/** 2D mode: the arrow shrinks to a tile marker around the sprite's feet, the badge floats over its head. */
+const ARROW_2D = 0.82;
+const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 1.74 * FIGURE_UNIT, 0);
 
 /**
  * Unit marker: a raised arrow lying on the tile, pointing the way the unit faces (+z = south
@@ -97,20 +109,28 @@ function createArrowMarker(color: string): Group {
 }
 
 /** The active unit's arrow glows gold. */
-function setArrowActive(arrow: Group, active: boolean): void {
+function setArrowActive(arrow: Group, active: boolean, base = 1): void {
   const fill = arrow.getObjectByName('fill') as Mesh | undefined;
   const rim = arrow.getObjectByName('rim') as Mesh | undefined;
   (fill?.material as MeshLambertMaterial | undefined)?.emissive.set(active ? '#5a4410' : '#000000');
   (rim?.material as MeshLambertMaterial | undefined)?.color.set(active ? '#f5d77a' : '#15100c');
-  arrow.scale.setScalar(active ? 1.12 : 1);
+  arrow.scale.setScalar(base * (active ? 1.12 : 1));
 }
 
 interface UnitNode {
-  sprite: Sprite;
+  /** The badge (initial and HP bar); absent for 2D story actors. */
+  sprite: Sprite | null;
   arrow: Group;
   labelOffset: Vector3;
   look: UnitLook;
   at: Coord;
+  facing: Facing;
+  /** 2D mode: the animated figure standing on the tile. */
+  fig: MapFigure | null;
+  /** World-space nudge (hit shake). */
+  nudge: number;
+  /** Tile-top position the node is currently drawn at. */
+  pos: Vector3;
 }
 
 type Tween = (now: number) => boolean; // returns true when finished
@@ -134,6 +154,13 @@ export class BattleView {
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly resizeObserver: ResizeObserver;
   private readonly units = new Map<string, UnitNode>();
+  private readonly dying = new Set<UnitNode>();
+  private mode: '2d' | '3d' = settings.get().renderMode === '3d' ? '3d' : '2d';
+  private lastList: readonly UnitVisual[] = [];
+  private readonly unsubscribeSettings: () => void;
+  private idleTimer: ReturnType<typeof setInterval> | undefined;
+  private readonly reduced = prefersReducedMotion();
+  private readonly ppu = Math.min(140, Math.max(90, 72 * (window.devicePixelRatio || 1)));
   private readonly tweens = new Set<Tween>();
   private terrain: Mesh | undefined;
   private readonly atlas: TerrainAtlas = createTerrainAtlas();
@@ -191,10 +218,28 @@ export class BattleView {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
+    // The map switches between 2D sprites and 3D figures live when the setting changes.
+    this.unsubscribeSettings = settings.subscribe(() => {
+      const mode = settings.get().renderMode === '3d' ? '3d' : '2d';
+      if (mode === this.mode) return;
+      this.mode = mode;
+      this.rebuildUnits();
+    });
+    this.idleTimer = setInterval(() => {
+      // Idle breathing at ~12 fps, only while the tab shows and sprites exist.
+      if (this.mode === '2d' && !this.reduced && this.units.size && !document.hidden)
+        this.requestRender();
+    }, 83);
   }
 
   dispose(): void {
     this.disposed = true;
+    this.unsubscribeSettings();
+    if (this.idleTimer) clearInterval(this.idleTimer);
+    for (const node of [...this.units.values(), ...this.dying]) this.removeNode(node, false);
+    this.units.clear();
+    this.dying.clear();
+    disposeRingTextures();
     this.tweens.clear();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
@@ -231,52 +276,136 @@ export class BattleView {
 
   /** Creates, updates or removes unit billboards to match the given list. */
   syncUnits(list: readonly UnitVisual[]): void {
+    this.lastList = list;
     const seen = new Set<string>();
     for (const u of list) {
       seen.add(u.id);
       let node = this.units.get(u.id);
       if (!node) {
-        const sprite = createUnitSprite(u);
-        const arrow = createArrowMarker(u.color);
-        if (u.figure) {
-          const figure = new Mesh(
-            bakeFigure(u.figure),
-            new MeshLambertMaterial({ vertexColors: true }),
-          );
-          figure.scale.setScalar(FIGURE_SCALE);
-          arrow.add(figure);
-          sprite.scale.multiplyScalar(0.75);
-        }
-        this.scene.add(sprite, arrow);
-        const labelOffset = u.figure ? FIGURE_LABEL_OFFSET : LABEL_OFFSET;
-        node = { sprite, arrow, labelOffset, look: u, at: u.at };
+        node = this.createNode(u);
         this.units.set(u.id, node);
         this.placeNode(node, u.at);
       } else {
         if (node.at.x !== u.at.x || node.at.y !== u.at.y) this.placeNode(node, u.at);
         if (!sameLook(node.look, u)) {
-          drawUnit(node.sprite, u);
+          if (node.sprite) drawUnit(node.sprite, u);
           node.look = u;
         }
       }
-      setArrowActive(node.arrow, u.active);
+      setArrowActive(node.arrow, u.active, node.fig ? ARROW_2D : 1);
       node.arrow.rotation.y = FACING_ANGLE[u.facing];
+      node.facing = u.facing;
     }
     for (const [id, node] of this.units) {
-      if (!seen.has(id)) {
-        this.scene.remove(node.sprite, node.arrow);
-        node.arrow.traverse((o) => {
-          if (o instanceof Mesh) {
-            o.geometry.dispose();
-            (o.material as MeshLambertMaterial).dispose();
-          }
-        });
-        node.sprite.material.map?.dispose();
-        node.sprite.material.dispose();
-        this.units.delete(id);
-      }
+      if (seen.has(id)) continue;
+      this.units.delete(id);
+      if (node.fig && this.mode === '2d' && !this.disposed) {
+        // Knocked out: fall and fade, then remove.
+        node.fig.ko();
+        if (node.sprite) node.sprite.visible = false;
+        node.arrow.visible = false;
+        this.dying.add(node);
+      } else this.removeNode(node, true);
     }
     this.requestRender();
+  }
+
+  private createNode(u: UnitVisual): UnitNode {
+    const two = this.mode === '2d';
+    const spec = u.figure ?? (two ? storyFigureSpec(u.id, u.color) : undefined);
+    const arrow = createArrowMarker(u.color);
+    let fig: MapFigure | null = null;
+    let sprite: Sprite | null = null;
+    let labelOffset = LABEL_OFFSET;
+    if (two && spec) {
+      fig = new MapFigure(spec, this.ppu, this.units.size + this.dying.size);
+      this.scene.add(fig.sprite);
+      arrow.scale.setScalar(ARROW_2D);
+      const ring = new Mesh(
+        new PlaneGeometry(0.95, 0.95).rotateX(-Math.PI / 2),
+        new MeshBasicMaterial({
+          map: ringTexture(u.color, !!u.enemy),
+          transparent: true,
+          depthWrite: false,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
+        }),
+      );
+      ring.name = 'ring';
+      ring.position.y = -0.06;
+      ring.renderOrder = 0;
+      arrow.add(ring);
+      if (!u.hideHp || u.figure) {
+        sprite = createUnitSprite(u);
+        sprite.scale.multiplyScalar(0.62);
+        sprite.renderOrder = 2;
+        sprite.material.depthTest = false;
+        labelOffset = BADGE_OFFSET_2D;
+      }
+    } else {
+      sprite = createUnitSprite(u);
+      if (u.figure) {
+        const figure = new Mesh(
+          bakeFigure(u.figure),
+          new MeshLambertMaterial({ vertexColors: true }),
+        );
+        figure.scale.setScalar(FIGURE_SCALE);
+        arrow.add(figure);
+        sprite.scale.multiplyScalar(0.75);
+        labelOffset = FIGURE_LABEL_OFFSET;
+      }
+    }
+    if (sprite) this.scene.add(sprite);
+    this.scene.add(arrow);
+    return {
+      sprite,
+      arrow,
+      labelOffset,
+      look: u,
+      at: u.at,
+      facing: u.facing,
+      fig,
+      nudge: 0,
+      pos: new Vector3(),
+    };
+  }
+
+  private removeNode(node: UnitNode, requestRender: boolean): void {
+    if (node.sprite) {
+      this.scene.remove(node.sprite);
+      node.sprite.material.map?.dispose();
+      node.sprite.material.dispose();
+    }
+    this.scene.remove(node.arrow);
+    node.arrow.traverse((o) => {
+      if (o instanceof Mesh) {
+        o.geometry.dispose();
+        (o.material as MeshLambertMaterial).dispose();
+      }
+    });
+    if (node.fig) {
+      this.scene.remove(node.fig.sprite);
+      node.fig.dispose();
+    }
+    if (requestRender) this.requestRender();
+  }
+
+  /** Render mode changed: drop every unit visual and build them again in the new style. */
+  private rebuildUnits(): void {
+    for (const node of [...this.units.values(), ...this.dying]) this.removeNode(node, false);
+    this.units.clear();
+    this.dying.clear();
+    this.syncUnits(this.lastList);
+  }
+
+  /** Positions every part of a node at a tile-top point. */
+  private setNodePos(node: UnitNode, pos: Vector3, dx = 0): void {
+    node.pos.copy(pos);
+    node.nudge = dx;
+    node.sprite?.position.copy(pos).add(node.labelOffset).setX(pos.x + dx);
+    node.arrow.position.copy(pos).add(ARROW_OFFSET);
+    node.fig?.sprite.position.copy(pos).setX(pos.x + dx);
   }
 
   /** Walks a unit along a path (tile by tile, hopping on height changes). */
@@ -296,13 +425,16 @@ export class BattleView {
         const b = points[seg + 1]!;
         const pos = a.clone().lerp(b, local);
         pos.y = Math.max(a.y, b.y) * Math.sin(local * Math.PI) * 0.15 + a.y + (b.y - a.y) * local;
-        node.sprite.position.copy(pos).add(node.labelOffset);
-        node.arrow.position.copy(pos).add(ARROW_OFFSET);
+        this.setNodePos(node, pos);
         const dir = { x: Math.sign(b.x - a.x), y: Math.sign(b.z - a.z) };
         const facing = (Object.keys(DIRECTIONS) as Facing[]).find(
           (f) => DIRECTIONS[f].x === dir.x && DIRECTIONS[f].y === dir.y,
         );
-        if (facing) node.arrow.rotation.y = FACING_ANGLE[facing];
+        if (facing) {
+          node.arrow.rotation.y = FACING_ANGLE[facing];
+          node.facing = facing;
+        }
+        if (node.fig) node.fig.walking = t < 1;
         if (t >= 1) {
           node.at = path[path.length - 1]!;
           resolve();
@@ -317,20 +449,35 @@ export class BattleView {
   shake(id: string): void {
     const node = this.units.get(id);
     if (!node) return;
-    const base = this.tileTop(node.at).add(node.labelOffset);
+    if (node.fig) {
+      // The active unit is the one striking: it lunges at the target, which recoils.
+      const attacker = [...this.units.values()].find((n) => n !== node && n.look.active);
+      if (attacker?.fig) {
+        const dx = node.at.x - attacker.at.x;
+        const dy = node.at.y - attacker.at.y;
+        const face = (Object.keys(DIRECTIONS) as Facing[]).find((f) =>
+          Math.abs(dx) >= Math.abs(dy)
+            ? DIRECTIONS[f].x === Math.sign(dx) && DIRECTIONS[f].y === 0
+            : DIRECTIONS[f].y === Math.sign(dy) && DIRECTIONS[f].x === 0,
+        );
+        if (face) {
+          attacker.facing = face;
+          attacker.arrow.rotation.y = FACING_ANGLE[face];
+        }
+        attacker.fig.lunge();
+      }
+      setTimeout(() => {
+        if (!this.disposed) node.fig?.hurt();
+        this.requestRender();
+      }, attacker?.fig ? 140 : 0);
+      this.requestRender();
+    }
+    const base = this.tileTop(node.at);
     const start = performance.now();
     this.addTween((now) => {
       const t = Math.max(0, (now - start) / 300);
-      node.sprite.position.set(
-        base.x + Math.sin(t * 40) * 0.06 * (1 - Math.min(t, 1)),
-        base.y,
-        base.z,
-      );
-      if (t >= 1) {
-        node.sprite.position.copy(base);
-        return true;
-      }
-      return false;
+      this.setNodePos(node, base, Math.sin(t * 40) * 0.06 * (1 - Math.min(t, 1)));
+      return t >= 1 && (this.setNodePos(node, base), true);
     });
   }
 
@@ -423,9 +570,7 @@ export class BattleView {
 
   private placeNode(node: UnitNode, c: Coord): void {
     node.at = c;
-    const p = this.tileTop(c);
-    node.sprite.position.copy(p).add(node.labelOffset);
-    node.arrow.position.copy(p).add(ARROW_OFFSET);
+    this.setNodePos(node, this.tileTop(c));
   }
 
   private tileTop(c: Coord): Vector3 {
@@ -570,9 +715,37 @@ export class BattleView {
       this.frameRequested = false;
       if (this.disposed) return;
       for (const t of [...this.tweens]) if (t(now)) this.tweens.delete(t);
+      const animating = this.mode === '2d' ? this.updateFigures(now) : false;
       this.renderer.render(this.scene, this.camera);
-      if (this.tweens.size) this.requestRender();
+      if (this.tweens.size || animating) this.requestRender();
     });
+  }
+
+  /** Steps the 2D figures: camera-relative mirroring, idle/walk/strike frames, KO removal. */
+  private updateFigures(now: number): boolean {
+    const angle = Math.PI / 4 + (this.rotation * Math.PI) / 2;
+    const idle = !this.reduced && !document.hidden;
+    let busy = false;
+    const v = new Vector3();
+    const step = (node: UnitNode): boolean => {
+      const fig = node.fig;
+      if (!fig) return false;
+      const cf = cameraFacing(node.facing, angle);
+      fig.mirror = cf.mirror;
+      fig.away = cf.away;
+      v.copy(node.pos).project(this.camera);
+      const visible = Math.abs(v.x) < 1.15 && v.y > -1.2 && v.y < 1.3;
+      return fig.update(now, idle, visible);
+    };
+    for (const node of this.units.values()) if (step(node)) busy = true;
+    for (const node of [...this.dying]) {
+      step(node);
+      if (node.fig?.gone) {
+        this.dying.delete(node);
+        this.removeNode(node, false);
+      } else busy = true;
+    }
+    return busy;
   }
 
   private pick(clientX: number, clientY: number): Coord | undefined {

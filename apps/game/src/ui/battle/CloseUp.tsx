@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { sfx } from '../../platform/audio';
-import { DuelStage } from '../../render/DuelStage';
+import { createDuelStage } from '../../render2d/stageFactory';
 import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
 import { settings } from '../../state/settings';
 import { t } from '../../i18n';
@@ -55,7 +55,7 @@ export function CloseUp({ data, onDone }: Props) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const speed = settings.get().battleSpeed;
-    const stage = new DuelStage(canvas, data.left.figure, data.right.figure, '#5b6b35', speed);
+    const stage = createDuelStage(canvas, data.left.figure, data.right.figure, '#5b6b35', speed);
     let cancelled = false;
     let key = 0;
     const wait = (ms: number) => new Promise((r) => setTimeout(r, ms / speed));

@@ -9,7 +9,15 @@ import { EXPR, type ExprParams, type Expression } from './expressions';
 import { type DrawOpts, CAST_IDS, drawPortraitU, hasPortrait } from './render';
 import { U } from './kit';
 
-export { EXPRESSIONS, type Expression, type ExprParams, EXPR, expressionForLine, isExpression, lerpExpr } from './expressions';
+export {
+  EXPRESSIONS,
+  type Expression,
+  type ExprParams,
+  EXPR,
+  expressionForLine,
+  isExpression,
+  lerpExpr,
+} from './expressions';
 export { CAST_IDS, hasPortrait, blinkAt, type DrawOpts } from './render';
 
 /** Draws a portrait into the square (x, y, size, size) of a 2D context. */
@@ -34,7 +42,11 @@ const canvases = new Map<string, HTMLCanvasElement>();
 const urls = new Map<string, string>();
 
 /** A still portrait on its own canvas, cached per (id, expression, size). Do not mutate it. */
-export function portraitFor(id: string, expression: Expression = 'neutral', size = 256): HTMLCanvasElement {
+export function portraitFor(
+  id: string,
+  expression: Expression = 'neutral',
+  size = 256,
+): HTMLCanvasElement {
   const key = `${id}|${expression}|${size}`;
   let cv = canvases.get(key);
   if (!cv) {
@@ -48,7 +60,11 @@ export function portraitFor(id: string, expression: Expression = 'neutral', size
 }
 
 /** The same as a PNG data URL (for <img> and CSS), cached. */
-export function portraitDataUrl(id: string, expression: Expression = 'neutral', size = 256): string {
+export function portraitDataUrl(
+  id: string,
+  expression: Expression = 'neutral',
+  size = 256,
+): string {
   const key = `${id}|${expression}|${size}`;
   let u = urls.get(key);
   if (u === undefined) {

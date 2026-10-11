@@ -13,7 +13,6 @@ import {
   clipped,
   ellipse,
   flat,
-  ink,
   lightOf,
   mix,
   paint,
@@ -181,7 +180,11 @@ function drawEye(c: Ctx, f: FaceDef, e: ExprParams, side: -1 | 1, blink: number)
     flat(c, circle(px, iy, pr), '#150c0b');
     // highlights
     flat(c, circle(px - ir * 0.34, iy - ir * 0.36, Math.max(1.5, ir * 0.3)), '#ffffff');
-    flat(c, circle(px + ir * 0.36, iy + ir * 0.34, Math.max(0.8, ir * 0.14)), 'rgba(255,255,255,0.85)');
+    flat(
+      c,
+      circle(px + ir * 0.36, iy + ir * 0.34, Math.max(0.8, ir * 0.14)),
+      'rgba(255,255,255,0.85)',
+    );
     if (e.tear > 0.2) {
       flat(c, ellipse(px, iy + ir * 0.78, ir * 0.85, ir * 0.22), alpha('#cfeaff', 0.85 * e.tear));
     }
@@ -246,7 +249,14 @@ function drawEye(c: Ctx, f: FaceDef, e: ExprParams, side: -1 | 1, blink: number)
   const lidTop = (1 - lidCover) * 1;
   c.beginPath();
   c.moveTo(-ew - 0.6, 0.2);
-  c.bezierCurveTo(-ew * g.wide, -top * (0.6 + 0.4 * lidTop), ew * g.wide, -top * (0.6 + 0.4 * lidTop), ew, g.tilt);
+  c.bezierCurveTo(
+    -ew * g.wide,
+    -top * (0.6 + 0.4 * lidTop),
+    ew * g.wide,
+    -top * (0.6 + 0.4 * lidTop),
+    ew,
+    g.tilt,
+  );
   if (f.lashes > 0) {
     c.lineTo(ew + 3.4 * f.lashes, g.tilt - 2.6 * f.lashes);
   }
@@ -274,10 +284,22 @@ function drawBrow(c: Ctx, f: FaceDef, e: ExprParams, side: -1 | 1): void {
   const L = f.browLen;
   const inner = [cx - side * L, by + e.tilt * 5.2];
   const outer = [cx + side * L * 0.95, by - e.tilt * 2.6 + 1.2];
-  const ctrl = [cx - side * L * 0.1, by - f.browArch * 2 - Math.abs(e.tilt) * 0.5 + (e.tilt < 0 ? -1.2 : 0)];
+  const ctrl = [
+    cx - side * L * 0.1,
+    by - f.browArch * 2 - Math.abs(e.tilt) * 0.5 + (e.tilt < 0 ? -1.2 : 0),
+  ];
   const col = f.hair;
   const thick = f.browThick;
-  taper(c, [inner[0]!, inner[1]!], [ctrl[0]!, ctrl[1]!], [outer[0]!, outer[1]!], thick * 1.05, thick * 0.55, col, 1.5);
+  taper(
+    c,
+    [inner[0]!, inner[1]!],
+    [ctrl[0]!, ctrl[1]!],
+    [outer[0]!, outer[1]!],
+    thick * 1.05,
+    thick * 0.55,
+    col,
+    1.5,
+  );
 }
 
 // ── nose ──────────────────────────────────────────────────────────────────────────────────────
@@ -403,7 +425,16 @@ function drawMouth(c: Ctx, f: FaceDef, e: ExprParams): void {
       }
       if (e.teeth > 0.05) {
         const th = Math.min(open * 0.5, 3.8) * e.teeth + 0.6;
-        flat(c, poly([[-mw - 1, upMid - 6], [mw + 1, upMid - 6], [mw + 1, upMid - 6 + th + 6.4], [-mw - 1, upMid - 6 + th + 6.4]]), TEETH);
+        flat(
+          c,
+          poly([
+            [-mw - 1, upMid - 6],
+            [mw + 1, upMid - 6],
+            [mw + 1, upMid - 6 + th + 6.4],
+            [-mw - 1, upMid - 6 + th + 6.4],
+          ]),
+          TEETH,
+        );
         c.save();
         c.strokeStyle = alpha('#8a6a60', 0.5);
         c.lineWidth = 0.9;
@@ -415,7 +446,16 @@ function drawMouth(c: Ctx, f: FaceDef, e: ExprParams): void {
         }
         c.restore();
         if (e.mopen > 6 && e.teeth > 0.5) {
-          flat(c, poly([[-mw, lowMid - 3.6], [mw, lowMid - 3.6], [mw, lowMid + 3], [-mw, lowMid + 3]]), TEETH);
+          flat(
+            c,
+            poly([
+              [-mw, lowMid - 3.6],
+              [mw, lowMid - 3.6],
+              [mw, lowMid + 3],
+              [-mw, lowMid + 3],
+            ]),
+            TEETH,
+          );
         }
       }
     });
@@ -427,7 +467,12 @@ function drawMouth(c: Ctx, f: FaceDef, e: ExprParams): void {
     // lower lip rim
     c.beginPath();
     c.moveTo(-mw * 0.62, lowMid * 0.86 + mid * 0.14 + 1.8);
-    c.quadraticCurveTo(0, lowMid + 3.4 + f.lipFull * 2, mw * 0.62, lowMid * 0.86 + mid * 0.14 + 1.8);
+    c.quadraticCurveTo(
+      0,
+      lowMid + 3.4 + f.lipFull * 2,
+      mw * 0.62,
+      lowMid * 0.86 + mid * 0.14 + 1.8,
+    );
     c.lineWidth = 2.2;
     c.strokeStyle = alpha(mix(f.lip, INK, 0.35), 0.8);
     c.stroke();
@@ -567,8 +612,16 @@ function drawMarks(c: Ctx, f: FaceDef): void {
 
 function drawExtras(c: Ctx, f: FaceDef, e: ExprParams): void {
   if (e.blush > 0.02) {
-    flat(c, ellipse(-f.headW * 0.58, f.eyeY + 11, 6.2, 3.6), alpha(f.blush, 0.5 * Math.min(1, e.blush)));
-    flat(c, ellipse(f.headW * 0.58, f.eyeY + 11, 6.2, 3.6), alpha(f.blush, 0.5 * Math.min(1, e.blush)));
+    flat(
+      c,
+      ellipse(-f.headW * 0.58, f.eyeY + 11, 6.2, 3.6),
+      alpha(f.blush, 0.5 * Math.min(1, e.blush)),
+    );
+    flat(
+      c,
+      ellipse(f.headW * 0.58, f.eyeY + 11, 6.2, 3.6),
+      alpha(f.blush, 0.5 * Math.min(1, e.blush)),
+    );
   }
   if (e.tear > 0.3) {
     for (const s of [-1, 1] as const) {
@@ -627,7 +680,6 @@ function drawOutside(c: Ctx, f: FaceDef, e: ExprParams): void {
   }
 }
 
-
 /** Draws the bare face: ears, head, expression and features (hair and headgear come later). */
 export function drawFace(c: Ctx, f: FaceDef, e: ExprParams, blink = 0): void {
   const hp = headPath(f);
@@ -636,10 +688,20 @@ export function drawFace(c: Ctx, f: FaceDef, e: ExprParams, blink = 0): void {
     for (const s of [-1, 1] as const) {
       const ear: PathFn = ellipse(s * (f.headW - 0.5), f.eyeY + 3.5, 4.4 * f.ear, 7 * f.ear, 0);
       paint(c, ear, skin, { shade: skinShade(skin, 0.3), sh: [0, -4], line: 2.6 });
-      flat(c, ellipse(s * (f.headW + 0.2), f.eyeY + 4, 1.6 * f.ear, 3.6 * f.ear), alpha(skinShade(skin, 0.55), 0.8));
+      flat(
+        c,
+        ellipse(s * (f.headW + 0.2), f.eyeY + 4, 1.6 * f.ear, 3.6 * f.ear),
+        alpha(skinShade(skin, 0.55), 0.8),
+      );
     }
   }
-  paint(c, hp, skin, { shade: skinShade(skin, 0.3), sh: [-2.6, -2], rim: lightOf(skin, 0.42), rimW: 2.6, line: 3.2 });
+  paint(c, hp, skin, {
+    shade: skinShade(skin, 0.3),
+    sh: [-2.6, -2],
+    rim: lightOf(skin, 0.42),
+    rimW: 2.6,
+    line: 3.2,
+  });
   clipped(c, hp, () => {
     flat(c, ellipse(-0.5, f.eyeY - 7.5, f.headW * 0.9, 3.4), alpha(skinShade(skin, 0.55), 0.16));
     drawMarks(c, f);

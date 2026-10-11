@@ -19,7 +19,10 @@ function rgb(h: string): [number, number, number] {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 function hex(r: number, g: number, b: number): string {
-  const p = (v: number) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+  const p = (v: number) =>
+    Math.max(0, Math.min(255, Math.round(v)))
+      .toString(16)
+      .padStart(2, '0');
   return `#${p(r)}${p(g)}${p(b)}`;
 }
 /** Linear blend of two #rrggbb colours (t = 0 gives a, 1 gives b). */
