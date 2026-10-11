@@ -71,6 +71,7 @@ export function SettingsPanel({
           label={t('common.done')}
           keyHint="back"
           keyContext="menu"
+          navBack
           onClick={onClose}
         />
       }

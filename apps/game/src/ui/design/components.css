@@ -1,7 +1,6 @@
 /*
  * Design-system components (docs/DESIGN.md, ADR 0013). Every class is prefixed `ds-` so
- * nothing here collides with the legacy screen styles (styles.css, maltese.css), and nothing
- * there styles these: the components never use .btn, .modal-box, .vb-* or .gallarija.
+ * nothing here collides with the screen stylesheets, and nothing there restyles these.
  * Values come from tokens.css only.
  */
 
@@ -719,6 +718,15 @@
 }
 .ds-sheet__close {
   margin-left: auto;
+}
+/* No ✕ (closeButton={false}): the dialog's own action closes it (and carries data-nav-back for
+   Esc / Ⓑ), so the title is centred. */
+.ds-sheet--noclose .ds-sheet__head {
+  min-height: var(--ds-hit);
+  padding: var(--ds-space-2) var(--ds-space-5) 0;
+}
+.ds-sheet--noclose .ds-sheet__title {
+  text-align: center;
 }
 .ds-sheet__rule {
   margin: 0 var(--ds-space-5);

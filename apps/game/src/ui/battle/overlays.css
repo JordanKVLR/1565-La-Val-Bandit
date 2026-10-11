@@ -928,17 +928,6 @@
 }
 
 /* ── Sheets: experience, level up, menu, log, help ────────────────────── */
-/* Dialogs whose own action closes them (Continue, Resume) draw no ✕. */
-.ov-sheet--noclose .ds-sheet__close {
-  display: none;
-}
-.ov-sheet--noclose .ds-sheet__head {
-  min-height: var(--ds-hit);
-  padding: var(--ds-space-2) var(--ds-space-5) 0;
-}
-.ov-sheet--noclose .ds-sheet__title {
-  text-align: center;
-}
 .ov-sheet .ds-sheet__foot {
   position: relative;
   align-items: center;
@@ -1412,11 +1401,19 @@
   .cu-attack {
     font-size: var(--ds-text-md);
   }
+  /* Below the name plates, which take a larger share of a phone's height. */
   .cu-pop {
+    top: 42%;
     font-size: var(--ds-text-2xl);
   }
   .cu-pop.miss {
     font-size: var(--ds-text-xl);
+  }
+  .cu-pop.xp {
+    top: 31%;
+  }
+  .cu-pop.level {
+    top: 22%;
   }
   .cu-line {
     min-height: 44px;

@@ -26,7 +26,8 @@ export function BattleMenu({ onResume, onLog, onHelp, onSettings, onQuit }: Prop
       placement="center"
       size="sm"
       ornament="cross"
-      class="ov-sheet ov-sheet--noclose ov-menu"
+      closeButton={false}
+      class="ov-sheet ov-menu"
     >
       <div class="ov-menu__list">
         <Button

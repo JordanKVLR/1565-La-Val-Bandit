@@ -92,6 +92,7 @@ export function HelpPanel({ onClose }: { onClose: () => void }) {
       onClose={onClose}
       placement="center"
       size="lg"
+      ornament="cross"
       class="ov-sheet ov-help"
     >
       <div ref={inner} class="ov-help__inner">

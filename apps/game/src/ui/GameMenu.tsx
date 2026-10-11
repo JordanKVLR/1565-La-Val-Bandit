@@ -76,12 +76,14 @@ export function GameMenu({
       ornament="cross"
       closeLabel={t('common.close')}
       onClose={onClose}
+      closeButton={false}
       class="fe-sheet fe-menu"
       footer={
         <Button
           variant="primary"
           label={t('common.resume')}
           navDefault
+          navBack
           keyHint="back"
           keyContext="menu"
           onClick={onClose}

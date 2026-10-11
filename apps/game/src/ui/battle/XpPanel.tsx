@@ -55,13 +55,16 @@ export function XpPanel({
       onClose={onDone}
       placement="center"
       size="sm"
-      class="ov-sheet ov-sheet--noclose ov-xp"
+      ornament="cross"
+      closeButton={false}
+      class="ov-sheet ov-xp"
       testId="xp-panel"
       footer={
         <Button
           variant="primary"
           label={t('common.continue')}
           keyHint="confirm"
+          navBack
           keyContext="menu"
           navDefault
           testId="xp-continue"
