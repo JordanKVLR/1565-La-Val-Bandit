@@ -36,6 +36,11 @@ export interface SheetProps {
   footer?: ComponentChildren;
   /** Clicking the dimmed backdrop closes (default true). */
   dismissible?: boolean;
+  /**
+   * Draw the ✕ (default true). Dialogs whose own main action closes them (Resume, Continue)
+   * draw none and centre their title; Esc / Ⓑ still close them through the hidden button.
+   */
+  closeButton?: boolean;
   class?: string;
   testId?: string;
   children: ComponentChildren;
@@ -57,6 +62,7 @@ export function Sheet({
   ornament,
   footer,
   dismissible = true,
+  closeButton = true,
   class: className,
   testId,
   children,
@@ -92,7 +98,12 @@ export function Sheet({
 
   return (
     <div
-      class={cx('ds-sheet', `ds-sheet--${placement}`, className)}
+      class={cx(
+        'ds-sheet',
+        `ds-sheet--${placement}`,
+        !closeButton && 'ds-sheet--noclose',
+        className,
+      )}
       onClick={dismissible ? onClose : undefined}
     >
       <section

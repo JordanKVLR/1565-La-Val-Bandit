@@ -33,7 +33,8 @@ export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props)
       placement="center"
       size="md"
       ornament="cross"
-      class="ov-sheet ov-sheet--noclose ov-levelup"
+      closeButton={false}
+      class="ov-sheet ov-levelup"
       footer={
         <>
           <Hint class="ov-levelup__hint" text={t('levelUp.hint')} />

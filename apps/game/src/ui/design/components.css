@@ -720,6 +720,18 @@
 .ds-sheet__close {
   margin-left: auto;
 }
+/* No ✕ (closeButton={false}): the dialog's own action closes it, so the title is centred. The
+   button stays in the DOM for Esc / Ⓑ (data-nav-back). */
+.ds-sheet--noclose .ds-sheet__close {
+  display: none;
+}
+.ds-sheet--noclose .ds-sheet__head {
+  min-height: var(--ds-hit);
+  padding: var(--ds-space-2) var(--ds-space-5) 0;
+}
+.ds-sheet--noclose .ds-sheet__title {
+  text-align: center;
+}
 .ds-sheet__rule {
   margin: 0 var(--ds-space-5);
 }

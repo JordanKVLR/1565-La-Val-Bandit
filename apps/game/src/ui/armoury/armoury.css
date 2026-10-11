@@ -725,7 +725,8 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  overflow: hidden;
+  /* clip, not hidden: a scroll container's grid row may shrink to one line and lose the second. */
+  overflow: clip;
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-sm);
   font-weight: var(--ds-weight-bold);

@@ -126,7 +126,6 @@ export function ResultsScreen({
           label={nameOf(open.characterId)}
           placement="side"
           size="md"
-          ornament="cross"
           closeLabel={t('common.close')}
           onClose={() => setRaising(null)}
           footer={

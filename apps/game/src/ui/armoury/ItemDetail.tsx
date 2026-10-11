@@ -307,22 +307,25 @@ export function ItemDetail({
           )}
           {actions.length > 0 && (
             <div class="id-actions">
-              {actions.map((a) => {
-                const blocked = blockedFor(a);
-                const isConfirm = confirming === a.id;
-                return (
-                  <Button
-                    key={a.id}
-                    class={`id-action${a.primary ? ' is-main' : ''}${isConfirm ? ' is-armed' : ''}`}
-                    variant={isConfirm ? 'danger' : a.primary ? 'primary' : 'secondary'}
-                    label={isConfirm ? t('armoury.confirm', { action: a.label }) : a.label}
-                    disabled={!!blocked}
-                    testId={isConfirm ? 'action-confirm' : `action-${a.id}`}
-                    {...(isConfirm ? { 'aria-describedby': 'confirm-note' } : {})}
-                    onClick={() => onAction(a)}
-                  />
-                );
-              })}
+              {/* While one action waits for its second tap, it stands alone at full width. */}
+              {actions
+                .filter((a) => !confirming || confirming === a.id)
+                .map((a) => {
+                  const blocked = blockedFor(a);
+                  const isConfirm = confirming === a.id;
+                  return (
+                    <Button
+                      key={a.id}
+                      class={`id-action${a.primary ? ' is-main' : ''}${isConfirm ? ' is-armed' : ''}`}
+                      variant={isConfirm ? 'danger' : a.primary ? 'primary' : 'secondary'}
+                      label={isConfirm ? t('armoury.confirm', { action: a.label }) : a.label}
+                      disabled={!!blocked}
+                      testId={isConfirm ? 'action-confirm' : `action-${a.id}`}
+                      {...(isConfirm ? { 'aria-describedby': 'confirm-note' } : {})}
+                      onClick={() => onAction(a)}
+                    />
+                  );
+                })}
             </div>
           )}
         </footer>

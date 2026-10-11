@@ -49,21 +49,6 @@ type Panel = 'none' | 'menu' | 'log' | 'help' | 'settings' | 'unit';
  * Modes where the player is mid-decision, in a dialog or picker: the unit card would only get in
  * the way, and the round banner never covers them.
  */
-/**
- * Modes where the player is mid-decision, in a dialog or picker: the unit card would only get in
- * the way, and the round banner never covers them.
- */
-/** Modes that put a dialog or a picker over the map. */
-const OVERLAY_MODES: readonly Mode['kind'][] = [
-  'attackMenu',
-  'forecast',
-  'facing',
-  'reaction',
-  'closeUp',
-  'xp',
-  'levelUp',
-  'ended',
-];
 const BUSY_MODES = [
   'forecast',
   'reaction',
