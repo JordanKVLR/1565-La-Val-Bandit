@@ -79,7 +79,7 @@ const FIGURE_SCALE = 0.5;
 const ARROW_OFFSET = new Vector3(0, 0.1, 0);
 /** 2D mode: the arrow shrinks to a tile marker around the sprite's feet, the badge floats over its head. */
 const ARROW_2D = 0.82;
-const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 1.98 * FIGURE_UNIT, 0);
+const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 2.2 * FIGURE_UNIT, 0);
 
 /**
  * Unit marker: a raised arrow lying on the tile, pointing the way the unit faces (+z = south

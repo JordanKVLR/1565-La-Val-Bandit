@@ -635,7 +635,7 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       fx.layer('back', L, (ctx, k) => {
         const lit = k * L > imp;
         const f = lit ? Math.min(1, (k * L - imp) * 5) : 0;
-        ctx.globalAlpha = 0.5;
+        ctx.globalAlpha = 0.28;
         ctx.fillStyle = '#c9bd98';
         ctx.fillRect(mx - 0.45, 0, 0.9, 2.9);
         ctx.fillStyle = '#b3a780';
@@ -649,11 +649,11 @@ export const MILITIA_SCRIPTS: AttackScripts = {
           ctx.globalAlpha = (0.85 - Math.max(0, k * L - imp - 0.6)) * f;
           ctx.fillStyle = '#ffb34d';
           ctx.beginPath();
-          ctx.arc(mx, 3.5, 0.55 * f, 0, TAU);
+          ctx.arc(mx, 3.55, 0.3 * f, 0, TAU);
           ctx.fill();
           ctx.fillStyle = '#fff3c0';
           ctx.beginPath();
-          ctx.arc(mx, 3.45, 0.28 * f, 0, TAU);
+          ctx.arc(mx, 3.5, 0.15 * f, 0, TAU);
           ctx.fill();
         }
       });
@@ -684,7 +684,7 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         fx.word({ x: p.x, y: p.y + 0.85 }, 'HEAVE!', { color: '#ffd08a', size: 0.62, life: 0.85 });
         fx.wash('#ffb34d', 0.2, 0.5);
       } else if (o !== 'block') fx.word({ x: a.x + c.dir * 1.6, y: 0.9 }, 'WHOOSH', { color: LIME, size: 0.42, life: 0.6 });
-      fx.later(0.1, () => fx.glow({ x: (c.attacker.baseX + c.defender.baseX) / 2, y: 3.4 }, { radius: 1.6, color: '#ffb34d', life: 0.5 }));
+      fx.later(0.1, () => fx.glow({ x: (c.attacker.baseX + c.defender.baseX) / 2, y: 3.4 }, { radius: 0.9, color: '#ffb34d', life: 0.5 }));
     },
   },
 
@@ -819,11 +819,15 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const x = f.x + c.dir * 0.55;
       const dir = c.dir;
       eng(c).layer('back', c.impact + 0.8, (ctx) => {
-        ctx.globalAlpha = 0.7;
-        ctx.fillStyle = '#c9bd98';
-        ctx.fillRect(Math.min(x, x + dir * 0.9), 0, 0.9, 0.55);
-        ctx.fillStyle = '#a89c78';
-        ctx.fillRect(Math.min(x, x + dir * 0.9), 0.5, 0.9, 0.07);
+        const x0 = Math.min(x, x + dir * 0.9);
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = '#d4c7a0';
+        ctx.fillRect(x0, 0, 0.9, 0.5);
+        for (let i = 0; i < 3; i++) ctx.fillRect(x0 + i * 0.33, 0.5, 0.24, 0.16);
+        ctx.fillStyle = '#9c8f68';
+        ctx.fillRect(x0, 0.24, 0.9, 0.02);
+        ctx.fillRect(x0 + 0.3, 0, 0.02, 0.24);
+        ctx.fillRect(x0 + 0.6, 0.26, 0.02, 0.24);
       });
     },
     windup: (c) => {

@@ -91,7 +91,7 @@ export class UnitViewer2D {
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
 
-    const scale = Math.min(h / 2.5, w / 1.9);
+    const scale = Math.min((h * 0.84) / 2.05, w / 1.9);
     const groundY = h * 0.86;
     const cx = w / 2;
     // Plinth.
@@ -128,7 +128,7 @@ export class UnitViewer2D {
     rig.facing = this.face;
     ctx.save();
     ctx.translate(cx, groundY);
-    ctx.scale(scale * 1.15, -scale * 1.15);
+    ctx.scale(scale, -scale);
     ctx.scale(Math.abs(sx) < 0.05 ? 0.05 : sx, 1);
     rig.draw(ctx);
     ctx.restore();

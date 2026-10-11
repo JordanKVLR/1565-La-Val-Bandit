@@ -78,7 +78,14 @@ function flyingCogs(c: FxContext, at: V2, n: number): void {
 }
 
 /** A round pressure gauge with a needle (0..1) that can shake. */
-function gauge(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, v: number, shake: number): void {
+function gauge(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  r: number,
+  v: number,
+  shake: number,
+): void {
   ctx.save();
   ctx.translate(x + Math.sin(v * 90) * shake, y);
   ctx.fillStyle = BRASS;
@@ -132,7 +139,10 @@ const pistonStrike: AttackScript = {
       fx.layer('front', c.impact + 0.3, (ctx, k) => {
         const a = rig.anchors();
         const imp = c.impact / (c.impact + 0.3);
-        const ext = k < imp ? -0.12 * (k / imp) : 0.5 * Math.min(1, (k - imp) / 0.06) * (1 - (k - imp) / (1 - imp) * 0.6);
+        const ext =
+          k < imp
+            ? -0.12 * (k / imp)
+            : 0.5 * Math.min(1, (k - imp) / 0.06) * (1 - ((k - imp) / (1 - imp)) * 0.6);
         const dx = a.offHand.x - a.chest.x;
         const dy = a.offHand.y - a.chest.y;
         const l = Math.hypot(dx, dy) || 1;
@@ -157,7 +167,11 @@ const pistonStrike: AttackScript = {
     if (c.t >= c.impact - 0.1 && fx.once('hiss')) {
       const a = c.attacker.anchors();
       steamPuff(c, { x: a.chest.x - c.dir * 0.2, y: a.chest.y + 0.2 }, 4, 0.18, 0.5);
-      fx.word({ x: a.chest.x - c.dir * 0.5, y: a.head.y + 0.5 }, 'PSSST', { color: STEAM, size: 0.32, life: 0.5 });
+      fx.word({ x: a.chest.x - c.dir * 0.5, y: a.head.y + 0.5 }, 'PSSST', {
+        color: STEAM,
+        size: 0.32,
+        life: 0.5,
+      });
     }
   },
   impactFx: (c) => {
@@ -233,11 +247,25 @@ const steamHammer: AttackScript = {
       steamPuff(c, { x: a.hand.x, y: a.hand.y + 0.1 }, 1, 0.11, 0.9);
     }
     if (c.t >= c.impact - 0.4 && fx.once('rumble')) {
-      fx.word({ x: a.chest.x - c.dir * 0.4, y: a.head.y + 0.8 }, 'HISSS', { color: STEAM, size: 0.4, life: 0.7 });
+      fx.word({ x: a.chest.x - c.dir * 0.4, y: a.head.y + 0.8 }, 'HISSS', {
+        color: STEAM,
+        size: 0.4,
+        life: 0.7,
+      });
       fx.shake(0.04, 0.97);
     }
     if (c.t >= c.impact - 0.2 && fx.once('smear'))
-      fx.arc({ x: a.chest.x + c.dir * 0.3, y: a.chest.y + 0.5 }, { radius: 1.4, from: face(3.0, c.dir), to: face(-0.1, c.dir), width: 0.8, color: '#ff8a2a', life: 0.3 });
+      fx.arc(
+        { x: a.chest.x + c.dir * 0.3, y: a.chest.y + 0.5 },
+        {
+          radius: 1.4,
+          from: face(3.0, c.dir),
+          to: face(-0.1, c.dir),
+          width: 0.8,
+          color: '#ff8a2a',
+          life: 0.3,
+        },
+      );
   },
   impactFx: (c) => {
     const fx = eng(c);
@@ -256,12 +284,21 @@ const steamHammer: AttackScript = {
       fx.spark(p, { n: 34, color: '#ffa23a', speed: 11, dir: Math.PI / 2, spread: 3.4 });
       fx.ember(p, { n: 12 });
       flyingCogs(c, p, 5);
-      for (let i = 0; i < 3; i++) steamPuff(c, { x: p.x + (i - 1) * 0.35, y: p.y - 0.2 }, 3, 0.25, 1.0);
-      fx.word({ x: p.x, y: p.y + 1.1 }, 'CLANG!', { color: '#ffb35a', size: 0.78, life: 1.0, rot: -0.07 });
+      for (let i = 0; i < 3; i++)
+        steamPuff(c, { x: p.x + (i - 1) * 0.35, y: p.y - 0.2 }, 3, 0.25, 1.0);
+      fx.word({ x: p.x, y: p.y + 1.1 }, 'CLANG!', {
+        color: '#ffb35a',
+        size: 0.78,
+        life: 1.0,
+        rot: -0.07,
+      });
       fx.punch(p, 1.2, 0.5);
       fx.wash('#ff8a2a', 0.22, 0.4);
     } else {
-      fx.spark({ x: g.x, y: 0.05 }, { n: 16, color: '#ffa23a', speed: 7, dir: Math.PI / 2, spread: 2.4 });
+      fx.spark(
+        { x: g.x, y: 0.05 },
+        { n: 16, color: '#ffa23a', speed: 7, dir: Math.PI / 2, spread: 2.4 },
+      );
       whiffWord(c, 'THUD!', '#ffd8a0');
     }
   },
@@ -313,11 +350,26 @@ const overpressure: AttackScript = {
     const a = c.attacker.anchors();
     const k = Math.min(1, c.t / c.impact);
     if (c.t > 0.1 && (Math.floor(c.t * 40) & 1) === 0) {
-      steamPuff(c, { x: a.chest.x - c.dir * 0.2, y: a.chest.y + 0.5 }, 1 + Math.floor(k * 2), 0.12, 0.9);
-      if (k > 0.5) fx.spark({ x: a.chest.x, y: a.chest.y + 0.2 }, { n: 1, color: '#ffb347', speed: 3, size: 0.03 });
+      steamPuff(
+        c,
+        { x: a.chest.x - c.dir * 0.2, y: a.chest.y + 0.5 },
+        1 + Math.floor(k * 2),
+        0.12,
+        0.9,
+      );
+      if (k > 0.5)
+        fx.spark(
+          { x: a.chest.x, y: a.chest.y + 0.2 },
+          { n: 1, color: '#ffb347', speed: 3, size: 0.03 },
+        );
     }
     if (k > 0.35) fx.shake(0.015 + 0.04 * k, 0.9);
-    if (k > 0.8 && fx.once('red')) fx.word({ x: a.chest.x - c.dir * 0.5, y: a.head.y + 1.3 }, 'SSSSS!', { color: '#ff8a7a', size: 0.45, life: 0.5 });
+    if (k > 0.8 && fx.once('red'))
+      fx.word({ x: a.chest.x - c.dir * 0.5, y: a.head.y + 1.3 }, 'SSSSS!', {
+        color: '#ff8a7a',
+        size: 0.45,
+        life: 0.5,
+      });
   },
   impactFx: (c) => {
     const fx = eng(c);
@@ -329,12 +381,16 @@ const overpressure: AttackScript = {
     fx.spark({ x: h.x, y: h.y + 0.75 }, { n: 16, color: '#ffe9c0', speed: 6, size: 0.04 });
     flyingCogs(c, { x: h.x, y: h.y + 0.75 }, 3);
     fx.ring({ x: h.x, y: h.y + 0.75 }, { color: STEAM, radius: 1.2, life: 0.4, width: 0.12 });
-    for (let i = 0; i < 3; i++) fx.smoke({ x: a.chest.x - c.dir * (0.2 + i * 0.1), y: a.chest.y + 0.2 + i * 0.3 }, { n: 4, size: 0.3, rise: 0.4, color: STEAM });
+    for (let i = 0; i < 3; i++)
+      fx.smoke(
+        { x: a.chest.x - c.dir * (0.2 + i * 0.1), y: a.chest.y + 0.2 + i * 0.3 },
+        { n: 4, size: 0.3, rise: 0.4, color: STEAM },
+      );
     fx.layer('front', 0.35, (ctx, k) => {
       ctx.globalCompositeOperation = 'lighter';
       ctx.globalAlpha = (1 - k) * 0.85;
       const x0 = a.hand.x;
-      const l = (1.2 + 3 * Math.min(1, k * 4));
+      const l = 1.2 + 3 * Math.min(1, k * 4);
       ctx.fillStyle = STEAM;
       ctx.beginPath();
       ctx.moveTo(x0, a.hand.y);
@@ -350,7 +406,12 @@ const overpressure: AttackScript = {
       fx.ring(p, { color: '#ffd0a0', radius: 3.2, life: 0.55, width: 0.18 });
       fx.ring(p, { color: '#e8392e', radius: 2.0, life: 0.4, width: 0.12 });
       fx.spark(p, { n: 32, color: '#ffb347', speed: 11 });
-      fx.word({ x: p.x, y: p.y + 1.5 }, 'BOOM!', { color: '#e8392e', size: 0.95, life: 1.1, rot: -0.1 });
+      fx.word({ x: p.x, y: p.y + 1.5 }, 'BOOM!', {
+        color: '#e8392e',
+        size: 0.95,
+        life: 1.1,
+        rot: -0.1,
+      });
       fx.speedLines({ color: '#ffffff', life: 0.4, n: 40 });
       fx.punch(p, 1.28, 0.6);
       fx.wash('#e8392e', 0.35, 0.6);
@@ -394,7 +455,10 @@ function pelletFan(c: FxContext, n: number, life: number): void {
   for (let i = 0; i < n; i++) {
     const spread = (i / (n - 1) - 0.5) * 1.5;
     const reach = Math.abs(d.x - m.x);
-    const to: V2 = c.hit || c.reaction === 'defend' ? { x: d.x - c.dir * 0.1, y: d.y + spread * 0.9 } : { x: m.x + c.dir * (reach + 1.2), y: d.y + spread * 1.2 };
+    const to: V2 =
+      c.hit || c.reaction === 'defend'
+        ? { x: d.x - c.dir * 0.1, y: d.y + spread * 0.9 }
+        : { x: m.x + c.dir * (reach + 1.2), y: d.y + spread * 1.2 };
     fx.sprite({
       from: { x: m.x, y: m.y },
       to,
@@ -455,12 +519,22 @@ const grapeshot: AttackScript = {
     if (c.t >= shot1 && fx.once('s1')) {
       muzzleSteam(c, 1);
       pelletFan(c, 7, 0.14);
-      fx.word({ x: c.attacker.anchors().tip.x + c.dir * 0.5, y: c.attacker.anchors().tip.y + 0.55 }, 'POP!', { color: BRASS, size: 0.4, life: 0.5 });
+      fx.word(
+        { x: c.attacker.anchors().tip.x + c.dir * 0.5, y: c.attacker.anchors().tip.y + 0.55 },
+        'POP!',
+        { color: BRASS, size: 0.4, life: 0.5 },
+      );
       fx.shake(0.06, 0.85);
       if (c.hit) {
         c.defender.flash = 0.5;
         const d = c.defender.anchors().chest;
-        for (let i = 0; i < 5; i++) fx.later(0.1 + i * 0.012, () => fx.spark({ x: d.x - c.dir * 0.1, y: d.y + (i - 2) * 0.32 }, { n: 3, color: '#ffd37a', speed: 5, dir: face(0.5, c.dir), spread: 2 }));
+        for (let i = 0; i < 5; i++)
+          fx.later(0.1 + i * 0.012, () =>
+            fx.spark(
+              { x: d.x - c.dir * 0.1, y: d.y + (i - 2) * 0.32 },
+              { n: 3, color: '#ffd37a', speed: 5, dir: face(0.5, c.dir), spread: 2 },
+            ),
+          );
       }
     }
   },
@@ -481,10 +555,18 @@ const grapeshot: AttackScript = {
           });
         }
         fx.glow(base, { radius: 1.5, color: '#ffd37a', life: 0.3 });
-        fx.word({ x: base.x, y: base.y + 0.95 }, 'RATTA!', { color: '#ffd37a', size: 0.6, life: 0.8 });
+        fx.word({ x: base.x, y: base.y + 0.95 }, 'RATTA!', {
+          color: '#ffd37a',
+          size: 0.6,
+          life: 0.8,
+        });
       } else {
         const f = c.defender.anchors().feet;
-        for (let i = 0; i < 5; i++) fx.spark({ x: f.x + c.dir * (0.4 + i * 0.35), y: 0.04 }, { n: 4, color: '#e8d4a0', speed: 4, dir: Math.PI / 2, spread: 1.4 });
+        for (let i = 0; i < 5; i++)
+          fx.spark(
+            { x: f.x + c.dir * (0.4 + i * 0.35), y: 0.04 },
+            { n: 4, color: '#e8d4a0', speed: 4, dir: Math.PI / 2, spread: 1.4 },
+          );
         fx.dust({ x: f.x + c.dir * 1.0, y: 0 }, { n: 8 });
         whiffWord(c, 'PING!', '#e8f0f4');
       }
@@ -538,16 +620,23 @@ const siegeBolt: AttackScript = {
   windup: (c) => {
     const fx = eng(c);
     const m = c.attacker.anchors().tip;
-    if (c.t > 0.15 && (Math.floor(c.t * 24) & 1) === 0 && c.t < c.impact - 0.1) steamPuff(c, { x: m.x - c.dir * 0.3, y: m.y + 0.1 }, 1, 0.1, 0.5);
+    if (c.t > 0.15 && (Math.floor(c.t * 24) & 1) === 0 && c.t < c.impact - 0.1)
+      steamPuff(c, { x: m.x - c.dir * 0.3, y: m.y + 0.1 }, 1, 0.1, 0.5);
     if (c.t >= c.impact - 0.12 && fx.once('fire')) {
       const from = { x: m.x, y: m.y };
       const d = c.defender.anchors().chest;
       const ok = c.hit || c.reaction === 'defend';
-      const to: V2 = ok ? { x: d.x - c.dir * 0.12, y: d.y } : { x: d.x + c.dir * 2.6, y: d.y + 0.3 };
+      const to: V2 = ok
+        ? { x: d.x - c.dir * 0.12, y: d.y }
+        : { x: d.x + c.dir * 2.6, y: d.y + 0.3 };
       fx.glow(from, { radius: 1.2, color: '#e6f0f8', life: 0.18 });
       steamPuff(c, from, 7, 0.22, 0.4);
       fx.ring(from, { color: '#e6f0f8', radius: 1.1, life: 0.3, width: 0.1 });
-      fx.word({ x: from.x + c.dir * 0.6, y: from.y + 0.6 }, 'THWANG!', { color: '#e6f0f8', size: 0.45, life: 0.5 });
+      fx.word({ x: from.x + c.dir * 0.6, y: from.y + 0.6 }, 'THWANG!', {
+        color: '#e6f0f8',
+        size: 0.45,
+        life: 0.5,
+      });
       fx.speedLines({ dir: dirAng(c) + Math.PI, color: '#e6f0f8', life: 0.2, n: 10 });
       fx.sprite({
         from,
@@ -590,7 +679,7 @@ const siegeBolt: AttackScript = {
       });
       fx.spark(out, { n: 16, color: '#e6f0f8', speed: 9, dir: face(0.1, c.dir), spread: 1.0 });
       fx.burst(out, { n: 7, color: '#c9d6e2', length: 0.8, life: 0.24 });
-      fx.word({ x: p.x, y: p.y + 1.0 }, 'PIERCED!', { color: '#e6f0f8', size: 0.5, life: 0.8 });
+      fx.word({ x: p.x, y: p.y + 1.35 }, 'PIERCED!', { color: '#e6f0f8', size: 0.5, life: 0.8 });
       fx.punch(p, 1.15, 0.4);
     } else if (o === 'block') {
       fx.spark(p, { n: 12, color: '#e6f0f8', speed: 8, dir: Math.PI / 2, spread: 2.6 });
@@ -630,7 +719,9 @@ function broadsideVolley(c: FxContext, n: number, big: boolean): void {
     if (i < 3)
       fx.sprite({
         from: at,
-        to: ok ? { x: d.x - c.dir * 0.15, y: d.y + (i - 1) * 0.4 } : { x: d.x + c.dir * 2.4, y: 0.2 + i * 0.3 },
+        to: ok
+          ? { x: d.x - c.dir * 0.15, y: d.y + (i - 1) * 0.4 }
+          : { x: d.x + c.dir * 2.4, y: 0.2 + i * 0.3 },
         life: 0.13 + i * 0.02,
         trail: '#ffd37a',
         paint: (ctx, p) => {
@@ -673,7 +764,11 @@ const broadside: AttackScript = {
     if (c.t >= shot1 && fx.once('s1')) {
       broadsideVolley(c, 3, false);
       fx.shake(0.12, 0.88);
-      fx.word({ x: c.attacker.anchors().chest.x + c.dir * 0.2, y: 2.4 }, 'BOOM!', { color: '#f0902a', size: 0.5, life: 0.6 });
+      fx.word({ x: c.attacker.anchors().chest.x + c.dir * 0.2, y: 2.4 }, 'BOOM!', {
+        color: '#f0902a',
+        size: 0.5,
+        life: 0.6,
+      });
       if (c.hit) c.defender.flash = 0.5;
     }
   },
@@ -698,14 +793,25 @@ const broadside: AttackScript = {
         }
         fx.ring(p, { color: '#ffd37a', radius: 2.6, life: 0.5, width: 0.14 });
         fx.smoke(p, { n: 6, size: 0.34, rise: 0.7, color: '#4a4540' });
-        fx.word({ x: p.x, y: p.y + 1.4 }, 'BROADSIDE!', { color: '#f0902a', size: 0.7, life: 1.0, rot: -0.07 });
+        fx.word({ x: p.x, y: p.y + 1.4 }, 'BROADSIDE!', {
+          color: '#f0902a',
+          size: 0.7,
+          life: 1.0,
+          rot: -0.07,
+        });
         fx.punch(p, 1.2, 0.5);
         fx.wash('#f0902a', 0.3, 0.5);
       } else {
         const f = c.defender.anchors().feet;
-        fx.ring({ x: f.x + c.dir * 2.0, y: 0.05 }, { color: '#e8d4a0', radius: 2.2, life: 0.5, width: 0.1, flat: 0.22 });
+        fx.ring(
+          { x: f.x + c.dir * 2.0, y: 0.05 },
+          { color: '#e8d4a0', radius: 2.2, life: 0.5, width: 0.1, flat: 0.22 },
+        );
         fx.dust({ x: f.x + c.dir * 2.0, y: 0 }, { n: 14, size: 0.26 });
-        fx.spark({ x: f.x + c.dir * 2.0, y: 0.1 }, { n: 16, color: '#ffb347', speed: 8, dir: Math.PI / 2, spread: 2.2 });
+        fx.spark(
+          { x: f.x + c.dir * 2.0, y: 0.1 },
+          { n: 16, color: '#ffb347', speed: 8, dir: Math.PI / 2, spread: 2.2 },
+        );
         whiffWord(c, 'SPLASH!', '#e8f0f4');
       }
     });
