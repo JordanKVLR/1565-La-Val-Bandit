@@ -36,6 +36,11 @@ export interface SheetProps {
   footer?: ComponentChildren;
   /** Clicking the dimmed backdrop closes (default true). */
   dismissible?: boolean;
+  /**
+   * Draw the ✕ (default true). Dialogs whose own main action closes them (Resume, Continue)
+   * draw none and centre their title; that action then carries `navBack`, so Esc / Ⓑ press it.
+   */
+  closeButton?: boolean;
   class?: string;
   testId?: string;
   children: ComponentChildren;
@@ -57,6 +62,7 @@ export function Sheet({
   ornament,
   footer,
   dismissible = true,
+  closeButton = true,
   class: className,
   testId,
   children,
@@ -92,7 +98,12 @@ export function Sheet({
 
   return (
     <div
-      class={cx('ds-sheet', `ds-sheet--${placement}`, className)}
+      class={cx(
+        'ds-sheet',
+        `ds-sheet--${placement}`,
+        !closeButton && 'ds-sheet--noclose',
+        className,
+      )}
       onClick={dismissible ? onClose : undefined}
     >
       <section
@@ -108,15 +119,17 @@ export function Sheet({
       >
         <header class="ds-sheet__head">
           {heading && <h2 class="ds-sheet__title">{heading}</h2>}
-          <Button
-            class="ds-sheet__close"
-            label={closeLabel}
-            icon="close"
-            iconOnly
-            variant="ghost"
-            navBack
-            onClick={onClose}
-          />
+          {closeButton && (
+            <Button
+              class="ds-sheet__close"
+              label={closeLabel}
+              icon="close"
+              iconOnly
+              variant="ghost"
+              navBack
+              onClick={onClose}
+            />
+          )}
         </header>
         <Divider glyph={ornament} class="ds-sheet__rule" />
         <div class="ds-sheet__body">{children}</div>

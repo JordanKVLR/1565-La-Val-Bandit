@@ -33,7 +33,8 @@ function layerInsets(layer: HTMLElement): Insets {
 
 /**
  * The active unit's commands as a slim bar. On wide screens (Deck, desktop, TV) it stands
- * beside the unit on the map and follows the camera; on phones it docks to the bottom edge.
+ * beside the unit on the map, follows the camera and keeps off the movement range (or docks in
+ * the bottom-right corner when it cannot); on phones it docks to the bottom edge.
  * While `moving`, the unit's movement range is on the map (the default at the start of a turn)
  * and Move shows as pressed.
  */
@@ -49,7 +50,9 @@ export function ActionMenu({
 }) {
   const bar = useRef<HTMLElement>(null);
   const docked = useMediaQuery(PHONE_QUERY) || !anchor;
-  useAnchor(bar, anchor ?? null, !docked, layerInsets, { gap: 48, lift: 28 });
+  // Beside the unit, off the movement range where it can be; in the bottom-right corner when
+  // every spot beside the unit would still hide more than two tiles of the range.
+  useAnchor(bar, anchor ?? null, !docked, layerInsets, { gap: 48, lift: 28, dockAbove: 2 });
   const unit = ctl.active();
   if (!unit) return null;
   return (

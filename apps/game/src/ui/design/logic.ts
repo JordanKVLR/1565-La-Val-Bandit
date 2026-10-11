@@ -103,22 +103,45 @@ export interface AnchorOptions {
    * edge, so the bar covers less of the middle of the map.
    */
   readonly prefer?: 'right' | 'left' | 'outward';
-  /** Points the bar should not cover (other units); the side covering fewer wins. */
+  /** Points the bar should not cover (other units); the spot covering fewer wins. */
   readonly avoid?: readonly Point[] | undefined;
   /** How close to the bar an avoided point may be (default 16 px). */
   readonly avoidMargin?: number;
+  /**
+   * Points the bar should keep clear where it can, weighed below `avoid` (the tiles of the
+   * movement range). With them the bar may also stand just past the range's edge, level with
+   * the point, instead of right beside it.
+   */
+  readonly keepClear?: readonly Point[] | undefined;
+  /** How close to the bar a kept-clear point may be (default 12 px, about half a tile). */
+  readonly clearMargin?: number;
+  /**
+   * When even the best spot beside the point covers more than this many `keepClear` points,
+   * the bar docks in the bottom-right corner if that covers less. Unset: it never docks.
+   */
+  readonly dockAbove?: number;
 }
 
 export interface AnchorPlacement {
   readonly x: number;
   readonly y: number;
-  readonly side: 'right' | 'left';
+  /** Beside the point (`right`/`left`), or docked in the bottom-right corner. */
+  readonly side: 'right' | 'left' | 'dock';
 }
+
+/** A unit covered costs as much as this many kept-clear tiles. */
+const AVOID_WEIGHT = 4;
 
 /**
  * Where to put a bar of `bar` size beside `point` inside an area of `area` size, keeping
- * `insets` clear (HUD, title-safe margins). It goes on the preferred side when it fits there,
- * else the other side, and is then clamped inside the area. Returns its top-left corner.
+ * `insets` clear (HUD, title-safe margins). Returns its top-left corner.
+ *
+ * Candidates are the two sides right beside the point and, when there are points to keep
+ * clear, the two spots just past the outermost of them level with the bar. A spot that fits
+ * (is not pushed back over the point by the screen edge) beats one that does not; then the
+ * one covering less wins (units weigh more than kept-clear tiles), then the nearer one, then
+ * the preferred side. If the winner still covers more than `dockAbove` kept-clear points, the
+ * bottom-right corner is taken instead when it covers less.
  */
 export function placeBeside(
   point: Point,
@@ -142,33 +165,52 @@ export function placeBeside(
   const clamp = (v: number, lo: number, hi: number) =>
     hi < lo ? lo : Math.min(Math.max(v, lo), hi);
   const y = Math.round(clamp(point.y - lift - bar.height / 2, minY, maxY));
-  const candidate = (side: 'right' | 'left') => {
-    const raw = side === 'right' ? point.x + gap : point.x - gap - bar.width;
+  const avoidMargin = opts.avoidMargin ?? 16;
+  const clearMargin = opts.clearMargin ?? 12;
+  const keepClear = opts.keepClear ?? [];
+  const count = (pts: readonly Point[], x: number, top: number, m: number) =>
+    pts.filter(
+      (p) =>
+        p.x >= x - m && p.x <= x + bar.width + m && p.y >= top - m && p.y <= top + bar.height + m,
+    ).length;
+  const measure = (x: number, top: number) => {
+    const units = count(opts.avoid ?? [], x, top, avoidMargin);
+    const tiles = count(keepClear, x, top, clearMargin);
+    return { tiles, cost: units * AVOID_WEIGHT + tiles };
+  };
+  const candidate = (side: 'right' | 'left', raw: number, rank: number) => {
     const x = Math.round(clamp(raw, minX, maxX));
     // Pushed back over the point by the screen edge: the bar would cover what it serves.
     const fits = side === 'right' ? raw <= maxX : raw >= minX;
-    const margin = opts.avoidMargin ?? 16;
-    const covered = (opts.avoid ?? []).filter(
-      (p) =>
-        p.x >= x - margin &&
-        p.x <= x + bar.width + margin &&
-        p.y >= y - margin &&
-        p.y <= y + bar.height + margin,
-    ).length;
-    return { x, y, side, fits, covered };
+    const distance = Math.abs(x + bar.width / 2 - point.x);
+    return { x, y, side, fits, rank, distance, ...measure(x, y) };
   };
-  const first = candidate(prefer);
-  const second = candidate(prefer === 'right' ? 'left' : 'right');
-  // Fitting beats not fitting; then fewer covered points; then the preferred side.
-  const better =
-    first.fits !== second.fits
-      ? first.fits
-        ? first
-        : second
-      : second.covered < first.covered
-        ? second
-        : first;
-  return { x: better.x, y: better.y, side: better.side };
+  const other = prefer === 'right' ? 'left' : 'right';
+  const near = (side: 'right' | 'left') =>
+    side === 'right' ? point.x + gap : point.x - gap - bar.width;
+  const candidates = [candidate(prefer, near(prefer), 0), candidate(other, near(other), 1)];
+  // Just past the range's edge, level with the bar (only the tiles in its band matter).
+  const band = keepClear.filter(
+    (p) => p.y >= y - clearMargin && p.y <= y + bar.height + clearMargin,
+  );
+  if (band.length) {
+    const right = Math.max(...band.map((p) => p.x)) + clearMargin + 1;
+    const left = Math.min(...band.map((p) => p.x)) - clearMargin - 1 - bar.width;
+    const rank = (side: 'right' | 'left') => (side === prefer ? 2 : 3);
+    if (right > near('right')) candidates.push(candidate('right', right, rank('right')));
+    if (left < near('left')) candidates.push(candidate('left', left, rank('left')));
+  }
+  const best = candidates.reduce((a, b) => {
+    if (a.fits !== b.fits) return a.fits ? a : b;
+    if (a.cost !== b.cost) return a.cost < b.cost ? a : b;
+    if (Math.abs(a.distance - b.distance) > 1) return a.distance < b.distance ? a : b;
+    return a.rank <= b.rank ? a : b;
+  });
+  if (opts.dockAbove !== undefined && best.tiles > opts.dockAbove) {
+    const dock = { x: Math.round(Math.max(minX, maxX)), y: Math.round(Math.max(minY, maxY)) };
+    if (measure(dock.x, dock.y).cost < best.cost) return { ...dock, side: 'dock' };
+  }
+  return { x: best.x, y: best.y, side: best.side };
 }
 
 // ── Focus trap ────────────────────────────────────────────────────────────

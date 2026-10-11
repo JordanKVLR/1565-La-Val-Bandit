@@ -172,7 +172,6 @@ export const en = {
   'results.progress': '{name}: Lv {level}, {xp}/{max} XP',
   'roster.pointsToSpend': { one: '{n} point to spend', other: '{n} points to spend' },
   'roster.raise': 'Raise {stat} for {pilot}',
-  'roster.techniques': 'Techniques: {list}',
   'roster.noTechniques': 'none yet',
   'roster.skills': 'Skills',
 

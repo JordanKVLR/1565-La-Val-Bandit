@@ -72,6 +72,9 @@ describe('design tokens', () => {
       'frontend.css',
       'codex.css',
       'design/controls.css',
+      'styles.css',
+      'input.css',
+      'pilot.css',
     ]) {
       const css = readFileSync(join(UI, sheet), 'utf8');
       expect(css.match(/#[0-9a-fA-F]{3,8}\b/g), sheet).toBeNull();

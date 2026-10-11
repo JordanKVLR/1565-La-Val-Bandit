@@ -559,11 +559,11 @@ Status (2026-09-30): M0–M7 complete. The whole campaign is playable on web and
 
 ## 12. Visual theme
 
-The interface is moving to the dark-glass design system in `docs/DESIGN.md` (ADR 0013): calm,
-map-first, one gold accent, hairlines instead of frames. The Maltese motifs below survive only
-as restraint (a cross on a divider, a faint madum ground behind a full-screen page) and their
-frames are removed screen by screen. Until a screen is converted it is framed in Maltese motifs
-(see `apps/game/src/ui/maltese.css`):
+The interface uses the dark-glass design system in `docs/DESIGN.md` (ADR 0013): calm,
+map-first, one gold accent, hairlines instead of frames. Every screen has been converted and the
+Maltese frames are gone; the motifs below survive only as restraint (a cross on a divider, a
+faint madum ground behind a full-screen page, from `apps/game/src/ui/maltese.generated.css`).
+They were:
 
 - **Madum:** the patterned cement floor tile, behind full-screen pages.
 - **Bizzilla:** lace edging along panel tops and dividers.

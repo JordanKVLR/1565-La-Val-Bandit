@@ -111,6 +111,62 @@ describe('placeBeside', () => {
     // Left of x=120 does not fit (it would be pushed back over the point).
     expect(placeBeside({ x: 120, y: 300 }, bar, area, insets, { avoid }).side).toBe('right');
   });
+
+  /** A grid of tile centres, `step` apart, from (x0, y0) to (x1, y1). */
+  const tiles = (x0: number, x1: number, y0: number, y1: number, step = 40) => {
+    const out: { x: number; y: number }[] = [];
+    for (let x = x0; x <= x1; x += step) for (let y = y0; y <= y1; y += step) out.push({ x, y });
+    return out;
+  };
+
+  it('takes the side off the movement range when the outward side would cover it', () => {
+    // The range lies left of the unit, towards the nearer edge.
+    const keepClear = tiles(120, 280, 220, 380);
+    expect(placeBeside({ x: 300, y: 300 }, bar, area, insets, { keepClear })).toEqual({
+      x: 340,
+      y: 200,
+      side: 'right',
+    });
+  });
+
+  it('stands just past the edge of a range that surrounds the unit, level with it', () => {
+    const keepClear = tiles(380, 620, 260, 340);
+    // Right beside the unit would hide nine tiles on either side; past the edge hides none.
+    expect(placeBeside({ x: 500, y: 300 }, bar, area, insets, { keepClear })).toEqual({
+      x: 633,
+      y: 200,
+      side: 'right',
+    });
+  });
+
+  it('docks in the bottom-right corner when every spot beside the unit hides the range', () => {
+    // One row of range across the whole map: no spot past its edge fits on screen.
+    const keepClear = tiles(20, 980, 300, 300);
+    const opts = { keepClear, dockAbove: 2 };
+    expect(placeBeside({ x: 500, y: 300 }, bar, area, insets, opts)).toEqual({
+      x: 840,
+      y: 390,
+      side: 'dock',
+    });
+    // Without a threshold it stays beside the unit; under the threshold it does not dock.
+    expect(placeBeside({ x: 500, y: 300 }, bar, area, insets, { keepClear }).side).toBe('right');
+    const few = tiles(560, 600, 300, 300);
+    expect(
+      placeBeside({ x: 500, y: 300 }, bar, area, insets, { keepClear: few, dockAbove: 2 }).side,
+    ).not.toBe('dock');
+  });
+
+  it('weighs a covered unit above a covered tile', () => {
+    // Left of the unit: one other unit. Right: two range tiles, and no room past them.
+    const avoid = [{ x: 420, y: 300 }];
+    const keepClear = [
+      { x: 600, y: 300 },
+      { x: 860, y: 300 },
+    ];
+    expect(placeBeside({ x: 500, y: 300 }, bar, area, insets, { avoid, keepClear })).toMatchObject({
+      side: 'right',
+    });
+  });
 });
 
 describe('nextTrapIndex', () => {

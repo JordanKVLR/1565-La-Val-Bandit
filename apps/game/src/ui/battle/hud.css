@@ -142,14 +142,28 @@
 .bhud-avatar.side-enemy {
   --bhud-side: var(--ds-side-enemy-text);
 }
-.bhud-avatar .portrait {
+/* The portrait (battle/Portrait.tsx): art, or the initial on the side's colour until it loads. */
+.portrait {
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
   overflow: hidden;
   font-family: var(--ds-font-display);
   font-size: var(--ds-text-xl);
-  border: 0;
+  font-weight: var(--ds-weight-bold);
+  color: var(--ds-text);
+  background: var(--ds-side-player);
   border-radius: inherit;
+}
+.portrait-enemy {
+  background: var(--ds-side-enemy);
+}
+.portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .bhud-avatar .ds-side-mark {
   position: absolute;
@@ -163,9 +177,6 @@
 }
 
 /* ── Map controls and terrain readout ─────────────────────────────────── */
-.hud-controls {
-  gap: var(--ds-space-2);
-}
 .bhud-terrain {
   min-height: 28px;
   padding: 2px var(--ds-space-3);

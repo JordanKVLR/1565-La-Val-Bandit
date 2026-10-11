@@ -1,0 +1,129 @@
+/*
+ * A pilot's attributes and skills (PilotAttributes.tsx, SkillList.tsx), drawn the same way in
+ * the Armoury's training sheet, the Results screen's "Raise attributes" sheet and the battle's
+ * unit details. Design tokens only (design.test.ts fails on a hex colour).
+ */
+
+/* Small spaced capitals over a section (Attributes, Techniques, Skills). */
+.pa-label {
+  margin: var(--ds-space-3) 0 var(--ds-space-2);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--ds-gold);
+}
+.pa > .pa-label:first-child,
+.pa-skills > .pa-label:first-child {
+  margin-top: 0;
+}
+.pa-attrs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-space-1) var(--ds-space-5);
+}
+.pa-attr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--ds-space-2);
+  min-height: 30px;
+}
+.pa-attrs.can-raise .pa-attr {
+  min-height: var(--ds-hit);
+}
+.pa-attr .ds-meter {
+  grid-template-columns: 2.7em minmax(0, 1fr) auto;
+}
+.pa-stats {
+  margin-top: var(--ds-space-3);
+}
+.pa-tech {
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-2);
+}
+
+/* ── Skills: hairline rows; a star and "Active", or a padlock, a dashed rule and "Unlocks at" ── */
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+.skill-row {
+  display: flex;
+  gap: var(--ds-space-2);
+  align-items: flex-start;
+  padding: var(--ds-space-2) 0;
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.skill-row:last-child {
+  border-bottom: 0;
+}
+.skill-row.locked {
+  border-bottom-style: dashed;
+  color: var(--ds-text-3);
+}
+.skill-icon {
+  flex: none;
+  margin-top: 0.2em;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-gold);
+}
+.skill-row.locked .skill-icon {
+  color: var(--ds-text-3);
+}
+.skill-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.skill-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--ds-space-2);
+}
+.skill-name {
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-bold);
+  color: var(--ds-text);
+}
+.skill-row.locked .skill-name {
+  color: var(--ds-text-2);
+}
+.skill-state {
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+}
+.skill-new {
+  padding: 0 var(--ds-space-1);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-text-on-gold);
+  background: var(--ds-gold);
+  border-radius: var(--ds-radius-xs);
+}
+.skill-desc {
+  font-size: var(--ds-text-xs);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text-2);
+}
+.skill-row.locked .skill-desc {
+  color: var(--ds-text-3);
+}
+.skill-none {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-3);
+}

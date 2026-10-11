@@ -1,7 +1,7 @@
 import type { PilotStats, StatName, UnitState } from '@m1565/core';
 import { t } from '../../i18n';
 import { Button, Chip, Hint, Meter, Sheet } from '../design';
-import { ATTRIBUTE_BAR_MAX, gearNote } from './StatBars';
+import { ATTRIBUTE_BAR_MAX, gearNote } from './stats';
 import { STAT_INFO } from './statInfo';
 import { NewSkillLines } from './XpPanel';
 
@@ -33,7 +33,8 @@ export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props)
       placement="center"
       size="md"
       ornament="cross"
-      class="ov-sheet ov-sheet--noclose ov-levelup"
+      closeButton={false}
+      class="ov-sheet ov-levelup"
       footer={
         <>
           <Hint class="ov-levelup__hint" text={t('levelUp.hint')} />
