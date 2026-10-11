@@ -62,7 +62,6 @@ export function SettingsPanel({
       label={t('common.settings')}
       placement="center"
       ornament="cross"
-      closeButton={false}
       closeLabel={t('common.close')}
       onClose={onClose}
       class="fe-sheet fe-settings"
@@ -72,6 +71,7 @@ export function SettingsPanel({
           label={t('common.done')}
           keyHint="back"
           keyContext="menu"
+          navBack
           onClick={onClose}
         />
       }

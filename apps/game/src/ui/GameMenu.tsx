@@ -83,6 +83,7 @@ export function GameMenu({
           variant="primary"
           label={t('common.resume')}
           navDefault
+          navBack
           keyHint="back"
           keyContext="menu"
           onClick={onClose}

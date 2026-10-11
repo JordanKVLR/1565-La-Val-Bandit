@@ -85,12 +85,14 @@ in priority order with what was done.
 
 7. **Two sheet header styles with no rule** (`deck/09-game-menu` vs `deck/36-battle-menu`). The
    story menu drew a ✕ _and_ a Resume button, the battle menu only Resume; side sheets mixed the
-   cross ornament with plain hairlines; Settings and Training had ✕ plus Done. **Fixed:** a
-   `closeButton` prop on `Sheet` (moved from a battle-only `ov-sheet--noclose` class) and one
-   rule, documented in DESIGN.md: side sheets have a left title, plain hairline and ✕; centre
-   dialogs have the cross ornament, and those closed by their own main action (Menu, Settings,
-   Level up, Experience, Training) draw no ✕ and centre their title. Help and Experience gained
-   the ornament; the Results side sheet lost its redundant Done.
+   cross ornament with plain hairlines; Training had ✕ plus Keep training. **Fixed:** a
+   `closeButton` prop on `Sheet` (replacing a battle-only `ov-sheet--noclose` class that hid the
+   ✕ with CSS) and one rule, documented in DESIGN.md: side sheets have a left title, plain
+   hairline and ✕; centre dialogs have the cross ornament, and those closed by their own main
+   action (story and battle Menu, Level up, Experience, Training) draw no ✕, centre their title,
+   and give that action `navBack` so Esc / Ⓑ press it (Experience's Continue now answers Ⓑ too).
+   Settings keeps its ✕ because on phones its footer gives way to the settings. Help and
+   Experience gained the ornament; the Results side sheet lost its redundant Done.
 
 8. **Close-up "+152 XP" over the HP meter on phones** (`phone/29-closeup`). The pops were placed
    by percentages tuned for tall screens. **Fixed:** on phones damage, experience and level-up

@@ -54,11 +54,12 @@ export function TrainingSheet({
               variant="primary"
               label={t('armoury.keepTraining')}
               navDefault
+              navBack
               onClick={onClose}
             />
           </>
         ) : (
-          <Button variant="primary" label={t('common.done')} navDefault onClick={onClose} />
+          <Button variant="primary" label={t('common.done')} navDefault navBack onClick={onClose} />
         )
       }
     >

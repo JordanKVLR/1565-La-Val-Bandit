@@ -208,9 +208,10 @@ One header rule for every sheet, so they read as one family:
 - **Side sheets** (details on demand: unit details, battle log, Raise attributes) have the title
   on the left, a plain hairline and the ✕, and no footer button that only closes.
 - **Centre dialogs** have the cross `ornament` on their hairline. When their own main action
-  closes them (Resume, Continue, Done, Keep training) they pass `closeButton={false}`: no ✕, the
-  title centred, and Esc / Ⓑ still close through the hidden button. Dialogs without such an
-  action (difficulty, load, New Game+, codex, help) keep the ✕.
+  closes them (Resume, Continue, Done, Keep training) they pass `closeButton={false}`: no ✕ and
+  the title centred; that action carries `navBack`, so Esc / Ⓑ press it. Dialogs without such
+  an action (difficulty, load, New Game+, codex, help) keep the ✕, and so does Settings, whose
+  Done gives way to the settings themselves on phones.
 
 ### Tooltip and Hint
 

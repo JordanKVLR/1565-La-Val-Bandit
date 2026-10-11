@@ -719,11 +719,8 @@
 .ds-sheet__close {
   margin-left: auto;
 }
-/* No ✕ (closeButton={false}): the dialog's own action closes it, so the title is centred. The
-   button stays in the DOM for Esc / Ⓑ (data-nav-back). */
-.ds-sheet--noclose .ds-sheet__close {
-  display: none;
-}
+/* No ✕ (closeButton={false}): the dialog's own action closes it (and carries data-nav-back for
+   Esc / Ⓑ), so the title is centred. */
 .ds-sheet--noclose .ds-sheet__head {
   min-height: var(--ds-hit);
   padding: var(--ds-space-2) var(--ds-space-5) 0;

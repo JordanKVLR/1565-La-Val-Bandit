@@ -64,6 +64,7 @@ export function XpPanel({
           variant="primary"
           label={t('common.continue')}
           keyHint="confirm"
+          navBack
           keyContext="menu"
           navDefault
           testId="xp-continue"

@@ -38,7 +38,7 @@ export interface SheetProps {
   dismissible?: boolean;
   /**
    * Draw the ✕ (default true). Dialogs whose own main action closes them (Resume, Continue)
-   * draw none and centre their title; Esc / Ⓑ still close them through the hidden button.
+   * draw none and centre their title; that action then carries `navBack`, so Esc / Ⓑ press it.
    */
   closeButton?: boolean;
   class?: string;
@@ -119,15 +119,17 @@ export function Sheet({
       >
         <header class="ds-sheet__head">
           {heading && <h2 class="ds-sheet__title">{heading}</h2>}
-          <Button
-            class="ds-sheet__close"
-            label={closeLabel}
-            icon="close"
-            iconOnly
-            variant="ghost"
-            navBack
-            onClick={onClose}
-          />
+          {closeButton && (
+            <Button
+              class="ds-sheet__close"
+              label={closeLabel}
+              icon="close"
+              iconOnly
+              variant="ghost"
+              navBack
+              onClick={onClose}
+            />
+          )}
         </header>
         <Divider glyph={ornament} class="ds-sheet__rule" />
         <div class="ds-sheet__body">{children}</div>
