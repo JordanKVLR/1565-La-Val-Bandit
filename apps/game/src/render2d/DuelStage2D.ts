@@ -139,8 +139,16 @@ export class DuelStage2D {
     this.leftRig.pose = { ...guardFor(left.weaponType) };
     this.rightRig.pose = { ...guardFor(right.weaponType) };
     for (let i = 0; i < 7; i++)
-      this.ghosts.push({ on: false, rig: null, pose: { ...this.poseA }, life: 0, max: 1, alpha: 0.4 });
-    this.resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
+      this.ghosts.push({
+        on: false,
+        rig: null,
+        pose: { ...this.poseA },
+        life: 0,
+        max: 1,
+        alpha: 0.4,
+      });
+    this.resizeObserver =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
     this.resizeObserver?.observe(canvas);
     this.resize();
     this.render();
@@ -183,12 +191,14 @@ export class DuelStage2D {
   /** Starts a strike without scheduling frames (the caller drives `advance` and `render`). */
   beginStrike(play: StrikePlay): void {
     this.finishRun();
-    const [atk, def] = play.attacker === 'left' ? [this.leftRig, this.rightRig] : [this.rightRig, this.leftRig];
+    const [atk, def] =
+      play.attacker === 'left' ? [this.leftRig, this.rightRig] : [this.rightRig, this.leftRig];
     const power = play.power ?? 1;
     const reach = play.reach ?? 1;
     let move = moveFor({ weapon: atk.spec.weaponType, style: play.style, power, reach });
     const script = scriptFor(play.attackId, play.style);
-    if (script.choreograph) move = script.choreograph(move, { hit: play.hit, power, reach, heavy: move.heavy });
+    if (script.choreograph)
+      move = script.choreograph(move, { hit: play.hit, power, reach, heavy: move.heavy });
     const atkGuard = { ...guardFor(atk.spec.weaponType) };
     const defGuard = def.pose.fall > 0.5 ? { ...def.pose } : { ...guardFor(def.spec.weaponType) };
     const defKeys = reactionFor({
@@ -307,7 +317,8 @@ export class DuelStage2D {
       this.poseD.y += Math.sin(u * Math.PI) * (move.heavy ? 0.7 : 0.45);
       this.poseD.x -= (1 - (1 - u) * (1 - u)) * 0.2;
     }
-    if (fx.timeScale === 0 && !this.calm && !play.defeated) this.poseD.x += (fx.rand() - 0.5) * 0.05;
+    if (fx.timeScale === 0 && !this.calm && !play.defeated)
+      this.poseD.x += (fx.rand() - 0.5) * 0.05;
     atk.pose = this.poseA;
     def.pose = this.poseD;
     def.flash = Math.max(0, def.flash - d * 5);
@@ -320,7 +331,7 @@ export class DuelStage2D {
       script.start?.(ctx);
     }
     if (t < move.impact) script.windup?.(ctx);
-    for (let i = 0; i < run.dustLeft.length; ) {
+    for (let i = 0; i < run.dustLeft.length;) {
       if (t >= run.dustLeft[i]!) {
         run.dustLeft.splice(i, 1);
         const f = atk.anchors().feet;
@@ -339,7 +350,13 @@ export class DuelStage2D {
       run.nextGhost = t + 0.06;
       this.ghost(atk, 0.3, 0.32);
     }
-    if (play.reaction === 'avoid' && !play.hit && t >= move.impact && t < move.impact + 0.3 && t >= run.nextGhost) {
+    if (
+      play.reaction === 'avoid' &&
+      !play.hit &&
+      t >= move.impact &&
+      t < move.impact + 0.3 &&
+      t >= run.nextGhost
+    ) {
       run.nextGhost = t + 0.045;
       this.ghost(def, 0.38, 0.4);
     }
@@ -430,10 +447,17 @@ export class DuelStage2D {
       fx.hitStop(40);
       fx.shake(0.05);
       fx.glow(p, { radius: 0.8, color: '#fff6d0', life: 0.18 });
-      fx.spark(p, { n: 16, color: pal.accent, speed: 8, dir: ctx.dir === 1 ? Math.PI * 0.5 : Math.PI * 0.5, spread: 3.2 });
+      fx.spark(p, {
+        n: 16,
+        color: pal.accent,
+        speed: 8,
+        dir: ctx.dir === 1 ? Math.PI * 0.5 : Math.PI * 0.5,
+        spread: 3.2,
+      });
       fx.burst(p, { n: 9, color: '#dfe8f0', length: 0.55, life: 0.25 });
       fx.ring(p, { color: '#ffffff', radius: 0.7, life: 0.3 });
-      if (!play.hit) fx.word({ x: p.x, y: p.y + 0.65 }, 'CLANG!', { color: '#dfe8f0', size: 0.5, life: 0.7 });
+      if (!play.hit)
+        fx.word({ x: p.x, y: p.y + 0.65 }, 'CLANG!', { color: '#dfe8f0', size: 0.5, life: 0.7 });
     } else if (o === 'counter') {
       const tip = def.anchors().tip;
       const p = { x: tip.x, y: tip.y };
@@ -456,7 +480,12 @@ export class DuelStage2D {
       fx.burst(at, { n: 14, color: '#ff7a3a', length: 1.3, life: 0.5 });
       fx.ring(at, { color: '#ffd7a0', radius: 1.8, life: 0.6, width: 0.14 });
       fx.spark(at, { n: 28, color: '#ffcf5a', speed: 9 });
-      fx.word({ x: at.x, y: 2.3 }, 'K.O.!', { color: '#ff5a3a', size: 0.95, life: 1.2, rot: -0.08 });
+      fx.word({ x: at.x, y: 2.3 }, 'K.O.!', {
+        color: '#ff5a3a',
+        size: 0.95,
+        life: 1.2,
+        rot: -0.08,
+      });
       fx.punch(at, 1.32, 0.95);
       fx.speedLines({ color: '#ffffff', life: 0.4, n: 40 });
       script.finish?.(ctx);
@@ -509,7 +538,7 @@ export class DuelStage2D {
       pivotY: py,
       time: this.clock,
     };
-    const hz = (w / 2 / scale) / (this.camZoom * cam.zoom);
+    const hz = w / 2 / scale / (this.camZoom * cam.zoom);
     fx.view.minX = this.camPan - hz + 0.1;
     fx.view.maxX = this.camPan + hz - 0.1;
     fx.view.maxY = Math.min(3.0, 0.9 + (groundY / scale - 0.9) / (this.camZoom * cam.zoom) - 0.1);
@@ -554,7 +583,10 @@ export class DuelStage2D {
     }
     g.globalAlpha = 1;
     // Defender behind, attacker in front.
-    const order = run && run.atk === this.leftRig ? [this.rightRig, this.leftRig] : [this.leftRig, this.rightRig];
+    const order =
+      run && run.atk === this.leftRig
+        ? [this.rightRig, this.leftRig]
+        : [this.leftRig, this.rightRig];
     for (const rig of order) {
       if (run && run.play.defeated && rig === run.def && run.impacted) {
         const fade = 1 - clamp01((run.t - run.move.impact - 0.65) / 0.45);

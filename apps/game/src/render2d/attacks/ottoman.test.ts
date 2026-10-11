@@ -5,7 +5,12 @@ import { DuelStage2D } from '../DuelStage2D';
 import { fakeCanvas } from '../testKit';
 import { OTTOMAN_SCRIPTS } from './ottoman';
 
-const spec = (weaponType: WeaponType) => ({ model: 'knight' as const, weaponType, frameClass: 'medium' as const, accent: '#f00' });
+const spec = (weaponType: WeaponType) => ({
+  model: 'knight' as const,
+  weaponType,
+  frameClass: 'medium' as const,
+  accent: '#f00',
+});
 type A = { id: string; faction: string; style: never; weaponTypes: WeaponType[] };
 const list = (attacks as unknown as A[]).filter((a) => a.faction === 'ottoman');
 const cases: { hit: boolean; defeated: boolean; reaction: Reaction }[] = [
@@ -22,9 +27,22 @@ describe('ottoman scripts', () => {
   for (const a of list) {
     it(`${a.id} runs without throwing and impacts once`, () => {
       for (const c of cases) {
-        const stage = new DuelStage2D(fakeCanvas(), spec(a.weaponTypes[0]!), spec('blade'), '#5b6b35', 1, { manual: true });
+        const stage = new DuelStage2D(
+          fakeCanvas(),
+          spec(a.weaponTypes[0]!),
+          spec('blade'),
+          '#5b6b35',
+          1,
+          { manual: true },
+        );
         let n = 0;
-        stage.beginStrike({ attacker: 'left', style: a.style, attackId: a.id, ...c, onImpact: () => n++ });
+        stage.beginStrike({
+          attacker: 'left',
+          style: a.style,
+          attackId: a.id,
+          ...c,
+          onImpact: () => n++,
+        });
         for (let i = 0; i < 3000 && stage.striking; i++) {
           stage.advance(1 / 30);
           stage.render();

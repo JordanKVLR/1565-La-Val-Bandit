@@ -135,7 +135,17 @@ const paintDrop: Paint = (ctx, p, _a, k) => {
 };
 
 /** Throws `n` painted bits from `at` along world angle `ang`, tumbling and falling. */
-function fling(c: FxContext, paint: Paint, at: V2, n: number, ang: number, spread: number, dist: number, life: number, lift = 0.5): void {
+function fling(
+  c: FxContext,
+  paint: Paint,
+  at: V2,
+  n: number,
+  ang: number,
+  spread: number,
+  dist: number,
+  life: number,
+  lift = 0.5,
+): void {
   const fx = eng(c);
   for (let i = 0; i < n; i++) {
     const a = ang + (fx.rand() - 0.5) * spread;
@@ -151,7 +161,18 @@ function fling(c: FxContext, paint: Paint, at: V2, n: number, ang: number, sprea
 }
 
 /** A tapered crescent swept from angle a0 to a1 (world angles, already faced), fading. */
-function crescent(c: FxContext, at: V2, r: number, a0: number, a1: number, thick: number, col: string, core: string, life: number, squash = 1): void {
+function crescent(
+  c: FxContext,
+  at: V2,
+  r: number,
+  a0: number,
+  a1: number,
+  thick: number,
+  col: string,
+  core: string,
+  life: number,
+  squash = 1,
+): void {
   const cx = at.x;
   const cy = at.y;
   eng(c).layer('front', life, (ctx, k) => {
@@ -168,7 +189,7 @@ function crescent(c: FxContext, at: V2, r: number, a0: number, a1: number, thick
       for (let i = 0; i <= N; i++) {
         const u = tail + ((head - tail) * i) / N;
         const a = a0 + (a1 - a0) * u;
-        const rr = r + (th * Math.sin(Math.PI * ((u - tail) / (head - tail || 1)))) * 0.5;
+        const rr = r + th * Math.sin(Math.PI * ((u - tail) / (head - tail || 1))) * 0.5;
         const px = cx + Math.cos(a) * rr;
         const py = cy + Math.sin(a) * rr * squash;
         if (i === 0) ctx.moveTo(px, py);
@@ -177,7 +198,7 @@ function crescent(c: FxContext, at: V2, r: number, a0: number, a1: number, thick
       for (let i = N; i >= 0; i--) {
         const u = tail + ((head - tail) * i) / N;
         const a = a0 + (a1 - a0) * u;
-        const rr = r - (th * Math.sin(Math.PI * ((u - tail) / (head - tail || 1)))) * 0.5;
+        const rr = r - th * Math.sin(Math.PI * ((u - tail) / (head - tail || 1))) * 0.5;
         ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * squash);
       }
       ctx.closePath();
@@ -187,7 +208,14 @@ function crescent(c: FxContext, at: V2, r: number, a0: number, a1: number, thick
 }
 
 /** Parallel streaks from the weapon hand through the tip (tines, spear drives). */
-function streaks(c: FxContext, offsets: readonly number[], col: string, life: number, extend: number, w: number): void {
+function streaks(
+  c: FxContext,
+  offsets: readonly number[],
+  col: string,
+  life: number,
+  extend: number,
+  w: number,
+): void {
   const a = c.attacker.anchors();
   const x0 = a.hand.x;
   const y0 = a.hand.y;
@@ -239,12 +267,27 @@ function muzzle(c: FxContext, col: string, scale: number): V2 {
   const at = { x: m.x, y: m.y };
   fx.glow(at, { radius: 0.9 * scale, color: '#ffd37a', life: 0.14 });
   fx.burst(at, { n: 7, color: '#ffe9a0', length: 0.55 * scale, life: 0.16 });
-  fx.spark(at, { n: Math.round(9 * scale), color: col, speed: 8, dir: face(0, c.dir), spread: 0.8 });
+  fx.spark(at, {
+    n: Math.round(9 * scale),
+    color: col,
+    speed: 8,
+    dir: face(0, c.dir),
+    spread: 0.8,
+  });
   fx.smoke(at, { n: Math.ceil(4 * scale), size: 0.14 * scale, rise: 0.4 });
   return at;
 }
 
-function shoot(c: FxContext, from: V2, to: V2, life: number, col: string, len: number, w: number, onEnd?: () => void): void {
+function shoot(
+  c: FxContext,
+  from: V2,
+  to: V2,
+  life: number,
+  col: string,
+  len: number,
+  w: number,
+  onEnd?: () => void,
+): void {
   eng(c).sprite({
     from,
     to,
@@ -272,7 +315,9 @@ function shoot(c: FxContext, from: V2, to: V2, life: number, col: string, len: n
 function aimAt(c: FxContext, dy: number): V2 {
   const d = c.defender.anchors().chest;
   const strike = c.hit || c.reaction === 'defend';
-  return strike ? { x: d.x - c.dir * 0.12, y: d.y + dy } : { x: d.x + c.dir * 0.9, y: d.y + dy + 0.5 };
+  return strike
+    ? { x: d.x - c.dir * 0.12, y: d.y + dy }
+    : { x: d.x + c.dir * 0.9, y: d.y + dy + 0.5 };
 }
 
 /** A shrinking reticle on a world point for `life` seconds. */
@@ -312,7 +357,20 @@ export const MILITIA_SCRIPTS: AttackScripts = {
     palette: { main: '#dfeeea', accent: '#d7503a', dark: '#243a3c' },
     choreograph: (base) =>
       retime(base, 0.18, 0.92, [
-        { t: 0.1, p: { y: -0.22, x: -0.1, lean: 0.25, sR: 0.2, eR: 1.1, hR: 0.6, kR: -0.9, hL: -0.2, kL: -0.5 } },
+        {
+          t: 0.1,
+          p: {
+            y: -0.22,
+            x: -0.1,
+            lean: 0.25,
+            sR: 0.2,
+            eR: 1.1,
+            hR: 0.6,
+            kR: -0.9,
+            hL: -0.2,
+            kL: -0.5,
+          },
+        },
       ]),
     windup: (c) => {
       const fx = eng(c);
@@ -322,7 +380,17 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       }
       if (c.t >= c.impact - 0.2 && fx.once('hook')) {
         const a = c.attacker.anchors().chest;
-        crescent(c, { x: a.x + c.dir * 0.2, y: a.y + 0.15 }, 1.15, face(2.6, c.dir), face(-0.9, c.dir), 0.55, '#8fd0d0', '#ffffff', 0.32);
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.2, y: a.y + 0.15 },
+          1.15,
+          face(2.6, c.dir),
+          face(-0.9, c.dir),
+          0.55,
+          '#8fd0d0',
+          '#ffffff',
+          0.32,
+        );
       }
     },
     impactFx: (c) => {
@@ -341,7 +409,15 @@ export const MILITIA_SCRIPTS: AttackScripts = {
           ctx.beginPath();
           ctx.moveTo(x + d * 0.1, y + 1.0);
           ctx.lineTo(x + d * 0.1, y + 1.0 - 1.1 * u);
-          if (u > 0.5) ctx.arc(x - d * 0.3 + d * 0.4, y - 0.1, 0.4, 0, d === 1 ? Math.PI * 1.4 * Math.min(1, (u - 0.5) * 2) : 0, d === 1 ? false : true);
+          if (u > 0.5)
+            ctx.arc(
+              x - d * 0.3 + d * 0.4,
+              y - 0.1,
+              0.4,
+              0,
+              d === 1 ? Math.PI * 1.4 * Math.min(1, (u - 0.5) * 2) : 0,
+              d === 1 ? false : true,
+            );
           ctx.stroke();
         }
       };
@@ -349,15 +425,30 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         fx.layer('front', 0.5, (ctx, k) => hook(ctx, p.x, p.y, k));
         fx.glow(p, { radius: 1.1, color: '#dfeeea', life: 0.25 });
         fx.burst(p, { n: 9, color: '#d7503a', length: 0.9, life: 0.3 });
-        fx.spark(p, { n: 18, color: '#dfeeea', speed: 7, dir: face(0.5, d), spread: 2.8, size: 0.035 });
+        fx.spark(p, {
+          n: 18,
+          color: '#dfeeea',
+          speed: 7,
+          dir: face(0.5, d),
+          spread: 2.8,
+          size: 0.035,
+        });
         fling(c, paintDrop, p, 7, face(0.9, d), 2.6, 1.6, 0.6);
         fx.ring(p, { color: '#8fd0d0', radius: 0.9, life: 0.35, width: 0.08 });
-        fx.word({ x: p.x, y: p.y + 0.8 }, ['SNAG!', 'ZIP!'][Math.floor(fx.rand() * 2)]!, { color: '#ffd9c4', size: 0.55, life: 0.8 });
+        fx.word({ x: p.x, y: p.y + 0.8 }, ['SNAG!', 'ZIP!'][Math.floor(fx.rand() * 2)]!, {
+          color: '#ffd9c4',
+          size: 0.55,
+          life: 0.8,
+        });
       } else if (o !== 'block') {
         const t = c.attacker.anchors().tip;
         fx.layer('front', 0.4, (ctx, k) => hook(ctx, t.x + d * 0.5, t.y - 0.3, k));
         fling(c, paintDrop, t, 5, face(1.1, d), 2.4, 1.2, 0.5);
-        fx.word({ x: t.x + d * 0.4, y: t.y + 0.6 }, 'SWISH', { color: '#cfeeee', size: 0.4, life: 0.6 });
+        fx.word({ x: t.x + d * 0.4, y: t.y + 0.6 }, 'SWISH', {
+          color: '#cfeeee',
+          size: 0.4,
+          life: 0.6,
+        });
       }
     },
   },
@@ -368,8 +459,14 @@ export const MILITIA_SCRIPTS: AttackScripts = {
     choreograph: (base) => {
       const adv = advOf(base);
       return retime(base, 0.38, 0.62, [
-        { t: 0.1, p: { x: -0.3, z: 0.3, lean: 0.2, sR: 0.5, eR: 1.2, hR: 0.5, kR: -0.6, hL: -0.2 } },
-        { t: 0.25, p: { x: adv * 0.55, z: -0.2, lean: -0.3, sR: 1.5, eR: 0.1, hR: 0.7, kR: -0.5, hL: -0.5 } },
+        {
+          t: 0.1,
+          p: { x: -0.3, z: 0.3, lean: 0.2, sR: 0.5, eR: 1.2, hR: 0.5, kR: -0.6, hL: -0.2 },
+        },
+        {
+          t: 0.25,
+          p: { x: adv * 0.55, z: -0.2, lean: -0.3, sR: 1.5, eR: 0.1, hR: 0.7, kR: -0.5, hL: -0.5 },
+        },
       ]);
     },
     start: (c) => {
@@ -385,7 +482,17 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       }
       if (c.t >= 0.25 && fx.once('cut1')) {
         const a = c.attacker.anchors().chest;
-        crescent(c, { x: a.x + c.dir * 0.2, y: a.y + 0.2 }, 0.9, face(2.2, c.dir), face(0.1, c.dir), 0.35, LIME, '#ffffff', 0.22);
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.2, y: a.y + 0.2 },
+          0.9,
+          face(2.2, c.dir),
+          face(0.1, c.dir),
+          0.35,
+          LIME,
+          '#ffffff',
+          0.22,
+        );
         const p = hitPoint(c);
         if (c.hit) {
           fx.spark(p, { n: 9, color: LIME, speed: 5, dir: face(0.5, c.dir), spread: 2 });
@@ -402,7 +509,9 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const at = { x: a.x + c.dir * 0.3, y: a.y + 0.15 };
       crescent(c, at, 1.0, face(-0.5, c.dir), face(2.0, c.dir), 0.42, RED, '#ffe9e0', 0.26);
       if (o === 'hit') {
-        fx.later(0.05, () => crescent(c, p, 0.7, face(2.4, c.dir), face(0.3, c.dir), 0.38, LIME, '#ffffff', 0.24));
+        fx.later(0.05, () =>
+          crescent(c, p, 0.7, face(2.4, c.dir), face(0.3, c.dir), 0.38, LIME, '#ffffff', 0.24),
+        );
         fx.glow(p, { radius: 1.1, color: LIME, life: 0.25 });
         fx.burst(p, { n: 12, color: RED, length: 1.0, life: 0.32 });
         fx.spark(p, { n: 16, color: LIME, speed: 7, dir: face(0.4, c.dir), spread: 2.6 });
@@ -420,18 +529,35 @@ export const MILITIA_SCRIPTS: AttackScripts = {
     palette: { main: WHEAT, accent: '#c9972b', dark: '#5a4018' },
     choreograph: (base) =>
       retime(base, 0.2, 1.0, [
-        { t: 0.12, p: { x: -0.3, y: -0.2, lean: 0.28, spin: -0.5, hR: 0.9, kR: -1.3, sR: 2.0, eR: 0.3 } },
+        {
+          t: 0.12,
+          p: { x: -0.3, y: -0.2, lean: 0.28, spin: -0.5, hR: 0.9, kR: -1.3, sR: 2.0, eR: 0.3 },
+        },
       ]),
     start: (c) => eng(c).wash('#d9a640', 0.14, 0.9),
     windup: (c) => {
       const fx = eng(c);
       const f = c.attacker.anchors().feet;
-      if (c.t > 0.15 && (Math.floor(c.t * 30) % 3) === 0) {
-        fx.spark({ x: f.x + (fx.rand() - 0.5) * 1.6, y: 0.1 }, { n: 1, color: WHEAT, speed: 2, dir: up, spread: 1.2, size: 0.04 });
+      if (c.t > 0.15 && Math.floor(c.t * 30) % 3 === 0) {
+        fx.spark(
+          { x: f.x + (fx.rand() - 0.5) * 1.6, y: 0.1 },
+          { n: 1, color: WHEAT, speed: 2, dir: up, spread: 1.2, size: 0.04 },
+        );
       }
       if (c.t >= c.impact - 0.22 && fx.once('sickle')) {
         const a = c.attacker.anchors().chest;
-        crescent(c, { x: a.x + c.dir * 0.2, y: a.y - 0.25 }, 1.6, face(3.5, c.dir), face(-0.5, c.dir), 0.9, WHEAT, '#fff7d0', 0.4, 0.5);
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.2, y: a.y - 0.25 },
+          1.6,
+          face(3.5, c.dir),
+          face(-0.5, c.dir),
+          0.9,
+          WHEAT,
+          '#fff7d0',
+          0.4,
+          0.5,
+        );
         fx.speedLines({ dir: c.dir === 1 ? Math.PI : 0, color: WHEAT, life: 0.3, n: 14 });
       }
     },
@@ -442,16 +568,26 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const a = c.attacker.anchors().feet;
       const at = o === 'hit' ? p : { x: a.x + c.dir * 1.2, y: 0.6 };
       fling(c, paintStalk, at, o === 'hit' ? 10 : 6, face(0.6, c.dir), 1.9, 3.2, 0.9, 0.8);
-      fx.ring({ x: a.x + c.dir * 0.4, y: 0.03 }, { color: WHEAT, radius: 2.4, life: 0.55, width: 0.12, flat: 0.22 });
+      fx.ring(
+        { x: a.x + c.dir * 0.4, y: 0.03 },
+        { color: WHEAT, radius: 2.4, life: 0.55, width: 0.12, flat: 0.22 },
+      );
       fx.dust({ x: a.x + c.dir * 0.8, y: 0 }, { n: 10, color: '#d9b866' });
       if (o === 'hit') {
         fx.glow(p, { radius: 1.4, color: WHEAT, life: 0.28 });
         fx.burst(p, { n: 14, color: '#c9972b', length: 1.2, life: 0.38 });
         fx.spark(p, { n: 20, color: WHEAT, speed: 8, dir: face(0.5, c.dir), spread: 3 });
         fx.word({ x: p.x, y: p.y + 0.85 }, 'SHWAK!', { color: '#ffe38a', size: 0.62, life: 0.85 });
-        fx.later(0.2, () => fling(c, paintStalk, { x: p.x, y: p.y + 1.2 }, 5, up, 3.4, 1.6, 0.8, 0.2));
+        fx.later(0.2, () =>
+          fling(c, paintStalk, { x: p.x, y: p.y + 1.2 }, 5, up, 3.4, 1.6, 0.8, 0.2),
+        );
         fx.later(0.2, () => fx.dust({ x: p.x, y: 0.2 }, { n: 5, color: '#e8d9a0', size: 0.25 }));
-      } else fx.word({ x: a.x + c.dir * 1.6, y: 1.2 }, 'SWOOSH', { color: WHEAT, size: 0.42, life: 0.6 });
+      } else
+        fx.word({ x: a.x + c.dir * 1.6, y: 1.2 }, 'SWOOSH', {
+          color: WHEAT,
+          size: 0.42,
+          life: 0.6,
+        });
     },
     finish: (c) => {
       const p = hitPoint(c);
@@ -484,7 +620,10 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const x = d.chest.x - c.dir * 0.1;
       crack(c, x, c.dir, 2.6, '#2b170c', 0.9);
       crack(c, x, -c.dir, 1.6, '#2b170c', 0.9);
-      fx.ring({ x, y: 0.03 }, { color: '#e6d9b8', radius: 2.2, life: 0.55, width: 0.13, flat: 0.24 });
+      fx.ring(
+        { x, y: 0.03 },
+        { color: '#e6d9b8', radius: 2.2, life: 0.55, width: 0.13, flat: 0.24 },
+      );
       fx.dust({ x, y: 0 }, { n: 14, size: 0.22 });
       if (o === 'hit') {
         const top = d.head.y + 0.5;
@@ -508,7 +647,12 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         fx.burst({ x, y: d.chest.y }, { n: 14, color: '#7a3e1c', length: 1.3, life: 0.4 });
         fling(c, paintPod, { x, y: d.chest.y + 0.3 }, 6, up, 3.2, 2.4, 0.9, 1.0);
         fling(c, paintChip, { x, y: d.chest.y }, 8, up, 3.6, 2.2, 0.7, 0.8);
-        fx.word({ x, y: d.head.y + 0.8 }, 'KRAK!', { color: '#ffcf8a', size: 0.72, life: 0.9, rot: -0.08 });
+        fx.word({ x, y: d.head.y + 0.8 }, 'KRAK!', {
+          color: '#ffcf8a',
+          size: 0.72,
+          life: 0.9,
+          rot: -0.08,
+        });
         fx.shake(0.22, 0.88);
         fx.punch({ x, y: d.chest.y }, 1.2, 0.6);
       } else if (o !== 'block') {
@@ -527,7 +671,8 @@ export const MILITIA_SCRIPTS: AttackScripts = {
   // ── Pitchfork Jab: three tines, three puncture marks, hay flying ──
   'militia-pitchfork-jab': {
     palette: { main: '#e8e2c8', accent: '#a56a2a', dark: '#3a2a14' },
-    choreograph: (base) => retime(base, 0.12, 0.8, [{ t: 0.06, p: { x: -0.2, lean: 0.14, sR: 0.4, eR: 0.9 } }]),
+    choreograph: (base) =>
+      retime(base, 0.12, 0.8, [{ t: 0.06, p: { x: -0.2, lean: 0.14, sR: 0.4, eR: 0.9 } }]),
     windup: (c) => {
       const fx = eng(c);
       if (c.t >= c.impact - 0.14 && fx.once('tines')) {
@@ -544,15 +689,29 @@ export const MILITIA_SCRIPTS: AttackScripts = {
           const q = { x: p.x, y: p.y + i * 0.26 };
           fx.burst(q, { n: 6, color: '#e8e2c8', length: 0.45, life: 0.24 });
           fx.ring(q, { color: '#fff', radius: 0.35, life: 0.3, width: 0.05 });
-          fx.spark(q, { n: 5, color: '#e8e2c8', speed: 5, dir: face(0.2 * i + 0.3, c.dir), spread: 0.9 });
+          fx.spark(q, {
+            n: 5,
+            color: '#e8e2c8',
+            speed: 5,
+            dir: face(0.2 * i + 0.3, c.dir),
+            spread: 0.9,
+          });
         }
         fx.glow(p, { radius: 1.1, color: '#fff3c0', life: 0.22 });
         fling(c, paintStalk, p, 6, face(1.0, c.dir), 2.6, 1.8, 0.7);
-        fx.word({ x: p.x, y: p.y + 0.95 }, ['PRONG!', 'POKE!'][Math.floor(fx.rand() * 2)]!, { color: '#ffe9a0', size: 0.55, life: 0.8 });
+        fx.word({ x: p.x, y: p.y + 0.95 }, ['PRONG!', 'POKE!'][Math.floor(fx.rand() * 2)]!, {
+          color: '#ffe9a0',
+          size: 0.55,
+          life: 0.8,
+        });
       } else if (o !== 'block') {
         const t = c.attacker.anchors().tip;
         fling(c, paintStalk, { x: t.x + c.dir * 0.8, y: t.y }, 4, face(0.4, c.dir), 1.6, 1.4, 0.6);
-        fx.word({ x: t.x + c.dir * 0.6, y: t.y + 0.5 }, 'WHIFF', { color: '#e8e2c8', size: 0.36, life: 0.55 });
+        fx.word({ x: t.x + c.dir * 0.6, y: t.y + 0.5 }, 'WHIFF', {
+          color: '#e8e2c8',
+          size: 0.36,
+          life: 0.55,
+        });
       }
     },
   },
@@ -561,14 +720,19 @@ export const MILITIA_SCRIPTS: AttackScripts = {
   'militia-brace-and-drive': {
     palette: { main: '#ffd9c8', accent: RED, dark: '#4a3a2a' },
     choreograph: (base) => {
-      const keys = base.keys.map((k, i) => (i === 0 ? { t: k.t, p: { ...k.p, y: -0.2, lean: 0.12 } } : k));
+      const keys = base.keys.map((k, i) =>
+        i === 0 ? { t: k.t, p: { ...k.p, y: -0.2, lean: 0.12 } } : k,
+      );
       return hold({ ...base, keys }, 0, 0.3);
     },
     windup: (c) => {
       const fx = eng(c);
       const f = c.attacker.anchors().feet;
       if (c.t >= 0.3 && fx.once('plant')) {
-        fx.ring({ x: f.x - c.dir * 0.3, y: 0.03 }, { color: LIME, radius: 1.3, life: 0.45, width: 0.1, flat: 0.22 });
+        fx.ring(
+          { x: f.x - c.dir * 0.3, y: 0.03 },
+          { color: LIME, radius: 1.3, life: 0.45, width: 0.1, flat: 0.22 },
+        );
         fx.dust({ x: f.x - c.dir * 0.3, y: 0 }, { n: 8, color: LIME });
         fling(c, paintStone, { x: f.x - c.dir * 0.3, y: 0.1 }, 5, up, 3, 1.2, 0.5);
         crack(c, f.x - c.dir * 0.3, -c.dir, 1.0, '#4a3a2a', 0.8);
@@ -577,7 +741,8 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       }
       if (c.t > 0.35 && c.t < c.impact - 0.1) {
         const t = c.attacker.anchors().tip;
-        if ((Math.floor(c.t * 30) % 3) === 0) fx.glow(t, { radius: 0.35 + (c.t - 0.35) * 0.9, color: RED, life: 0.12 });
+        if (Math.floor(c.t * 30) % 3 === 0)
+          fx.glow(t, { radius: 0.35 + (c.t - 0.35) * 0.9, color: RED, life: 0.12 });
       }
       if (c.t >= c.impact - 0.16 && fx.once('drive')) {
         streaks(c, [-0.07, 0.07], RED, 0.28, 1.6, 0.09);
@@ -590,7 +755,18 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const p = hitPoint(c);
       const d = c.defender.anchors().feet;
       for (let i = 0; i < 3; i++)
-        fx.later(i * 0.07, () => fx.ring({ x: d.x - c.dir * 0.2, y: 0.03 }, { color: i === 1 ? RED : LIME, radius: 1.6 + i * 0.7, life: 0.5, width: 0.1, flat: 0.22 }));
+        fx.later(i * 0.07, () =>
+          fx.ring(
+            { x: d.x - c.dir * 0.2, y: 0.03 },
+            {
+              color: i === 1 ? RED : LIME,
+              radius: 1.6 + i * 0.7,
+              life: 0.5,
+              width: 0.1,
+              flat: 0.22,
+            },
+          ),
+        );
       if (o === 'hit') {
         fx.layer('front', 0.4, (ctx, k) => {
           ctx.globalCompositeOperation = 'lighter';
@@ -616,7 +792,10 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const fx = eng(c);
       if (c.t >= c.impact + 0.2 && fx.once('shiver')) {
         const d = c.defender.anchors().feet;
-        fx.ring({ x: d.x, y: 0.03 }, { color: LIME, radius: 1.2, life: 0.4, width: 0.06, flat: 0.22 });
+        fx.ring(
+          { x: d.x, y: 0.03 },
+          { color: LIME, radius: 1.2, life: 0.4, width: 0.06, flat: 0.22 },
+        );
         fx.dust({ x: d.x, y: 0 }, { n: 4 });
       }
     },
@@ -626,7 +805,9 @@ export const MILITIA_SCRIPTS: AttackScripts = {
   'militia-watchtower-sweep': {
     palette: { main: '#ffb34d', accent: LIME, dark: '#3a2a1a' },
     choreograph: (base) =>
-      retime(base, 0.18, 1.0, [{ t: 0.1, p: { y: -0.3, x: -0.2, spin: -0.5, lean: 0.2, hR: 0.9, kR: -1.3 } }]),
+      retime(base, 0.18, 1.0, [
+        { t: 0.1, p: { y: -0.3, x: -0.2, spin: -0.5, lean: 0.2, hR: 0.9, kR: -1.3 } },
+      ]),
     start: (c) => {
       const fx = eng(c);
       const mx = (c.attacker.baseX + c.defender.baseX) / 2 + c.dir * 0.3;
@@ -662,9 +843,20 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const fx = eng(c);
       if (c.t >= c.impact - 0.24 && fx.once('low')) {
         const a = c.attacker.anchors();
-        crescent(c, { x: a.chest.x + c.dir * 0.2, y: 0.35 }, 1.9, face(3.5, c.dir), face(-0.4, c.dir), 0.55, '#ffb34d', LIME, 0.4, 0.4);
+        crescent(
+          c,
+          { x: a.chest.x + c.dir * 0.2, y: 0.35 },
+          1.9,
+          face(3.5, c.dir),
+          face(-0.4, c.dir),
+          0.55,
+          '#ffb34d',
+          LIME,
+          0.4,
+          0.4,
+        );
       }
-      if ((Math.floor(c.t * 30) % 4) === 0 && c.t > 0.2) {
+      if (Math.floor(c.t * 30) % 4 === 0 && c.t > 0.2) {
         const f = c.attacker.anchors().feet;
         fx.dust({ x: f.x + c.dir * 0.5, y: 0 }, { n: 1, size: 0.14, color: '#d8c89a' });
       }
@@ -674,17 +866,36 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const o = outcomeOf(c);
       const p = hitPoint(c);
       const a = c.attacker.anchors().feet;
-      fx.ring({ x: a.x + c.dir * 0.8, y: 0.03 }, { color: '#e8d9a8', radius: 2.8, life: 0.55, width: 0.14, flat: 0.2 });
+      fx.ring(
+        { x: a.x + c.dir * 0.8, y: 0.03 },
+        { color: '#e8d9a8', radius: 2.8, life: 0.55, width: 0.14, flat: 0.2 },
+      );
       fx.dust({ x: a.x + c.dir * 1.0, y: 0 }, { n: 14, color: '#d8c89a', size: 0.26 });
-      fling(c, paintStone, { x: a.x + c.dir * 1.2, y: 0.2 }, 6, face(0.4, c.dir), 1.4, 2.8, 0.7, 0.5);
+      fling(
+        c,
+        paintStone,
+        { x: a.x + c.dir * 1.2, y: 0.2 },
+        6,
+        face(0.4, c.dir),
+        1.4,
+        2.8,
+        0.7,
+        0.5,
+      );
       if (o === 'hit') {
         fx.glow(p, { radius: 1.3, color: '#ffb34d', life: 0.28 });
         fx.burst(p, { n: 12, color: '#ffb34d', length: 1.1, life: 0.36 });
         fx.spark(p, { n: 16, color: LIME, speed: 7, dir: face(0.3, c.dir), spread: 2.6 });
         fx.word({ x: p.x, y: p.y + 0.85 }, 'HEAVE!', { color: '#ffd08a', size: 0.62, life: 0.85 });
         fx.wash('#ffb34d', 0.2, 0.5);
-      } else if (o !== 'block') fx.word({ x: a.x + c.dir * 1.6, y: 0.9 }, 'WHOOSH', { color: LIME, size: 0.42, life: 0.6 });
-      fx.later(0.1, () => fx.glow({ x: (c.attacker.baseX + c.defender.baseX) / 2, y: 3.4 }, { radius: 0.9, color: '#ffb34d', life: 0.5 }));
+      } else if (o !== 'block')
+        fx.word({ x: a.x + c.dir * 1.6, y: 0.9 }, 'WHOOSH', { color: LIME, size: 0.42, life: 0.6 });
+      fx.later(0.1, () =>
+        fx.glow(
+          { x: (c.attacker.baseX + c.defender.baseX) / 2, y: 3.4 },
+          { radius: 0.9, color: '#ffb34d', life: 0.5 },
+        ),
+      );
     },
   },
 
@@ -697,14 +908,30 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       const fx = eng(c);
       if (c.t >= 0.25 && fx.once('ret')) {
         const d = c.defender.anchors().chest;
-        reticle(c, { x: d.x - c.dir * 0.12, y: d.y }, 1.1, 0.22, RED, Math.max(0.2, c.impact - 0.37));
+        reticle(
+          c,
+          { x: d.x - c.dir * 0.12, y: d.y },
+          1.1,
+          0.22,
+          RED,
+          Math.max(0.2, c.impact - 0.37),
+        );
       }
-      if (c.t > 0.3 && c.t < c.impact - 0.15 && (Math.floor(c.t * 4) & 1) === 0 && fx.once(`br${Math.floor(c.t * 4)}`)) {
+      if (
+        c.t > 0.3 &&
+        c.t < c.impact - 0.15 &&
+        (Math.floor(c.t * 4) & 1) === 0 &&
+        fx.once(`br${Math.floor(c.t * 4)}`)
+      ) {
         fx.smoke(c.attacker.anchors().head, { n: 1, size: 0.1, rise: 0.25, color: '#e8e8e8' });
       }
       if (c.t >= c.impact - 0.12 && fx.once('fire')) {
         const m = muzzle(c, '#ffcf7a', 1);
-        fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'CRACK!', { color: '#ffcf7a', size: 0.4, life: 0.5 });
+        fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'CRACK!', {
+          color: '#ffcf7a',
+          size: 0.4,
+          life: 0.5,
+        });
         shoot(c, m, aimAt(c, 0), 0.12, '#ffe2a8', 0.2, 0.04);
       }
     },
@@ -715,7 +942,14 @@ export const MILITIA_SCRIPTS: AttackScripts = {
       if (o === 'hit') {
         fx.glow(p, { radius: 1.0, color: '#fff3d0', life: 0.22 });
         for (let i = 0; i < 3; i++)
-          fx.later(i * 0.05, () => fx.ring(p, { color: i === 1 ? '#ffffff' : RED, radius: 0.4 + i * 0.35, life: 0.3, width: 0.07 }));
+          fx.later(i * 0.05, () =>
+            fx.ring(p, {
+              color: i === 1 ? '#ffffff' : RED,
+              radius: 0.4 + i * 0.35,
+              life: 0.3,
+              width: 0.07,
+            }),
+          );
         fx.burst(p, { n: 8, color: RED, length: 0.9, life: 0.3 });
         fx.spark(p, { n: 12, color: '#fff3d0', speed: 6, dir: face(0.3, c.dir), spread: 2.2 });
         fx.word({ x: p.x, y: p.y + 0.8 }, 'TAP!', { color: '#ff9a88', size: 0.6, life: 0.8 });
@@ -732,13 +966,16 @@ export const MILITIA_SCRIPTS: AttackScripts = {
   'militia-double-charge': {
     palette: { main: '#ffd37a', accent: '#ff6a1f', dark: '#3a1a0a' },
     choreograph: (base) => {
-      const keys = base.keys.map((k, i) => (i === 2 ? { t: k.t, p: { ...k.p, x: -0.4, lean: 0.38, y: 0.06 } } : k));
+      const keys = base.keys.map((k, i) =>
+        i === 2 ? { t: k.t, p: { ...k.p, x: -0.4, lean: 0.38, y: 0.06 } } : k,
+      );
       return hold({ ...base, keys }, 1, 0.3);
     },
     windup: (c) => {
       const fx = eng(c);
       const m = c.attacker.anchors().tip;
-      if (c.t >= 0.12 && fx.once('pour1')) fx.smoke(m, { n: 2, size: 0.12, rise: 0.3, color: '#cfcfcf' });
+      if (c.t >= 0.12 && fx.once('pour1'))
+        fx.smoke(m, { n: 2, size: 0.12, rise: 0.3, color: '#cfcfcf' });
       if (c.t >= 0.3 && fx.once('pour2')) {
         fx.smoke(m, { n: 3, size: 0.14, rise: 0.3, color: '#cfcfcf' });
         fx.word({ x: m.x, y: m.y + 0.6 }, 'x2', { color: '#ffd37a', size: 0.4, life: 0.6 });
@@ -755,7 +992,11 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         f.ring(mm, { color: '#ffd37a', radius: 1.2, life: 0.3 });
         f.shake(0.12, 0.85);
         f.flash('#ffe9a0', 0.25, 0.1);
-        f.word({ x: mm.x + c.dir * 0.6, y: mm.y + 0.7 }, 'BLAM!', { color: '#ff9a3a', size: 0.55, life: 0.6 });
+        f.word({ x: mm.x + c.dir * 0.6, y: mm.y + 0.7 }, 'BLAM!', {
+          color: '#ff9a3a',
+          size: 0.55,
+          life: 0.6,
+        });
         shoot(c, { x: mm.x, y: mm.y + 0.06 }, aimAt(c, 0.06), 0.12, '#ffb347', 0.22, 0.06);
         shoot(c, { x: mm.x, y: mm.y - 0.06 }, aimAt(c, -0.06), 0.12, '#ff6a1f', 0.22, 0.06);
       }
@@ -784,7 +1025,8 @@ export const MILITIA_SCRIPTS: AttackScripts = {
     },
     follow: (c) => {
       const fx = eng(c);
-      if (c.t >= c.impact + 0.15 && fx.once('smoke')) fx.smoke(c.attacker.anchors().tip, { n: 8, size: 0.22, rise: 0.5, color: '#8a8580' });
+      if (c.t >= c.impact + 0.15 && fx.once('smoke'))
+        fx.smoke(c.attacker.anchors().tip, { n: 8, size: 0.22, rise: 0.5, color: '#8a8580' });
     },
   },
 
@@ -836,14 +1078,32 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         const m = muzzle(c, '#ffe2a8', 1);
         const to = aimAt(c, 0.5);
         shoot(c, m, to, 0.14, '#ffe2a8', 0.2, 0.045);
-        fx.word({ x: m.x + c.dir * 0.4, y: m.y + 0.5 }, 'KRAK!', { color: '#ffe2a8', size: 0.38, life: 0.5 });
+        fx.word({ x: m.x + c.dir * 0.4, y: m.y + 0.5 }, 'KRAK!', {
+          color: '#ffe2a8',
+          size: 0.38,
+          life: 0.5,
+        });
         fx.shake(0.04);
-        if (c.hit) fx.later(0.14, () => fx.spark(to, { n: 6, color: '#d94a38', speed: 5, dir: face(Math.PI, c.dir), spread: 1.6 }));
+        if (c.hit)
+          fx.later(0.14, () =>
+            fx.spark(to, {
+              n: 6,
+              color: '#d94a38',
+              speed: 5,
+              dir: face(Math.PI, c.dir),
+              spread: 1.6,
+            }),
+          );
       }
       if (c.t >= c.impact - 0.12 && fx.once('s2')) {
         const m = muzzle(c, '#ffb08a', 1);
         shoot(c, m, aimAt(c, -0.5), 0.12, '#ff9a7a', 0.2, 0.045);
-        fx.word({ x: m.x + c.dir * 0.6, y: m.y + 0.8 }, 'KRAK!', { color: '#ff9a7a', size: 0.42, life: 0.5, rot: 0.1 });
+        fx.word({ x: m.x + c.dir * 0.6, y: m.y + 0.8 }, 'KRAK!', {
+          color: '#ff9a7a',
+          size: 0.42,
+          life: 0.5,
+          rot: 0.1,
+        });
         fx.shake(0.04);
       }
     },
@@ -928,9 +1188,15 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         const m = muzzle(c, '#7fe0ff', 0.8);
         const d = c.defender.anchors().head;
         const strike = c.hit || c.reaction === 'defend';
-        const to = strike ? { x: d.x - c.dir * 0.12, y: d.y } : { x: d.x + c.dir * 1.0, y: d.y + 0.4 };
+        const to = strike
+          ? { x: d.x - c.dir * 0.12, y: d.y }
+          : { x: d.x + c.dir * 1.0, y: d.y + 0.4 };
         fx.slowmo(0.28, 0.25);
-        fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'PHT!', { color: '#7fe0ff', size: 0.34, life: 0.5 });
+        fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'PHT!', {
+          color: '#7fe0ff',
+          size: 0.34,
+          life: 0.5,
+        });
         fx.sprite({
           from: m,
           to,
@@ -951,7 +1217,8 @@ export const MILITIA_SCRIPTS: AttackScripts = {
             ctx.fill();
           },
           onStep: (p, k) => {
-            if ((Math.floor(k * 40) & 1) === 0) fx.spark(p, { n: 1, color: '#7fe0ff', speed: 0.6, dir: up, spread: 6, size: 0.02 });
+            if ((Math.floor(k * 40) & 1) === 0)
+              fx.spark(p, { n: 1, color: '#7fe0ff', speed: 0.6, dir: up, spread: 6, size: 0.02 });
           },
         });
       }
@@ -979,7 +1246,10 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         fx.punch(p, 1.25, 0.6);
       } else if (o !== 'block') {
         const f = c.defender.anchors().feet;
-        fx.spark({ x: f.x + c.dir, y: 0.1 }, { n: 8, color: '#7fe0ff', speed: 6, dir: up, spread: 1.4 });
+        fx.spark(
+          { x: f.x + c.dir, y: 0.1 },
+          { n: 8, color: '#7fe0ff', speed: 6, dir: up, spread: 1.4 },
+        );
         fx.word({ x: f.x + c.dir, y: 0.8 }, 'WHIZ', { color: '#bff0ff', size: 0.4, life: 0.55 });
       }
     },

@@ -2,7 +2,17 @@ import { describe, expect, it } from 'vitest';
 import type { AttackStyle } from '@m1565/core';
 import { ATTACK_SCRIPTS, scriptFor } from './index';
 
-const STYLES: AttackStyle[] = ['slash', 'thrust', 'overhead', 'sweep', 'bash', 'charge', 'shot', 'volley', 'throw'];
+const STYLES: AttackStyle[] = [
+  'slash',
+  'thrust',
+  'overhead',
+  'sweep',
+  'bash',
+  'charge',
+  'shot',
+  'volley',
+  'throw',
+];
 
 describe('scriptFor', () => {
   it('returns a complete default script for every style', () => {

@@ -27,7 +27,10 @@ export interface FxEngine extends Fx {
   readonly step: number;
   /** Camera offsets from shake and punch (world units / zoom). Read after `update`. */
   readonly cam: { dx: number; dy: number; roll: number; zoom: number; px: number; py: number };
-  ring(at: V2, o?: { color?: string; radius?: number; life?: number; width?: number; flat?: number }): void;
+  ring(
+    at: V2,
+    o?: { color?: string; radius?: number; life?: number; width?: number; flat?: number },
+  ): void;
   sprite(o: Parameters<Fx['sprite']>[0] & { onStep?: (p: V2, k: number) => void }): void;
   update(dt: number): void;
   drawWash(ctx: CanvasRenderingContext2D, w: number, h: number): void;
@@ -290,7 +293,10 @@ interface Screen {
   strength: number;
 }
 
-function pool<T extends { alive: boolean }>(n: number, make: () => T): { items: T[]; cursor: number } {
+function pool<T extends { alive: boolean }>(
+  n: number,
+  make: () => T,
+): { items: T[]; cursor: number } {
   const items: T[] = [];
   for (let i = 0; i < n; i++) items.push(make());
   return { items, cursor: 0 };
@@ -565,7 +571,15 @@ class FxImpl implements FxEngine {
     return this.low ? Math.max(1, Math.round(n * 0.55)) : n;
   }
 
-  private part(kind: Kind, x: number, y: number, vx: number, vy: number, life: number, size: number): Part {
+  private part(
+    kind: Kind,
+    x: number,
+    y: number,
+    vx: number,
+    vy: number,
+    life: number,
+    size: number,
+  ): Part {
     const p = alloc(this.parts);
     p.kind = kind;
     p.x = x;
@@ -585,7 +599,14 @@ class FxImpl implements FxEngine {
 
   spark(
     at: V2,
-    o: { n?: number; color?: string; speed?: number; dir?: number; spread?: number; size?: number } = {},
+    o: {
+      n?: number;
+      color?: string;
+      speed?: number;
+      dir?: number;
+      spread?: number;
+      size?: number;
+    } = {},
   ): void {
     const n = this.count(o.n ?? 10);
     const speed = o.speed ?? 5;
@@ -595,7 +616,15 @@ class FxImpl implements FxEngine {
     for (let i = 0; i < n; i++) {
       const a = o.dir === undefined ? this.rng() * TAU : dir + (this.rng() - 0.5) * spread;
       const sp = speed * (0.35 + this.rng() * 0.9);
-      const p = this.part(Kind.Spark, at.x, at.y, Math.cos(a) * sp, Math.sin(a) * sp, 0.28 + this.rng() * 0.35, (o.size ?? 0.035) * (0.6 + this.rng() * 0.8));
+      const p = this.part(
+        Kind.Spark,
+        at.x,
+        at.y,
+        Math.cos(a) * sp,
+        Math.sin(a) * sp,
+        0.28 + this.rng() * 0.35,
+        (o.size ?? 0.035) * (0.6 + this.rng() * 0.8),
+      );
       p.grav = 7;
       p.drag = 1.6;
       p.color = this.rng() < 0.35 ? '#fff6d8' : color;
@@ -659,7 +688,10 @@ class FxImpl implements FxEngine {
     }
   }
 
-  ring(at: V2, o: { color?: string; radius?: number; life?: number; width?: number; flat?: number } = {}): void {
+  ring(
+    at: V2,
+    o: { color?: string; radius?: number; life?: number; width?: number; flat?: number } = {},
+  ): void {
     const r = alloc(this.rings);
     r.x = at.x;
     r.y = at.y;
@@ -684,7 +716,10 @@ class FxImpl implements FxEngine {
     for (let i = 0; i < b.n; i++) b.lens[i] = 0.62 + this.rng() * 0.55;
   }
 
-  arc(at: V2, o: { radius: number; from: number; to: number; width?: number; color?: string; life?: number }): void {
+  arc(
+    at: V2,
+    o: { radius: number; from: number; to: number; width?: number; color?: string; life?: number },
+  ): void {
     const a = alloc(this.arcs);
     a.x = at.x;
     a.y = at.y;
@@ -707,7 +742,11 @@ class FxImpl implements FxEngine {
     g.color = o.color ?? '#fff1b8';
   }
 
-  word(at: V2, text: string, o: { color?: string; size?: number; life?: number; rot?: number } = {}): void {
+  word(
+    at: V2,
+    text: string,
+    o: { color?: string; size?: number; life?: number; rot?: number } = {},
+  ): void {
     const w = alloc(this.words);
     w.x = at.x;
     w.y = at.y;
@@ -828,7 +867,11 @@ class FxImpl implements FxEngine {
     this.slowLeft = life;
   }
 
-  layer(where: 'back' | 'front', life: number, paint: (ctx: CanvasRenderingContext2D, k: number) => void): void {
+  layer(
+    where: 'back' | 'front',
+    life: number,
+    paint: (ctx: CanvasRenderingContext2D, k: number) => void,
+  ): void {
     const l = alloc(this.layers);
     l.where = where;
     l.age = 0;
@@ -1082,7 +1125,13 @@ class FxImpl implements FxEngine {
     ctx.restore();
   }
 
-  private arcPath(ctx: CanvasRenderingContext2D, a: Arc, tail: number, head: number, wScale: number): void {
+  private arcPath(
+    ctx: CanvasRenderingContext2D,
+    a: Arc,
+    tail: number,
+    head: number,
+    wScale: number,
+  ): void {
     const N = 22;
     const span = a.to - a.from;
     // Outer edge forward, inner edge back: a crescent that is thick in the middle.
@@ -1314,7 +1363,14 @@ class FxImpl implements FxEngine {
       ctx.fillStyle = s.color;
       ctx.fillRect(0, 0, w, h);
       // Darker toward the edges.
-      const g = ctx.createRadialGradient(w / 2, h * 0.55, h * 0.25, w / 2, h * 0.55, Math.hypot(w, h) * 0.6);
+      const g = ctx.createRadialGradient(
+        w / 2,
+        h * 0.55,
+        h * 0.25,
+        w / 2,
+        h * 0.55,
+        Math.hypot(w, h) * 0.6,
+      );
       g.addColorStop(0, 'rgba(0,0,0,0)');
       g.addColorStop(1, 'rgba(0,0,0,0.55)');
       ctx.fillStyle = g;
@@ -1385,7 +1441,7 @@ class FxImpl implements FxEngine {
       const wedges = 16;
       for (let i = 0; i < wedges; i++) {
         const a0 = (i / wedges) * TAU;
-        const a1 = a0 + (TAU / wedges) * (0.18 + 0.22 * ((i * 37) % 5) / 5);
+        const a1 = a0 + (TAU / wedges) * (0.18 + (0.22 * ((i * 37) % 5)) / 5);
         ctx.beginPath();
         ctx.moveTo(cx + Math.cos(a0) * h * 0.12, cy + Math.sin(a0) * h * 0.12);
         ctx.lineTo(cx + Math.cos(a0) * R, cy + Math.sin(a0) * R);

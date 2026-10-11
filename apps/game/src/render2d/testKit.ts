@@ -42,7 +42,14 @@ export function stubRig(spec: FigureSpec, baseX: number, facing: 1 | -1): Rig {
     anchors(): FighterAnchors {
       const x = rig.baseX + rig.pose.x * rig.facing;
       const p = (dx: number, y: number) => ({ x: x + dx * rig.facing, y: y + rig.pose.y });
-      return { chest: p(0, 1.1), head: p(0, 1.6), hand: p(0.5, 1.1), offHand: p(0.3, 1), tip: p(1.1, 1.1), feet: p(0, 0) };
+      return {
+        chest: p(0, 1.1),
+        head: p(0, 1.6),
+        hand: p(0.5, 1.1),
+        offHand: p(0.3, 1),
+        tip: p(1.1, 1.1),
+        feet: p(0, 0),
+      };
     },
     draw: () => undefined,
   };

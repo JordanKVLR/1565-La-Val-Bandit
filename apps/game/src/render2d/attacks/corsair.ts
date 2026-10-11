@@ -96,7 +96,17 @@ const paintClaw: Paint = (ctx, p, ang, _k) => {
   ctx.stroke();
 };
 
-function fling(c: FxContext, paint: Paint, at: V2, n: number, ang: number, spread: number, dist: number, life: number, lift = 0.5): void {
+function fling(
+  c: FxContext,
+  paint: Paint,
+  at: V2,
+  n: number,
+  ang: number,
+  spread: number,
+  dist: number,
+  life: number,
+  lift = 0.5,
+): void {
   const fx = eng(c);
   for (let i = 0; i < n; i++) {
     const a = ang + (fx.rand() - 0.5) * spread;
@@ -111,7 +121,18 @@ function fling(c: FxContext, paint: Paint, at: V2, n: number, ang: number, sprea
   }
 }
 
-function crescent(c: FxContext, at: V2, r: number, a0: number, a1: number, thick: number, col: string, core: string, life: number, squash = 1): void {
+function crescent(
+  c: FxContext,
+  at: V2,
+  r: number,
+  a0: number,
+  a1: number,
+  thick: number,
+  col: string,
+  core: string,
+  life: number,
+  squash = 1,
+): void {
   const cx = at.x;
   const cy = at.y;
   eng(c).layer('front', life, (ctx, k) => {
@@ -160,7 +181,20 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       const adv = advOf(base);
       return retime(base, 0.32, 0.9, [
         { t: 0.1, p: { x: -0.35, y: -0.2, lean: 0.25, hR: 0.8, kR: -1.2, sR: 0.3, eR: 1.0 } },
-        { t: 0.2, p: { x: adv * 0.35, y: 0.7, lean: 0.1, hR: 0.5, kR: -0.3, hL: -0.5, kL: -0.5, sR: 2.4, eR: 0.3 } },
+        {
+          t: 0.2,
+          p: {
+            x: adv * 0.35,
+            y: 0.7,
+            lean: 0.1,
+            hR: 0.5,
+            kR: -0.3,
+            hL: -0.5,
+            kL: -0.5,
+            sR: 2.4,
+            eR: 0.3,
+          },
+        },
         { t: 0.3, p: { x: adv * 0.7, y: 0.8, lean: -0.1, sR: 2.9, eR: 0.3, hR: 0.2, kR: -0.2 } },
       ]);
     },
@@ -188,11 +222,24 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       }
       if (c.t > 0.15 && c.t < c.impact && (Math.floor(c.t * 40) & 1) === 0) {
         const a = c.attacker.anchors().chest;
-        fx.spark({ x: a.x - c.dir * 0.2, y: a.y }, { n: 1, color: TEAL, speed: 1.6, dir: face(Math.PI, c.dir), spread: 1, size: 0.05 });
+        fx.spark(
+          { x: a.x - c.dir * 0.2, y: a.y },
+          { n: 1, color: TEAL, speed: 1.6, dir: face(Math.PI, c.dir), spread: 1, size: 0.05 },
+        );
       }
       if (c.t >= c.impact - 0.18 && fx.once('cut')) {
         const a = c.attacker.anchors().chest;
-        crescent(c, { x: a.x + c.dir * 0.25, y: a.y + 0.1 }, 1.2, face(2.4, c.dir), face(-1.0, c.dir), 0.6, TEAL, FOAM, 0.3);
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.25, y: a.y + 0.1 },
+          1.2,
+          face(2.4, c.dir),
+          face(-1.0, c.dir),
+          0.6,
+          TEAL,
+          FOAM,
+          0.3,
+        );
       }
     },
     impactFx: (c) => {
@@ -201,7 +248,10 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       const p = hitPoint(c);
       const f = c.attacker.anchors().feet;
       fx.dust({ x: f.x, y: 0 }, { n: 8 });
-      fx.ring({ x: f.x, y: 0.03 }, { color: FOAM, radius: 1.3, life: 0.4, width: 0.08, flat: 0.22 });
+      fx.ring(
+        { x: f.x, y: 0.03 },
+        { color: FOAM, radius: 1.3, life: 0.4, width: 0.08, flat: 0.22 },
+      );
       if (o === 'hit') {
         fx.layer('front', 0.4, (ctx, k) => {
           ctx.globalCompositeOperation = 'lighter';
@@ -241,8 +291,32 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       const adv = advOf(base);
       return retime(base, 0.5, 0.6, [
         { t: 0.1, p: { x: 0.1, z: 0.25, lean: 0.2, hR: 0.5, kR: -0.8, hL: -0.2 } },
-        { t: 0.22, p: { x: adv * 0.4, z: -0.2, spin: 1.8, lean: -0.1, hR: -0.2, kR: -0.3, hL: 0.7, kL: -0.9 } },
-        { t: 0.34, p: { x: adv * 0.6, z: 0.0, spin: Math.PI * 2, lean: -0.3, sR: 1.5, eR: 0.1, hR: 0.5, kR: -0.4 } },
+        {
+          t: 0.22,
+          p: {
+            x: adv * 0.4,
+            z: -0.2,
+            spin: 1.8,
+            lean: -0.1,
+            hR: -0.2,
+            kR: -0.3,
+            hL: 0.7,
+            kL: -0.9,
+          },
+        },
+        {
+          t: 0.34,
+          p: {
+            x: adv * 0.6,
+            z: 0.0,
+            spin: Math.PI * 2,
+            lean: -0.3,
+            sR: 1.5,
+            eR: 0.1,
+            hR: 0.5,
+            kR: -0.4,
+          },
+        },
       ]);
     },
     start: (c) => {
@@ -266,15 +340,35 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       for (let i = 0; i < 3; i++) {
         const when = 0.1 + i * 0.12;
         if (c.t >= when && fx.once(`step${i}`)) {
-          fx.ring({ x: f.x, y: 0.03 }, { color: i === 1 ? BRASS : TEAL, radius: 0.8, life: 0.35, width: 0.06, flat: 0.22 });
-          fx.spark({ x: f.x, y: 0.15 }, { n: 4, color: BRASS, speed: 3, dir: up, spread: 2, size: 0.04 });
-          fx.word({ x: f.x - c.dir * 0.3, y: 1.9 + i * 0.2 }, ['TAP', 'TAP', 'TING'][i]!, { color: BRASS, size: 0.28, life: 0.4 });
+          fx.ring(
+            { x: f.x, y: 0.03 },
+            { color: i === 1 ? BRASS : TEAL, radius: 0.8, life: 0.35, width: 0.06, flat: 0.22 },
+          );
+          fx.spark(
+            { x: f.x, y: 0.15 },
+            { n: 4, color: BRASS, speed: 3, dir: up, spread: 2, size: 0.04 },
+          );
+          fx.word({ x: f.x - c.dir * 0.3, y: 1.9 + i * 0.2 }, ['TAP', 'TAP', 'TING'][i]!, {
+            color: BRASS,
+            size: 0.28,
+            life: 0.4,
+          });
         }
       }
       if (c.t >= 0.22 && fx.once('cut1')) {
         const a = c.attacker.anchors().chest;
         const p = hitPoint(c);
-        crescent(c, { x: a.x + c.dir * 0.2, y: a.y + 0.2 }, 0.9, face(2.3, c.dir), face(0.2, c.dir), 0.4, TEAL, FOAM, 0.22);
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.2, y: a.y + 0.2 },
+          0.9,
+          face(2.3, c.dir),
+          face(0.2, c.dir),
+          0.4,
+          TEAL,
+          FOAM,
+          0.22,
+        );
         if (c.hit) {
           fx.spark(p, { n: 8, color: BRASS, speed: 5, dir: face(0.5, c.dir), spread: 2 });
           fx.burst(p, { n: 6, color: TEAL, length: 0.5, life: 0.2 });
@@ -287,9 +381,21 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       const o = outcomeOf(c);
       const p = hitPoint(c);
       const a = c.attacker.anchors().chest;
-      crescent(c, { x: a.x + c.dir * 0.3, y: a.y + 0.1 }, 1.0, face(-0.6, c.dir), face(2.1, c.dir), 0.45, CRIM, '#ffe0e4', 0.26);
+      crescent(
+        c,
+        { x: a.x + c.dir * 0.3, y: a.y + 0.1 },
+        1.0,
+        face(-0.6, c.dir),
+        face(2.1, c.dir),
+        0.45,
+        CRIM,
+        '#ffe0e4',
+        0.26,
+      );
       if (o === 'hit') {
-        fx.later(0.05, () => crescent(c, p, 0.7, face(2.4, c.dir), face(0.3, c.dir), 0.4, BRASS, '#fff', 0.24));
+        fx.later(0.05, () =>
+          crescent(c, p, 0.7, face(2.4, c.dir), face(0.3, c.dir), 0.4, BRASS, '#fff', 0.24),
+        );
         fx.glow(p, { radius: 1.1, color: BRASS, life: 0.25 });
         fx.burst(p, { n: 12, color: TEAL, length: 1.0, life: 0.32 });
         fx.spark(p, { n: 16, color: BRASS, speed: 7, dir: face(0.4, c.dir), spread: 2.6 });
@@ -306,7 +412,9 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
   'corsair-salt-and-steel': {
     palette: { main: FOAM, accent: '#58c8d0', dark: '#08303a' },
     choreograph: (base) =>
-      retime(base, 0.22, 1.05, [{ t: 0.12, p: { x: -0.35, y: -0.2, lean: 0.3, spin: -0.6, hR: 0.9, kR: -1.3 } }]),
+      retime(base, 0.22, 1.05, [
+        { t: 0.12, p: { x: -0.35, y: -0.2, lean: 0.3, spin: -0.6, hR: 0.9, kR: -1.3 } },
+      ]),
     start: (c) => {
       const mx = (c.attacker.baseX + c.defender.baseX) / 2;
       const dir = c.dir;
@@ -339,8 +447,30 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       }
       if (c.t >= c.impact - 0.24 && fx.once('sheet')) {
         const a = c.attacker.anchors().chest;
-        crescent(c, { x: a.x + c.dir * 0.2, y: a.y - 0.1 }, 1.6, face(3.5, c.dir), face(-0.5, c.dir), 0.9, '#58c8d0', FOAM, 0.4, 0.55);
-        crescent(c, { x: a.x + c.dir * 0.2, y: a.y - 0.1 }, 1.25, face(3.7, c.dir), face(-0.3, c.dir), 0.3, FOAM, '#fff', 0.34, 0.55);
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.2, y: a.y - 0.1 },
+          1.6,
+          face(3.5, c.dir),
+          face(-0.5, c.dir),
+          0.9,
+          '#58c8d0',
+          FOAM,
+          0.4,
+          0.55,
+        );
+        crescent(
+          c,
+          { x: a.x + c.dir * 0.2, y: a.y - 0.1 },
+          1.25,
+          face(3.7, c.dir),
+          face(-0.3, c.dir),
+          0.3,
+          FOAM,
+          '#fff',
+          0.34,
+          0.55,
+        );
         fx.speedLines({ dir: c.dir === 1 ? Math.PI : 0, color: FOAM, life: 0.3, n: 14 });
       }
     },
@@ -358,7 +488,8 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
         fx.word({ x: p.x, y: p.y + 0.9 }, 'SPLASH!', { color: '#9ff0f4', size: 0.66, life: 0.9 });
         fx.wash('#58c8d0', 0.22, 0.5);
         fx.later(0.2, () => fx.dust({ x: p.x, y: 0.3 }, { n: 5, color: FOAM, size: 0.2 }));
-      } else if (o !== 'block') fx.word({ x: a.x + c.dir * 1.6, y: 1.0 }, 'WHOOSH', { color: FOAM, size: 0.42, life: 0.6 });
+      } else if (o !== 'block')
+        fx.word({ x: a.x + c.dir * 1.6, y: 1.0 }, 'WHOOSH', { color: FOAM, size: 0.42, life: 0.6 });
     },
   },
 
@@ -366,8 +497,14 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
   'corsair-barbary-reaper': {
     palette: { main: '#ff7a8a', accent: CRIM, dark: '#2a0a12' },
     choreograph: (base) => {
-      const fixed = base.keys.map((k) => (k.p.spin !== undefined && k.p.spin > 6 ? { t: k.t, p: { ...k.p, spin: k.p.spin + TAU } } : k));
-      return retime({ ...base, keys: fixed }, 0.2, 1.1, [{ t: 0.1, p: { x: -0.4, y: -0.25, lean: 0.3, spin: -0.8, hR: 0.9, kR: -1.3 } }]);
+      const fixed = base.keys.map((k) =>
+        k.p.spin !== undefined && k.p.spin > 6
+          ? { t: k.t, p: { ...k.p, spin: k.p.spin + TAU } }
+          : k,
+      );
+      return retime({ ...base, keys: fixed }, 0.2, 1.1, [
+        { t: 0.1, p: { x: -0.4, y: -0.25, lean: 0.3, spin: -0.8, hR: 0.9, kR: -1.3 } },
+      ]);
     },
     start: (c) => {
       const fx = eng(c);
@@ -381,15 +518,32 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
         const ang = c.t * 22;
         fx.trailPoint('reap', a.tip, { color: CRIM, width: 0.4, fade: 0.28 });
         if ((Math.floor(c.t * 30) & 1) === 0) {
-          fx.dust({ x: a.feet.x + Math.cos(ang) * 0.6, y: 0 }, { n: 1, size: 0.2, color: '#c9b890' });
-          fx.spark({ x: a.chest.x, y: a.chest.y + Math.sin(ang) * 0.6 }, { n: 1, color: '#ff7a8a', speed: 2, dir: ang, spread: 1, size: 0.04 });
+          fx.dust(
+            { x: a.feet.x + Math.cos(ang) * 0.6, y: 0 },
+            { n: 1, size: 0.2, color: '#c9b890' },
+          );
+          fx.spark(
+            { x: a.chest.x, y: a.chest.y + Math.sin(ang) * 0.6 },
+            { n: 1, color: '#ff7a8a', speed: 2, dir: ang, spread: 1, size: 0.04 },
+          );
         }
       }
       if (c.t >= c.impact - 0.3 && fx.once('whirl')) {
         const x = a.chest.x;
         const y = a.chest.y;
         for (let i = 0; i < 3; i++) {
-          crescent(c, { x, y }, 1.0 + i * 0.35, (i * TAU) / 3, (i * TAU) / 3 + TAU * 0.9, 0.4, i === 1 ? '#ff7a8a' : CRIM, '#ffe0e4', 0.35, 0.55);
+          crescent(
+            c,
+            { x, y },
+            1.0 + i * 0.35,
+            (i * TAU) / 3,
+            (i * TAU) / 3 + TAU * 0.9,
+            0.4,
+            i === 1 ? '#ff7a8a' : CRIM,
+            '#ffe0e4',
+            0.35,
+            0.55,
+          );
         }
       }
     },
@@ -398,8 +552,14 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       const o = outcomeOf(c);
       const p = hitPoint(c);
       const a = c.attacker.anchors().feet;
-      fx.ring({ x: a.x, y: 0.03 }, { color: '#ff7a8a', radius: 2.4, life: 0.55, width: 0.12, flat: 0.22 });
-      fx.ring({ x: a.x, y: 0.03 }, { color: CRIM, radius: 3.2, life: 0.7, width: 0.09, flat: 0.22 });
+      fx.ring(
+        { x: a.x, y: 0.03 },
+        { color: '#ff7a8a', radius: 2.4, life: 0.55, width: 0.12, flat: 0.22 },
+      );
+      fx.ring(
+        { x: a.x, y: 0.03 },
+        { color: CRIM, radius: 3.2, life: 0.7, width: 0.09, flat: 0.22 },
+      );
       fx.dust({ x: a.x, y: 0 }, { n: 14, size: 0.26, color: '#c9b890' });
       if (o === 'hit') {
         fx.slowmo(0.4, 0.2);
@@ -423,7 +583,12 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
         fx.word({ x: p.x, y: p.y + 0.95 }, 'REAP!', { color: '#ff9aa6', size: 0.72, life: 0.95 });
         fx.shake(0.2, 0.88);
         fx.punch(p, 1.18, 0.55);
-      } else if (o !== 'block') fx.word({ x: a.x + c.dir * 1.6, y: 1.1 }, 'WHIRL', { color: '#ff9aa6', size: 0.46, life: 0.6 });
+      } else if (o !== 'block')
+        fx.word({ x: a.x + c.dir * 1.6, y: 1.1 }, 'WHIRL', {
+          color: '#ff9aa6',
+          size: 0.46,
+          life: 0.6,
+        });
     },
     finish: (c) => {
       const fx = eng(c);
@@ -443,17 +608,31 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
   // ── Grapple: an iron hook flung on a rope, hauled tight; the rope stays taut ──
   'corsair-grapple': {
     palette: { main: '#c9d4d8', accent: BRASS, dark: '#1a2428' },
-    choreograph: (base) => hauled(retime(base, 0.1, 0.9, [{ t: 0.06, p: { x: -0.2, lean: 0.2, sR: 2.2, eR: 0.8 } }]), advOf(base)),
+    choreograph: (base) =>
+      hauled(
+        retime(base, 0.1, 0.9, [{ t: 0.06, p: { x: -0.2, lean: 0.2, sR: 2.2, eR: 0.8 } }]),
+        advOf(base),
+      ),
     windup: (c) => {
       const fx = eng(c);
       const a = c.attacker.anchors();
       if (c.t > 0.08 && c.t < c.impact - 0.2 && (Math.floor(c.t * 30) & 1) === 0) {
-        fx.spark(a.hand, { n: 1, color: '#c9d4d8', speed: 2, dir: Math.sin(c.t * 40) * 3, spread: 6, size: 0.03 });
+        fx.spark(a.hand, {
+          n: 1,
+          color: '#c9d4d8',
+          speed: 2,
+          dir: Math.sin(c.t * 40) * 3,
+          spread: 6,
+          size: 0.03,
+        });
       }
       if (c.t >= c.impact - 0.22 && fx.once('throw')) {
         const from = { x: a.hand.x, y: a.hand.y };
         const d = c.defender.anchors();
-        const to = c.hit || c.reaction === 'defend' ? { x: d.chest.x - c.dir * 0.12, y: d.chest.y } : { x: d.chest.x + c.dir * 1.2, y: 0.15 };
+        const to =
+          c.hit || c.reaction === 'defend'
+            ? { x: d.chest.x - c.dir * 0.12, y: d.chest.y }
+            : { x: d.chest.x + c.dir * 1.2, y: 0.15 };
         const ax = c.attacker;
         fx.layer('front', 0.22, (ctx, k) => {
           const h = ax.anchors().hand;
@@ -467,7 +646,11 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
           ctx.stroke();
         });
         fx.sprite({ from, to, life: 0.22, arc: 0.2, trail: '#c9d4d8', paint: paintClaw });
-        fx.word({ x: from.x + c.dir * 0.5, y: from.y + 0.6 }, 'WHIRR', { color: '#c9d4d8', size: 0.3, life: 0.4 });
+        fx.word({ x: from.x + c.dir * 0.5, y: from.y + 0.6 }, 'WHIRR', {
+          color: '#c9d4d8',
+          size: 0.3,
+          life: 0.4,
+        });
       }
     },
     impactFx: (c) => {
@@ -499,8 +682,15 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
         });
       } else if (o !== 'block') {
         fx.dust({ x: p.x + c.dir * 1.2, y: 0 }, { n: 6 });
-        fx.spark({ x: p.x + c.dir * 1.2, y: 0.1 }, { n: 8, color: '#c9d4d8', speed: 5, dir: up, spread: 1.6 });
-        fx.word({ x: p.x + c.dir * 1.0, y: 0.8 }, 'CLANG', { color: '#c9d4d8', size: 0.4, life: 0.6 });
+        fx.spark(
+          { x: p.x + c.dir * 1.2, y: 0.1 },
+          { n: 8, color: '#c9d4d8', speed: 5, dir: up, spread: 1.6 },
+        );
+        fx.word({ x: p.x + c.dir * 1.0, y: 0.8 }, 'CLANG', {
+          color: '#c9d4d8',
+          size: 0.4,
+          life: 0.6,
+        });
       }
     },
     follow: (c) => {
@@ -530,7 +720,13 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       if (c.t >= 0.24 && fx.once('hook')) {
         const d = c.defender.anchors();
         const to = { x: d.chest.x - c.dir * 0.1, y: d.chest.y };
-        fx.sprite({ from: { x: a.hand.x, y: a.hand.y }, to, life: 0.14, trail: '#c9d4d8', paint: paintClaw });
+        fx.sprite({
+          from: { x: a.hand.x, y: a.hand.y },
+          to,
+          life: 0.14,
+          trail: '#c9d4d8',
+          paint: paintClaw,
+        });
         fx.layer('front', 0.5, (ctx, k) => {
           const h = c.attacker.anchors().hand;
           ctx.globalAlpha = 1 - k * k;
@@ -541,7 +737,11 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
           ctx.lineTo(to.x, to.y + Math.sin(k * 50) * 0.03);
           ctx.stroke();
         });
-        fx.word({ x: a.hand.x + c.dir * 0.6, y: a.hand.y + 0.7 }, 'HOOK!', { color: '#c9d4d8', size: 0.34, life: 0.5 });
+        fx.word({ x: a.hand.x + c.dir * 0.6, y: a.hand.y + 0.7 }, 'HOOK!', {
+          color: '#c9d4d8',
+          size: 0.34,
+          life: 0.5,
+        });
         fling(c, paintRope, { x: a.hand.x, y: a.hand.y }, 3, up, 2, 1.0, 0.5);
       }
       if (c.t >= c.impact - 0.25 && fx.once('lift')) {
@@ -593,6 +793,10 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
 
 /** Adds a haul-back lean after the impact (the target is dragged in). */
 function hauled(m: Move, adv: number): Move {
-  const keys = m.keys.map((k) => (k.t > m.impact && k.t < m.impact + 0.4 ? { t: k.t, p: { ...k.p, x: adv - 0.2, lean: 0.25, sR: 1.1 } } : k));
+  const keys = m.keys.map((k) =>
+    k.t > m.impact && k.t < m.impact + 0.4
+      ? { t: k.t, p: { ...k.p, x: adv - 0.2, lean: 0.25, sR: 1.1 } }
+      : k,
+  );
   return { ...m, keys };
 }

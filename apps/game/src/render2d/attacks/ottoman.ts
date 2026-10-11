@@ -54,7 +54,15 @@ const X0 = (OFF * OFF + 1 - BITE * BITE) / (2 * OFF);
 const TH = Math.acos(X0);
 const PSI = Math.atan2(-Math.sin(TH), X0 - OFF);
 
-function fillCrescent(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, rot: number, color: string, alpha: number): void {
+function fillCrescent(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  r: number,
+  rot: number,
+  color: string,
+  alpha: number,
+): void {
   if (alpha <= 0.01) return;
   ctx.globalAlpha = Math.min(1, alpha);
   ctx.fillStyle = color;
@@ -70,7 +78,15 @@ function fillCrescent(ctx: CanvasRenderingContext2D, x: number, y: number, r: nu
 }
 
 /** Eight-pointed star (two squares) centred on x,y. */
-function fillStar8(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, rot: number, color: string, alpha: number): void {
+function fillStar8(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  r: number,
+  rot: number,
+  color: string,
+  alpha: number,
+): void {
   if (alpha <= 0.01) return;
   ctx.globalAlpha = Math.min(1, alpha);
   ctx.fillStyle = color;
@@ -86,7 +102,14 @@ function fillStar8(ctx: CanvasRenderingContext2D, x: number, y: number, r: numbe
 }
 
 /** Four-point glint. */
-function fillGlint(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, color: string, alpha: number): void {
+function fillGlint(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  r: number,
+  color: string,
+  alpha: number,
+): void {
   if (alpha <= 0.01) return;
   ctx.globalAlpha = Math.min(1, alpha);
   ctx.fillStyle = color;
@@ -103,7 +126,15 @@ function fillGlint(ctx: CanvasRenderingContext2D, x: number, y: number, r: numbe
  * A tughra-style flourish: three tall staves rising from a pair of linked loops, with a long
  * calligraphic tail. Original shapes only. `u` 0..1 draws it stroke by stroke.
  */
-function strokeTughra(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, u: number, color: string, alpha: number): void {
+function strokeTughra(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  s: number,
+  u: number,
+  color: string,
+  alpha: number,
+): void {
   if (alpha <= 0.01 || u <= 0) return;
   ctx.globalAlpha = Math.min(1, alpha);
   ctx.strokeStyle = color;
@@ -138,7 +169,14 @@ function strokeTughra(ctx: CanvasRenderingContext2D, x: number, y: number, s: nu
 }
 
 /** A licking tongue of flame with its base at bx,by. */
-function flameTongue(ctx: CanvasRenderingContext2D, bx: number, by: number, w: number, h: number, sway: number): void {
+function flameTongue(
+  ctx: CanvasRenderingContext2D,
+  bx: number,
+  by: number,
+  w: number,
+  h: number,
+  sway: number,
+): void {
   ctx.beginPath();
   ctx.moveTo(bx - w, by);
   ctx.quadraticCurveTo(bx - w * 0.7, by + h * 0.55, bx + sway, by + h);
@@ -148,7 +186,16 @@ function flameTongue(ctx: CanvasRenderingContext2D, bx: number, by: number, w: n
 }
 
 /** A spectral steed in side view, galloping toward +x (flip with `fd`). */
-function ghostHorse(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, phase: number, fd: number, color: string, alpha: number): void {
+function ghostHorse(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  s: number,
+  phase: number,
+  fd: number,
+  color: string,
+  alpha: number,
+): void {
   if (alpha <= 0.01) return;
   ctx.save();
   ctx.translate(x, y);
@@ -204,7 +251,17 @@ function ghostHorse(ctx: CanvasRenderingContext2D, x: number, y: number, s: numb
 // ───────────────────────────── shared effect helpers ─────────────────────────────
 
 /** A crescent moon that sweeps through angles `a0..a1` at `at`, growing and fading. */
-function moonSweep(c: FxContext, at: V2, r: number, a0: number, a1: number, life: number, main: string, accent: string, grow = 0.5): void {
+function moonSweep(
+  c: FxContext,
+  at: V2,
+  r: number,
+  a0: number,
+  a1: number,
+  life: number,
+  main: string,
+  accent: string,
+  grow = 0.5,
+): void {
   const f0 = face(a0, c.dir);
   const f1 = face(a1, c.dir);
   eng(c).layer('front', life, (ctx, k) => {
@@ -240,8 +297,24 @@ function guardCrack(c: FxContext, main: string, accent: string): void {
   const t = c.defender.anchors().tip;
   fx.layer('front', 0.35, (ctx, k) => {
     ctx.globalCompositeOperation = 'lighter';
-    fillCrescent(ctx, t.x - c.dir * 0.1 * k, t.y, 0.5 + 0.3 * k, face(Math.PI * 0.5 + 3 * k, c.dir), main, 1 - k);
-    fillCrescent(ctx, t.x + c.dir * 0.1 * k, t.y, 0.5 + 0.3 * k, face(-Math.PI * 0.5 - 3 * k, c.dir), accent, 1 - k);
+    fillCrescent(
+      ctx,
+      t.x - c.dir * 0.1 * k,
+      t.y,
+      0.5 + 0.3 * k,
+      face(Math.PI * 0.5 + 3 * k, c.dir),
+      main,
+      1 - k,
+    );
+    fillCrescent(
+      ctx,
+      t.x + c.dir * 0.1 * k,
+      t.y,
+      0.5 + 0.3 * k,
+      face(-Math.PI * 0.5 - 3 * k, c.dir),
+      accent,
+      1 - k,
+    );
   });
   fx.spark(t, { n: 10, color: accent, speed: 6, dir: Math.PI / 2, spread: 3 });
   fx.word({ x: t.x, y: t.y + 0.75 }, 'HOLD!', { color: main, size: 0.42, life: 0.6 });
@@ -266,7 +339,13 @@ function hoofRing(c: FxContext, color: string, radius: number, n = 1): void {
 }
 
 /** Spectral horse(s) racing along under/behind the attacker until contact. */
-function spiritSteeds(c: FxContext, count: number, main: string, accent: string, scale: number): void {
+function spiritSteeds(
+  c: FxContext,
+  count: number,
+  main: string,
+  accent: string,
+  scale: number,
+): void {
   const life = Math.max(0.3, c.impact);
   eng(c).layer('back', life + 0.15, (ctx, k) => {
     const f = c.attacker.anchors().feet;
@@ -275,13 +354,31 @@ function spiritSteeds(c: FxContext, count: number, main: string, accent: string,
     ctx.globalCompositeOperation = 'lighter';
     for (let i = count - 1; i >= 0; i--) {
       const lag = i * 0.55 * scale;
-      ghostHorse(ctx, f.x - c.dir * (0.1 + lag), 0.0 + i * 0.015, scale * (1 - i * 0.08), tt * 22 + i * 1.3, c.dir, i === 0 ? main : accent, fade * (0.6 - i * 0.12));
+      ghostHorse(
+        ctx,
+        f.x - c.dir * (0.1 + lag),
+        0.0 + i * 0.015,
+        scale * (1 - i * 0.08),
+        tt * 22 + i * 1.3,
+        c.dir,
+        i === 0 ? main : accent,
+        fade * (0.6 - i * 0.12),
+      );
     }
   });
 }
 
 /** Banner/pennant: a swallow-tailed crimson flag on a staff, flapping. */
-function pennant(ctx: CanvasRenderingContext2D, x: number, y: number, len: number, rot: number, phase: number, color: string, alpha: number): void {
+function pennant(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  len: number,
+  rot: number,
+  phase: number,
+  color: string,
+  alpha: number,
+): void {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(rot);
@@ -301,7 +398,13 @@ function pennant(ctx: CanvasRenderingContext2D, x: number, y: number, len: numbe
 }
 
 /** Flames licking over the defender's body for `life` seconds. */
-function burningBody(c: FxContext, life: number, outer: string, inner: string, tongues: number): void {
+function burningBody(
+  c: FxContext,
+  life: number,
+  outer: string,
+  inner: string,
+  tongues: number,
+): void {
   const e = eng(c);
   e.layer('front', life, (ctx, k) => {
     const a = c.defender.anchors();
@@ -334,7 +437,9 @@ function lobber(
   const fx = eng(c);
   const a = c.attacker.anchors();
   const d = c.defender.anchors();
-  const to: V2 = c.hit ? { x: d.chest.x - c.dir * 0.1, y: d.chest.y - 0.15 } : { x: d.feet.x + c.dir * 0.35, y: 0.18 };
+  const to: V2 = c.hit
+    ? { x: d.chest.x - c.dir * 0.1, y: d.chest.y - 0.15 }
+    : { x: d.feet.x + c.dir * 0.35, y: 0.18 };
   fx.sprite({
     from: { x: a.hand.x, y: a.hand.y + 0.1 },
     to,
@@ -352,9 +457,15 @@ const crescentSlash: AttackScript = {
   choreograph: (base) => {
     const first = base.keys[0]?.t ?? 0.3;
     const sp = strikePose(base);
-    let keys = insertKey(base.keys, { t: first * 0.5, p: { x: -0.28, lean: 0.3, sR: 2.5, eR: 0.7, wR: 0.2, hR: 0.5, kR: -0.8 } });
+    let keys = insertKey(base.keys, {
+      t: first * 0.5,
+      p: { x: -0.28, lean: 0.3, sR: 2.5, eR: 0.7, wR: 0.2, hR: 0.5, kR: -0.8 },
+    });
     // the draw-cut follows the curve of the blade: a flick after contact
-    keys = insertKey(keys, { t: base.impact + 0.12, p: { ...sp, sR: (sp.sR ?? 1.5) - 0.6, lean: (sp.lean ?? -0.3) * 0.6, spin: 0.35 } });
+    keys = insertKey(keys, {
+      t: base.impact + 0.12,
+      p: { ...sp, sR: (sp.sR ?? 1.5) - 0.6, lean: (sp.lean ?? -0.3) * 0.6, spin: 0.35 },
+    });
     return { ...base, keys };
   },
   start: (c) => eng(c).wash('#3a0812', 0.14, 0.7),
@@ -368,8 +479,22 @@ const crescentSlash: AttackScript = {
     if (c.t >= c.impact - 0.2 && fx.once('arcs')) {
       const ch = a;
       const at = { x: ch.chest.x + c.dir * 0.15, y: ch.chest.y + 0.3 };
-      fx.arc(at, { radius: 1.3, from: face(2.4, c.dir), to: face(-0.8, c.dir), width: 0.5, color: CRIMSON, life: 0.32 });
-      fx.arc(at, { radius: 1.1, from: face(2.3, c.dir), to: face(-0.7, c.dir), width: 0.22, color: GOLD, life: 0.28 });
+      fx.arc(at, {
+        radius: 1.3,
+        from: face(2.4, c.dir),
+        to: face(-0.8, c.dir),
+        width: 0.5,
+        color: CRIMSON,
+        life: 0.32,
+      });
+      fx.arc(at, {
+        radius: 1.1,
+        from: face(2.3, c.dir),
+        to: face(-0.7, c.dir),
+        width: 0.22,
+        color: GOLD,
+        life: 0.28,
+      });
       moonSweep(c, at, 0.8, 2.4, -0.6, 0.34, '#fff1c0', GOLD, 0.8);
     }
   },
@@ -383,15 +508,43 @@ const crescentSlash: AttackScript = {
       moonSweep(c, p, 1.25, 1.4, -1.6, 0.55, '#fff4c8', CRIMSON, 0.9);
       starPop(c, { x: p.x + c.dir * 0.2, y: p.y + 0.85 }, 0.55, 0.6, GOLD, 2);
       fx.burst(p, { n: 12, color: GOLD, length: 1.0, life: 0.34 });
-      fx.spark(p, { n: 16, color: CRIMSON, speed: 7, dir: face(0.4, c.dir), spread: 2.2, size: 0.04 });
-      fx.spark(p, { n: 8, color: '#fff4c8', speed: 9, dir: face(0.1, c.dir), spread: 0.6, size: 0.03 });
+      fx.spark(p, {
+        n: 16,
+        color: CRIMSON,
+        speed: 7,
+        dir: face(0.4, c.dir),
+        spread: 2.2,
+        size: 0.04,
+      });
+      fx.spark(p, {
+        n: 8,
+        color: '#fff4c8',
+        speed: 9,
+        dir: face(0.1, c.dir),
+        spread: 0.6,
+        size: 0.03,
+      });
       fx.ring(p, { color: GOLD, radius: 1.0, life: 0.4, width: 0.1 });
-      fx.word({ x: p.x - c.dir * 0.1, y: p.y + 0.85 }, 'HILAL!', { color: GOLD, size: 0.55, life: 0.85 });
+      fx.word({ x: p.x - c.dir * 0.1, y: p.y + 0.85 }, 'HILAL!', {
+        color: GOLD,
+        size: 0.55,
+        life: 0.85,
+      });
       fx.speedLines({ dir: face(0.3, c.dir), color: GOLD, life: 0.25, n: 14 });
     } else if (o === 'block') {
       guardCrack(c, GOLD, CRIMSON);
     } else {
-      moonSweep(c, { x: p.x + c.dir * 0.7, y: p.y + 0.1 }, 0.9, 1.0, -1.4, 0.5, rgba(GOLD, 0.8), CRIMSON, 0.4);
+      moonSweep(
+        c,
+        { x: p.x + c.dir * 0.7, y: p.y + 0.1 },
+        0.9,
+        1.0,
+        -1.4,
+        0.5,
+        rgba(GOLD, 0.8),
+        CRIMSON,
+        0.4,
+      );
       whiffWord(c, 'SWISH!', GOLD);
     }
   },
@@ -401,7 +554,15 @@ const crescentSlash: AttackScript = {
     fx.layer('front', 1.1, (ctx, k) => {
       ctx.globalCompositeOperation = 'lighter';
       const e = 1 - (1 - k) * (1 - k);
-      fillCrescent(ctx, p.x, p.y + 0.4 + e * 0.6, 1.9 + e * 0.5, Math.PI / 2 + e * 0.5, CRIMSON, (1 - k) * 0.55);
+      fillCrescent(
+        ctx,
+        p.x,
+        p.y + 0.4 + e * 0.6,
+        1.9 + e * 0.5,
+        Math.PI / 2 + e * 0.5,
+        CRIMSON,
+        (1 - k) * 0.55,
+      );
       fillStar8(ctx, p.x + c.dir * 0.5, p.y + 1.05 + e * 0.5, 0.5, k * 2, GOLD, (1 - k) * 0.9);
     });
   },
@@ -444,14 +605,35 @@ const janissaryOath: AttackScript = {
         ctx.fillStyle = '#e8f2ff';
         ctx.fillRect(ff.hand.x - 0.05, ff.hand.y, 0.1, 3.5);
         fillStar8(ctx, ff.hand.x, ff.hand.y + 0.9 + 0.2 * k, 0.28 + 0.4 * k, k * 3, GOLD, 0.9 * k);
-        fillCrescent(ctx, ff.hand.x, ff.hand.y + 0.9 + 0.2 * k, 0.75 * (0.6 + 0.5 * k), -Math.PI / 2 + k, '#cfe0ff', 0.7 * k);
+        fillCrescent(
+          ctx,
+          ff.hand.x,
+          ff.hand.y + 0.9 + 0.2 * k,
+          0.75 * (0.6 + 0.5 * k),
+          -Math.PI / 2 + k,
+          '#cfe0ff',
+          0.7 * k,
+        );
       });
     }
-    if ((Math.floor(c.t * 60) % 4) === 0) {
-      fx.spark({ x: f.x + (fx.rand() - 0.5) * 0.9, y: 0.05 }, { n: 1, color: GOLD, speed: 2.5 + 2 * u, dir: Math.PI / 2, spread: 0.4, size: 0.035 });
+    if (Math.floor(c.t * 60) % 4 === 0) {
+      fx.spark(
+        { x: f.x + (fx.rand() - 0.5) * 0.9, y: 0.05 },
+        { n: 1, color: GOLD, speed: 2.5 + 2 * u, dir: Math.PI / 2, spread: 0.4, size: 0.035 },
+      );
     }
     if (c.t >= c.impact - 0.2 && fx.once('smear')) {
-      eng(c).arc({ x: a.chest.x + c.dir * 0.15, y: a.chest.y + 0.5 }, { radius: 1.35, from: face(2.9, c.dir), to: face(-0.2, c.dir), width: 0.7, color: '#bcd6ff', life: 0.32 });
+      eng(c).arc(
+        { x: a.chest.x + c.dir * 0.15, y: a.chest.y + 0.5 },
+        {
+          radius: 1.35,
+          from: face(2.9, c.dir),
+          to: face(-0.2, c.dir),
+          width: 0.7,
+          color: '#bcd6ff',
+          life: 0.32,
+        },
+      );
     }
   },
   impactFx: (c) => {
@@ -505,7 +687,15 @@ const janissaryOath: AttackScript = {
     const p = hitPoint(c);
     eng(c).layer('front', 1.4, (ctx, k) => {
       ctx.globalCompositeOperation = 'lighter';
-      strokeTughra(ctx, p.x, p.y + 0.8, 1.5, Math.min(1, k * 2.2), GOLD, k < 0.7 ? 0.9 : (1 - k) / 0.3 * 0.9);
+      strokeTughra(
+        ctx,
+        p.x,
+        p.y + 0.8,
+        1.5,
+        Math.min(1, k * 2.2),
+        GOLD,
+        k < 0.7 ? 0.9 : ((1 - k) / 0.3) * 0.9,
+      );
     });
   },
 };
@@ -521,9 +711,15 @@ const twinMoons: AttackScript = {
       ...pre,
       // high cut, half a turn
       { t: t1, p: { ...sp, x: (sp.x ?? 0) * 0.8, sR: 2.2, eR: 0.2, lean: -0.2, spin: 0.9 } },
-      { t: t1 + 0.07, p: { ...sp, x: (sp.x ?? 0) * 0.9, sR: 1.7, eR: 0.3, lean: -0.15, spin: 1.7 } },
+      {
+        t: t1 + 0.07,
+        p: { ...sp, x: (sp.x ?? 0) * 0.9, sR: 1.7, eR: 0.3, lean: -0.15, spin: 1.7 },
+      },
       // low cut, back round
-      { t: i, p: { ...sp, y: -0.12, sR: 0.95, eR: 0.1, lean: -0.5, spin: -0.2, hR: 1.0, kR: -0.9 } },
+      {
+        t: i,
+        p: { ...sp, y: -0.12, sR: 0.95, eR: 0.1, lean: -0.5, spin: -0.2, hR: 1.0, kR: -0.9 },
+      },
       { t: i + 0.12, p: { ...sp, y: -0.1, sR: 0.8, lean: -0.4, spin: -0.4 } },
       { t: i + 0.5, p: {} },
     ];
@@ -533,14 +729,25 @@ const twinMoons: AttackScript = {
     const fx = eng(c);
     const a = c.attacker.anchors();
     const t1 = Math.max(0.12, c.impact - 0.22);
-    if (c.t < t1 && (Math.floor(c.t * 60) & 3) === 0) fx.glow(a.tip, { radius: 0.3, color: '#bfe0ff', life: 0.12 });
+    if (c.t < t1 && (Math.floor(c.t * 60) & 3) === 0)
+      fx.glow(a.tip, { radius: 0.3, color: '#bfe0ff', life: 0.12 });
     if (c.t >= t1 && fx.once('cut1')) {
       const at = { x: a.chest.x + c.dir * 0.35, y: a.chest.y + 0.5 };
       moonSweep(c, at, 0.95, 1.9, 0.1, 0.3, '#ffffff', '#7fb4ff', 0.5);
-      fx.arc(at, { radius: 1.2, from: face(2.4, c.dir), to: face(0.3, c.dir), width: 0.3, color: '#bfe0ff', life: 0.25 });
+      fx.arc(at, {
+        radius: 1.2,
+        from: face(2.4, c.dir),
+        to: face(0.3, c.dir),
+        width: 0.3,
+        color: '#bfe0ff',
+        life: 0.25,
+      });
       if (c.hit) {
         const p = hitPoint(c);
-        fx.spark({ x: p.x, y: p.y + 0.4 }, { n: 8, color: '#dff0ff', speed: 5, dir: face(0.8, c.dir), spread: 1.6 });
+        fx.spark(
+          { x: p.x, y: p.y + 0.4 },
+          { n: 8, color: '#dff0ff', speed: 5, dir: face(0.8, c.dir), spread: 1.6 },
+        );
         fx.word({ x: p.x, y: p.y + 1.1 }, 'ONE', { color: '#bfe0ff', size: 0.34, life: 0.45 });
         fx.shake(0.04, 0.8);
       }
@@ -558,13 +765,36 @@ const twinMoons: AttackScript = {
         ctx.globalCompositeOperation = 'lighter';
         const e = 1 - (1 - k) * (1 - k);
         const r = 0.8 + 0.5 * e;
-        fillCrescent(ctx, p.x, p.y + 0.1, r, face(0.75, c.dir) + e * 0.3, '#ffffff', (1 - k) * 0.95);
-        fillCrescent(ctx, p.x, p.y + 0.1, r, face(-0.75, c.dir) - e * 0.3, '#9cc8ff', (1 - k) * 0.95);
-        fillStar8(ctx, p.x, p.y + 0.1, 0.35 + 0.3 * e, k * 4, '#ffffff', (1 - k));
+        fillCrescent(
+          ctx,
+          p.x,
+          p.y + 0.1,
+          r,
+          face(0.75, c.dir) + e * 0.3,
+          '#ffffff',
+          (1 - k) * 0.95,
+        );
+        fillCrescent(
+          ctx,
+          p.x,
+          p.y + 0.1,
+          r,
+          face(-0.75, c.dir) - e * 0.3,
+          '#9cc8ff',
+          (1 - k) * 0.95,
+        );
+        fillStar8(ctx, p.x, p.y + 0.1, 0.35 + 0.3 * e, k * 4, '#ffffff', 1 - k);
       });
       fx.glow(p, { radius: 1.3, color: '#9cc8ff', life: 0.26 });
       fx.burst(p, { n: 14, color: '#dff0ff', length: 1.1, life: 0.32 });
-      fx.spark(p, { n: 16, color: '#bfe0ff', speed: 7, dir: face(0.4, c.dir), spread: 2.6, size: 0.035 });
+      fx.spark(p, {
+        n: 16,
+        color: '#bfe0ff',
+        speed: 7,
+        dir: face(0.4, c.dir),
+        spread: 2.6,
+        size: 0.035,
+      });
       fx.ring(p, { color: '#9cc8ff', radius: 1.1, life: 0.4, width: 0.08 });
       fx.word({ x: p.x, y: p.y + 1.0 }, 'TWIN!', { color: '#dff0ff', size: 0.58, life: 0.85 });
     } else if (o === 'block') {
@@ -579,7 +809,15 @@ const twinMoons: AttackScript = {
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 2; i++) {
         const sgn = i ? 1 : -1;
-        fillCrescent(ctx, p.x + sgn * k * 1.4, p.y + 0.8 + k * 0.5, 1.0, Math.PI / 2 + sgn * (0.5 + k), i ? '#ffffff' : '#9cc8ff', (1 - k) * 0.8);
+        fillCrescent(
+          ctx,
+          p.x + sgn * k * 1.4,
+          p.y + 0.8 + k * 0.5,
+          1.0,
+          Math.PI / 2 + sgn * (0.5 + k),
+          i ? '#ffffff' : '#9cc8ff',
+          (1 - k) * 0.8,
+        );
       }
     });
   },
@@ -591,7 +829,10 @@ const sultansEdge: AttackScript = {
     // a regal pause: the blade is drawn, held, then the perfect cut falls
     const first = base.keys[0]!;
     const hold = delayFrom(base, first.t + 0.01, 0.22);
-    const keys = insertKey(hold.keys, { t: first.t + 0.14, p: { ...first.p, lean: (first.p.lean ?? 0) + 0.08, sR: (first.p.sR ?? 1) + 0.15 } });
+    const keys = insertKey(hold.keys, {
+      t: first.t + 0.14,
+      p: { ...first.p, lean: (first.p.lean ?? 0) + 0.08, sR: (first.p.sR ?? 1) + 0.15 },
+    });
     return { ...hold, keys };
   },
   start: (c) => eng(c).wash('#4a0c1a', 0.24, Math.max(0.7, c.impact)),
@@ -604,12 +845,27 @@ const sultansEdge: AttackScript = {
         const ff = c.attacker.anchors();
         ctx.globalCompositeOperation = 'lighter';
         const fade = k < 0.85 ? 1 : (1 - k) / 0.15;
-        strokeTughra(ctx, ff.chest.x - c.dir * 0.2, ff.head.y + 0.55, 1.15, Math.min(1, k * 1.3), GOLD, 0.8 * fade);
+        strokeTughra(
+          ctx,
+          ff.chest.x - c.dir * 0.2,
+          ff.head.y + 0.55,
+          1.15,
+          Math.min(1, k * 1.3),
+          GOLD,
+          0.8 * fade,
+        );
       });
     }
     if ((Math.floor(c.t * 60) & 1) === 0) {
       fx.glow(a.tip, { radius: 0.4, color: GOLD, life: 0.1 });
-      fx.spark(a.tip, { n: 1, color: '#fff4c8', speed: 2, dir: Math.PI / 2, spread: 3.2, size: 0.03 });
+      fx.spark(a.tip, {
+        n: 1,
+        color: '#fff4c8',
+        speed: 2,
+        dir: Math.PI / 2,
+        spread: 3.2,
+        size: 0.03,
+      });
     }
     // the world slows just before the cut
     if (c.t >= c.impact - 0.2 && fx.once('hush')) {
@@ -648,14 +904,29 @@ const sultansEdge: AttackScript = {
         // seam glints where the blade finds the joints
         for (let i = 0; i < 3; i++) {
           const gu = 0.25 + i * 0.25;
-          if (u > gu) fillGlint(ctx, x0 + Math.cos(ang) * reach * gu, y0 + Math.sin(ang) * reach * gu, 0.28 + 0.1 * i, '#ffffff', (1 - k) * 1.2);
+          if (u > gu)
+            fillGlint(
+              ctx,
+              x0 + Math.cos(ang) * reach * gu,
+              y0 + Math.sin(ang) * reach * gu,
+              0.28 + 0.1 * i,
+              '#ffffff',
+              (1 - k) * 1.2,
+            );
         }
       });
       fx.impactFrame(0.05);
       fx.glow(p, { radius: 1.8, color: GOLD, life: 0.32 });
       fx.burst(p, { n: 14, color: GOLD, length: 1.4, life: 0.4 });
       fx.spark(p, { n: 22, color: GOLD, speed: 9, dir: face(0.4, c.dir), spread: 2, size: 0.04 });
-      fx.spark(p, { n: 10, color: '#ffffff', speed: 11, dir: face(0.42, c.dir), spread: 0.3, size: 0.03 });
+      fx.spark(p, {
+        n: 10,
+        color: '#ffffff',
+        speed: 11,
+        dir: face(0.42, c.dir),
+        spread: 0.3,
+        size: 0.03,
+      });
       fx.ring(p, { color: GOLD, radius: 1.3, life: 0.45, width: 0.1 });
       fx.word({ x: p.x, y: p.y + 1.0 }, 'SULTAN!', { color: GOLD, size: 0.7, life: 1.0 });
       fx.punch(p, 1.18, 0.55);
@@ -681,7 +952,15 @@ const sultansEdge: AttackScript = {
     const p = hitPoint(c);
     eng(c).layer('front', 1.6, (ctx, k) => {
       ctx.globalCompositeOperation = 'lighter';
-      strokeTughra(ctx, p.x, p.y + 1.1, 2.0, Math.min(1, k * 2), GOLD, k < 0.75 ? 0.95 : (1 - k) / 0.25 * 0.95);
+      strokeTughra(
+        ctx,
+        p.x,
+        p.y + 1.1,
+        2.0,
+        Math.min(1, k * 2),
+        GOLD,
+        k < 0.75 ? 0.95 : ((1 - k) / 0.25) * 0.95,
+      );
       fillStar8(ctx, p.x, p.y + 0.5, 0.8 + k, k * 1.5, CRIMSON, (1 - k) * 0.5);
     });
   },
@@ -729,11 +1008,20 @@ function bigMuzzle(c: FxContext, main: string, accent: string): V2 {
   return at;
 }
 
-function tracerTo(c: FxContext, from: V2, life: number, color: string, aimY: number, onEnd?: () => void): void {
+function tracerTo(
+  c: FxContext,
+  from: V2,
+  life: number,
+  color: string,
+  aimY: number,
+  onEnd?: () => void,
+): void {
   const fx = eng(c);
   const d = c.defender.anchors();
   const hitMode = c.hit || c.reaction === 'defend';
-  const to: V2 = hitMode ? { x: d.chest.x - c.dir * 0.12, y: d.chest.y + aimY } : { x: d.chest.x + c.dir * 0.5, y: d.chest.y + aimY + 0.4 };
+  const to: V2 = hitMode
+    ? { x: d.chest.x - c.dir * 0.12, y: d.chest.y + aimY }
+    : { x: d.chest.x + c.dir * 0.5, y: d.chest.y + aimY + 0.4 };
   fx.sprite({
     from,
     to,
@@ -762,7 +1050,10 @@ const steadyVolley: AttackScript = {
   choreograph: (base) => {
     // a brace: settle one step, breathe, then the shot
     const k0 = base.keys[0]!;
-    return { ...base, keys: insertKey(base.keys, { t: k0.t * 0.5, p: { x: -0.1, lean: 0.12, sR: 1.1, sL: 1.2 } }) };
+    return {
+      ...base,
+      keys: insertKey(base.keys, { t: k0.t * 0.5, p: { x: -0.1, lean: 0.12, sR: 1.1, sL: 1.2 } }),
+    };
   },
   start: (c) => {
     reticle(c, GOLD, '#7fa6ff', 1.3, 0.38);
@@ -772,7 +1063,11 @@ const steadyVolley: AttackScript = {
     const fx = eng(c);
     if (c.t >= c.impact - 0.12 && fx.once('fire')) {
       const m = bigMuzzle(c, '#ffe9a0', GOLD);
-      fx.word({ x: m.x + c.dir * 0.6, y: m.y + 0.6 }, 'FIRE!', { color: GOLD, size: 0.42, life: 0.5 });
+      fx.word({ x: m.x + c.dir * 0.6, y: m.y + 0.6 }, 'FIRE!', {
+        color: GOLD,
+        size: 0.42,
+        life: 0.5,
+      });
       fx.shake(0.05, 0.85);
       tracerTo(c, m, 0.12, GOLD, 0);
     }
@@ -789,7 +1084,15 @@ const steadyVolley: AttackScript = {
       fx.layer('front', 0.4, (ctx, k) => {
         ctx.globalCompositeOperation = 'lighter';
         fillCrescent(ctx, p.x, p.y, 0.4 + 0.5 * k, face(Math.PI * 0.5, c.dir) + 2 * k, GOLD, 1 - k);
-        fillCrescent(ctx, p.x, p.y, 0.4 + 0.5 * k, face(-Math.PI * 0.5, c.dir) + 2 * k, '#ffffff', 1 - k);
+        fillCrescent(
+          ctx,
+          p.x,
+          p.y,
+          0.4 + 0.5 * k,
+          face(-Math.PI * 0.5, c.dir) + 2 * k,
+          '#ffffff',
+          1 - k,
+        );
       });
       fx.word({ x: p.x, y: p.y + 0.8 }, 'POW!', { color: GOLD, size: 0.55, life: 0.75 });
     } else if (o === 'block') {
@@ -825,12 +1128,16 @@ const rollingFire: AttackScript = {
     const fx = eng(c);
     const fire = c.impact - 0.3;
     // the drum of the mehter: pulses under the feet while the first shot is prepared
-    if (c.t > 0.15 && c.t < fire && (Math.floor(c.t * 60) % 9) === 0) hoofRing(c, '#ff9a5a', 0.7, 0);
+    if (c.t > 0.15 && c.t < fire && Math.floor(c.t * 60) % 9 === 0) hoofRing(c, '#ff9a5a', 0.7, 0);
     if (c.t >= fire && fx.once('s1')) {
       const m = bigMuzzle(c, '#ffd0a0', '#ff9a5a');
       tracerTo(c, m, 0.12, '#ff9a5a', 0.1);
       fx.shake(0.05, 0.85);
-      fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'BANG', { color: '#ffb36b', size: 0.36, life: 0.45 });
+      fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'BANG', {
+        color: '#ffb36b',
+        size: 0.36,
+        life: 0.45,
+      });
       if (c.hit) {
         const p = hitPoint(c);
         fx.spark(p, { n: 8, color: '#ffb36b', speed: 5, dir: face(0.3, c.dir), spread: 2 });
@@ -841,7 +1148,11 @@ const rollingFire: AttackScript = {
       const m = bigMuzzle(c, '#fff0c0', CRIMSON);
       tracerTo(c, m, 0.1, CRIMSON, -0.3);
       fx.shake(0.06, 0.85);
-      fx.word({ x: m.x + c.dir * 0.7, y: m.y + 0.8 }, 'BANG!', { color: '#ff8a5a', size: 0.46, life: 0.5 });
+      fx.word({ x: m.x + c.dir * 0.7, y: m.y + 0.8 }, 'BANG!', {
+        color: '#ff8a5a',
+        size: 0.46,
+        life: 0.5,
+      });
     }
   },
   impactFx: (c) => {
@@ -850,8 +1161,15 @@ const rollingFire: AttackScript = {
     const p = hitPoint(c);
     const a = c.attacker.anchors().feet;
     // a rolling bank of smoke along the ground between the two
-    fx.ring({ x: a.x + c.dir * 0.8, y: 0.03 }, { color: '#d8c2b0', radius: 1.6, life: 0.6, width: 0.1, flat: 0.2 });
-    for (let i = 0; i < 4; i++) fx.smoke({ x: a.x + c.dir * (0.6 + i * 0.5), y: 0.25 }, { n: 2, size: 0.26, rise: 0.25, color: '#b9aeb4' });
+    fx.ring(
+      { x: a.x + c.dir * 0.8, y: 0.03 },
+      { color: '#d8c2b0', radius: 1.6, life: 0.6, width: 0.1, flat: 0.2 },
+    );
+    for (let i = 0; i < 4; i++)
+      fx.smoke(
+        { x: a.x + c.dir * (0.6 + i * 0.5), y: 0.25 },
+        { n: 2, size: 0.26, rise: 0.25, color: '#b9aeb4' },
+      );
     if (o === 'hit') {
       fx.glow(p, { radius: 1.3, color: '#ffb36b', life: 0.24 });
       fx.burst(p, { n: 14, color: '#ff9a5a', length: 1.1, life: 0.32 });
@@ -882,7 +1200,14 @@ const rollingFire: AttackScript = {
       ctx.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 6; i++) {
         const u = Math.max(0, Math.min(1, k * 1.5 - i * 0.1));
-        fillGlint(ctx, p.x + (i - 2.5) * 0.35, p.y + 0.4 + (i % 2) * 0.5, 0.25 + u * 0.2, '#ffd0a0', (1 - u) * (u > 0 ? 1 : 0));
+        fillGlint(
+          ctx,
+          p.x + (i - 2.5) * 0.35,
+          p.y + 0.4 + (i % 2) * 0.5,
+          0.25 + u * 0.2,
+          '#ffd0a0',
+          (1 - u) * (u > 0 ? 1 : 0),
+        );
       }
     });
   },
@@ -892,7 +1217,7 @@ const ortaMarksman: AttackScript = {
   palette: { main: '#ffe28a', accent: '#3fb0d8', dark: '#0a2230' },
   choreograph: (base) => {
     // the long barrel is laid on the target: hold the aim before the trigger
-    const hold = delayFrom(base, (base.keys[1]?.t ?? 0.4), 0.45);
+    const hold = delayFrom(base, base.keys[1]?.t ?? 0.4, 0.45);
     return hold;
   },
   start: (c) => {
@@ -917,7 +1242,11 @@ const ortaMarksman: AttackScript = {
       fx.speedLines({ dir: dirAngle(c), color: '#bff0ff', life: 0.18, n: 22 });
       fx.shake(0.07, 0.85);
       tracerTo(c, m, 0.1, '#7fe0ff', 0.25);
-      fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.6 }, 'CRACK!', { color: '#ffe28a', size: 0.46, life: 0.55 });
+      fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.6 }, 'CRACK!', {
+        color: '#ffe28a',
+        size: 0.46,
+        life: 0.55,
+      });
     }
   },
   impactFx: (c) => {
@@ -929,7 +1258,14 @@ const ortaMarksman: AttackScript = {
       const exit = { x: p.x + c.dir * 0.9, y: p.y + 0.25 };
       fx.glow(p, { radius: 1.2, color: '#fff1c0', life: 0.22 });
       fx.burst(p, { n: 10, color: '#ffe28a', length: 0.9, life: 0.3 });
-      fx.spark(exit, { n: 18, color: '#7fe0ff', speed: 10, dir: face(0.1, c.dir) + (c.dir === 1 ? 0 : 0), spread: 0.5, size: 0.035 });
+      fx.spark(exit, {
+        n: 18,
+        color: '#7fe0ff',
+        speed: 10,
+        dir: face(0.1, c.dir) + (c.dir === 1 ? 0 : 0),
+        spread: 0.5,
+        size: 0.035,
+      });
       fx.layer('front', 0.5, (ctx, k) => {
         ctx.globalCompositeOperation = 'lighter';
         // a narrow line of light through the body and a bullseye of rings
@@ -966,7 +1302,16 @@ const ortaMarksman: AttackScript = {
     const p = hitPoint(c);
     eng(c).layer('front', 1.0, (ctx, k) => {
       ctx.globalCompositeOperation = 'lighter';
-      for (let i = 0; i < 3; i++) fillCrescent(ctx, p.x, p.y + 0.3, 0.5 + k * (0.9 + i * 0.4), Math.PI / 2 + i * 0.4, '#7fe0ff', (1 - k) * 0.5);
+      for (let i = 0; i < 3; i++)
+        fillCrescent(
+          ctx,
+          p.x,
+          p.y + 0.3,
+          0.5 + k * (0.9 + i * 0.4),
+          Math.PI / 2 + i * 0.4,
+          '#7fe0ff',
+          (1 - k) * 0.5,
+        );
     });
   },
 };
@@ -984,19 +1329,32 @@ const sipahiCharge: AttackScript = {
     fx.layer('front', Math.max(0.3, c.impact), (ctx, k) => {
       const a = c.attacker.anchors();
       ctx.globalCompositeOperation = 'source-over';
-      pennant(ctx, a.tip.x - c.dir * 0.45, a.tip.y + 0.02, 0.6 * c.dir, c.dir === 1 ? 0 : 0, k * 40, CRIMSON, Math.min(1, k * 5));
+      pennant(
+        ctx,
+        a.tip.x - c.dir * 0.45,
+        a.tip.y + 0.02,
+        0.6 * c.dir,
+        c.dir === 1 ? 0 : 0,
+        k * 40,
+        CRIMSON,
+        Math.min(1, k * 5),
+      );
     });
   },
   windup: (c) => {
     const fx = eng(c);
     const beat = Math.floor(c.t * 14);
-    if (c.t > 0.2 && beat !== lastBeat(c) && fx.once(`beat${beat}`)) hoofRing(c, '#e7c88a', 0.55, 2);
+    if (c.t > 0.2 && beat !== lastBeat(c) && fx.once(`beat${beat}`))
+      hoofRing(c, '#e7c88a', 0.55, 2);
   },
   impactFx: (c) => {
     const fx = eng(c);
     const o = outcomeOf(c);
     const d = c.defender.anchors();
-    fx.ring({ x: d.feet.x - c.dir * 0.3, y: 0.03 }, { color: '#e8d4a0', radius: 2.6, life: 0.6, width: 0.14, flat: 0.25 });
+    fx.ring(
+      { x: d.feet.x - c.dir * 0.3, y: 0.03 },
+      { color: '#e8d4a0', radius: 2.6, life: 0.6, width: 0.14, flat: 0.25 },
+    );
     fx.dust({ x: d.feet.x - c.dir * 0.4, y: 0 }, { n: 18, size: 0.26 });
     if (o === 'hit') {
       const p = hitPoint(c);
@@ -1006,7 +1364,16 @@ const sipahiCharge: AttackScript = {
       // the lance pennant is flung loose and flutters away, with a crescent flash
       fx.layer('front', 0.8, (ctx, k) => {
         ctx.globalCompositeOperation = 'source-over';
-        pennant(ctx, p.x - c.dir * 0.2 + c.dir * k * 1.2, p.y + 0.5 + k * 0.9, 0.7 * c.dir, -0.4 * c.dir + k * 3, k * 30, CRIMSON, 1 - k);
+        pennant(
+          ctx,
+          p.x - c.dir * 0.2 + c.dir * k * 1.2,
+          p.y + 0.5 + k * 0.9,
+          0.7 * c.dir,
+          -0.4 * c.dir + k * 3,
+          k * 30,
+          CRIMSON,
+          1 - k,
+        );
         ctx.globalCompositeOperation = 'lighter';
         fillCrescent(ctx, p.x, p.y, 1.1 * (0.5 + k), face(0.3, c.dir), GOLD, (1 - k) * 0.8);
       });
@@ -1023,7 +1390,17 @@ const sipahiCharge: AttackScript = {
     const p = hitPoint(c);
     eng(c).layer('front', 1.0, (ctx, k) => {
       ctx.globalCompositeOperation = 'source-over';
-      for (let i = 0; i < 3; i++) pennant(ctx, p.x + (i - 1) * 0.5, p.y + 0.4 + k * (1.1 + i * 0.3), 0.6, -0.6 + i * 0.6 + k * 2, k * 30 + i, i === 1 ? GOLD : CRIMSON, 1 - k);
+      for (let i = 0; i < 3; i++)
+        pennant(
+          ctx,
+          p.x + (i - 1) * 0.5,
+          p.y + 0.4 + k * (1.1 + i * 0.3),
+          0.6,
+          -0.6 + i * 0.6 + k * 2,
+          k * 30 + i,
+          i === 1 ? GOLD : CRIMSON,
+          1 - k,
+        );
     });
   },
 };
@@ -1042,7 +1419,19 @@ const lanceFeint: AttackScript = {
     const keys: Key[] = [
       { t: dip * 0.5, p: { ...k0.p, y: -0.1, sR: 0.3, eR: 0.5, wR: 0.2, lean: 0.12 } },
       // the feint: the point dips low and the body commits down...
-      { t: dip, p: { x: (k0.p.x ?? 0) + 0.15, y: -0.25, sR: 0.15, eR: 0.5, wR: 0.1, lean: -0.3, hR: 0.9, kR: -1.2 } },
+      {
+        t: dip,
+        p: {
+          x: (k0.p.x ?? 0) + 0.15,
+          y: -0.25,
+          sR: 0.15,
+          eR: 0.5,
+          wR: 0.1,
+          lean: -0.3,
+          hR: 0.9,
+          kR: -1.2,
+        },
+      },
       // ...then snaps up and darts high
       ...base.keys.filter((k) => k.t > dip + 0.06),
     ];
@@ -1071,11 +1460,18 @@ const lanceFeint: AttackScript = {
         ctx.stroke();
         ctx.setLineDash([]);
       });
-      fx.word({ x: a.tip.x + c.dir * 0.6, y: 0.75 }, 'FEINT!', { color: '#9cc0ff', size: 0.38, life: 0.5 });
+      fx.word({ x: a.tip.x + c.dir * 0.6, y: 0.75 }, 'FEINT!', {
+        color: '#9cc0ff',
+        size: 0.38,
+        life: 0.5,
+      });
       fx.dust({ x: a.tip.x + c.dir * 0.4, y: 0 }, { n: 3 });
       if (c.hit || c.reaction === 'avoid') {
         // the defender is lured low
-        fx.spark({ x: d.chest.x, y: 0.5 }, { n: 4, color: '#9cc0ff', speed: 3, dir: Math.PI / 2, spread: 2 });
+        fx.spark(
+          { x: d.chest.x, y: 0.5 },
+          { n: 4, color: '#9cc0ff', speed: 3, dir: Math.PI / 2, spread: 2 },
+        );
       }
     }
     if (c.t >= c.impact - 0.14 && fx.once('dart')) {
@@ -1092,7 +1488,12 @@ const lanceFeint: AttackScript = {
         const ex = d.chest.x - c.dir * 0.1;
         ctx.beginPath();
         ctx.moveTo(sx, 0.3);
-        ctx.quadraticCurveTo(sx + (ex - sx) * 0.4, 0.2, sx + (ex - sx) * u, 0.3 + (d.head.y - 0.3) * u * u);
+        ctx.quadraticCurveTo(
+          sx + (ex - sx) * 0.4,
+          0.2,
+          sx + (ex - sx) * u,
+          0.3 + (d.head.y - 0.3) * u * u,
+        );
         ctx.stroke();
       });
       fx.speedLines({ dir: dirAngle(c), color: '#bfe0ff', life: 0.2, n: 14 });
@@ -1111,13 +1512,25 @@ const lanceFeint: AttackScript = {
         ctx.globalCompositeOperation = 'lighter';
         fillGlint(ctx, p.x, p.y, 0.6 + 0.4 * k, '#ffffff', 1 - k);
         // chevron arrowheads fanning from the point of impact
-        for (let i = -1; i <= 1; i += 2) fillCrescent(ctx, p.x, p.y, 0.45 + 0.5 * k, face(i * 0.9, c.dir) + i * k, GOLD, (1 - k) * 0.9);
+        for (let i = -1; i <= 1; i += 2)
+          fillCrescent(
+            ctx,
+            p.x,
+            p.y,
+            0.45 + 0.5 * k,
+            face(i * 0.9, c.dir) + i * k,
+            GOLD,
+            (1 - k) * 0.9,
+          );
       });
       fx.word({ x: p.x, y: p.y + 0.8 }, 'GOTCHA!', { color: GOLD, size: 0.52, life: 0.8 });
     } else if (o === 'block' || o === 'counter') {
       guardCrack(c, '#bfe0ff', GOLD);
     } else {
-      fx.spark({ x: d.chest.x, y: d.head.y }, { n: 6, color: '#bfe0ff', speed: 4, dir: face(0.2, c.dir), spread: 1.4 });
+      fx.spark(
+        { x: d.chest.x, y: d.head.y },
+        { n: 6, color: '#bfe0ff', speed: 4, dir: face(0.2, c.dir), spread: 1.4 },
+      );
       whiffWord(c, 'TOO SLOW!', '#bfe0ff');
     }
   },
@@ -1155,7 +1568,19 @@ const thunderOfHooves: AttackScript = {
     const gx = d.feet.x - c.dir * 0.3;
     // a wall of dust and three rings rolling out, one per hoofbeat
     fx.dust({ x: gx, y: 0 }, { n: 24, size: 0.32 });
-    for (let i = 0; i < 3; i++) fx.later(i * 0.09, () => fx.ring({ x: gx, y: 0.03 }, { color: i === 1 ? '#5a86ff' : '#f2d890', radius: 2.2 + i * 0.9, life: 0.6, width: 0.15, flat: 0.22 }));
+    for (let i = 0; i < 3; i++)
+      fx.later(i * 0.09, () =>
+        fx.ring(
+          { x: gx, y: 0.03 },
+          {
+            color: i === 1 ? '#5a86ff' : '#f2d890',
+            radius: 2.2 + i * 0.9,
+            life: 0.6,
+            width: 0.15,
+            flat: 0.22,
+          },
+        ),
+      );
     // lightning bolt out of the sky
     const bolt = [0, 0.1, -0.15, 0.2, -0.1, 0.12, 0];
     fx.layer('front', 0.4, (ctx, k) => {
@@ -1163,11 +1588,12 @@ const thunderOfHooves: AttackScript = {
       ctx.strokeStyle = '#ffffff';
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
-      ctx.globalAlpha = (1 - k) * (((Math.floor(k * 14)) & 1) ? 0.6 : 1);
+      ctx.globalAlpha = (1 - k) * (Math.floor(k * 14) & 1 ? 0.6 : 1);
       ctx.lineWidth = 0.14 * (1 - k) + 0.03;
       ctx.beginPath();
       ctx.moveTo(d.chest.x + bolt[0]!, 5);
-      for (let i = 1; i < bolt.length; i++) ctx.lineTo(d.chest.x + bolt[i]! * 2, 5 - (i * 5) / (bolt.length - 1));
+      for (let i = 1; i < bolt.length; i++)
+        ctx.lineTo(d.chest.x + bolt[i]! * 2, 5 - (i * 5) / (bolt.length - 1));
       ctx.stroke();
       ctx.strokeStyle = '#7fa0ff';
       ctx.lineWidth = 0.4 * (1 - k);
@@ -1183,7 +1609,12 @@ const thunderOfHooves: AttackScript = {
       fx.spark(p, { n: 30, color: '#ffe28a', speed: 10, dir: face(0.4, c.dir), spread: 2.6 });
       fx.speedLines({ color: '#ffffff', life: 0.35, n: 44 });
       fx.punch(p, 1.2, 0.6);
-      fx.word({ x: p.x, y: p.y + 1.1 }, 'THUNDER!', { color: GOLD, size: 0.85, life: 1.1, rot: -0.08 });
+      fx.word({ x: p.x, y: p.y + 1.1 }, 'THUNDER!', {
+        color: GOLD,
+        size: 0.85,
+        life: 1.1,
+        rot: -0.08,
+      });
       // exhausted: dizzy stars and sweat drops circle the head
       fx.layer('front', 1.4, (ctx, k) => {
         const h = c.defender.anchors().head;
@@ -1191,7 +1622,15 @@ const thunderOfHooves: AttackScript = {
         const fade = k < 0.7 ? 1 : (1 - k) / 0.3;
         for (let i = 0; i < 4; i++) {
           const a = k * 8 + (i * TAU) / 4;
-          fillStar8(ctx, h.x + Math.cos(a) * 0.45, h.y + 0.5 + Math.sin(a) * 0.12, 0.13, a * 2, '#ffe28a', fade * 0.9);
+          fillStar8(
+            ctx,
+            h.x + Math.cos(a) * 0.45,
+            h.y + 0.5 + Math.sin(a) * 0.12,
+            0.13,
+            a * 2,
+            '#ffe28a',
+            fade * 0.9,
+          );
         }
         ctx.globalAlpha = fade * 0.7;
         ctx.fillStyle = '#9cc0ff';
@@ -1211,7 +1650,7 @@ const thunderOfHooves: AttackScript = {
   follow: (c) => {
     const fx = eng(c);
     // dust cloud rolling on past the impact
-    if (c.t < c.impact + 0.5 && (Math.floor(c.t * 60) % 5) === 0) {
+    if (c.t < c.impact + 0.5 && Math.floor(c.t * 60) % 5 === 0) {
       const d = c.defender.anchors().feet;
       fx.dust({ x: d.x - c.dir * (0.3 - (c.t - c.impact)), y: 0 }, { n: 1, size: 0.3 });
     }
@@ -1220,7 +1659,16 @@ const thunderOfHooves: AttackScript = {
     const p = hitPoint(c);
     eng(c).layer('front', 1.2, (ctx, k) => {
       ctx.globalCompositeOperation = 'lighter';
-      ghostHorse(ctx, p.x - c.dir * (1.8 - 4 * k), 0, 1.4, k * 24, c.dir, '#ffe28a', (1 - k) * 0.55);
+      ghostHorse(
+        ctx,
+        p.x - c.dir * (1.8 - 4 * k),
+        0,
+        1.4,
+        k * 24,
+        c.dir,
+        '#ffe28a',
+        (1 - k) * 0.55,
+      );
     });
   },
 };
@@ -1233,7 +1681,11 @@ const firePot: AttackScript = {
     const fx = eng(c);
     const a = c.attacker.anchors();
     // the wick is lit: a lit flicker in the hand
-    if (c.t < c.impact - 0.45 && (Math.floor(c.t * 60) & 3) === 0) fx.spark({ x: a.hand.x, y: a.hand.y + 0.2 }, { n: 1, color: '#ffcf5a', speed: 2, dir: Math.PI / 2, spread: 2.5, size: 0.03 });
+    if (c.t < c.impact - 0.45 && (Math.floor(c.t * 60) & 3) === 0)
+      fx.spark(
+        { x: a.hand.x, y: a.hand.y + 0.2 },
+        { n: 1, color: '#ffcf5a', speed: 2, dir: Math.PI / 2, spread: 2.5, size: 0.03 },
+      );
     if (c.t >= c.impact - 0.45 && fx.once('lob')) {
       lobber(
         c,
@@ -1254,7 +1706,10 @@ const firePot: AttackScript = {
         },
         (p, k) => {
           const fx2 = eng(c);
-          fx2.spark({ x: p.x, y: p.y + 0.2 }, { n: 2, color: '#ffb347', speed: 2.5, dir: Math.PI / 2, spread: 2.4, size: 0.035 });
+          fx2.spark(
+            { x: p.x, y: p.y + 0.2 },
+            { n: 2, color: '#ffb347', speed: 2.5, dir: Math.PI / 2, spread: 2.4, size: 0.035 },
+          );
           if (k > 0.2 && (Math.floor(k * 40) & 3) === 0) fx2.ember({ x: p.x, y: p.y }, { n: 1 });
         },
       );
@@ -1270,7 +1725,10 @@ const firePot: AttackScript = {
     fx.ring(at, { color: '#ffd37a', radius: 1.6, life: 0.4, width: 0.12 });
     // clay shards fly out, fat tongues of naphtha flame splash up
     for (let i = 0; i < 9; i++) {
-      const to = { x: at.x + (fx.rand() - 0.5) * 3.2, y: Math.max(0.05, at.y + (fx.rand() - 0.2) * 1.8) };
+      const to = {
+        x: at.x + (fx.rand() - 0.5) * 3.2,
+        y: Math.max(0.05, at.y + (fx.rand() - 0.2) * 1.8),
+      };
       const sz = 0.05 + fx.rand() * 0.05;
       fx.sprite({
         from: at,
@@ -1305,7 +1763,12 @@ const firePot: AttackScript = {
     fx.spark(at, { n: 22, color: '#ffb347', speed: 8, size: 0.045 });
     fx.ember(at, { n: 12 });
     fx.smoke(at, { n: 5, size: 0.24, rise: 0.8, color: '#2a2220' });
-    fx.word({ x: at.x, y: at.y + 1.2 }, 'FWOOSH!', { color: '#ffb347', size: 0.62, life: 0.9, rot: -0.1 });
+    fx.word({ x: at.x, y: at.y + 1.2 }, 'FWOOSH!', {
+      color: '#ffb347',
+      size: 0.62,
+      life: 0.9,
+      rot: -0.1,
+    });
     fx.shake(0.14, 0.88);
     fx.wash('#ff7a1a', 0.2, 0.5);
     if (o === 'hit') burningBody(c, 1.1, '#ff5a1a', '#ffd37a', 6);
@@ -1319,7 +1782,15 @@ const firePot: AttackScript = {
       const e = 1 - (1 - k) * (1 - k);
       ctx.globalAlpha = (1 - k) * 0.8;
       ctx.fillStyle = '#ff7a1a';
-      for (let i = 0; i < 5; i++) flameTongue(ctx, p.x + (i - 2) * 0.35, 0.1, 0.22, 1.2 + e * 1.4 - Math.abs(i - 2) * 0.25, Math.sin(k * 14 + i) * 0.1);
+      for (let i = 0; i < 5; i++)
+        flameTongue(
+          ctx,
+          p.x + (i - 2) * 0.35,
+          0.1,
+          0.22,
+          1.2 + e * 1.4 - Math.abs(i - 2) * 0.25,
+          Math.sin(k * 14 + i) * 0.1,
+        );
     });
   },
 };
@@ -1354,8 +1825,12 @@ const smokeAndIron: AttackScript = {
         },
         (p, k) => {
           const f = eng(c);
-          f.spark({ x: p.x, y: p.y + 0.22 }, { n: 2, color: '#ffb04a', speed: 3, dir: Math.PI / 2, spread: 3, size: 0.03 });
-          if ((Math.floor(k * 50) & 3) === 0) f.smoke({ x: p.x, y: p.y }, { n: 1, size: 0.1, rise: 0.25, color: '#9aa4bc' });
+          f.spark(
+            { x: p.x, y: p.y + 0.22 },
+            { n: 2, color: '#ffb04a', speed: 3, dir: Math.PI / 2, spread: 3, size: 0.03 },
+          );
+          if ((Math.floor(k * 50) & 3) === 0)
+            f.smoke({ x: p.x, y: p.y }, { n: 1, size: 0.1, rise: 0.25, color: '#9aa4bc' });
         },
         1.3,
       );
@@ -1411,11 +1886,22 @@ const smokeAndIron: AttackScript = {
         const a = (i / 7) * TAU;
         ctx.globalAlpha = fade * 0.42;
         ctx.beginPath();
-        ctx.arc(at.x + Math.cos(a) * 0.75 * e, at.y + 0.2 + Math.sin(a) * 0.5 * e + k * 0.5, 0.45 + 0.4 * e, 0, TAU);
+        ctx.arc(
+          at.x + Math.cos(a) * 0.75 * e,
+          at.y + 0.2 + Math.sin(a) * 0.5 * e + k * 0.5,
+          0.45 + 0.4 * e,
+          0,
+          TAU,
+        );
         ctx.fill();
       }
     });
-    fx.word({ x: at.x, y: at.y + 1.2 }, 'KABOOM!', { color: '#ffb04a', size: 0.7, life: 1.0, rot: 0.08 });
+    fx.word({ x: at.x, y: at.y + 1.2 }, 'KABOOM!', {
+      color: '#ffb04a',
+      size: 0.7,
+      life: 1.0,
+      rot: 0.08,
+    });
     fx.flash('#fff0c0', 0.4, 0.15);
     fx.shake(0.2, 0.88);
     fx.wash('#1c2236', 0.35, 1.2);
@@ -1440,9 +1926,12 @@ const smokeAndIron: AttackScript = {
   },
   follow: (c) => {
     const fx = eng(c);
-    if (c.t < c.impact + 0.9 && (Math.floor(c.t * 60) % 6) === 0) {
+    if (c.t < c.impact + 0.9 && Math.floor(c.t * 60) % 6 === 0) {
       const d = c.defender.anchors();
-      fx.smoke({ x: d.chest.x + (fx.rand() - 0.5) * 1.2, y: 0.4 + fx.rand() * 0.8 }, { n: 1, size: 0.45, rise: 0.25, color: '#7a849e' });
+      fx.smoke(
+        { x: d.chest.x + (fx.rand() - 0.5) * 1.2, y: 0.4 + fx.rand() * 0.8 },
+        { n: 1, size: 0.45, rise: 0.25, color: '#7a849e' },
+      );
     }
   },
   finish: (c) => {
@@ -1460,13 +1949,20 @@ const burningPitch: AttackScript = {
   choreograph: (base) => {
     // heave the cask: lean back deep, then hurl from the hip
     const k0 = base.keys[0]!;
-    return { ...base, keys: insertKey(base.keys, { t: k0.t * 0.6, p: { ...k0.p, lean: 0.4, y: -0.12, hR: 0.5, kR: -0.8 } }) };
+    return {
+      ...base,
+      keys: insertKey(base.keys, {
+        t: k0.t * 0.6,
+        p: { ...k0.p, lean: 0.4, y: -0.12, hR: 0.5, kR: -0.8 },
+      }),
+    };
   },
   start: (c) => eng(c).wash('#2a0d05', 0.22, 0.9),
   windup: (c) => {
     const fx = eng(c);
     const a = c.attacker.anchors();
-    if (c.t < c.impact - 0.45 && (Math.floor(c.t * 60) & 1) === 0) fx.ember({ x: a.hand.x, y: a.hand.y + 0.1 }, { n: 1 });
+    if (c.t < c.impact - 0.45 && (Math.floor(c.t * 60) & 1) === 0)
+      fx.ember({ x: a.hand.x, y: a.hand.y + 0.1 }, { n: 1 });
     if (c.t >= c.impact - 0.45 && fx.once('lob')) {
       lobber(
         c,
@@ -1495,8 +1991,12 @@ const burningPitch: AttackScript = {
         (p, k) => {
           const f = eng(c);
           f.ember({ x: p.x, y: p.y }, { n: 1 });
-          f.spark({ x: p.x, y: p.y - 0.1 }, { n: 1, color: '#ff7a1a', speed: 1.4, dir: -Math.PI / 2, spread: 1.2, size: 0.045 });
-          if ((Math.floor(k * 40) & 3) === 0) f.smoke({ x: p.x, y: p.y }, { n: 1, size: 0.1, rise: 0.2, color: '#1a1412' });
+          f.spark(
+            { x: p.x, y: p.y - 0.1 },
+            { n: 1, color: '#ff7a1a', speed: 1.4, dir: -Math.PI / 2, spread: 1.2, size: 0.045 },
+          );
+          if ((Math.floor(k * 40) & 3) === 0)
+            f.smoke({ x: p.x, y: p.y }, { n: 1, size: 0.1, rise: 0.2, color: '#1a1412' });
         },
         1.7,
       );
@@ -1513,7 +2013,10 @@ const burningPitch: AttackScript = {
     fx.burst(at, { n: 14, color: '#ff7a1a', length: 1.3, life: 0.42 });
     // black tar splashes out in thick drops
     for (let i = 0; i < 10; i++) {
-      const to = { x: at.x + (fx.rand() - 0.5) * 3.4, y: Math.max(0.06, at.y + (fx.rand() - 0.4) * 1.6) };
+      const to = {
+        x: at.x + (fx.rand() - 0.5) * 3.4,
+        y: Math.max(0.06, at.y + (fx.rand() - 0.4) * 1.6),
+      };
       const sz = 0.05 + fx.rand() * 0.06;
       fx.sprite({
         from: at,
@@ -1543,16 +2046,35 @@ const burningPitch: AttackScript = {
         const h = (1.9 - Math.abs(i - 2) * 0.45) * (0.3 + 0.9 * e);
         ctx.globalAlpha = fade * 0.8;
         ctx.fillStyle = '#ff5a14';
-        flameTongue(ctx, at.x + sx, Math.max(0.05, at.y - 0.55), 0.2, h, Math.sin(k * 18 + i) * 0.12);
+        flameTongue(
+          ctx,
+          at.x + sx,
+          Math.max(0.05, at.y - 0.55),
+          0.2,
+          h,
+          Math.sin(k * 18 + i) * 0.12,
+        );
         ctx.globalAlpha = fade * 0.9;
         ctx.fillStyle = '#ffd02a';
-        flameTongue(ctx, at.x + sx, Math.max(0.05, at.y - 0.55), 0.09, h * 0.55, Math.sin(k * 18 + i) * 0.06);
+        flameTongue(
+          ctx,
+          at.x + sx,
+          Math.max(0.05, at.y - 0.55),
+          0.09,
+          h * 0.55,
+          Math.sin(k * 18 + i) * 0.06,
+        );
       }
       fillCrescent(ctx, at.x, at.y + 1.0 + 0.8 * e, 0.8, Math.PI / 2, '#ffd02a', fade * 0.6);
     });
     fx.ember(at, { n: 18 });
     fx.smoke(at, { n: 8, size: 0.35, rise: 1.0, color: '#1a1412' });
-    fx.word({ x: at.x, y: at.y + 1.4 }, 'BURN!', { color: '#ffd02a', size: 0.8, life: 1.1, rot: -0.08 });
+    fx.word({ x: at.x, y: at.y + 1.4 }, 'BURN!', {
+      color: '#ffd02a',
+      size: 0.8,
+      life: 1.1,
+      rot: -0.08,
+    });
     fx.flash('#ffd7a0', 0.45, 0.2);
     fx.shake(0.22, 0.9);
     fx.wash('#ff5a14', 0.28, 0.8);
@@ -1582,7 +2104,14 @@ const burningPitch: AttackScript = {
           const w = Math.sin(t * 16 + i * 1.7);
           ctx.globalAlpha = fade * 0.8;
           ctx.fillStyle = '#ff5a14';
-          flameTongue(ctx, a.chest.x + (i - 1.5) * 0.2, a.chest.y + 0.5, 0.11, 0.45 + 0.15 * w, w * 0.07);
+          flameTongue(
+            ctx,
+            a.chest.x + (i - 1.5) * 0.2,
+            a.chest.y + 0.5,
+            0.11,
+            0.45 + 0.15 * w,
+            w * 0.07,
+          );
         }
       });
     } else if (o === 'block') {
@@ -1591,10 +2120,17 @@ const burningPitch: AttackScript = {
   },
   follow: (c) => {
     const fx = eng(c);
-    if (c.t < c.impact + 1.0 && (Math.floor(c.t * 60) % 5) === 0) {
+    if (c.t < c.impact + 1.0 && Math.floor(c.t * 60) % 5 === 0) {
       const d = c.defender.anchors();
-      fx.ember({ x: d.chest.x + (fx.rand() - 0.5) * 0.7, y: d.chest.y + fx.rand() * 0.6 }, { n: 1 });
-      if ((Math.floor(c.t * 60) % 10) === 0) fx.smoke({ x: d.chest.x, y: d.chest.y + 0.6 }, { n: 1, size: 0.25, rise: 0.7, color: '#1a1412' });
+      fx.ember(
+        { x: d.chest.x + (fx.rand() - 0.5) * 0.7, y: d.chest.y + fx.rand() * 0.6 },
+        { n: 1 },
+      );
+      if (Math.floor(c.t * 60) % 10 === 0)
+        fx.smoke(
+          { x: d.chest.x, y: d.chest.y + 0.6 },
+          { n: 1, size: 0.25, rise: 0.7, color: '#1a1412' },
+        );
     }
   },
   finish: (c) => {
@@ -1604,7 +2140,15 @@ const burningPitch: AttackScript = {
       const e = 1 - (1 - k) * (1 - k);
       ctx.globalAlpha = (1 - k) * 0.85;
       ctx.fillStyle = '#ff5a14';
-      for (let i = 0; i < 7; i++) flameTongue(ctx, p.x + (i - 3) * 0.3, 0.05, 0.22, 1.8 * e - Math.abs(i - 3) * 0.2, Math.sin(k * 16 + i) * 0.12);
+      for (let i = 0; i < 7; i++)
+        flameTongue(
+          ctx,
+          p.x + (i - 3) * 0.3,
+          0.05,
+          0.22,
+          1.8 * e - Math.abs(i - 3) * 0.2,
+          Math.sin(k * 16 + i) * 0.12,
+        );
       strokeTughra(ctx, p.x, p.y + 1.2, 1.5, Math.min(1, k * 2), '#ffd02a', (1 - k) * 0.8);
     });
   },

@@ -42,7 +42,12 @@ const play: StrikePlay = {
 const canvas = document.getElementById('c') as HTMLCanvasElement;
 const ground = q.get('ground') ?? '#5b6b35';
 const specs = () => {
-  const a = { model: (q.get('modelA') ?? 'knight') as ArmaturaModel, weaponType: weapon, frameClass: frame, accent: '#c0161f' };
+  const a = {
+    model: (q.get('modelA') ?? 'knight') as ArmaturaModel,
+    weaponType: weapon,
+    frameClass: frame,
+    accent: '#c0161f',
+  };
   const b = {
     model: (q.get('modelB') ?? 'janissary') as ArmaturaModel,
     weaponType: (q.get('weaponB') ?? 'blade') as WeaponType,

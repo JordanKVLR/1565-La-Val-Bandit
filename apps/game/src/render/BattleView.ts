@@ -403,7 +403,10 @@ export class BattleView {
   private setNodePos(node: UnitNode, pos: Vector3, dx = 0): void {
     node.pos.copy(pos);
     node.nudge = dx;
-    node.sprite?.position.copy(pos).add(node.labelOffset).setX(pos.x + dx);
+    node.sprite?.position
+      .copy(pos)
+      .add(node.labelOffset)
+      .setX(pos.x + dx);
     node.arrow.position.copy(pos).add(ARROW_OFFSET);
     node.fig?.sprite.position.copy(pos).setX(pos.x + dx);
   }
@@ -466,10 +469,13 @@ export class BattleView {
         }
         attacker.fig.lunge();
       }
-      setTimeout(() => {
-        if (!this.disposed) node.fig?.hurt();
-        this.requestRender();
-      }, attacker?.fig ? 140 : 0);
+      setTimeout(
+        () => {
+          if (!this.disposed) node.fig?.hurt();
+          this.requestRender();
+        },
+        attacker?.fig ? 140 : 0,
+      );
       this.requestRender();
     }
     const base = this.tileTop(node.at);

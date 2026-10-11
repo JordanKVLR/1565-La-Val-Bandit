@@ -3,7 +3,6 @@ import type { AttackStyle, Reaction, WeaponType } from '@m1565/core';
 import { DuelStage2D } from './DuelStage2D';
 import { fakeCanvas } from './testKit';
 
-
 const STYLES: [AttackStyle, WeaponType][] = [
   ['slash', 'blade'],
   ['thrust', 'polearm'],
@@ -15,7 +14,12 @@ const STYLES: [AttackStyle, WeaponType][] = [
   ['volley', 'firearm'],
   ['throw', 'explosive'],
 ];
-const spec = (weaponType: WeaponType) => ({ model: 'knight' as const, weaponType, frameClass: 'medium' as const, accent: '#f00' });
+const spec = (weaponType: WeaponType) => ({
+  model: 'knight' as const,
+  weaponType,
+  frameClass: 'medium' as const,
+  accent: '#f00',
+});
 
 function drive(stage: DuelStage2D, p: Promise<void>): Promise<void> {
   let done = false;
@@ -41,7 +45,9 @@ describe('DuelStage2D', () => {
   for (const [style, weapon] of STYLES) {
     it(`${style}: resolves and impacts exactly once for hit, miss, block, counter, defeat`, async () => {
       for (const c of cases) {
-        const stage = new DuelStage2D(fakeCanvas(), spec(weapon), spec('blade'), '#5b6b35', 1, { manual: true });
+        const stage = new DuelStage2D(fakeCanvas(), spec(weapon), spec('blade'), '#5b6b35', 1, {
+          manual: true,
+        });
         let impacts = 0;
         const p = stage.playStrike({ attacker: 'left', style, ...c, onImpact: () => impacts++ });
         await drive(stage, p);
@@ -52,18 +58,45 @@ describe('DuelStage2D', () => {
   }
 
   it('plays right-to-left and back to back', async () => {
-    const stage = new DuelStage2D(fakeCanvas(), spec('blade'), spec('firearm'), '#5b6b35', 1, { manual: true });
+    const stage = new DuelStage2D(fakeCanvas(), spec('blade'), spec('firearm'), '#5b6b35', 1, {
+      manual: true,
+    });
     let n = 0;
-    const a = stage.playStrike({ attacker: 'right', style: 'shot', hit: true, defeated: false, reaction: 'none', onImpact: () => n++ });
-    const b = stage.playStrike({ attacker: 'left', style: 'slash', hit: true, defeated: false, reaction: 'none', onImpact: () => n++ });
-    await drive(stage, Promise.all([a, b]).then(() => undefined));
+    const a = stage.playStrike({
+      attacker: 'right',
+      style: 'shot',
+      hit: true,
+      defeated: false,
+      reaction: 'none',
+      onImpact: () => n++,
+    });
+    const b = stage.playStrike({
+      attacker: 'left',
+      style: 'slash',
+      hit: true,
+      defeated: false,
+      reaction: 'none',
+      onImpact: () => n++,
+    });
+    await drive(
+      stage,
+      Promise.all([a, b]).then(() => undefined),
+    );
     expect(n).toBe(2);
   });
 
   it('is deterministic: two runs give the same strike length', () => {
     const mk = () => {
-      const s = new DuelStage2D(fakeCanvas(), spec('blade'), spec('blade'), '#5b6b35', 1, { manual: true });
-      s.beginStrike({ attacker: 'left', style: 'slash', hit: true, defeated: true, reaction: 'none' });
+      const s = new DuelStage2D(fakeCanvas(), spec('blade'), spec('blade'), '#5b6b35', 1, {
+        manual: true,
+      });
+      s.beginStrike({
+        attacker: 'left',
+        style: 'slash',
+        hit: true,
+        defeated: true,
+        reaction: 'none',
+      });
       let steps = 0;
       while (s.striking && steps < 5000) {
         s.advance(1 / 60);

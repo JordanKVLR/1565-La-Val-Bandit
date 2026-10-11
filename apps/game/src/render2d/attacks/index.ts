@@ -32,7 +32,9 @@ export function scriptFor(attackId: string | undefined, style: AttackStyle): Att
   const base = defaultsFor(style, palette);
   const out: AttackScript = {
     palette,
-    ...(own?.choreograph ?? base.choreograph ? { choreograph: own?.choreograph ?? base.choreograph! } : {}),
+    ...((own?.choreograph ?? base.choreograph)
+      ? { choreograph: own?.choreograph ?? base.choreograph! }
+      : {}),
     ...((own?.start ?? base.start) ? { start: (own?.start ?? base.start)! } : {}),
     ...((own?.windup ?? base.windup) ? { windup: (own?.windup ?? base.windup)! } : {}),
     ...((own?.follow ?? base.follow) ? { follow: (own?.follow ?? base.follow)! } : {}),

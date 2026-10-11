@@ -64,7 +64,8 @@ function merlons(g: Ctx, x: number, y: number, w: number, tooth: number, color: 
   g.fillStyle = color;
   const n = Math.max(1, Math.floor(w / (tooth * 2)));
   const step = w / n;
-  for (let i = 0; i < n; i++) g.fillRect(x + i * step + step * 0.12, y - tooth, step * 0.56, tooth + 1);
+  for (let i = 0; i < n; i++)
+    g.fillRect(x + i * step + step * 0.12, y - tooth, step * 0.56, tooth + 1);
 }
 
 interface Palette {
@@ -180,7 +181,8 @@ function paintFortress(g: Ctx, W: number, H: number, p: Palette): void {
   g.beginPath();
   g.moveTo(W * 0.2, seaB + H * 0.03);
   g.lineTo(W * 0.27, base + H * 0.012);
-  for (let x = W * 0.3; x < W; x += W * 0.035) g.lineTo(x, base - H * 0.012 + (r() - 0.5) * H * 0.016);
+  for (let x = W * 0.3; x < W; x += W * 0.035)
+    g.lineTo(x, base - H * 0.012 + (r() - 0.5) * H * 0.016);
   g.lineTo(W, seaB + H * 0.03);
   g.closePath();
   g.fill();
@@ -231,7 +233,8 @@ function paintFortress(g: Ctx, W: number, H: number, p: Palette): void {
     merlons(g, x - w * 0.08, top - H * 0.012, w * 1.16, H * 0.011, lit);
     // Arrow slits.
     g.fillStyle = dark;
-    for (let y = top + H * 0.025; y < base - H * 0.02; y += H * 0.035) g.fillRect(x + w * 0.4, y, w * 0.08, H * 0.016);
+    for (let y = top + H * 0.025; y < base - H * 0.02; y += H * 0.035)
+      g.fillRect(x + w * 0.4, y, w * 0.08, H * 0.016);
   }
 
   // The town behind the wall: flat roofs, a dome and a bell tower (Mdina-ish).
@@ -344,7 +347,11 @@ function paintFields(g: Ctx, W: number, H: number, p: Palette): void {
     g.moveTo(0, y1);
     const amp = H * (0.018 - band * 0.003);
     const ph = r() * 6;
-    for (let x = 0; x <= W; x += 24) g.lineTo(x, y0 + Math.sin(x / (W * 0.11) + ph) * amp + Math.sin(x / (W * 0.037) + ph * 2) * amp * 0.4);
+    for (let x = 0; x <= W; x += 24)
+      g.lineTo(
+        x,
+        y0 + Math.sin(x / (W * 0.11) + ph) * amp + Math.sin(x / (W * 0.037) + ph * 2) * amp * 0.4,
+      );
     g.lineTo(W, y1);
     g.closePath();
     g.fill();
@@ -353,7 +360,11 @@ function paintFields(g: Ctx, W: number, H: number, p: Palette): void {
     g.lineWidth = 2 + band;
     g.beginPath();
     for (let x = 0; x <= W; x += 24) {
-      const y = y0 + Math.sin(x / (W * 0.11) + ph) * amp + Math.sin(x / (W * 0.037) + ph * 2) * amp * 0.4 + 1;
+      const y =
+        y0 +
+        Math.sin(x / (W * 0.11) + ph) * amp +
+        Math.sin(x / (W * 0.037) + ph * 2) * amp * 0.4 +
+        1;
       if (x === 0) g.moveTo(x, y);
       else g.lineTo(x, y);
     }
@@ -438,7 +449,12 @@ function paintFloor(g: Ctx, W: number, H: number, p: Palette): void {
       for (let k = -2; k <= 2; k++) {
         g.beginPath();
         g.moveTo(x + k * s * 0.35, y);
-        g.quadraticCurveTo(x + k * s * 0.5, y - s * 1.2, x + k * s * 0.9, y - s * (1.6 - Math.abs(k) * 0.3));
+        g.quadraticCurveTo(
+          x + k * s * 0.5,
+          y - s * 1.2,
+          x + k * s * 0.9,
+          y - s * (1.6 - Math.abs(k) * 0.3),
+        );
         g.stroke();
       }
     } else {
@@ -455,7 +471,14 @@ function paintFloor(g: Ctx, W: number, H: number, p: Palette): void {
 }
 
 function paintVignette(g: Ctx, W: number, H: number): void {
-  const grd = g.createRadialGradient(W / 2, H * 0.52, H * 0.45, W / 2, H * 0.52, Math.hypot(W, H) * 0.56);
+  const grd = g.createRadialGradient(
+    W / 2,
+    H * 0.52,
+    H * 0.45,
+    W / 2,
+    H * 0.52,
+    Math.hypot(W, H) * 0.56,
+  );
   grd.addColorStop(0, 'rgba(20,10,0,0)');
   grd.addColorStop(1, 'rgba(20,10,0,0.45)');
   g.fillStyle = grd;

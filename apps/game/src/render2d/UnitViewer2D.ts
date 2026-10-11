@@ -31,7 +31,8 @@ export class UnitViewer2D {
     this.reduced = safeMatch('(prefers-reduced-motion: reduce)');
     this.rig = createRig(spec, 0, 1);
     this.turn = -1;
-    this.resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
+    this.resizeObserver =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => this.resize()) : null;
     this.resizeObserver?.observe(canvas);
     this.resize();
     if (!this.reduced && typeof requestAnimationFrame !== 'undefined') {

@@ -96,7 +96,14 @@ describe('fx engine', () => {
   it('sprites call onEnd once and drawing every primitive is safe', () => {
     const fx = createFx();
     let ended = 0;
-    fx.sprite({ from: { x: 0, y: 1 }, to: { x: 2, y: 1 }, life: 0.1, trail: '#fff', paint: () => undefined, onEnd: () => ended++ });
+    fx.sprite({
+      from: { x: 0, y: 1 },
+      to: { x: 2, y: 1 },
+      life: 0.1,
+      trail: '#fff',
+      paint: () => undefined,
+      onEnd: () => ended++,
+    });
     fx.spark({ x: 0, y: 1 });
     fx.dust({ x: 0, y: 0 });
     fx.smoke({ x: 0, y: 0 });

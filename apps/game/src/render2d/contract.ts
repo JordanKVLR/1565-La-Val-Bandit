@@ -11,6 +11,7 @@
  *     forward = +x" terms via `FxContext.dir`.
  */
 import type { Pose, FigureSpec } from '../render/Armatura';
+import type { Move } from '../render/duelMoves';
 
 export type { Pose, FigureSpec };
 
@@ -61,7 +62,17 @@ export interface Fx {
   readonly time: number;
   /** Deterministic randomness for particles (never Math.random in tests). */
   rand(): number;
-  spark(at: V2, o?: { n?: number; color?: string; speed?: number; dir?: number; spread?: number; size?: number }): void;
+  spark(
+    at: V2,
+    o?: {
+      n?: number;
+      color?: string;
+      speed?: number;
+      dir?: number;
+      spread?: number;
+      size?: number;
+    },
+  ): void;
   dust(at: V2, o?: { n?: number; color?: string; size?: number }): void;
   smoke(at: V2, o?: { n?: number; color?: string; size?: number; rise?: number }): void;
   ember(at: V2, o?: { n?: number; color?: string }): void;
@@ -70,11 +81,18 @@ export interface Fx {
   /** Radial slash lines bursting from a point (comic impact). */
   burst(at: V2, o?: { n?: number; color?: string; length?: number; life?: number }): void;
   /** Crescent / arc slash swoosh, angles in radians, drawn once and fading. */
-  arc(at: V2, o: { radius: number; from: number; to: number; width?: number; color?: string; life?: number }): void;
+  arc(
+    at: V2,
+    o: { radius: number; from: number; to: number; width?: number; color?: string; life?: number },
+  ): void;
   /** Soft glow blob. */
   glow(at: V2, o?: { radius?: number; color?: string; life?: number }): void;
   /** Text onomatopoeia ("CLANG!") that pops and fades. */
-  word(at: V2, text: string, o?: { color?: string; size?: number; life?: number; rot?: number }): void;
+  word(
+    at: V2,
+    text: string,
+    o?: { color?: string; size?: number; life?: number; rot?: number },
+  ): void;
   /** A moving projectile / body drawn with a custom painter until `life` ends. */
   sprite(o: {
     from: V2;
@@ -105,7 +123,11 @@ export interface Fx {
   /** Runs `fn` after `delay` seconds of strike time. */
   later(delay: number, fn: () => void): void;
   /** Free-form painter drawn under (`back`) or over (`front`) the fighters for `life` seconds. */
-  layer(where: 'back' | 'front', life: number, paint: (ctx: CanvasRenderingContext2D, k: number) => void): void;
+  layer(
+    where: 'back' | 'front',
+    life: number,
+    paint: (ctx: CanvasRenderingContext2D, k: number) => void,
+  ): void;
 }
 
 /** Everything a per-attack script sees. Scripts write in attacker-forward = +x terms. */
@@ -135,7 +157,10 @@ export interface AttackScript {
    * Optionally replace the base move's keyframes/timing (spins, leaps, multi-hit flurries).
    * Receives the base Move and returns the move to play. Keep `impact` consistent with the keys.
    */
-  readonly choreograph?: (base: import('../render/duelMoves').Move, c: Pick<FxContext, 'hit' | 'power' | 'reach' | 'heavy'>) => import('../render/duelMoves').Move;
+  readonly choreograph?: (
+    base: Move,
+    c: Pick<FxContext, 'hit' | 'power' | 'reach' | 'heavy'>,
+  ) => Move;
   /** Runs once when the strike starts (announce, stance glow, camera push). */
   readonly start?: (c: FxContext) => void;
   /** Runs every frame before contact (trails, charge-up auras, projectiles in flight). */
