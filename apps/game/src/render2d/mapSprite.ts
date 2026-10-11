@@ -19,7 +19,7 @@ const CELL_W = 2.5;
 const CELL_H = 2.3;
 const FOOT = 0.1;
 /** World size of one figure unit on the map. */
-export const FIGURE_UNIT = 0.72;
+export const FIGURE_UNIT = 0.86;
 const IDLE_MS = 1000 / 12;
 
 export const LUNGE_S = 0.38;

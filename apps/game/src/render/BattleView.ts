@@ -79,7 +79,7 @@ const FIGURE_SCALE = 0.5;
 const ARROW_OFFSET = new Vector3(0, 0.1, 0);
 /** 2D mode: the arrow shrinks to a tile marker around the sprite's feet, the badge floats over its head. */
 const ARROW_2D = 0.82;
-const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 1.74 * FIGURE_UNIT, 0);
+const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 1.98 * FIGURE_UNIT, 0);
 
 /**
  * Unit marker: a raised arrow lying on the tile, pointing the way the unit faces (+z = south
@@ -322,7 +322,7 @@ export class BattleView {
       this.scene.add(fig.sprite);
       arrow.scale.setScalar(ARROW_2D);
       const ring = new Mesh(
-        new PlaneGeometry(0.95, 0.95).rotateX(-Math.PI / 2),
+        new PlaneGeometry(1.2, 1.2).rotateX(-Math.PI / 2),
         new MeshBasicMaterial({
           map: ringTexture(u.color, !!u.enemy),
           transparent: true,
@@ -338,7 +338,7 @@ export class BattleView {
       arrow.add(ring);
       if (!u.hideHp || u.figure) {
         sprite = createUnitSprite(u);
-        sprite.scale.multiplyScalar(0.62);
+        sprite.scale.multiplyScalar(0.74);
         sprite.renderOrder = 2;
         sprite.material.depthTest = false;
         labelOffset = BADGE_OFFSET_2D;

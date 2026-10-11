@@ -275,7 +275,7 @@ function spiritSteeds(c: FxContext, count: number, main: string, accent: string,
     ctx.globalCompositeOperation = 'lighter';
     for (let i = count - 1; i >= 0; i--) {
       const lag = i * 0.55 * scale;
-      ghostHorse(ctx, f.x - c.dir * (0.1 + lag), 0.0 + i * 0.015, scale * (1 - i * 0.08), tt * 22 + i * 1.3, c.dir, i === 0 ? main : accent, fade * (0.42 - i * 0.1));
+      ghostHorse(ctx, f.x - c.dir * (0.1 + lag), 0.0 + i * 0.015, scale * (1 - i * 0.08), tt * 22 + i * 1.3, c.dir, i === 0 ? main : accent, fade * (0.6 - i * 0.12));
     }
   });
 }
