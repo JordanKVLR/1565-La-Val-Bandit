@@ -5,6 +5,7 @@ import type { CloseUpData, CloseUpSide } from '../../scenes/BattleController';
 import { settings } from '../../state/settings';
 import { t } from '../../i18n';
 import { usePrompt } from '../KeyHint';
+import { Meter, SideMark } from '../design';
 import { Portrait } from '../../render2d/portraits/Portrait';
 import { hasPortrait, type Expression } from '../../render2d/portraits';
 
@@ -30,7 +31,8 @@ function castFor(side: CloseUpSide): string | null {
 
 /**
  * Cinematic duel: a 3D stage with both pilots as stick figures, animated by the attack style
- * and the defender's reaction. Tap anywhere to skip.
+ * and the defender's reaction. Glass name plates with HP meters frame the top, the technique in
+ * play sits between them, and the numbers rise over the fighters. Tap anywhere to skip.
  */
 export function CloseUp({ data, onDone }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -135,26 +137,27 @@ export function CloseUp({ data, onDone }: Props) {
     };
   }, [data]);
 
-  const bar = (s: CloseUpSide) => {
+  const plate = (s: CloseUpSide, at: 'left' | 'right') => {
     const now = hp[s.id] ?? s.hpBefore;
     return (
-      <div class="cu-status">
-        <strong>{s.name}</strong>
-        <div class="cu-hp">
-          <span style={{ width: `${(now / s.maxHp) * 100}%` }} />
+      <div class={`cu-plate cu-plate--${at}`}>
+        <div class="cu-plate__id">
+          <SideMark side={s.side} label={t(`unit.side.${s.side}`)} />
+          <strong class="cu-plate__name">{s.name}</strong>
+          <span class="cu-plate__weapon">{s.weapon}</span>
         </div>
-        <span class="cu-hp-num">
-          {now}/{s.maxHp}
-        </span>
+        <Meter label={t('stat.hp')} kind="hp" value={now} max={s.maxHp} class="cu-plate__hp" />
       </div>
     );
   };
-
-  const face = (s: CloseUpSide, where: 'left' | 'right') => {
+  const speaker = (s: CloseUpSide, where: 'left' | 'right') => {
     const cast = render2d ? castFor(s) : null;
     return (
-      <div class={`portrait portrait-${s.side}`}>
-        {cast ? <Portrait castId={cast} expression={mood[where]} animated /> : s.initial}
+      <div class={`bhud-avatar cu-avatar side-${s.side}`} aria-hidden="true">
+        <div class={`portrait portrait-${s.side}`}>
+          {cast ? <Portrait castId={cast} expression={mood[where]} animated /> : s.initial}
+        </div>
+        <SideMark side={s.side} />
       </div>
     );
   };
@@ -170,27 +173,27 @@ export function CloseUp({ data, onDone }: Props) {
       <div class="cu-stage">
         <canvas ref={canvasRef} class="cu-canvas" aria-hidden="true" />
         <div class="cu-top">
-          {bar(data.left)}
+          {plate(data.left, 'left')}
           <div class="cu-attack">{title}</div>
-          {bar(data.right)}
+          {plate(data.right, 'right')}
         </div>
         {popups.map((p) => (
           <div key={p.key} class={`cu-pop ${p.side} ${p.kind}`}>
             {p.text}
           </div>
         ))}
+        <p class="cu-skip">{prompt('skip')}</p>
       </div>
       <div class="cu-lines">
         <div class={`cu-line ${data.left.side}`}>
-          {face(data.left, 'left')}
-          <p>{lines.left}</p>
+          {speaker(data.left, 'left')}
+          <p class={lines.left ? 'is-speaking' : ''}>{lines.left}</p>
         </div>
         <div class={`cu-line right ${data.right.side}`}>
-          <p>{lines.right}</p>
-          {face(data.right, 'right')}
+          <p class={lines.right ? 'is-speaking' : ''}>{lines.right}</p>
+          {speaker(data.right, 'right')}
         </div>
       </div>
-      <div class="cu-skip">{prompt('skip')}</div>
     </div>
   );
 }

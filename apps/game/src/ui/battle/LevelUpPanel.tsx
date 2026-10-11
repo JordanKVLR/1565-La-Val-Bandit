@@ -1,7 +1,9 @@
 import type { PilotStats, StatName, UnitState } from '@m1565/core';
-import { AttributeBars } from './StatBars';
-import { NewSkills } from '../SkillList';
 import { t } from '../../i18n';
+import { Button, Chip, Hint, Meter, Sheet } from '../design';
+import { ATTRIBUTE_BAR_MAX, gearNote } from './stats';
+import { STAT_INFO } from './statInfo';
+import { NewSkillLines } from './XpPanel';
 
 interface Props {
   /** The unit: its top-level attributes include gear, `pilot` holds its own. */
@@ -14,30 +16,78 @@ interface Props {
   doneLabel?: string;
 }
 
-/** Spend level-up points on any of the six attributes. Techniques stay a surprise. */
+/**
+ * Spend level-up points on any of the six attributes: each row names the attribute, says what
+ * it does, shows it as a meter (gear's share in brackets) and has a 44 px raise button.
+ * Techniques stay a surprise.
+ */
 export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props) {
+  const canRaise = unit.statPoints > 0;
   return (
-    <div class="modal" role="dialog" aria-label={t('levelUp.label')}>
-      <div class="modal-box levelup">
-        <h2>{title ?? t('levelUp.title', { name: unit.name, level: unit.level })}</h2>
-        <p class="points" data-testid="stat-points">
-          {t('levelUp.points', { n: unit.statPoints, hp: unit.maxHp })}
-        </p>
-        <NewSkills
+    <Sheet
+      label={t('levelUp.label')}
+      title={title ?? t('levelUp.title', { name: unit.name, level: unit.level })}
+      closeLabel={t('common.close')}
+      onClose={onDone}
+      dismissible={false}
+      placement="center"
+      size="md"
+      ornament="cross"
+      closeButton={false}
+      class="ov-sheet ov-levelup"
+      footer={
+        <>
+          <Hint class="ov-levelup__hint" text={t('levelUp.hint')} />
+          <Button
+            variant={canRaise ? 'secondary' : 'primary'}
+            label={doneLabel ?? (canRaise ? t('levelUp.saveForLater') : t('common.continue'))}
+            keyContext="menu"
+            onClick={onDone}
+          />
+        </>
+      }
+    >
+      <div class="ov-levelup__top">
+        <Chip
+          tone={canRaise ? 'gold' : 'neutral'}
+          icon={canRaise ? 'plus' : null}
+          testId="stat-points"
+          label={t('levelUp.points', { n: unit.statPoints, hp: unit.maxHp })}
+        />
+        <NewSkillLines
           names={(unit.skills ?? []).filter((s) => s.level === unit.level).map((s) => s.name)}
         />
-        <AttributeBars
-          stats={unit.pilot}
-          geared={unit}
-          help
-          onRaise={onRaise}
-          canRaise={unit.statPoints > 0}
-        />
-        <p class="hint">{t('levelUp.hint')}</p>
-        <button type="button" class="btn" onClick={onDone}>
-          {doneLabel ?? (unit.statPoints > 0 ? t('levelUp.saveForLater') : t('common.continue'))}
-        </button>
       </div>
-    </div>
+      <ul class="ov-attrs">
+        {STAT_INFO.map((s) => {
+          const own = unit.pilot[s.key];
+          const geared = unit[s.key];
+          const diff = geared - own;
+          return (
+            <li key={s.key} class="ov-attr">
+              <div class="ov-attr__text">
+                <Meter
+                  label={s.label}
+                  kind="neutral"
+                  value={geared}
+                  max={ATTRIBUTE_BAR_MAX}
+                  valueText={diff ? `${geared} ${gearNote(diff)}` : `${geared}`}
+                  title={s.help}
+                />
+                <small class="ov-attr__help">{s.help}</small>
+              </div>
+              <Button
+                class="ov-attr__raise"
+                icon="plus"
+                iconOnly
+                label={t('stat.raise', { stat: s.label })}
+                disabled={!canRaise || own >= ATTRIBUTE_BAR_MAX}
+                onClick={() => onRaise(s.key)}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </Sheet>
   );
 }

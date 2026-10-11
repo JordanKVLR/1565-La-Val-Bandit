@@ -43,9 +43,9 @@ async function step(page: Page, opts: { move: boolean }): Promise<boolean> {
         // Hovering (or a first tap on touch) previews the route: the AP bar shows the cost
         // before anything moves.
         await page.mouse.move(box.x + pos.x, box.y + pos.y);
-        await expect(page.getByTestId('active-card').locator('.vb-ap .changing')).toHaveText(
-          /\d+→\d+/,
-        );
+        await expect(
+          page.getByTestId('active-card').getByTestId('meter-ap').locator('.changing'),
+        ).toHaveText(/\d+→\d+/);
         // Clicking the previewed tile moves.
         await page.mouse.click(box.x + pos.x, box.y + pos.y);
         await expect(menu.getByRole('button', { name: 'Undo' })).toBeVisible();

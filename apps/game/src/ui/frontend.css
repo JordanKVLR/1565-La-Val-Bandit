@@ -1,0 +1,1278 @@
+/*
+ * Front-end screens on the design system (docs/DESIGN.md, ADR 0013): title, difficulty and
+ * save slots, story (dialogue, choices, chapter cards), in-game menu, settings, results, ending,
+ * intro chrome, controller notice and the rotate overlay. Every class is prefixed `fe-` (or
+ * kept for TV mode and tests: chapter-card, stage-*, intro-*, dlg-next); values come from
+ * tokens.css. The codex has its own sheet in codex.css.
+ */
+
+/* ── Full-screen grounds: warm ink, a faint madum tile, a vignette ─────── */
+.fe-title,
+.fe-page,
+.fe-rotate,
+.stage-blank {
+  background:
+    radial-gradient(ellipse 70% 80% at 32% 42%, rgba(212, 178, 106, 0.1), transparent 70%),
+    radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(6, 5, 8, 0.82) 100%),
+    linear-gradient(rgba(11, 10, 14, 0.92), rgba(11, 10, 14, 0.92)),
+    var(--mt-madum) center / 176px 176px,
+    var(--ds-ink-0);
+}
+
+/* ── Shared pieces ────────────────────────────────────────────────────── */
+/* A small spaced-capitals label over a group (Save game, Screen, Sound…). */
+.fe-label {
+  margin: var(--ds-space-4) 0 var(--ds-space-1);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+}
+.fe-label:first-child {
+  margin-top: 0;
+}
+.fe-sheet__hint {
+  margin-bottom: var(--ds-space-3);
+}
+
+/* Difficulty rank pips: one to three diamonds. */
+.fe-pips {
+  display: inline-flex;
+  flex: none;
+  gap: 1px;
+  color: var(--ds-gold);
+}
+.fe-pips .ds-icon {
+  width: 0.7em;
+  height: 0.7em;
+}
+.fe-badges {
+  display: inline-flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ds-space-1);
+}
+.fe-badge-ngplus {
+  font-weight: var(--ds-weight-bold);
+}
+.fe-badge-difficulty {
+  gap: var(--ds-space-1);
+}
+
+/* ── Save slots ───────────────────────────────────────────────────────── */
+.fe-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+}
+.fe-slot {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  width: 100%;
+  min-height: var(--ds-hit-lg);
+  margin: 0;
+  padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-2) var(--ds-space-4);
+  font-family: var(--ds-font-body);
+  font-variant-numeric: lining-nums;
+  text-align: left;
+  color: var(--ds-text);
+  background: var(--ds-glass-1);
+  border: var(--ds-border) solid var(--ds-hairline-soft);
+  border-radius: var(--ds-radius-md);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ds-dur-fast) var(--ds-ease-out),
+    border-color var(--ds-dur-fast) var(--ds-ease-out),
+    transform var(--ds-dur-press) var(--ds-ease-out);
+}
+@media (hover: hover) {
+  .fe-slot:not(:disabled):hover {
+    background-color: var(--ds-wash-hover);
+    border-color: var(--ds-hairline);
+  }
+}
+.fe-slot:not(:disabled):active {
+  transform: translateY(1px);
+  background-color: var(--ds-wash-press);
+}
+.fe-slot:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: var(--ds-focus-offset);
+}
+.fe-slot:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+.fe-slot__text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.fe-slot__name {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+}
+.fe-slot__detail {
+  overflow: hidden;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-3);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fe-slot.is-empty .fe-slot__name {
+  color: var(--ds-text-2);
+}
+.fe-slot__go {
+  flex: none;
+  color: var(--ds-text-3);
+}
+
+/* ── Difficulty cards ─────────────────────────────────────────────────── */
+.fe-modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ds-space-3);
+}
+.fe-mode {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ds-space-1);
+  min-height: var(--ds-hit-lg);
+  margin: 0;
+  padding: var(--ds-space-3) var(--ds-space-4) var(--ds-space-4);
+  font-family: var(--ds-font-body);
+  font-variant-numeric: lining-nums;
+  text-align: left;
+  color: var(--ds-text-2);
+  background: var(--ds-glass-1);
+  border: var(--ds-border) solid var(--ds-hairline-soft);
+  border-radius: var(--ds-radius-md);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--ds-dur-fast) var(--ds-ease-out),
+    border-color var(--ds-dur-fast) var(--ds-ease-out),
+    transform var(--ds-dur-press) var(--ds-ease-out);
+}
+@media (hover: hover) {
+  .fe-mode:hover {
+    background-color: var(--ds-wash-hover);
+    border-color: var(--ds-hairline);
+  }
+}
+.fe-mode:active {
+  transform: translateY(1px);
+}
+.fe-mode:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: var(--ds-focus-offset);
+}
+/* The current mode: a gold frame twice as thick, a gold wash, and "✓ current" in words. */
+.fe-mode.is-current {
+  background-color: var(--ds-gold-wash);
+  border-color: var(--ds-gold);
+  box-shadow: inset 0 0 0 1px var(--ds-gold);
+}
+.fe-mode__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+  width: 100%;
+}
+.fe-mode__name {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+}
+.fe-mode__head .fe-pips {
+  font-size: var(--ds-text-md);
+}
+.fe-mode__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-1);
+  min-height: 24px;
+}
+.fe-mode__tagline {
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-medium);
+  color: var(--ds-text);
+}
+.fe-mode__summary {
+  font-size: var(--ds-text-xs);
+  line-height: 1.4;
+  color: var(--ds-text-3);
+}
+
+/* ── Title ────────────────────────────────────────────────────────────── */
+.fe-title {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: max(var(--ds-space-6), env(safe-area-inset-top))
+    max(var(--ds-space-8), env(safe-area-inset-right))
+    max(var(--ds-space-6), env(safe-area-inset-bottom))
+    max(var(--ds-space-8), env(safe-area-inset-left));
+  overflow: hidden;
+}
+.fe-title__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  align-items: center;
+  gap: clamp(var(--ds-space-8), 7 * var(--vw), 120px);
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.fe-title__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.fe-title__emblem {
+  width: calc(1.1 * var(--ds-text-2xl));
+  height: calc(1.1 * var(--ds-text-2xl));
+  margin-bottom: var(--ds-space-3);
+  color: var(--ds-gold);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+}
+.fe-title__name {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: clamp(2.75rem, 11.5 * var(--vh), 5.75rem);
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: 0.14em;
+  line-height: 1;
+  /* Optical centring: the tracking adds space after the last letter. */
+  padding-left: 0.14em;
+  color: var(--ds-text);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+}
+/* The year: smaller, gold, between two hairlines. */
+.fe-title__year {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  margin-top: 0.3em;
+  font-size: 0.32em;
+  letter-spacing: 0.6em;
+  color: var(--ds-gold);
+}
+.fe-title__year::before,
+.fe-title__year::after {
+  content: '';
+  width: 2.4em;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ds-hairline-strong));
+}
+.fe-title__year::after {
+  margin-left: -0.6em;
+  background: linear-gradient(90deg, var(--ds-hairline-strong), transparent);
+}
+.fe-title__rule {
+  width: min(320px, 80%);
+  margin: var(--ds-space-4) 0 var(--ds-space-2);
+}
+.fe-title__subtitle {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ds-text-2);
+}
+.fe-title__menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-3);
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.fe-title__continue.ds-btn {
+  min-height: calc(var(--ds-hit-lg) + 8px);
+  padding-top: var(--ds-space-2);
+  padding-bottom: var(--ds-space-2);
+}
+.fe-title__continue .ds-btn__detail {
+  overflow: hidden;
+  font-size: var(--ds-text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fe-title__continue .fe-badges {
+  margin-left: auto;
+}
+/* Badges on the gold button: dark ink pills, so they stay legible on the fill. */
+.ds-btn--primary .ds-chip {
+  color: var(--ds-text-on-gold);
+  background: rgba(26, 20, 10, 0.12);
+  border-color: rgba(26, 20, 10, 0.35);
+}
+.ds-btn--primary .fe-pips {
+  color: var(--ds-text-on-gold);
+}
+/* The rest: one glass column of quiet rows, hairlines between them. */
+.fe-title__list {
+  display: flex;
+  flex-direction: column;
+  padding: var(--ds-space-1);
+  background: var(--ds-sheen), var(--ds-glass-2);
+  border: var(--ds-border) solid var(--ds-hairline);
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-inner-light), var(--ds-shadow-2);
+  -webkit-backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+}
+.fe-title__list .ds-btn {
+  color: var(--ds-text);
+  font-weight: var(--ds-weight-regular);
+}
+.fe-title__list .ds-btn + .ds-btn {
+  background-image: linear-gradient(var(--ds-hairline-soft), var(--ds-hairline-soft));
+  background-position: center top;
+  background-size: calc(100% - 2 * var(--ds-space-4)) 1px;
+  background-repeat: no-repeat;
+}
+.fe-title__note {
+  position: absolute;
+  left: max(var(--ds-space-6), env(safe-area-inset-left));
+  bottom: max(var(--ds-space-3), env(safe-area-inset-bottom));
+  margin: 0;
+  font-size: var(--ds-text-2xs);
+  letter-spacing: 0.04em;
+  color: var(--ds-text-3);
+}
+
+/* ── Story: the diorama breathes, the words sit low ───────────────────── */
+/* No overflow clipping: in TV mode the diorama bleeds into the screen's border (tv.css). */
+.fe-story {
+  position: relative;
+  height: 100%;
+  cursor: pointer;
+  background: var(--ds-ink-0);
+}
+.stage-canvas,
+.stage-blank {
+  position: absolute;
+  inset: 0;
+}
+/* A soft vignette, darker under the dialogue so the words read over bright tiles. */
+.fe-story__shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(0deg, rgba(6, 5, 8, 0.6), rgba(6, 5, 8, 0.25) 22%, transparent 42%),
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(6, 5, 8, 0.45) 100%);
+}
+.fe-story__menu {
+  position: absolute;
+  top: max(var(--ds-edge), env(safe-area-inset-top));
+  right: max(var(--ds-edge), env(safe-area-inset-right));
+  z-index: var(--ds-z-hud);
+}
+.fe-story__menu .ds-btn {
+  background: var(--ds-glass-1);
+  border-color: var(--ds-hairline-soft);
+  -webkit-backdrop-filter: blur(var(--ds-blur));
+  backdrop-filter: blur(var(--ds-blur));
+}
+.fe-story__stack {
+  position: absolute;
+  left: max(var(--ds-edge), env(safe-area-inset-left));
+  right: max(var(--ds-edge), env(safe-area-inset-right));
+  bottom: max(var(--ds-edge), env(safe-area-inset-bottom));
+  z-index: var(--ds-z-hud);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-3);
+  pointer-events: none;
+}
+.fe-story__stack > * {
+  pointer-events: auto;
+}
+
+/* Dialogue: a slim glass box, never wider than a comfortable line. */
+.fe-dialogue {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-4);
+  width: min(960px, 100%);
+  min-height: 92px;
+  padding: var(--ds-space-3) var(--ds-space-6) var(--ds-space-6) var(--ds-space-4);
+  color: var(--ds-text);
+  font-family: var(--ds-font-body);
+  background: var(--ds-sheen), var(--ds-glass-2);
+  border: var(--ds-border) solid var(--ds-hairline);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-inner-light), var(--ds-shadow-2);
+  -webkit-backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+  animation: ds-rise-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.fe-dialogue::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ds-gold), transparent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+/* The portrait stands a little above the box, like a cameo. */
+.fe-dialogue__portrait {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin-top: calc(-1 * var(--ds-space-6));
+  overflow: hidden;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-2xl);
+  font-weight: var(--ds-weight-bold);
+  color: var(--ds-text);
+  text-shadow: var(--ds-text-shadow);
+  border-radius: var(--ds-radius-md);
+  box-shadow:
+    0 0 0 1px var(--ds-hairline-strong),
+    0 0 0 4px var(--ds-ink-1),
+    var(--ds-shadow-2);
+}
+.fe-dialogue__portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fe-dialogue__body {
+  flex: 1;
+  min-width: 0;
+}
+.fe-dialogue__speaker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--ds-space-3);
+  margin-bottom: var(--ds-space-1);
+}
+.fe-dialogue__name {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+  color: var(--ds-gold-bright);
+}
+.fe-dialogue__role {
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-medium);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+}
+.fe-dialogue__text {
+  margin: 0;
+  font-size: var(--ds-text-lg);
+  line-height: 1.45;
+}
+.fe-dialogue__rest {
+  visibility: hidden;
+}
+/* Narration: no speaker; the line is centred in italics in a narrower box. */
+.fe-dialogue.is-narration {
+  width: min(760px, 100%);
+  padding: var(--ds-space-4) var(--ds-space-8) var(--ds-space-6);
+  text-align: center;
+}
+.fe-dialogue.is-narration .fe-dialogue__text {
+  font-style: italic;
+  color: var(--ds-text-2);
+}
+/* The line is complete: a quiet prompt and a gold chevron in the corner. */
+.fe-dialogue__next {
+  position: absolute;
+  right: var(--ds-space-4);
+  bottom: var(--ds-space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-medium);
+  letter-spacing: var(--ds-track-label);
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);
+}
+.fe-dialogue__chev {
+  width: 1.3em;
+  height: 1.3em;
+  color: var(--ds-gold);
+  transform: rotate(90deg);
+}
+
+/* Choices rise above the dialogue, one glass row each. */
+.fe-choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+  width: min(640px, 100%);
+  cursor: default;
+}
+.fe-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  width: 100%;
+  min-height: var(--ds-hit-lg);
+  margin: 0;
+  padding: var(--ds-space-2) var(--ds-space-5) var(--ds-space-2) var(--ds-space-4);
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-medium);
+  line-height: 1.3;
+  text-align: left;
+  color: var(--ds-text);
+  background: var(--ds-sheen), var(--ds-glass-2);
+  border: var(--ds-border) solid var(--ds-hairline);
+  border-radius: var(--ds-radius-md);
+  box-shadow: var(--ds-shadow-1);
+  -webkit-backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+  backdrop-filter: blur(var(--ds-blur)) saturate(1.2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  animation: ds-rise-in var(--ds-dur-base) var(--ds-ease-out);
+  transition:
+    background-color var(--ds-dur-fast) var(--ds-ease-out),
+    border-color var(--ds-dur-fast) var(--ds-ease-out),
+    transform var(--ds-dur-press) var(--ds-ease-out);
+}
+.fe-choice__mark {
+  flex: none;
+  width: 0.7em;
+  height: 0.7em;
+  color: var(--ds-gold-deep);
+  transition: color var(--ds-dur-fast) var(--ds-ease-out);
+}
+@media (hover: hover) {
+  .fe-choice:hover {
+    background-color: var(--ds-wash-hover);
+    border-color: var(--ds-hairline-strong);
+  }
+  .fe-choice:hover .fe-choice__mark {
+    color: var(--ds-gold-bright);
+  }
+}
+.fe-choice:active {
+  transform: translateY(1px);
+  background-color: var(--ds-wash-press);
+}
+.fe-choice:focus-visible {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: var(--ds-focus-offset);
+}
+.fe-choice:focus-visible .fe-choice__mark {
+  color: var(--ds-gold-bright);
+}
+
+/* Chapter card: the scene dims and blurs behind a centred title. */
+.fe-card {
+  position: absolute;
+  inset: 0;
+  z-index: var(--ds-z-popover);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: max(var(--ds-space-6), env(safe-area-inset-top))
+    max(var(--ds-space-6), env(safe-area-inset-right))
+    max(var(--ds-space-6), env(safe-area-inset-bottom))
+    max(var(--ds-space-6), env(safe-area-inset-left));
+  text-align: center;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(11, 10, 14, 0.62),
+    rgba(11, 10, 14, 0.93) 78%
+  );
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: ds-fade-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.fe-card__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-2);
+  width: min(760px, 100%);
+  animation: ds-rise-in calc(2 * var(--ds-dur-slow)) var(--ds-ease-out);
+}
+.fe-card__rule {
+  width: min(420px, 70%);
+}
+.fe-card__rule--end {
+  width: min(160px, 30%);
+  margin-top: var(--ds-space-2);
+}
+.fe-card__title {
+  margin: var(--ds-space-1) 0 0;
+  padding-left: 0.08em;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display);
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: 0.08em;
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text);
+  text-shadow: var(--ds-text-shadow);
+}
+.fe-card__subtitle {
+  margin: 0;
+  font-size: var(--ds-text-lg);
+  font-style: italic;
+  color: var(--ds-text-2);
+}
+.fe-card__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(var(--ds-space-6), env(safe-area-inset-bottom));
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-medium);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  animation: ds-fade-in calc(4 * var(--ds-dur-slow)) var(--ds-ease-in-out);
+}
+
+/* ── In-game menu ─────────────────────────────────────────────────────── */
+.fe-menu__grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-3);
+}
+.fe-menu__difficulty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-2);
+  min-height: var(--ds-hit);
+  padding-bottom: var(--ds-space-2);
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.fe-menu__difficulty-text {
+  font-size: var(--ds-text-md);
+  color: var(--ds-text-2);
+}
+.fe-menu__difficulty-text strong {
+  font-weight: var(--ds-weight-bold);
+  color: var(--ds-text);
+}
+.fe-menu__change {
+  margin-left: auto;
+}
+.fe-menu__msg {
+  margin: var(--ds-space-2) 0 0;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-2);
+}
+.fe-menu__msg:empty {
+  margin: 0;
+}
+.fe-menu__more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-1);
+  padding-top: var(--ds-space-2);
+  border-top: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.fe-menu__more .ds-btn {
+  flex: 1 1 auto;
+  width: auto;
+  justify-content: center;
+}
+
+/* ── Settings ─────────────────────────────────────────────────────────── */
+.fe-settings__group + .fe-settings__group {
+  margin-top: var(--ds-space-4);
+}
+.fe-setting {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--ds-space-4);
+  min-height: var(--ds-hit);
+  padding: var(--ds-space-1) 0;
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.fe-setting:last-child {
+  border-bottom: 0;
+}
+.fe-setting__label {
+  font-size: var(--ds-text-md);
+  line-height: 1.25;
+  color: var(--ds-text);
+}
+.fe-setting__control {
+  display: flex;
+  justify-content: flex-end;
+}
+.fe-setting__control .ds-slider {
+  width: min(260px, 36 * var(--vw));
+}
+.fe-setting__hint {
+  grid-column: 1 / -1;
+  margin: var(--ds-space-1) 0 var(--ds-space-1);
+  font-size: var(--ds-text-xs);
+  line-height: 1.4;
+  color: var(--ds-text-3);
+}
+
+/* ── Results and ending: full-screen pages ────────────────────────────── */
+.fe-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-4);
+  padding: max(var(--ds-space-5), env(safe-area-inset-top))
+    max(var(--ds-space-6), env(safe-area-inset-right))
+    max(var(--ds-space-5), env(safe-area-inset-bottom))
+    max(var(--ds-space-6), env(safe-area-inset-left));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  color: var(--ds-text);
+  font-family: var(--ds-font-body);
+}
+.fe-page__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-1);
+  text-align: center;
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.fe-page__emblem {
+  width: 26px;
+  height: 26px;
+  color: var(--ds-gold);
+}
+.fe-page__title {
+  margin: 0;
+  padding-left: 0.12em;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display);
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: 0.12em;
+  line-height: var(--ds-leading-tight);
+}
+.fe-page__rule {
+  width: min(360px, 60 * var(--vw));
+  margin: 0;
+}
+.fe-page__foot {
+  display: flex;
+  justify-content: flex-end;
+  width: min(980px, 100%);
+  margin-top: auto;
+}
+.fe-results__cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  align-items: start;
+  gap: var(--ds-space-4);
+  width: min(980px, 100%);
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.fe-results__lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fe-results__line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ds-space-2);
+  font-size: var(--ds-text-md);
+  line-height: 1.35;
+}
+.fe-results__line-icon {
+  flex: none;
+  align-self: center;
+  color: var(--ds-gold);
+}
+.fe-results__line.is-scudi {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-lg);
+  font-weight: var(--ds-weight-bold);
+  color: var(--ds-gold-bright);
+}
+.fe-company {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fe-pilot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+  padding-bottom: var(--ds-space-3);
+  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
+}
+.fe-pilot:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.fe-pilot__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-2);
+}
+.fe-pilot__name {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-caps);
+}
+.fe-pilot__level {
+  font-size: var(--ds-text-2xs);
+  font-weight: var(--ds-weight-bold);
+  letter-spacing: var(--ds-track-label);
+  color: var(--ds-gold);
+}
+.fe-pilot__head .ds-chip {
+  margin-left: auto;
+}
+.fe-pilot__points {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+  margin-top: var(--ds-space-1);
+}
+/* Raise attributes (a side sheet): the points, then the same pilot block as the Armoury's. */
+.fe-raise {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ds-space-3);
+}
+.fe-raise > section {
+  align-self: stretch;
+}
+
+.fe-end {
+  justify-content: center;
+}
+.fe-end__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-3);
+  width: min(640px, 100%);
+  margin: auto 0;
+  text-align: center;
+  animation: ds-rise-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.fe-end__title {
+  margin: 0;
+  padding-left: 0.1em;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-display);
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: 0.1em;
+  line-height: var(--ds-leading-tight);
+}
+.fe-end__thanks {
+  margin: 0;
+  font-size: var(--ds-text-lg);
+}
+.fe-end__credits {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  line-height: 1.5;
+  color: var(--ds-text-3);
+}
+.fe-end__ngplus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ds-space-2);
+  margin: var(--ds-space-1) 0 var(--ds-space-2);
+}
+.fe-end__ngplus.ds-panel.ds-compact {
+  padding: var(--ds-space-3) var(--ds-space-5);
+}
+.fe-end__ngplus p {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-2);
+}
+
+/* ── Opening cinematic chrome ─────────────────────────────────────────── */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ds-z-modal);
+  background: var(--ds-ink-0);
+}
+.intro-screen iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+.intro-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-3);
+  margin: 0;
+  padding-left: 0.3em;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-sm);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ds-text-3);
+  animation: ds-fade-in var(--ds-dur-slow) var(--ds-ease-out);
+}
+.intro-loading__mark {
+  width: 22px;
+  height: 22px;
+  color: var(--ds-gold);
+  opacity: 0.85;
+}
+.intro-begin {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  color: var(--ds-text);
+  background: var(--ds-scrim);
+  border: 0;
+  cursor: pointer;
+}
+.intro-begin__text {
+  padding: var(--ds-space-3) var(--ds-space-6) var(--ds-space-3) calc(var(--ds-space-6) + 0.22em);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-lg);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-top: var(--ds-border) solid var(--ds-hairline);
+  border-bottom: var(--ds-border) solid var(--ds-hairline);
+}
+.intro-begin:focus-visible {
+  outline: none;
+}
+.intro-begin:focus-visible .intro-begin__text {
+  outline: var(--ds-focus-width) solid var(--ds-focus);
+  outline-offset: var(--ds-space-2);
+}
+.intro-skip.ds-btn {
+  position: absolute;
+  right: max(var(--ds-space-4), env(safe-area-inset-right));
+  bottom: max(var(--ds-space-4), env(safe-area-inset-bottom));
+  color: var(--ds-text-2);
+  background: var(--ds-glass-1);
+  border-color: var(--ds-hairline-soft);
+  -webkit-backdrop-filter: blur(var(--ds-blur));
+  backdrop-filter: blur(var(--ds-blur));
+}
+.intro-skip .ds-btn__icon {
+  order: 1;
+}
+
+/* ── Controller notice: a small alert dialog on the system layer ──────── */
+.fe-notice {
+  z-index: var(--ds-z-system);
+}
+.fe-notice__panel {
+  align-items: center;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-5) var(--ds-space-6);
+  text-align: center;
+}
+.fe-notice__icon {
+  width: 30px;
+  height: 30px;
+  color: var(--ds-gold);
+}
+.fe-notice__panel .ds-divider {
+  width: 60%;
+  margin: 0;
+}
+.fe-notice__title {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-text-xl);
+  font-weight: var(--ds-weight-regular);
+  letter-spacing: var(--ds-track-caps);
+  line-height: var(--ds-leading-tight);
+}
+.fe-notice__text {
+  margin: 0;
+  font-size: var(--ds-text-sm);
+  line-height: 1.5;
+  color: var(--ds-text-2);
+}
+.fe-notice__btn.ds-btn {
+  justify-content: center;
+  margin-top: var(--ds-space-2);
+}
+
+/* ── Rotate overlay: portrait phones only ─────────────────────────────── */
+.fe-rotate {
+  display: none;
+}
+@media (orientation: portrait) and (max-width: 900px) {
+  .fe-rotate {
+    position: fixed;
+    inset: 0;
+    z-index: var(--ds-z-system);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-5);
+    padding: var(--ds-space-8);
+    text-align: center;
+    font-family: var(--ds-font-body);
+  }
+  .fe-rotate__phone {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 104px;
+    color: var(--ds-gold);
+    border: 2px solid var(--ds-hairline-strong);
+    border-radius: var(--ds-radius-lg);
+    box-shadow: var(--ds-shadow-2);
+  }
+  .fe-rotate__icon {
+    width: 30px;
+    height: 30px;
+  }
+  .fe-rotate__text {
+    max-width: 18em;
+    margin: 0;
+    font-size: var(--ds-text-lg);
+    line-height: 1.4;
+    color: var(--ds-text-2);
+  }
+}
+
+/* TV mode lays the page out about 960×540 before its zoom: settings take two columns. */
+:root[data-display='tv'] .fe-settings .ds-sheet__panel {
+  --ds-sheet-w: 820px;
+}
+:root[data-display='tv'] .fe-settings__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  column-gap: var(--ds-space-6);
+}
+:root[data-display='tv'] .fe-settings__group:first-child {
+  grid-row: 1 / span 2;
+}
+:root[data-display='tv'] .fe-settings__group + .fe-settings__group {
+  margin-top: 0;
+}
+:root[data-display='tv'] .fe-setting__control .ds-slider {
+  width: 180px;
+}
+
+/* ── Short phones in landscape (360–430 px tall) ──────────────────────── */
+@media (max-height: 520px) {
+  .fe-title {
+    padding-top: max(var(--ds-space-4), env(safe-area-inset-top));
+    padding-bottom: max(var(--ds-space-5), env(safe-area-inset-bottom));
+  }
+  .fe-title__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+    gap: var(--ds-space-6);
+  }
+  .fe-title__emblem {
+    width: 30px;
+    height: 30px;
+    margin-bottom: var(--ds-space-2);
+  }
+  .fe-title__rule {
+    margin: var(--ds-space-3) 0 var(--ds-space-1);
+  }
+  .fe-title__menu {
+    gap: var(--ds-space-2);
+  }
+  .fe-title__continue.ds-btn {
+    min-height: var(--ds-hit-lg);
+    padding-top: var(--ds-space-1);
+    padding-bottom: var(--ds-space-1);
+  }
+  .fe-title__list {
+    padding: 2px var(--ds-space-1);
+  }
+  .fe-title__list .ds-btn {
+    min-height: var(--ds-hit);
+    font-size: var(--ds-text-sm);
+  }
+  .fe-title__note {
+    bottom: max(var(--ds-space-1), env(safe-area-inset-bottom));
+  }
+
+  .fe-dialogue {
+    min-height: 0;
+    gap: var(--ds-space-3);
+    padding: var(--ds-space-2) var(--ds-space-4) var(--ds-space-5) var(--ds-space-3);
+  }
+  .fe-dialogue__portrait {
+    width: 60px;
+    height: 60px;
+    margin-top: calc(-1 * var(--ds-space-4));
+    font-size: var(--ds-text-xl);
+  }
+  .fe-dialogue__text {
+    font-size: var(--ds-text-md);
+    line-height: 1.4;
+  }
+  .fe-dialogue.is-narration {
+    padding: var(--ds-space-3) var(--ds-space-6) var(--ds-space-5);
+  }
+  .fe-story__stack {
+    gap: var(--ds-space-2);
+  }
+  .fe-choices {
+    gap: var(--ds-space-1);
+  }
+  .fe-choice {
+    min-height: var(--ds-hit);
+    padding-top: var(--ds-space-1);
+    padding-bottom: var(--ds-space-1);
+    font-size: var(--ds-text-sm);
+  }
+  .fe-card__hint {
+    bottom: max(var(--ds-space-3), env(safe-area-inset-bottom));
+  }
+
+  .fe-mode {
+    padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-3);
+  }
+  .fe-mode__name {
+    font-size: var(--ds-text-md);
+  }
+
+  /* The menu: save slots on the left, the other actions in a column on the right. */
+  .fe-menu .ds-sheet__panel {
+    --ds-sheet-w: 720px;
+  }
+  .fe-menu__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(160px, 34%);
+    gap: var(--ds-space-4);
+  }
+  .fe-menu__more {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-self: start;
+    padding: 0 0 0 var(--ds-space-3);
+    border-top: 0;
+    border-left: var(--ds-border) solid var(--ds-hairline-soft);
+  }
+  .fe-menu__more .ds-btn {
+    flex: none;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .fe-slot {
+    min-height: var(--ds-hit);
+    padding-top: var(--ds-space-1);
+    padding-bottom: var(--ds-space-1);
+  }
+
+  /* Settings: the three groups side by side in two columns, so they fit without scrolling. */
+  .fe-settings .ds-sheet__panel {
+    --ds-sheet-w: 820px;
+  }
+  .fe-settings__groups {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: var(--ds-space-6);
+  }
+  .fe-settings__group:first-child {
+    grid-row: 1 / span 2;
+  }
+  .fe-settings__group + .fe-settings__group {
+    margin-top: 0;
+  }
+  .fe-settings__group + .fe-settings__group + .fe-settings__group {
+    padding-top: var(--ds-space-2);
+  }
+  .fe-setting {
+    min-height: 0;
+    padding: 2px 0;
+  }
+  /* The close button in the header and Esc / Ⓑ close it: the height goes to the settings. */
+  .fe-settings .ds-sheet__foot {
+    display: none;
+  }
+  .fe-setting__control .ds-slider {
+    width: min(200px, 26 * var(--vw));
+  }
+  .fe-setting__label {
+    font-size: var(--ds-text-sm);
+  }
+
+  .fe-page {
+    gap: var(--ds-space-3);
+  }
+  .fe-page__title,
+  .fe-end__title {
+    font-size: var(--ds-text-2xl);
+  }
+  .fe-page__emblem {
+    display: none;
+  }
+  .fe-end__inner {
+    gap: var(--ds-space-2);
+  }
+  .fe-end__ngplus {
+    margin: 0 0 var(--ds-space-1);
+  }
+}

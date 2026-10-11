@@ -5,19 +5,20 @@ import type { ItemKind } from '../../campaign/inventory';
 import { equipped } from '../../campaign/inventory';
 import { t } from '../../i18n';
 import { sfx } from '../../platform/audio';
-import { portraitUrl } from '../../render/art';
 import { figureSpec } from '../../render/Armatura';
 import { SIDE_COLORS } from '../../render/palette';
 import { createUnitViewer } from '../../render2d/stageFactory';
 import type { UnitViewerLike } from '../../render2d/stageFactory';
 import { useStore } from '../../state/store';
-import { RosterStats } from '../RosterStats';
+import { Button, Chip, Icon, Panel, useMediaQuery } from '../design';
 import { ItemIcon } from './ItemIcon';
 import { DetailEmpty, ItemDetail } from './ItemDetail';
 import type { Action, ActionId, Mode, ShelfEntry } from './model';
 import { iconVariant, itemName, nameOf, shelfSections, sideOf, tierOf } from './model';
-import { ArmourerEmblem, ScudiCounter } from './parts';
+import { ArmourerEmblem, KindGlyph, ScudiCounter } from './parts';
+import { PilotFace } from './PilotFace';
 import { entryKey, Shelf, TABS } from './Shelf';
+import { TrainingSheet } from './Training';
 import './armoury.css';
 
 type BarkKind = 'greetings' | 'onBuy' | 'onSell' | 'onEquip' | 'tooPoor';
@@ -36,6 +37,8 @@ interface Selected {
 const slotLabel = (kind: ItemKind): string => t(`item.kind.${kind}`);
 const UI_KEY = 'm1565.armoury.ui';
 const CONFIRM_MS = 4000;
+/** Steam Deck, desktop and TV: a separate detail column beside the shelf. */
+const WIDE_QUERY = '(min-width: 1100px) and (min-height: 521px)';
 
 function loadUi(): { tab: ItemKind; mode: Mode } {
   try {
@@ -45,21 +48,6 @@ function loadUi(): { tab: ItemKind; mode: Mode } {
   } catch {
     return { tab: 'weapon', mode: 'shop' };
   }
-}
-
-const wide = () =>
-  typeof matchMedia !== 'undefined' &&
-  matchMedia('(min-width: 1100px) and (min-height: 521px)').matches;
-
-/** True while the layout has a separate detail column (Steam Deck, desktop). */
-function useWide(): boolean {
-  const [isWide, setWide] = useState(wide);
-  useEffect(() => {
-    const onResize = () => setWide(wide());
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
-  return isWide;
 }
 
 /** The pilot's armatura on its plinth, turning slowly; falls back to an icon without WebGL. */
@@ -98,19 +86,20 @@ function ArmaturaCanvas({
     return () => viewer?.dispose();
   }, [frameId, weaponId, pilot.characterId]);
   return (
-    <div class="forge-alcove">
+    <div class="ps-viewer">
       {failed ? (
         <ItemIcon kind="frame" variant={iconVariant(lib, 'frame', frameId)} size={96} title="" />
       ) : (
         <canvas ref={ref} class="arm-viewer" data-testid="arm-viewer" aria-hidden="true" />
       )}
       {preview && (preview.kind === 'frame' || preview.kind === 'weapon') && (
-        <span class="preview-ribbon">{t('armoury.preview')}</span>
+        <Chip tone="gold" icon="info" label={t('armoury.preview')} class="ps-preview" />
       )}
     </div>
   );
 }
 
+/** A pilot on the rail: portrait, short name and level; selected with a gold rule and ring. */
 function PilotChip({
   lib,
   entry,
@@ -123,8 +112,6 @@ function PilotChip({
   onSelect: () => void;
 }) {
   const name = nameOf(lib, entry.characterId);
-  const side = sideOf(lib, entry.characterId);
-  const url = portraitUrl(entry.characterId);
   const frame = lib.frames.get(entry.frame)?.name ?? entry.frame;
   const points = entry.statPoints ?? 0;
   const label = points
@@ -138,24 +125,23 @@ function PilotChip({
       aria-controls="pilot-stage"
       aria-label={label}
       tabIndex={selected ? 0 : -1}
-      class={`pilot-chip side-${side}${selected ? ' on' : ''}`}
+      class={`pilot-chip${selected ? ' on' : ''}`}
       data-testid={`pilot-chip-${entry.characterId}`}
       onClick={onSelect}
     >
-      <span class="pc-face" aria-hidden="true">
-        {url ? <img src={url} alt="" /> : name.charAt(0)}
-      </span>
+      <PilotFace lib={lib} entry={entry} />
       <span class="pc-name">{name.split(' ').pop()}</span>
-      <span class="pc-lv">{t('unit.lv', { n: entry.level })}</span>
-      {(entry.statPoints ?? 0) > 0 && (
-        <span class="pc-pip" aria-hidden="true">
-          +{entry.statPoints}
+      <span class="pc-lv">{t('unit.lvUpper', { n: entry.level })}</span>
+      {points > 0 && (
+        <span class="ds-badge pc-pip" aria-hidden="true">
+          +{points}
         </span>
       )}
     </button>
   );
 }
 
+/** The selected pilot: name, the turning armatura and the four slots under it. */
 function PilotStage({
   lib,
   pilot,
@@ -172,17 +158,18 @@ function PilotStage({
   const side = sideOf(lib, pilot.characterId);
   const frame = lib.frames.get(pilot.frame);
   return (
-    <section
+    <Panel
+      as="section"
       class="ar-panel pilot-stage"
       id="pilot-stage"
-      data-testid="pilot-stage"
+      testId="pilot-stage"
       aria-label={t('armoury.pilot')}
     >
       <header class="ps-head">
         <h3>{nameOf(lib, pilot.characterId)}</h3>
         <small>
           {[
-            t('unit.lv', { n: pilot.level }),
+            t('unit.lvUpper', { n: pilot.level }),
             t(`armoury.side.${side}`),
             frame ? t(`frameClass.armatura.${frame.class}`) : '',
           ].join(t('common.sep'))}
@@ -209,108 +196,26 @@ function PilotStage({
                   kind={kind}
                   variant={iconVariant(lib, kind, id)}
                   tier={tierOf(lib, kind, id) ?? 'common'}
-                  size={28}
+                  size={30}
                   title=""
                 />
               ) : (
                 <span class="slot-empty-ico" aria-hidden="true">
-                  +
+                  <Icon name="plus" />
                 </span>
               )}
               <span class="slot-text">
-                <small>{slotLabel(kind)}</small>
+                <small>
+                  <KindGlyph kind={kind} />
+                  {slotLabel(kind)}
+                </small>
                 <b>{id ? itemName(lib, kind, id) : t('armoury.empty')}</b>
               </span>
             </button>
           );
         })}
       </div>
-    </section>
-  );
-}
-
-function TrainingSheet({
-  lib,
-  roster,
-  pilotId,
-  onPilot,
-  onRaise,
-  onClose,
-  onBattle,
-}: {
-  lib: Library;
-  roster: readonly RosterEntry[];
-  pilotId: string;
-  onPilot: (id: string) => void;
-  onRaise: (id: string, stat: Parameters<GameSession['raiseStat']>[1]) => void;
-  onClose: () => void;
-  /** Set when opened from To battle: offers to leave the points for later. */
-  onBattle: (() => void) | null;
-}) {
-  const entry = roster.find((r) => r.characterId === pilotId) ?? roster[0]!;
-  const i = roster.indexOf(entry);
-  const step = (d: number) => onPilot(roster[(i + d + roster.length) % roster.length]!.characterId);
-  return (
-    <div
-      class="modal"
-      role="dialog"
-      aria-label={t('armoury.training')}
-      data-testid="training-sheet"
-    >
-      <div class="modal-box training-box">
-        <header class="tr-head">
-          <button
-            type="button"
-            class="btn ghost tr-arrow"
-            aria-label={t('armoury.prevPilot')}
-            onClick={() => step(-1)}
-          >
-            ‹
-          </button>
-          <h3>
-            {t('armoury.trainingTitle', { name: nameOf(lib, entry.characterId) })}
-            <small>
-              {(entry.statPoints ?? 0) > 0
-                ? t('roster.pointsToSpend', { n: entry.statPoints ?? 0 })
-                : t('armoury.noPoints')}
-            </small>
-          </h3>
-          <button
-            type="button"
-            class="btn ghost tr-arrow"
-            aria-label={t('armoury.nextPilot')}
-            onClick={() => step(1)}
-          >
-            ›
-          </button>
-        </header>
-        <div class="tr-body">
-          <RosterStats
-            lib={lib}
-            entry={entry}
-            showAttacks
-            showSkills
-            onRaise={(stat) => onRaise(entry.characterId, stat)}
-          />
-        </div>
-        <footer class="tr-foot">
-          {onBattle ? (
-            <>
-              <button type="button" class="btn ghost" onClick={onBattle}>
-                {t('armoury.spendLater')}
-              </button>
-              <button type="button" class="btn" onClick={onClose}>
-                {t('armoury.keepTraining')}
-              </button>
-            </>
-          ) : (
-            <button type="button" class="btn" onClick={onClose}>
-              {t('common.done')}
-            </button>
-          )}
-        </footer>
-      </div>
-    </div>
+    </Panel>
   );
 }
 
@@ -321,7 +226,7 @@ function TrainingSheet({
 export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Library }) {
   const view = useStore(session.view);
   const { roster, scudi } = view;
-  const isWide = useWide();
+  const isWide = useMediaQuery(WIDE_QUERY);
   const [pilotId, setPilotId] = useState(roster[0]?.characterId ?? '');
   const [{ tab, mode }, setUi] = useState(loadUi);
   const [selected, setSelected] = useState<Selected | null>(null);
@@ -564,16 +469,15 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
 
   if (!pilot) {
     return (
-      <main class="armoury" data-testid="armoury-screen">
+      <main class="armoury is-empty" data-testid="armoury-screen">
         <p class="shelf-empty">{t('armoury.nobody')}</p>
-        <button
-          type="button"
-          class="btn go"
-          data-testid="to-battle"
+        <Button
+          variant="primary"
+          size="lg"
+          label={t('armoury.onward')}
+          testId="to-battle"
           onClick={() => session.closePrep()}
-        >
-          {t('armoury.onward')}
-        </button>
+        />
       </main>
     );
   }
@@ -621,18 +525,29 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
             </span>
           )}
         </div>
-        <button
-          type="button"
-          class="btn ghost ab-train"
-          data-testid="train"
+        <Button
+          class="ab-train"
+          label={t('armoury.train')}
+          testId="train"
           onClick={() => setTraining('open')}
         >
-          {t('armoury.train')}
-          {pending > 0 && <span class="pip">{pending}</span>}
-        </button>
-        <button type="button" class="btn go ab-battle" data-testid="to-battle" onClick={toBattle}>
-          {t('armoury.toBattle')}
-        </button>
+          {pending > 0 && (
+            <>
+              <span class="ds-badge" aria-hidden="true">
+                {pending}
+              </span>
+              <span class="ds-visually-hidden">{t('roster.pointsToSpend', { n: pending })}</span>
+            </>
+          )}
+        </Button>
+        <Button
+          class="ab-battle"
+          variant="primary"
+          icon="chevronRight"
+          label={t('armoury.toBattle')}
+          testId="to-battle"
+          onClick={toBattle}
+        />
       </header>
 
       <nav
@@ -680,9 +595,9 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
         onSelect={select}
       />
 
-      {isWide && <div class="ar-detail">{detail ?? <DetailEmpty />}</div>}
+      {isWide && <div class="ar-detail">{detail ?? <DetailEmpty side={side} />}</div>}
 
-      <div class="visually-hidden" aria-live="polite">
+      <div class="ds-visually-hidden" aria-live="polite">
         {announce}
       </div>
 

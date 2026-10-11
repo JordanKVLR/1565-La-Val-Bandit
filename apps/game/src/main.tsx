@@ -6,10 +6,21 @@ import { loadArtManifest } from './render/art';
 import { App } from './ui/App';
 import '@fontsource/cinzel/400.css';
 import '@fontsource/cinzel/700.css';
+import '@fontsource/alegreya-sans/400.css';
+import '@fontsource/alegreya-sans/500.css';
+import '@fontsource/alegreya-sans/700.css';
+// Design tokens first: every stylesheet after this may use them (docs/DESIGN.md).
+import './ui/design/tokens.css';
 import './ui/styles.css';
 import './ui/maltese.generated.css';
-import './ui/maltese.css';
 import './ui/input.css';
+import './ui/design/components.css';
+import './ui/design/controls.css';
+import './ui/pilot.css';
+import './ui/battle/hud.css';
+import './ui/frontend.css';
+import './ui/battle/overlays.css';
+import './ui/battle/chrome.css';
 import './ui/tv.css';
 
 registerSW({ immediate: true });

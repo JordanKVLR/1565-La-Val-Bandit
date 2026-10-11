@@ -34,20 +34,25 @@ function playOut(id: string, seed: number): { outcome: BattleState['outcome']; r
 }
 
 describe('battle balance (AI vs AI)', () => {
-  it.each(Object.keys(battleSources))('%s finishes and is winnable', (id) => {
-    let wins = 0;
-    let rounds = 0;
-    for (let seed = 1; seed <= SEEDS; seed++) {
-      const r = playOut(id, seed);
-      expect(r.outcome, `seed ${seed} stalled`).not.toBe('ongoing');
-      if (r.outcome === 'victory') wins++;
-      rounds += r.rounds;
-    }
+  it.each(Object.keys(battleSources))(
+    '%s finishes and is winnable',
+    (id) => {
+      let wins = 0;
+      let rounds = 0;
+      for (let seed = 1; seed <= SEEDS; seed++) {
+        const r = playOut(id, seed);
+        expect(r.outcome, `seed ${seed} stalled`).not.toBe('ongoing');
+        if (r.outcome === 'victory') wins++;
+        rounds += r.rounds;
+      }
 
-    console.log(
-      `${id}: player-side AI won ${wins}/${SEEDS}, avg ${(rounds / SEEDS).toFixed(1)} rounds`,
-    );
-    // The player-side AI is a weak stand-in for a human: 2+ wins in 16 means a person can win.
-    expect(wins).toBeGreaterThanOrEqual(2);
-  });
+      console.log(
+        `${id}: player-side AI won ${wins}/${SEEDS}, avg ${(rounds / SEEDS).toFixed(1)} rounds`,
+      );
+      // The player-side AI is a weak stand-in for a human: 2+ wins in 16 means a person can win.
+      expect(wins).toBeGreaterThanOrEqual(2);
+      // 16 full AI-vs-AI battles: about a second alone, far longer when the CPU is shared.
+    },
+    60_000,
+  );
 });

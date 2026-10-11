@@ -57,14 +57,14 @@
   border-width: var(--tv-safe-y) var(--tv-safe-x);
   background-origin: border-box;
 }
-:root[data-display='tv'] :is(.battle-canvas, .stage-canvas) {
+:root[data-display='tv'] :is(.battle-canvas, .stage-canvas, .bhud-layer, .fe-story__shade) {
   position: absolute;
   top: calc(-1 * var(--tv-safe-y));
   left: calc(-1 * var(--tv-safe-x));
   width: calc(100% + 2 * var(--tv-safe-x));
   height: calc(100% + 2 * var(--tv-safe-y));
 }
-:root[data-display='tv'] .modal {
+:root[data-display='tv'] .ds-sheet {
   inset: calc(-1 * var(--tv-safe-y)) calc(-1 * var(--tv-safe-x));
   padding: calc(var(--tv-safe-y) + 12px) calc(var(--tv-safe-x) + 12px);
 }
@@ -76,32 +76,6 @@
 /* Button prompts are always shown (pad glyphs, see KeyHint). */
 :root[data-display='tv'] .key {
   display: inline-block;
-}
-
-/*
- * Title: name on the left, menu on the right, as on short phones (styles.css), so a full menu
- * (Continue, New Game+, …) fits the safe area of a 16:9 TV.
- */
-:root[data-display='tv'] .title-screen {
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto auto;
-  align-content: center;
-  justify-content: center;
-  column-gap: 64px;
-  row-gap: 4px;
-}
-:root[data-display='tv'] .title-screen h1,
-:root[data-display='tv'] .title-screen .subtitle,
-:root[data-display='tv'] .title-screen .build-note {
-  grid-column: 1;
-  margin: 0;
-  text-align: center;
-}
-:root[data-display='tv'] .title-menu {
-  grid-column: 2;
-  grid-row: 1 / span 3;
-  align-self: center;
 }
 
 /*
@@ -122,12 +96,6 @@
 }
 :root[data-display='tv'] .armoury.wide .shelf-tab:not(.on) {
   flex: 0 0 44px;
-}
-
-/* The smallest print (under 12 px before the zoom) is raised to stay readable from the sofa. */
-:root[data-display='tv'] .facing-now,
-:root[data-display='tv'] .vb-cmd small.why {
-  font-size: 0.75rem;
 }
 
 /* The duel close-up's scene runs out to the edges too (its dialogue bar stays inside). */

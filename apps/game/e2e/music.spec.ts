@@ -21,7 +21,10 @@ test('Gentle Piano plays outside battle and Thunderous Charge in battle', async 
   const charge = trackLoaded(page, /thunderous-charge/);
   await page.goto('./?battle=b1-marsaxlokk');
   await expect(page.locator('canvas.battle-canvas')).toBeVisible();
-  await page.locator('canvas.battle-canvas').click({ position: { x: 20, y: 20 } });
+  // Any tap unlocks audio; aim at the middle of the map, clear of the HUD in the corners.
+  const map = page.locator('canvas.battle-canvas');
+  const box = (await map.boundingBox())!;
+  await map.click({ position: { x: box.width / 2, y: box.height / 2 } });
   expect([200, 206]).toContain(await charge);
   expect(errors).toEqual([]);
 });

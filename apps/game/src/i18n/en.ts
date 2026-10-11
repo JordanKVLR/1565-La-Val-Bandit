@@ -98,7 +98,6 @@ export const en = {
   'difficulty.tagline.squire': 'For the story.',
   'difficulty.tagline.knight': 'The intended challenge.',
   'difficulty.tagline.grandMaster': 'For veterans of the siege.',
-  'difficulty.recommended': '(recommended)',
   'difficulty.current': 'current',
   'difficulty.enemies': 'Enemies {changes}',
   'difficulty.enemiesAsWritten': 'Enemies as written',
@@ -176,7 +175,6 @@ export const en = {
   'results.progress': '{name}: Lv {level}, {xp}/{max} XP',
   'roster.pointsToSpend': { one: '{n} point to spend', other: '{n} points to spend' },
   'roster.raise': 'Raise {stat} for {pilot}',
-  'roster.techniques': 'Techniques: {list}',
   'roster.noTechniques': 'none yet',
   'roster.skills': 'Skills',
 
@@ -205,6 +203,7 @@ export const en = {
   'stat.hp': 'HP',
   'stat.ap': 'AP',
   'stat.fp': 'FP',
+  'stat.xp': 'EXP',
   'stat.dmg': 'DMG',
   'stat.block': 'BLOCK',
   'stat.hit': 'HIT',
@@ -253,6 +252,13 @@ export const en = {
   'objective.unitFalls': '{name} falls',
   /** Joins alternative objectives: "Defeat Mustafa or Hold out for 5 rounds". */
   'objective.or': ' or ',
+  /** Battle HUD chrome (ui/battle/BattleChrome.tsx): objectives toggle, queue, map buttons. */
+  'battleHud.objectives': 'Objectives',
+  'battleHud.mapControls': 'Map controls',
+  'battleHud.queueUnit': '{name}, {side}',
+  'battleHud.queueNow': '{name}, {side}, acting now',
+  'battleHud.round': 'Round {n}',
+  'battleHud.notices': 'Announcements',
   'facing.choose': 'Choose facing',
   'facing.question': 'Face which way?',
   'facing.face.north': 'Face north',
@@ -309,13 +315,7 @@ export const en = {
   // ── Combat forecast and reactions ───────────────────────────────────────────────────
   'forecast.label': 'Combat forecast',
   'forecast.reactions': 'Reactions',
-  'forecast.lv': 'LV',
-  'forecast.assist': 'Assist +{n}%',
-  'forecast.odds': '{n} %',
-  'forecast.damage': '{damage} dmg',
   'forecast.counterDamage': '{damage} dmg, or {reflect} back to you',
-  'forecast.zone.side': 'side',
-  'forecast.zone.rear': 'rear',
   'forecast.strikesBack': 'strikes back for {damage}',
   'forecast.reflects': 'reflects {n} on success',
   'forecast.halves': 'halves the blow',
@@ -351,7 +351,6 @@ export const en = {
   'xp.title': 'Experience',
   'xp.gain': '+{n} XP',
   'xp.levelUp': 'LEVEL UP! Lv {from} → {to}',
-  'xp.progress': '· {xp}/{max} XP · {left} to next level',
   'levelUp.label': 'Level up',
   'levelUp.title': '{name} reached level {level}!',
   'levelUp.points': {
@@ -361,25 +360,59 @@ export const en = {
   'levelUp.hint': 'New techniques unlock as your attributes grow. Experiment to find them.',
   'levelUp.saveForLater': 'Save points for later',
 
+  // ── Battle overlays: technique list, forecast, reactions, dialogs ──────────────────
+  'overlay.attack.heading': 'Techniques',
+  'overlay.tech.more': 'About {name}',
+  'overlay.num.pow': 'POW',
+  'overlay.num.range': 'RNG',
+  /** A percentage, e.g. "81%". */
+  'overlay.pct': '{n}%',
+  /** A signed modifier, e.g. "+10%" or "−25%". */
+  'overlay.pctSigned': '{sign}{n}%',
+  /** Damage per strike and the number of strikes, e.g. "16 ×2". */
+  'overlay.times': '{damage} ×{n}',
+  'overlay.forecast.versus': 'versus',
+  'overlay.forecast.ifHit': 'If every blow lands',
+  'overlay.forecast.mayFall': 'Could fall',
+  'overlay.mod.side': 'Side attack',
+  'overlay.mod.rear': 'Rear attack',
+  'overlay.mod.high': 'High ground +{n}',
+  'overlay.mod.low': 'Low ground −{n}',
+  'overlay.mod.assist': 'Assist +{n}%',
+  'overlay.reaction.pick': 'Your answer',
+  'overlay.unitLine': 'Lv {level} · {frame}',
+  'overlay.menu.saved': 'Progress is saved after every action.',
+  'overlay.end.victoryLine': 'The field is yours.',
+  'overlay.end.defeatLine': 'The line has broken.',
+  'overlay.end.giveUpConfirm': 'Give up? Press again',
+  'overlay.log.latest': 'Latest',
+  'overlay.xp.progress': '{xp}/{max} XP · {left} to next level',
+
   // ── Unit card and details sheet ─────────────────────────────────────────────────────
-  'unit.info': 'Info',
   'unit.detailsFor': 'Details for {name}',
-  'unit.exp': 'EXP {xp}/{max}',
   'unit.points': '+{n} pts',
+  'unit.side.player': 'Your unit',
+  'unit.side.enemy': 'Enemy unit',
+  'unit.tabs': 'Unit details',
+  'unit.tab.stats': 'Stats',
+  'unit.tab.techniques': 'Techniques',
+  'unit.condition': 'Condition',
+  'unit.attributes': 'Attributes',
+  'unit.equipment': 'Equipment',
+  'unit.equip.frame': 'Frame',
+  'unit.equip.weapon': 'Weapon',
+  'unit.equip.charm': 'Charm',
+  'unit.equip.amulet': 'Amulet',
   'unit.details': '{name} details',
-  'unit.fromGear': 'From gear',
   'unit.currentLevel': 'Current Level',
   'unit.expToNext': 'Exp. To Next',
   'unit.blocks': 'Blocks',
   'unit.blocksValue': '{n} dmg',
   'unit.move': 'Move',
   'unit.range': 'Range',
-  'unit.skillsTitle': '{name}: Skills',
-  'unit.techniquesTitle': '{name}: Techniques',
   'unit.enemyTechniques': "An enemy's techniques are only revealed in battle.",
   'unit.spendPoints': { one: 'Spend {n} point', other: 'Spend {n} points' },
   'unit.skills': 'Skills',
-  'unit.moreInfo': 'More Info',
   'gear.noCharm': 'No charm',
   'gear.noAmulet': 'No amulet',
 
@@ -415,7 +448,6 @@ export const en = {
   'help.pages': 'Help pages',
   'help.tab.rules': 'Rules',
   'help.tab.controls': 'Controls',
-  'help.gotIt': 'Got it',
   'help.touch': 'Touch',
   'help.touch.tap': 'Tap',
   'help.touch.tapText': 'Select a tile or unit, press a button, next line of dialogue',
@@ -651,6 +683,8 @@ export const en = {
   'shelf.cardSellsFor': 'sells for {n} scudi',
   'shelf.cardFitted': 'fitted',
   'shelf.cardUnavailable': 'unavailable: {reason}',
+  /** The sell toggle's label on narrow phones, where the shelf tabs need the room. */
+  'shelf.sellShort': 'Sell',
   'action.sell': 'Sell · {n}',
   'action.equip': 'Equip',
   'action.swap': 'Swap',
@@ -660,4 +694,26 @@ export const en = {
   'action.buyEquip': 'Buy & equip · {n}',
   'action.buy': 'Buy · {n}',
   'action.remove': 'Remove',
+
+  // ── Front-end screens on the design system (title, story, menus, results) ───────────
+  /** The title screen's list of actions, for assistive tech. */
+  'fe.title.menu': 'Main menu',
+  /** A tag on the difficulty card the game suggests. */
+  'fe.difficulty.recommended': 'Recommended',
+  /** Heading over the save slots in the in-game menu. */
+  'fe.menu.save': 'Save game',
+  /** The in-game menu's other actions (settings, notes, title screen), for assistive tech. */
+  'fe.menu.more': 'More',
+  'fe.settings.screen': 'Screen',
+  'fe.settings.battle': 'Battle',
+  'fe.settings.sound': 'Sound',
+  /** A volume, e.g. "70%". */
+  'fe.settings.percent': '{n}%',
+  /** Battle speed choice, e.g. "×2". */
+  'fe.settings.speed': '×{n}',
+  'fe.results.spoils': 'Spoils',
+  'fe.results.company': 'The company',
+  'fe.results.levelUp': 'Level up',
+  /** Opens the sheet where a pilot's unspent attribute points are spent. */
+  'fe.results.raise': 'Raise attributes',
 } as const satisfies MessageTable;

@@ -303,7 +303,8 @@ export class BattleController {
       },
       // Enemies already in reach of the main attack, before moving at all.
       ...(path ? [] : this.basicTargetLayer()),
-      ...(path ? [{ kind: 'path' as const, tiles: path }] : []),
+      // The route is drawn from the unit's own tile.
+      ...(path ? [{ kind: 'path' as const, tiles: [unit.pos, ...path] }] : []),
     ]);
   }
 

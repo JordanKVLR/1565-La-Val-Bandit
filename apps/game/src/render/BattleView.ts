@@ -16,6 +16,7 @@ import {
   MeshBasicMaterial,
   MeshLambertMaterial,
   OrthographicCamera,
+  Path,
   PlaneGeometry,
   Raycaster,
   Scene,
@@ -28,13 +29,14 @@ import type { Sprite } from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { applyTerrainArt } from './art';
 import type { HighlightKind } from './highlights';
-import { buildHighlights, disposeHighlights } from './highlights';
+import { buildHighlights, cursorTexture, disposeHighlights } from './highlights';
+import { MAP_GOLD_BRIGHT, MAP_INK } from './palette';
 import type { TerrainAtlas } from './terrainTextures';
 import { createTerrainAtlas } from './terrainTextures';
 import type { FigureSpec } from './Armatura';
 import { bakeFigure } from './Armatura';
 import type { UnitLook } from './unitSprite';
-import { createUnitSprite, drawUnit } from './unitSprite';
+import { BADGE_FONT, createUnitSprite, drawUnit } from './unitSprite';
 import { measureCanvas, renderPixelRatio } from './resolution';
 import { settings } from '../state/settings';
 import {
@@ -46,7 +48,6 @@ import {
   MapFigure,
   cameraFacing,
   disposeRingTextures,
-  ringTexture,
   storyFigureSpec,
 } from '../render2d/mapSprite';
 
@@ -90,39 +91,71 @@ const ARROW_2D = 0.82;
 const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 2.2 * FIGURE_UNIT, 0);
 
 /**
- * Unit marker: a raised arrow lying on the tile, pointing the way the unit faces (+z = south
- * before rotation). A dark rim under the coloured arrow keeps it readable on any terrain.
+ * Unit marker on the tile: a thin ring in the side's shape (circle: yours, diamond: enemy)
+ * round the unit's feet, with a slim dart on its rim pointing the way the unit faces (+z =
+ * south before rotation). A dark rim just outside keeps it readable on any terrain; it turns
+ * gold for the unit whose turn it is. One shape set, so the marker is two meshes.
  */
-function createArrowMarker(color: string): Group {
-  const shape = new Shape();
-  shape.moveTo(0, 0.44);
-  shape.lineTo(0.33, 0.06);
-  shape.lineTo(0.13, 0.06);
-  shape.lineTo(0.13, -0.38);
-  shape.lineTo(-0.13, -0.38);
-  shape.lineTo(-0.13, 0.06);
-  shape.lineTo(-0.33, 0.06);
-  shape.closePath();
-  const body = new ExtrudeGeometry(shape, { depth: 0.08, bevelEnabled: false }).rotateX(
-    Math.PI / 2,
-  );
-  const rim = body.clone().scale(1.18, 1, 1.18).translate(0, -0.012, 0);
+function markerShapes(enemy: boolean, pad: number): Shape[] {
+  const ring = new Shape();
+  const hole = new Path();
+  const width = 0.045;
+  if (enemy) {
+    // Square to the tile, so the isometric camera shows it as a diamond, like the HUD's mark.
+    const r = 0.29 + pad;
+    const inner = 0.29 - width - pad;
+    ring.moveTo(-r, -r);
+    ring.lineTo(r, -r);
+    ring.lineTo(r, r);
+    ring.lineTo(-r, r);
+    ring.closePath();
+    hole.moveTo(-inner, -inner);
+    hole.lineTo(-inner, inner);
+    hole.lineTo(inner, inner);
+    hole.lineTo(inner, -inner);
+    hole.closePath();
+  } else {
+    const r = 0.33;
+    ring.absarc(0, 0, r + pad, 0, Math.PI * 2, false);
+    hole.absarc(0, 0, r - width - pad, 0, Math.PI * 2, true);
+  }
+  ring.holes.push(hole);
+  const dart = new Shape();
+  const p = pad * 1.4;
+  dart.moveTo(0, 0.52 + p);
+  dart.lineTo(0.15 + p, 0.3 - p * 0.5);
+  dart.lineTo(0, 0.36 - p);
+  dart.lineTo(-0.15 - p, 0.3 - p * 0.5);
+  dart.closePath();
+  return [ring, dart];
+}
+
+function createArrowMarker(color: string, enemy: boolean): Group {
+  const extrude = (pad: number, depth: number) =>
+    new ExtrudeGeometry(markerShapes(enemy, pad), {
+      depth,
+      bevelEnabled: false,
+      curveSegments: 40,
+    }).rotateX(Math.PI / 2);
   const g = new Group();
-  const fill = new Mesh(body, new MeshLambertMaterial({ color }));
+  const fill = new Mesh(extrude(0, 0.035), new MeshLambertMaterial({ color }));
   fill.name = 'fill';
-  const edge = new Mesh(rim, new MeshLambertMaterial({ color: '#15100c' }));
+  const edge = new Mesh(
+    extrude(0.018, 0.03).translate(0, -0.008, 0),
+    new MeshLambertMaterial({ color: MAP_INK }),
+  );
   edge.name = 'rim';
   g.add(edge, fill);
   return g;
 }
 
-/** The active unit's arrow glows gold. */
+/** The active unit's marker: a gold rim, a warm glow and a touch larger (`base` scales 2D markers). */
 function setArrowActive(arrow: Group, active: boolean, base = 1): void {
   const fill = arrow.getObjectByName('fill') as Mesh | undefined;
   const rim = arrow.getObjectByName('rim') as Mesh | undefined;
-  (fill?.material as MeshLambertMaterial | undefined)?.emissive.set(active ? '#5a4410' : '#000000');
-  (rim?.material as MeshLambertMaterial | undefined)?.color.set(active ? '#f5d77a' : '#15100c');
-  arrow.scale.setScalar(base * (active ? 1.12 : 1));
+  (fill?.material as MeshLambertMaterial | undefined)?.emissive.set(active ? '#4a3810' : '#000000');
+  (rim?.material as MeshLambertMaterial | undefined)?.color.set(active ? MAP_GOLD_BRIGHT : MAP_INK);
+  arrow.scale.setScalar(base * (active ? 1.08 : 1));
 }
 
 interface UnitNode {
@@ -187,6 +220,7 @@ export class BattleView {
   /** Anything but sprite idling changed: the next frame redraws the whole canvas. */
   private fullRedraw = true;
   private disposed = false;
+  private readonly frameListeners = new Set<() => void>();
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -208,20 +242,26 @@ export class BattleView {
     sun.position.set(-4, 10, 6);
     this.scene.add(sun);
 
+    // The selected tile: a gold frame with firmer corners over a faint wash (one textured plane).
     this.cursor = new Mesh(
-      new PlaneGeometry(0.96, 0.96).rotateX(-Math.PI / 2),
-      new MeshBasicMaterial({
-        color: 0xf5d77a,
-        transparent: true,
-        opacity: 0.55,
-        depthWrite: false,
-      }),
+      new PlaneGeometry(1, 1).rotateX(-Math.PI / 2),
+      new MeshBasicMaterial({ map: cursorTexture(false), transparent: true, depthWrite: false }),
     );
+    this.cursor.renderOrder = 1;
     this.cursor.visible = false;
     this.scene.add(this.cursor, this.highlightGroup);
 
     this.buildTerrain();
     void applyTerrainArt(this.atlas).then((changed) => changed && this.requestRender());
+    // Badges are drawn on canvases: draw them again once their typeface (Cinzel) is ready.
+    void document.fonts
+      ?.load(BADGE_FONT)
+      .then(() => {
+        if (this.disposed) return;
+        for (const node of this.units.values()) if (node.sprite) drawUnit(node.sprite, node.look);
+        this.requestRender();
+      })
+      .catch(() => undefined);
     this.target.set(map.width / 2, 0, map.depth / 2);
     this.updateCamera();
 
@@ -276,6 +316,7 @@ export class BattleView {
     this.dying.clear();
     disposeRingTextures();
     this.tweens.clear();
+    this.frameListeners.clear();
     this.resizeObserver.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onPointerDown);
     this.canvas.removeEventListener('pointermove', this.onPointerMove);
@@ -348,7 +389,7 @@ export class BattleView {
   private createNode(u: UnitVisual): UnitNode {
     const two = this.mode === '2d';
     const spec = u.figure ?? (two ? storyFigureSpec(u.id, u.color) : undefined);
-    const arrow = createArrowMarker(u.color);
+    const arrow = createArrowMarker(u.color, !!u.enemy);
     let fig: MapFigure | null = null;
     let sprite: Sprite | null = null;
     let labelOffset = LABEL_OFFSET;
@@ -356,21 +397,6 @@ export class BattleView {
       fig = new MapFigure(spec, this.ppu, this.units.size + this.dying.size);
       this.scene.add(fig.sprite);
       arrow.scale.setScalar(ARROW_2D);
-      const ring = new Mesh(
-        new PlaneGeometry(1.2, 1.2).rotateX(-Math.PI / 2),
-        new MeshBasicMaterial({
-          map: ringTexture(u.color, !!u.enemy),
-          transparent: true,
-          depthWrite: false,
-          polygonOffset: true,
-          polygonOffsetFactor: -2,
-          polygonOffsetUnits: -2,
-        }),
-      );
-      ring.name = 'ring';
-      ring.position.y = -0.06;
-      ring.renderOrder = 0;
-      arrow.add(ring);
       if (!u.hideHp || u.figure) {
         sprite = createUnitSprite(u);
         sprite.scale.multiplyScalar(0.74);
@@ -547,12 +573,15 @@ export class BattleView {
   setHighContrast(on: boolean): void {
     if (on === this.highContrast) return;
     this.highContrast = on;
+    const cursor = this.cursor.material as MeshBasicMaterial;
+    cursor.map = cursorTexture(on);
+    cursor.needsUpdate = true;
     this.setHighlights(this.lastLayers);
   }
 
   select(c: Coord | undefined): void {
     this.cursor.visible = !!c;
-    if (c) this.cursor.position.copy(this.tileTop(c)).add(new Vector3(0, 0.01, 0));
+    if (c) this.cursor.position.copy(this.tileTop(c)).add(new Vector3(0, 0.004, 0));
     this.requestRender();
   }
 
@@ -572,6 +601,16 @@ export class BattleView {
         return t >= 1;
       });
     });
+  }
+
+  /**
+   * Runs `listener` after every rendered frame (camera moves, zoom, resize, animations), so
+   * DOM pieces pinned to the map, such as the action bar beside a unit, can follow it. Returns
+   * the unsubscribe function.
+   */
+  onFrame(listener: () => void): () => void {
+    this.frameListeners.add(listener);
+    return () => this.frameListeners.delete(listener);
   }
 
   /** Screen-space position (CSS pixels, relative to the canvas) of a tile's centre. */
@@ -769,6 +808,7 @@ export class BattleView {
         const wait = Math.max(0, started - requestedAt - 20);
         this.idleWait = this.idleWait * 0.7 + wait * 0.3;
       }
+      for (const listener of this.frameListeners) listener();
       if (this.tweens.size || animating) this.requestRender();
     });
   }

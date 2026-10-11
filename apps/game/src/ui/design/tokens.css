@@ -1,0 +1,208 @@
+/*
+ * Design tokens: the one source of colour, type, spacing, depth and motion for the UI
+ * (docs/DESIGN.md, ADR 0013). Imported first, before every other stylesheet.
+ *
+ * Every token is a custom property named --ds-*. Components (design/components.css) and
+ * screens use only these; a raw colour or pixel size in a screen's CSS is a smell.
+ *
+ * TV mode (ADR 0010) zooms the whole page, so tokens need no TV values of their own: the type
+ * scale reads the zoom-safe --vh unit, and --ds-text-scale adds a small bump for the sofa.
+ */
+:root {
+  /* ── Colour: ink and glass ────────────────────────────────────────────── */
+  /* The darkest ground (full-screen pages behind glass, the focus ring's inner edge). */
+  --ds-ink-0: #0b0a0e;
+  --ds-ink-1: #14121a;
+  --ds-ink-2: #1d1a24;
+  /*
+   * Glass surfaces, by elevation. Translucent so the map shows through; the backdrop blur
+   * (--ds-blur) keeps text readable over busy tiles. Without backdrop-filter support the
+   * solid fallbacks below take over (see the @supports block).
+   *   1: chips, HUD readouts, slim bars   2: cards and panels   3: sheets and dialogs
+   */
+  --ds-glass-1: rgba(18, 16, 22, 0.58);
+  --ds-glass-2: rgba(16, 14, 20, 0.7);
+  --ds-glass-3: rgba(14, 12, 18, 0.84);
+  /* A faint top sheen that makes glass read as a surface rather than a hole. */
+  --ds-sheen: linear-gradient(180deg, rgba(255, 246, 225, 0.06), rgba(255, 246, 225, 0) 42%);
+  /* Hover and pressed washes laid over any surface. */
+  --ds-wash-hover: rgba(255, 240, 210, 0.07);
+  --ds-wash-press: rgba(255, 240, 210, 0.12);
+  /* The modal backdrop: dims the map without hiding it. */
+  --ds-scrim: rgba(6, 5, 8, 0.56);
+
+  /* ── Colour: the one accent ───────────────────────────────────────────── */
+  --ds-gold: #d4b26a;
+  --ds-gold-bright: #f0d48e;
+  --ds-gold-deep: #9c7d3c;
+  /* Gold hairlines: the 1px rules that replace thick and double borders. */
+  --ds-hairline: rgba(212, 178, 106, 0.42);
+  --ds-hairline-strong: rgba(212, 178, 106, 0.75);
+  /* Neutral separators inside a surface (between rows, around tracks). */
+  --ds-hairline-soft: rgba(243, 236, 220, 0.12);
+  /* Selected and pressed states: a gold wash, always with a non-colour cue as well. */
+  --ds-gold-wash: rgba(212, 178, 106, 0.16);
+
+  /* ── Colour: text ─────────────────────────────────────────────────────── */
+  /* On glass-2 over the map, primary ≈ 13:1, secondary ≈ 9:1, muted ≈ 5.5:1 (≥ 4.5:1). */
+  --ds-text: #f4eedf;
+  --ds-text-2: rgba(244, 238, 223, 0.8);
+  --ds-text-3: rgba(244, 238, 223, 0.62);
+  /* Text on a gold fill (primary buttons). */
+  --ds-text-on-gold: #1a140a;
+
+  /* ── Colour: sides (Okabe-Ito, same as render/palette.ts) ─────────────── */
+  /* Always paired with a shape: player = circle, enemy = diamond (see .ds-side-mark). */
+  --ds-side-player: #1f6fb5;
+  --ds-side-enemy: #d0700a;
+  /* Lighter versions for text and hairlines on dark glass. */
+  --ds-side-player-text: #8cc2f0;
+  --ds-side-enemy-text: #f2aa58;
+
+  /* ── Colour: meters ───────────────────────────────────────────────────── */
+  /*
+   * HP / AP / FP are told apart by label (always shown), position (always HP, AP, FP) and
+   * pattern, not by hue alone: HP is solid, AP has a notch every 10%, FP is hatched (it is
+   * fatigue, which you want low). Hues are Okabe-Ito with distinct lightness.
+   */
+  --ds-meter-hp: #3eb489;
+  --ds-meter-ap: #5ab4e8;
+  --ds-meter-fp: #e9c94e;
+  --ds-meter-xp: #e8dcbc;
+  --ds-meter-neutral: var(--ds-gold);
+  --ds-meter-track: rgba(0, 0, 0, 0.45);
+  /* A preview of what an action does: a cost is cut out (hollow), a gain is hatched. */
+  --ds-meter-preview: #fff3cf;
+
+  /* ── Colour: states ───────────────────────────────────────────────────── */
+  /* Destructive actions. Never colour alone: danger buttons carry a glyph and a confirm step. */
+  --ds-danger: #e27a62;
+  --ds-danger-wash: rgba(226, 122, 98, 0.16);
+  --ds-focus: #ffd76a;
+
+  /* ── Type ─────────────────────────────────────────────────────────────── */
+  /* Cinzel: Roman inscriptional capitals for headings, names and command labels. */
+  --ds-font-display: 'Cinzel', 'Palatino Linotype', Georgia, serif;
+  /* Alegreya Sans: a calligraphic humanist sans for body text and numbers (SIL OFL). */
+  --ds-font-body: 'Alegreya Sans', 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
+  /* Large-text setting and TV mode multiply the scale (below). */
+  --ds-text-scale: 1;
+  /*
+   * Fluid sizes: clamp(min, fluid, max) on the zoom-safe height unit, so a 360 px-tall phone
+   * gets the minimum, the Deck the maximum, and TV mode (whose page is ~540 px tall before the
+   * zoom) lands in between and is then zoomed.
+   */
+  --ds-text-2xs: calc(clamp(0.6875rem, 0.62rem + 0.12 * var(--vh), 0.75rem) * var(--ds-text-scale));
+  --ds-text-xs: calc(clamp(0.75rem, 0.68rem + 0.16 * var(--vh), 0.8125rem) * var(--ds-text-scale));
+  --ds-text-sm: calc(
+    clamp(0.8125rem, 0.72rem + 0.22 * var(--vh), 0.9375rem) * var(--ds-text-scale)
+  );
+  --ds-text-md: calc(clamp(0.9375rem, 0.82rem + 0.3 * var(--vh), 1.0625rem) * var(--ds-text-scale));
+  --ds-text-lg: calc(clamp(1.0625rem, 0.92rem + 0.42 * var(--vh), 1.25rem) * var(--ds-text-scale));
+  --ds-text-xl: calc(clamp(1.25rem, 1rem + 0.7 * var(--vh), 1.625rem) * var(--ds-text-scale));
+  --ds-text-2xl: calc(clamp(1.5rem, 1.1rem + 1.2 * var(--vh), 2.25rem) * var(--ds-text-scale));
+  --ds-text-display: calc(clamp(2rem, 1.2rem + 3 * var(--vh), 3.5rem) * var(--ds-text-scale));
+  --ds-leading-tight: 1.15;
+  --ds-leading: 1.4;
+  /* Inscriptional capitals read best spaced. */
+  --ds-track-caps: 0.06em;
+  --ds-track-label: 0.08em;
+  --ds-weight-regular: 400;
+  --ds-weight-medium: 500;
+  --ds-weight-bold: 700;
+
+  /* ── Space (4 px grid) ────────────────────────────────────────────────── */
+  --ds-space-0: 2px;
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+  /* Distance from the screen edge for HUD pieces (before safe-area insets). */
+  --ds-edge: 12px;
+  /* Touch targets: every control's hit area is at least this (CLAUDE.md: ≥ 44 px). */
+  --ds-hit: 44px;
+  --ds-hit-lg: 52px;
+
+  /* ── Shape ────────────────────────────────────────────────────────────── */
+  /* Small and consistent: sleek, not bubbly. Pills only for chips. */
+  --ds-radius-xs: 2px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 6px;
+  --ds-radius-lg: 10px;
+  --ds-radius-pill: 999px;
+  --ds-border: 1px;
+
+  /* ── Depth ────────────────────────────────────────────────────────────── */
+  --ds-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.22);
+  --ds-shadow-2: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.32);
+  --ds-shadow-3: 0 4px 10px rgba(0, 0, 0, 0.35), 0 18px 48px rgba(0, 0, 0, 0.5);
+  /* A 1px inner highlight along the top edge of a raised surface. */
+  --ds-inner-light: inset 0 1px 0 rgba(255, 246, 225, 0.07);
+  --ds-blur: 14px;
+  --ds-blur-strong: 22px;
+  /* Text over the map without a surface (rare: titles over the scene). */
+  --ds-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 8px rgba(0, 0, 0, 0.5);
+
+  /* ── Motion ───────────────────────────────────────────────────────────── */
+  --ds-dur-press: 90ms;
+  --ds-dur-fast: 140ms;
+  --ds-dur-base: 220ms;
+  --ds-dur-slow: 320ms;
+  --ds-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ds-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  /* How far things travel when they enter (sheets slide further). */
+  --ds-rise: 6px;
+
+  /* ── Layers ───────────────────────────────────────────────────────────── */
+  --ds-z-hud: 10;
+  --ds-z-actionbar: 20;
+  --ds-z-popover: 30;
+  --ds-z-toast: 40;
+  --ds-z-modal: 50;
+  --ds-z-sheet: 60;
+  --ds-z-tooltip: 70;
+  --ds-z-system: 120;
+
+  /* ── Focus ────────────────────────────────────────────────────────────── */
+  --ds-focus-width: 2px;
+  --ds-focus-offset: 2px;
+  /* A dark halo outside the ring keeps it visible on light tiles and gold fills. */
+  --ds-focus-halo: 0 0 0 calc(var(--ds-focus-width) + var(--ds-focus-offset) + 2px)
+    rgba(0, 0, 0, 0.6);
+}
+
+/* Without backdrop blur, glass would be hard to read over the map: go nearly solid. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --ds-glass-1: rgba(18, 16, 22, 0.86);
+    --ds-glass-2: rgba(16, 14, 20, 0.92);
+    --ds-glass-3: rgba(14, 12, 18, 0.97);
+  }
+}
+
+/* Settings → Large text. */
+:root[data-text-size='large'] {
+  --ds-text-scale: 1.15;
+}
+/* TV: the zoom does the heavy lifting; this keeps body text near 29 px at 1080p (ADR 0010). */
+:root[data-display='tv'] {
+  --ds-text-scale: 1.06;
+}
+:root[data-display='tv'][data-text-size='large'] {
+  --ds-text-scale: 1.2;
+}
+
+/* Reduced motion: things appear and disappear, nothing travels. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-dur-press: 0ms;
+    --ds-dur-fast: 0ms;
+    --ds-dur-base: 0ms;
+    --ds-dur-slow: 0ms;
+    --ds-rise: 0px;
+  }
+}
