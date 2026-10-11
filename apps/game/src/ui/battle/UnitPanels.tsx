@@ -2,7 +2,8 @@ import type { BattleState, UnitState } from '@m1565/core';
 import { attackFpCost, attackRange, unlockedAttacks } from '@m1565/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { t } from '../../i18n';
-import { UnitViewer } from '../../render/UnitViewer';
+import { createUnitViewer } from '../../render2d/stageFactory';
+import type { UnitViewerLike } from '../../render2d/stageFactory';
 import {
   Button,
   Chip,
@@ -120,9 +121,9 @@ function Figure({ unit }: { unit: UnitState }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     if (!ref.current) return;
-    let viewer: UnitViewer | null = null;
+    let viewer: UnitViewerLike | null = null;
     try {
-      viewer = new UnitViewer(ref.current, unitFigure(unit, SIDE_COLOR[unit.side]));
+      viewer = createUnitViewer(ref.current, unitFigure(unit, SIDE_COLOR[unit.side]));
     } catch {
       // No WebGL: the equipment list still shows.
     }

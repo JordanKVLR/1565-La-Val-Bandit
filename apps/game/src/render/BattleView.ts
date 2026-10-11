@@ -38,6 +38,18 @@ import { bakeFigure } from './Armatura';
 import type { UnitLook } from './unitSprite';
 import { BADGE_FONT, createUnitSprite, drawUnit } from './unitSprite';
 import { measureCanvas, renderPixelRatio } from './resolution';
+import { settings } from '../state/settings';
+import {
+  CELL_H,
+  CELL_W,
+  FIGURE_UNIT,
+  FOOT,
+  IDLE_MS,
+  MapFigure,
+  cameraFacing,
+  disposeRingTextures,
+  storyFigureSpec,
+} from '../render2d/mapSprite';
 
 /** World units per height step. Tiles are 1×1 on the ground plane. */
 const STEP = 0.35;
@@ -45,6 +57,10 @@ const TRIANGLES_PER_TILE = 12;
 const MIN_ZOOM = 0.6;
 const MAX_ZOOM = 2.8;
 const TAP_SLOP_PX = 8;
+const IDLE_MIN_MS = IDLE_MS;
+const IDLE_MAX_MS = 500;
+/** Idle frames may take about 1/IDLE_DUTY of the time between them. */
+const IDLE_DUTY = 10;
 
 export interface UnitVisual extends UnitLook {
   readonly id: string;
@@ -70,6 +86,9 @@ const LABEL_OFFSET = new Vector3(0, 0.42, 0);
 const FIGURE_LABEL_OFFSET = new Vector3(0, 1.15, 0);
 const FIGURE_SCALE = 0.5;
 const ARROW_OFFSET = new Vector3(0, 0.1, 0);
+/** 2D mode: the arrow shrinks to a tile marker around the sprite's feet, the badge floats over its head. */
+const ARROW_2D = 0.82;
+const BADGE_OFFSET_2D = new Vector3(0, 0.1 + 2.2 * FIGURE_UNIT, 0);
 
 /**
  * Unit marker on the tile: a thin ring in the side's shape (circle: yours, diamond: enemy)
@@ -130,21 +149,29 @@ function createArrowMarker(color: string, enemy: boolean): Group {
   return g;
 }
 
-/** The active unit's marker: a gold rim, a warm glow and a touch larger. */
-function setArrowActive(arrow: Group, active: boolean): void {
+/** The active unit's marker: a gold rim, a warm glow and a touch larger (`base` scales 2D markers). */
+function setArrowActive(arrow: Group, active: boolean, base = 1): void {
   const fill = arrow.getObjectByName('fill') as Mesh | undefined;
   const rim = arrow.getObjectByName('rim') as Mesh | undefined;
   (fill?.material as MeshLambertMaterial | undefined)?.emissive.set(active ? '#4a3810' : '#000000');
   (rim?.material as MeshLambertMaterial | undefined)?.color.set(active ? MAP_GOLD_BRIGHT : MAP_INK);
-  arrow.scale.setScalar(active ? 1.08 : 1);
+  arrow.scale.setScalar(base * (active ? 1.08 : 1));
 }
 
 interface UnitNode {
-  sprite: Sprite;
+  /** The badge (initial and HP bar); absent for 2D story actors. */
+  sprite: Sprite | null;
   arrow: Group;
   labelOffset: Vector3;
   look: UnitLook;
   at: Coord;
+  facing: Facing;
+  /** 2D mode: the animated figure standing on the tile. */
+  fig: MapFigure | null;
+  /** World-space nudge (hit shake). */
+  nudge: number;
+  /** Tile-top position the node is currently drawn at. */
+  pos: Vector3;
 }
 
 type Tween = (now: number) => boolean; // returns true when finished
@@ -168,6 +195,21 @@ export class BattleView {
   private readonly pointers = new Map<number, { x: number; y: number }>();
   private readonly resizeObserver: ResizeObserver;
   private readonly units = new Map<string, UnitNode>();
+  private readonly dying = new Set<UnitNode>();
+  private mode: '2d' | '3d' = settings.get().renderMode === '3d' ? '3d' : '2d';
+  private lastList: readonly UnitVisual[] = [];
+  private readonly unsubscribeSettings: () => void;
+  private idleTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Current idle-frame interval; the governor stretches it when the main thread lags. */
+  private idleMs = IDLE_MIN_MS;
+  private idleLate = 0;
+  private idleWait = 0;
+  /** Smoothed main-thread cost (ms) of one idle-only frame. */
+  private idleCost = 0;
+  private idleDue = 0;
+  private idlePaused = false;
+  private readonly reduced = prefersReducedMotion();
+  private readonly ppu = Math.min(140, Math.max(90, 72 * (window.devicePixelRatio || 1)));
   private readonly tweens = new Set<Tween>();
   private terrain: Mesh | undefined;
   private readonly atlas: TerrainAtlas = createTerrainAtlas();
@@ -176,6 +218,8 @@ export class BattleView {
   private dragStart: { x: number; y: number; moved: boolean } | undefined;
   private pinchDistance = 0;
   private frameRequested = false;
+  /** Anything but sprite idling changed: the next frame redraws the whole canvas. */
+  private fullRedraw = true;
   private disposed = false;
   private readonly frameListeners = new Set<() => void>();
 
@@ -190,7 +234,7 @@ export class BattleView {
       readonly onCancel?: () => void;
     } = {},
   ) {
-    this.renderer = new WebGLRenderer({ canvas, antialias: true });
+    this.renderer = new WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
     this.scene.background = new Color(0x2a1f2e);
 
     this.scene.add(new HemisphereLight(0xe8f0ff, 0x6b5a3a, 1.3));
@@ -215,7 +259,7 @@ export class BattleView {
       ?.load(BADGE_FONT)
       .then(() => {
         if (this.disposed) return;
-        for (const node of this.units.values()) drawUnit(node.sprite, node.look);
+        for (const node of this.units.values()) if (node.sprite) drawUnit(node.sprite, node.look);
         this.requestRender();
       })
       .catch(() => undefined);
@@ -232,10 +276,57 @@ export class BattleView {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(canvas);
     this.resize();
+    // The map switches between 2D sprites and 3D figures live when the setting changes.
+    this.unsubscribeSettings = settings.subscribe(() => {
+      const mode = settings.get().renderMode === '3d' ? '3d' : '2d';
+      if (mode === this.mode) return;
+      this.mode = mode;
+      this.rebuildUnits();
+    });
+    this.scheduleIdle();
+  }
+
+  /**
+   * Idle breathing runs at ~12 fps while the tab shows and sprites exist. A governor keeps it to
+   * roughly a tenth of the main thread: it times the idle frames and how late the timer fires
+   * (a slow device, software GL, a starved page) and stretches the interval towards 2 fps when
+   * they cost more than that; fast devices stay at 12 fps.
+   */
+  private scheduleIdle(): void {
+    this.idleDue = performance.now() + this.idleMs;
+    this.idleTimer = setTimeout(() => {
+      if (this.disposed) return;
+      const late = Math.max(0, performance.now() - this.idleDue);
+      this.idleLate = this.idleLate * 0.7 + late * 0.3;
+      this.idleMs = Math.min(
+        IDLE_MAX_MS,
+        Math.max(IDLE_MIN_MS, this.idleCost * IDLE_DUTY + (this.idleLate + this.idleWait) * 4),
+      );
+      if (
+        !this.idlePaused &&
+        this.mode === '2d' &&
+        !this.reduced &&
+        this.units.size &&
+        !document.hidden
+      )
+        this.requestRender(true);
+      this.scheduleIdle();
+    }, this.idleMs);
+  }
+
+  /** Holds the idle breathing (the story screen does while its text is still typing). */
+  setIdlePaused(paused: boolean): void {
+    this.idlePaused = paused;
   }
 
   dispose(): void {
     this.disposed = true;
+    this.unsubscribeSettings();
+    if (this.idleTimer) clearTimeout(this.idleTimer);
+    for (const node of [...this.units.values(), ...this.dying]) this.removeNode(node, false);
+    this.units.clear();
+    this.dying.clear();
+    disposeRingTextures();
     this.tweens.clear();
     this.frameListeners.clear();
     this.resizeObserver.disconnect();
@@ -273,52 +364,124 @@ export class BattleView {
 
   /** Creates, updates or removes unit billboards to match the given list. */
   syncUnits(list: readonly UnitVisual[]): void {
+    this.lastList = list;
     const seen = new Set<string>();
     for (const u of list) {
       seen.add(u.id);
       let node = this.units.get(u.id);
       if (!node) {
-        const sprite = createUnitSprite(u);
-        const arrow = createArrowMarker(u.color, !!u.enemy);
-        if (u.figure) {
-          const figure = new Mesh(
-            bakeFigure(u.figure),
-            new MeshLambertMaterial({ vertexColors: true }),
-          );
-          figure.scale.setScalar(FIGURE_SCALE);
-          arrow.add(figure);
-          sprite.scale.multiplyScalar(0.75);
-        }
-        this.scene.add(sprite, arrow);
-        const labelOffset = u.figure ? FIGURE_LABEL_OFFSET : LABEL_OFFSET;
-        node = { sprite, arrow, labelOffset, look: u, at: u.at };
+        node = this.createNode(u);
         this.units.set(u.id, node);
         this.placeNode(node, u.at);
       } else {
         if (node.at.x !== u.at.x || node.at.y !== u.at.y) this.placeNode(node, u.at);
         if (!sameLook(node.look, u)) {
-          drawUnit(node.sprite, u);
+          if (node.sprite) drawUnit(node.sprite, u);
           node.look = u;
         }
       }
-      setArrowActive(node.arrow, u.active);
+      setArrowActive(node.arrow, u.active, node.fig ? ARROW_2D : 1);
       node.arrow.rotation.y = FACING_ANGLE[u.facing];
+      node.facing = u.facing;
     }
     for (const [id, node] of this.units) {
-      if (!seen.has(id)) {
-        this.scene.remove(node.sprite, node.arrow);
-        node.arrow.traverse((o) => {
-          if (o instanceof Mesh) {
-            o.geometry.dispose();
-            (o.material as MeshLambertMaterial).dispose();
-          }
-        });
-        node.sprite.material.map?.dispose();
-        node.sprite.material.dispose();
-        this.units.delete(id);
-      }
+      if (seen.has(id)) continue;
+      this.units.delete(id);
+      if (node.fig && this.mode === '2d' && !this.disposed) {
+        // Knocked out: fall and fade, then remove.
+        node.fig.ko();
+        if (node.sprite) node.sprite.visible = false;
+        node.arrow.visible = false;
+        this.dying.add(node);
+      } else this.removeNode(node, true);
     }
     this.requestRender();
+  }
+
+  private createNode(u: UnitVisual): UnitNode {
+    const two = this.mode === '2d';
+    const spec = u.figure ?? (two ? storyFigureSpec(u.id, u.color) : undefined);
+    const arrow = createArrowMarker(u.color, !!u.enemy);
+    let fig: MapFigure | null = null;
+    let sprite: Sprite | null = null;
+    let labelOffset = LABEL_OFFSET;
+    if (two && spec) {
+      fig = new MapFigure(spec, this.ppu, this.units.size + this.dying.size);
+      this.scene.add(fig.sprite);
+      arrow.scale.setScalar(ARROW_2D);
+      if (!u.hideHp || u.figure) {
+        sprite = createUnitSprite(u);
+        sprite.scale.multiplyScalar(0.74);
+        sprite.renderOrder = 2;
+        sprite.material.depthTest = false;
+        labelOffset = BADGE_OFFSET_2D;
+      }
+    } else {
+      sprite = createUnitSprite(u);
+      if (u.figure) {
+        const figure = new Mesh(
+          bakeFigure(u.figure),
+          new MeshLambertMaterial({ vertexColors: true }),
+        );
+        figure.scale.setScalar(FIGURE_SCALE);
+        arrow.add(figure);
+        sprite.scale.multiplyScalar(0.75);
+        labelOffset = FIGURE_LABEL_OFFSET;
+      }
+    }
+    if (sprite) this.scene.add(sprite);
+    this.scene.add(arrow);
+    return {
+      sprite,
+      arrow,
+      labelOffset,
+      look: u,
+      at: u.at,
+      facing: u.facing,
+      fig,
+      nudge: 0,
+      pos: new Vector3(),
+    };
+  }
+
+  private removeNode(node: UnitNode, requestRender: boolean): void {
+    if (node.sprite) {
+      this.scene.remove(node.sprite);
+      node.sprite.material.map?.dispose();
+      node.sprite.material.dispose();
+    }
+    this.scene.remove(node.arrow);
+    node.arrow.traverse((o) => {
+      if (o instanceof Mesh) {
+        o.geometry.dispose();
+        (o.material as MeshLambertMaterial).dispose();
+      }
+    });
+    if (node.fig) {
+      this.scene.remove(node.fig.sprite);
+      node.fig.dispose();
+    }
+    if (requestRender) this.requestRender();
+  }
+
+  /** Render mode changed: drop every unit visual and build them again in the new style. */
+  private rebuildUnits(): void {
+    for (const node of [...this.units.values(), ...this.dying]) this.removeNode(node, false);
+    this.units.clear();
+    this.dying.clear();
+    this.syncUnits(this.lastList);
+  }
+
+  /** Positions every part of a node at a tile-top point. */
+  private setNodePos(node: UnitNode, pos: Vector3, dx = 0): void {
+    node.pos.copy(pos);
+    node.nudge = dx;
+    node.sprite?.position
+      .copy(pos)
+      .add(node.labelOffset)
+      .setX(pos.x + dx);
+    node.arrow.position.copy(pos).add(ARROW_OFFSET);
+    node.fig?.sprite.position.copy(pos).setX(pos.x + dx);
   }
 
   /** Walks a unit along a path (tile by tile, hopping on height changes). */
@@ -338,13 +501,16 @@ export class BattleView {
         const b = points[seg + 1]!;
         const pos = a.clone().lerp(b, local);
         pos.y = Math.max(a.y, b.y) * Math.sin(local * Math.PI) * 0.15 + a.y + (b.y - a.y) * local;
-        node.sprite.position.copy(pos).add(node.labelOffset);
-        node.arrow.position.copy(pos).add(ARROW_OFFSET);
+        this.setNodePos(node, pos);
         const dir = { x: Math.sign(b.x - a.x), y: Math.sign(b.z - a.z) };
         const facing = (Object.keys(DIRECTIONS) as Facing[]).find(
           (f) => DIRECTIONS[f].x === dir.x && DIRECTIONS[f].y === dir.y,
         );
-        if (facing) node.arrow.rotation.y = FACING_ANGLE[facing];
+        if (facing) {
+          node.arrow.rotation.y = FACING_ANGLE[facing];
+          node.facing = facing;
+        }
+        if (node.fig) node.fig.walking = t < 1;
         if (t >= 1) {
           node.at = path[path.length - 1]!;
           resolve();
@@ -359,20 +525,38 @@ export class BattleView {
   shake(id: string): void {
     const node = this.units.get(id);
     if (!node) return;
-    const base = this.tileTop(node.at).add(node.labelOffset);
+    if (node.fig) {
+      // The active unit is the one striking: it lunges at the target, which recoils.
+      const attacker = [...this.units.values()].find((n) => n !== node && n.look.active);
+      if (attacker?.fig) {
+        const dx = node.at.x - attacker.at.x;
+        const dy = node.at.y - attacker.at.y;
+        const face = (Object.keys(DIRECTIONS) as Facing[]).find((f) =>
+          Math.abs(dx) >= Math.abs(dy)
+            ? DIRECTIONS[f].x === Math.sign(dx) && DIRECTIONS[f].y === 0
+            : DIRECTIONS[f].y === Math.sign(dy) && DIRECTIONS[f].x === 0,
+        );
+        if (face) {
+          attacker.facing = face;
+          attacker.arrow.rotation.y = FACING_ANGLE[face];
+        }
+        attacker.fig.lunge();
+      }
+      setTimeout(
+        () => {
+          if (!this.disposed) node.fig?.hurt();
+          this.requestRender();
+        },
+        attacker?.fig ? 140 : 0,
+      );
+      this.requestRender();
+    }
+    const base = this.tileTop(node.at);
     const start = performance.now();
     this.addTween((now) => {
       const t = Math.max(0, (now - start) / 300);
-      node.sprite.position.set(
-        base.x + Math.sin(t * 40) * 0.06 * (1 - Math.min(t, 1)),
-        base.y,
-        base.z,
-      );
-      if (t >= 1) {
-        node.sprite.position.copy(base);
-        return true;
-      }
-      return false;
+      this.setNodePos(node, base, Math.sin(t * 40) * 0.06 * (1 - Math.min(t, 1)));
+      return t >= 1 && (this.setNodePos(node, base), true);
     });
   }
 
@@ -478,9 +662,7 @@ export class BattleView {
 
   private placeNode(node: UnitNode, c: Coord): void {
     node.at = c;
-    const p = this.tileTop(c);
-    node.sprite.position.copy(p).add(node.labelOffset);
-    node.arrow.position.copy(p).add(ARROW_OFFSET);
+    this.setNodePos(node, this.tileTop(c));
   }
 
   private tileTop(c: Coord): Vector3 {
@@ -618,17 +800,119 @@ export class BattleView {
   }
 
   /** Render on demand; keeps rendering only while tweens run, to save battery on phones. */
-  private requestRender(): void {
+  private requestRender(idleOnly = false): void {
+    if (!idleOnly) this.fullRedraw = true;
     if (this.frameRequested || this.disposed) return;
     this.frameRequested = true;
+    const requestedAt = performance.now();
     requestAnimationFrame((now) => {
       this.frameRequested = false;
       if (this.disposed) return;
+      const started = performance.now();
+      const idleOnly = !this.fullRedraw && !this.tweens.size;
       for (const t of [...this.tweens]) if (t(now)) this.tweens.delete(t);
-      this.renderer.render(this.scene, this.camera);
+      const animating = this.mode === '2d' ? this.updateFigures(now) : false;
+      this.paint(animating);
+      if (idleOnly && !animating) {
+        this.idleCost = this.idleCost * 0.7 + (performance.now() - started) * 0.3;
+        // How long the browser took to hand out the frame beyond a normal vsync wait: it grows
+        // when the compositor or GPU is behind.
+        const wait = Math.max(0, started - requestedAt - 20);
+        this.idleWait = this.idleWait * 0.7 + wait * 0.3;
+      }
       for (const listener of this.frameListeners) listener();
-      if (this.tweens.size) this.requestRender();
+      if (this.tweens.size || animating) this.requestRender();
     });
+  }
+
+  /**
+   * Draws a frame. When only idling sprites changed their textures, just the screen rectangle
+   * around them is redrawn (scissored) instead of the whole map, which is what keeps idle
+   * breathing cheap on slow GPUs; an idle tick where nothing is due draws nothing.
+   */
+  private paint(animating: boolean): void {
+    const full = this.fullRedraw || animating || this.tweens.size > 0 || this.mode !== '2d';
+    this.fullRedraw = false;
+    const r = this.renderer;
+    if (full) {
+      for (const n of this.units.values()) if (n.fig) n.fig.redrawn = false;
+      r.render(this.scene, this.camera);
+      return;
+    }
+    const box = this.idleRect();
+    if (!box) return;
+    r.setScissorTest(true);
+    r.setScissor(box.x, box.y, box.w, box.h);
+    r.render(this.scene, this.camera);
+    r.setScissorTest(false);
+  }
+
+  /** Canvas rectangle (CSS pixels, y up) around the sprites redrawn this frame, or null. */
+  private idleRect(): { x: number; y: number; w: number; h: number } | null {
+    const size = this.renderer.getSize(new Vector2());
+    let x0 = Infinity;
+    let y0 = Infinity;
+    let x1 = -Infinity;
+    let y1 = -Infinity;
+    const right = new Vector3().setFromMatrixColumn(this.camera.matrixWorld, 0);
+    const up = new Vector3().setFromMatrixColumn(this.camera.matrixWorld, 1);
+    const p = new Vector3();
+    const w = CELL_W * FIGURE_UNIT;
+    const h = CELL_H * FIGURE_UNIT;
+    for (const n of this.units.values()) {
+      const f = n.fig;
+      if (!f?.redrawn) continue;
+      f.redrawn = false;
+      for (const sx of [-0.5, 0.5])
+        for (const sy of [-FOOT / CELL_H, 1 - FOOT / CELL_H]) {
+          p.copy(f.sprite.position)
+            .addScaledVector(right, sx * w)
+            .addScaledVector(up, sy * h)
+            .project(this.camera);
+          x0 = Math.min(x0, p.x);
+          x1 = Math.max(x1, p.x);
+          y0 = Math.min(y0, p.y);
+          y1 = Math.max(y1, p.y);
+        }
+    }
+    if (x0 === Infinity) return null;
+    const pad = 3;
+    const left = Math.max(0, Math.floor(((x0 + 1) / 2) * size.x) - pad);
+    const bottom = Math.max(0, Math.floor(((y0 + 1) / 2) * size.y) - pad);
+    const rightPx = Math.min(size.x, Math.ceil(((x1 + 1) / 2) * size.x) + pad);
+    const top = Math.min(size.y, Math.ceil(((y1 + 1) / 2) * size.y) + pad);
+    if (rightPx <= left || top <= bottom) return null;
+    return { x: left, y: bottom, w: rightPx - left, h: top - bottom };
+  }
+
+  /** Steps the 2D figures: camera-relative mirroring, idle/walk/strike frames, KO removal. */
+  private updateFigures(now: number): boolean {
+    const angle = Math.PI / 4 + (this.rotation * Math.PI) / 2;
+    const idle = !this.reduced && !document.hidden;
+    let busy = false;
+    // With many units standing, each redraws less often (and out of step with the others).
+    const idleMs = IDLE_MS * Math.max(1, Math.ceil(this.units.size / 10));
+    const v = new Vector3();
+    const step = (node: UnitNode): boolean => {
+      const fig = node.fig;
+      if (!fig) return false;
+      const cf = cameraFacing(node.facing, angle);
+      fig.mirror = cf.mirror;
+      fig.away = cf.away;
+      fig.idleMs = idleMs;
+      v.copy(node.pos).project(this.camera);
+      const visible = Math.abs(v.x) < 1.15 && v.y > -1.2 && v.y < 1.3;
+      return fig.update(now, idle, visible);
+    };
+    for (const node of this.units.values()) if (step(node)) busy = true;
+    for (const node of [...this.dying]) {
+      step(node);
+      if (node.fig?.gone) {
+        this.dying.delete(node);
+        this.removeNode(node, false);
+      } else busy = true;
+    }
+    return busy;
   }
 
   private pick(clientX: number, clientY: number): Coord | undefined {

@@ -6,6 +6,9 @@ import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
+import { settings } from '../state/settings';
+import { Portrait } from '../render2d/portraits/Portrait';
+import { expressionForLine, hasPortrait, isExpression } from '../render2d/portraits';
 import { t } from '../i18n';
 import { Button, cx, Divider, Icon } from './design';
 import { usePrompt } from './KeyHint';
@@ -19,7 +22,7 @@ interface Props {
 }
 
 /** Diorama: the stage map with characters standing on it. Remounts when the map changes. */
-function Stage({ stage, lib }: { stage: StageState; lib: Library }) {
+function Stage({ stage, lib, still }: { stage: StageState; lib: Library; still: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const viewRef = useRef<BattleView | null>(null);
   const map = useMemo(() => {
@@ -34,6 +37,10 @@ function Stage({ stage, lib }: { stage: StageState; lib: Library }) {
     viewRef.current = view;
     return () => view.dispose();
   }, [map]);
+
+  useEffect(() => {
+    viewRef.current?.setIdlePaused(still);
+  }, [still, map]);
 
   useEffect(() => {
     viewRef.current?.syncUnits(
@@ -130,10 +137,18 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
   }, [onMenu, screen.choices]);
 
   const portrait = speaker ? portraitUrl(speaker.id) : undefined;
+  const render2d = useStore(settings).renderMode === '2d';
+  const art2d = !!speaker && render2d && hasPortrait(speaker.id);
+  // The Ink script has no mood tags yet; a `mood` on the line (if the runner ever adds one) wins.
+  const mood = (line as { mood?: unknown } | null | undefined)?.mood;
+  const expression = useMemo(
+    () => (isExpression(mood) ? mood : expressionForLine(line?.text ?? '', speaker?.id)),
+    [mood, line?.text, speaker?.id],
+  );
 
   return (
     <main class="fe-story" onClick={onTap} data-testid="story-screen">
-      <Stage stage={view.stage} lib={lib} />
+      <Stage stage={view.stage} lib={lib} still={!done} />
       <div class="fe-story__shade" aria-hidden="true" />
       <div class="fe-story__menu" onClick={(e) => e.stopPropagation()}>
         <Button iconOnly icon="menu" label={t('common.menu')} onClick={onMenu} />
@@ -176,7 +191,11 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
           )}
           {line && (
             <section
-              class={cx('fe-dialogue', !speaker && 'is-narration', portrait && 'has-portrait')}
+              class={cx(
+                'fe-dialogue',
+                !speaker && 'is-narration',
+                (portrait || art2d) && 'has-portrait',
+              )}
               aria-live="polite"
             >
               {speaker && (
@@ -185,7 +204,9 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
                   style={{ backgroundColor: speaker.color }}
                   aria-hidden="true"
                 >
-                  {portrait ? (
+                  {art2d && speaker ? (
+                    <Portrait castId={speaker.id} expression={expression} animated={done} />
+                  ) : portrait ? (
                     <img src={portrait} alt="" />
                   ) : (
                     speaker.name.replace(/^(Fra|La) /, '').charAt(0)

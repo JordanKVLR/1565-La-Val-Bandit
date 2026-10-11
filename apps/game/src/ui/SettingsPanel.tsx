@@ -151,6 +151,19 @@ export function SettingsPanel({
               />
             )}
           </Row>
+          <Row label={t('settings.renderMode')}>
+            {(id) => (
+              <Segmented
+                labelledBy={id}
+                value={s.renderMode}
+                onChange={(v) => set({ renderMode: v })}
+                options={(['2d', '3d'] as const).map((m) => ({
+                  value: m,
+                  label: t(`settings.renderMode.${m}`),
+                }))}
+              />
+            )}
+          </Row>
           <Row label={t('settings.highContrast')}>
             {(id) => (
               <Switch
