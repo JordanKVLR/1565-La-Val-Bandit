@@ -159,9 +159,12 @@ with `Button`s and `<ActionBarSeparator />` before the commit action (End Turn, 
 
 To pin a bar beside a point on the map, put it in a layer that covers the map exactly and use
 `useAnchor(ref, source, enabled, insets, { gap, lift, prefer, avoid })` with an `AnchorSource`
-(`point()`, `subscribe(onChange)`, optional `avoid()`); see `ActionMenu.tsx`. The placement
-(`placeBeside` in `logic.ts`) takes the side towards the nearer screen edge, avoids covering
-other units and stays inside the HUD and title-safe insets.
+(`point()`, `subscribe(onChange)`, optional `avoid()` and `keepClear()`); see `ActionMenu.tsx`.
+The placement (`placeBeside` in `logic.ts`) takes the side towards the nearer screen edge,
+avoids covering other units, keeps off the movement range (it may stand just past the range's
+edge, level with the unit), and stays inside the HUD and title-safe insets. With `dockAbove`
+it docks in the bottom-right corner when every spot beside the unit would still hide more than
+that many tiles of the range.
 
 ### Meter
 
@@ -191,14 +194,23 @@ gold underline. Every tab is a tab stop, so the D-pad reaches them, and `[ ]`/LB
 ### Sheet
 
 `<Sheet label title?|null onClose closeLabel placement="side|bottom|center" size="sm|md|lg"
-ornament? footer? dismissible? class? testId?>` — render it only while open.
+ornament? footer? dismissible? closeButton? class? testId?>` — render it only while open.
 
 A modal dialog on a dimmed backdrop: `side` slides in from the right at full height (details on
 demand, the map stays visible on the left), `bottom` rises from the bottom edge (short choices on
 phones), `center` is a classic dialog. Focus moves in (to `[data-nav-default]` if present) and
 back on close, Tab is trapped, and Esc/Ⓑ press its close button through `data-nav-back`, so the
-screen decides what closing means. In TV mode its backdrop bleeds to the screen edge like
-`.modal` (tv.css), and the pad uses the menu control table inside it.
+screen decides what closing means. In TV mode its backdrop bleeds to the screen edge (tv.css),
+and the pad uses the menu control table inside it.
+
+One header rule for every sheet, so they read as one family:
+
+- **Side sheets** (details on demand: unit details, battle log, Raise attributes) have the title
+  on the left, a plain hairline and the ✕, and no footer button that only closes.
+- **Centre dialogs** have the cross `ornament` on their hairline. When their own main action
+  closes them (Resume, Continue, Done, Keep training) they pass `closeButton={false}`: no ✕, the
+  title centred, and Esc / Ⓑ still close through the hidden button. Dialogs without such an
+  action (difficulty, load, New Game+, codex, help) keep the ✕.
 
 ### Tooltip and Hint
 
@@ -207,6 +219,15 @@ and on a TV.
 `<Tooltip text placement="top|bottom|left|right">{(p) => <Button {...p} … />}</Tooltip>` — for
 pointer and keyboard only (hover or focus), and it describes its trigger. Never the only place
 a fact lives.
+
+### Pilot attributes and skills
+
+`<PilotAttributes lib entry name onRaise>` and `<PilotSkills lib entry>` (`ui/PilotAttributes.tsx`,
+styles in `ui/pilot.css`) draw a pilot between battles: attribute meters with gear's share in
+brackets and a raise button each while points remain, movement and HP, techniques, and the
+skill list (`ui/SkillList.tsx`: hairline rows, a star and "Active" or a padlock, a dashed rule
+and "Unlocks at Lv N"). The Armoury's training sheet and the Results screen's Raise attributes
+sheet both use them; the battle's unit details use the same skill list.
 
 ### Divider, Stat, StatGrid, Icon
 
@@ -222,7 +243,7 @@ spaced capitals over a tabular value; `emphasis` for the one number that matters
 | ------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Phone landscape (Pixel 5) | 851×393                    | `@media (max-height: 520px)` (`PHONE_QUERY`). Bars dock to the bottom edge, horizontal; cards shrink (avatar 40 px); sheets use 6–8 px edges. Content inside `env(safe-area-inset-*)`.                |
 | Small phone               | 800×360                    | As above; check nothing wraps to two lines in a bar and the card fits 36% of the width.                                                                                                               |
-| Steam Deck / desktop      | 1280×800                   | Action bar anchored beside the unit (vertical); step prompt bottom centre; cards bottom left; sheets 520–820 px wide. Key prompts show with a mouse or keyboard.                                      |
+| Steam Deck / desktop      | 1280×800                   | Action bar anchored beside the unit (vertical), off the movement range or docked bottom right; step prompt bottom centre; cards bottom left; sheets 520–820 px wide. Key prompts with a mouse/keys.   |
 | TV 1080p / 4K (ADR 0010)  | ≈ 960×540 then ×1.8 / ×3.6 | Same as Deck (media queries see the real screen, so phone rules never apply). Everything inside the 5% title-safe area; pictures and backdrops bleed. Pad glyphs always. No `.pointer-only` controls. |
 
 Rules for all of them:
@@ -332,8 +353,8 @@ Checklist for each screen:
 3. Keep or add `data-testid`s; run the screen's e2e spec on phone, Deck and (if it has one) TV.
 4. Check 851×393, 800×360, 1280×800 and TV 1080p for overflow, the 44 px hit areas, focus
    rings with a pad, and that nothing depends on colour alone.
-5. Remove the legacy rules for classes no component renders any more (`styles.css`,
-   `maltese.css`, `input.css`), and anything in `tv.css` that only served them.
+5. Remove the rules for classes no component renders any more, and anything in `tv.css` that
+   only served them (search the `.tsx` files for each class first).
 
 The Maltese motifs in `maltese.generated.css` stay available for full-screen backgrounds (a
 madum tile behind the title, faint, under a scrim) if a screen wants them; never as frames.

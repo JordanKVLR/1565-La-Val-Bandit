@@ -58,11 +58,13 @@ change at once, with the parallel agents fighting over the same selectors.
 - New UI uses `ui/design` components and `--ds-*` tokens; `design.test.ts` fails on an
   undefined token or a hex colour in the converted battle HUD styles, and keeps the side colours
   in step with `render/palette.ts`.
-- The legacy Maltese frames (`.gallarija`, lace, cornices, shutters) remain for unconverted
-  screens and are deleted as screens move over. PLAN §12's motifs survive only as restraint
-  (a cross on a divider, a madum ground behind a full-screen page).
+- The legacy Maltese frames (`.gallarija`, lace, cornices, shutters) remained for unconverted
+  screens while they moved over; since the October 2026 review no legacy chrome is left
+  (`maltese.css` and the legacy `.btn`/`.modal-box`/`.bar` rules are gone). PLAN §12's motifs
+  survive only as restraint (a cross on a divider, a madum ground behind a full-screen page).
 - `backdrop-filter` over the WebGL canvas costs GPU time on phones; the battle renders on
   demand, the blur radius is a token, and without support the glass goes nearly solid.
-- An anchored bar can still cover some of the movement range on wide screens; the map pans,
-  keyboard and pad players never click under it, and the side choice avoids units. If players
-  struggle, dock it on the Deck too (one media query).
+- An anchored bar could cover some of the movement range on wide screens. Since the UX review
+  of October 2026 (docs/ux-review-2026-10.md) the placement also keeps off the range's tiles,
+  standing just past its edge when both sides of the unit are in range, and docks in the
+  bottom-right corner when every spot beside the unit would still hide more than two tiles.

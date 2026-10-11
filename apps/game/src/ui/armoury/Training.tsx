@@ -43,6 +43,7 @@ export function TrainingSheet({
       placement="center"
       size="lg"
       ornament="cross"
+      closeButton={false}
       class="ar-training"
       testId="training-sheet"
       footer={

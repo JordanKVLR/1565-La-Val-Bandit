@@ -128,14 +128,6 @@ export function ResultsScreen({
           size="md"
           closeLabel={t('common.close')}
           onClose={() => setRaising(null)}
-          footer={
-            <Button
-              variant="primary"
-              label={t('common.done')}
-              navDefault
-              onClick={() => setRaising(null)}
-            />
-          }
         >
           <div class="fe-raise">
             {(open.statPoints ?? 0) > 0 ? (
