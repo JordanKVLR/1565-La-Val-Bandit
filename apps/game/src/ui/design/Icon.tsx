@@ -32,6 +32,8 @@ const PATHS = {
   dash: 'M6.5 12h11',
   // Battle HUD: objectives (a pennant on a staff)
   flag: 'M6 20.5v-16M6 4.5h11l-2.75 4.25L17 13H6',
+  // Locked (skills not reached yet, items out of reach): shackle, body and keyhole
+  lock: 'M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5M5.5 10.5h13v9.5h-13ZM12 14v2.5',
   // Ornaments (period flavour through restraint)
   cross:
     'M12 12 8.3 3.5 12 5.6l3.7-2.1ZM12 12l8.5-3.7-2.1 3.7 2.1 3.7ZM12 12l3.7 8.5-3.7-2.1-3.7 2.1ZM12 12 3.5 15.7 5.6 12 3.5 8.3Z',

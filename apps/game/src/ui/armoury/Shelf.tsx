@@ -3,7 +3,6 @@ import type { ItemKind } from '../../campaign/inventory';
 import { t } from '../../i18n';
 import { bonusParts } from '../battle/statInfo';
 import { Button, Icon, Panel, useMediaQuery } from '../design';
-import { Padlock } from '../SkillList';
 import { ItemIcon } from './ItemIcon';
 import type { Mode, ShelfEntry, ShelfSection } from './model';
 import { headlineDelta, iconVariant, nameOf, previewFor } from './model';
@@ -166,7 +165,7 @@ function ItemCard({
         />
         {entry.blocked && (
           <span class="ic-lock">
-            <Padlock size={11} />
+            <Icon name="lock" />
           </span>
         )}
       </span>

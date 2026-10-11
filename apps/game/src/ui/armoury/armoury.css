@@ -7,7 +7,6 @@
 
 /* ── Screen ───────────────────────────────────────────────────────────── */
 .armoury {
-  --skill-lock-hole: var(--ds-ink-0);
   position: fixed;
   inset: 0;
   isolation: isolate;
@@ -709,6 +708,7 @@
 }
 .ic-lock {
   position: absolute;
+  font-size: 11px;
   right: -4px;
   bottom: -4px;
   display: grid;
@@ -1102,81 +1102,9 @@
 .tr-pilot .tr-next {
   margin-left: auto;
 }
-.tr-attrs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ds-space-1) var(--ds-space-5);
-}
-.tr-attr {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--ds-space-2);
-  min-height: 30px;
-}
-.tr-attrs.can-raise .tr-attr {
-  min-height: var(--ds-hit);
-}
-.tr-attr .ds-meter {
-  grid-template-columns: 2.7em minmax(0, 1fr) auto;
-}
-.tr-stats {
+.tr-main .pa {
   margin-top: var(--ds-space-3);
 }
-.tr-tech {
-  font-size: var(--ds-text-sm);
-  color: var(--ds-text-2);
-}
-.tr-skills .ar-label:first-child,
-.tr-main > .ar-label:first-of-type {
-  margin-top: var(--ds-space-3);
-}
-.tr-skills > .ar-label:first-child {
-  margin-top: 0;
-}
-/* The shared skill list, redrawn as hairline rows (padlock, star and wording unchanged). */
-.ar-training .skill-list {
-  gap: 0;
-}
-.ar-training .skill-row {
-  padding: var(--ds-space-2) 0;
-  background: none;
-  border: 0;
-  border-bottom: var(--ds-border) solid var(--ds-hairline-soft);
-  border-radius: 0;
-}
-.ar-training .skill-row:last-child {
-  border-bottom: 0;
-}
-.ar-training .skill-row.locked {
-  color: var(--ds-text-3);
-  border-bottom-style: dashed;
-  opacity: 1;
-}
-.ar-training .skill-icon {
-  color: var(--ds-gold);
-}
-.ar-training .skill-row.locked .skill-icon {
-  color: var(--ds-text-3);
-}
-.ar-training .skill-name {
-  font-size: var(--ds-text-sm);
-  color: var(--ds-text);
-}
-.ar-training .skill-row.locked .skill-name {
-  color: var(--ds-text-2);
-}
-.ar-training .skill-state {
-  font-size: var(--ds-text-2xs);
-  font-weight: var(--ds-weight-bold);
-  letter-spacing: var(--ds-track-label);
-  color: var(--ds-text-3);
-}
-.ar-training .skill-desc {
-  font-size: var(--ds-text-xs);
-  color: var(--ds-text-2);
-}
-
 /* ── Coin burst (a purchase or sale) ──────────────────────────────────── */
 .coin-burst {
   position: absolute;

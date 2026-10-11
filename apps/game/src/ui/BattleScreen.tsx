@@ -14,7 +14,7 @@ import { EndOverlay } from './battle/EndOverlay';
 import { FacingPicker } from './battle/FacingPicker';
 import { BattleMenu, LogPanel } from './battle/BattleMenu';
 import { HelpPanel } from './battle/HelpPanel';
-import type { CostPreview } from './battle/StatBars';
+import type { CostPreview } from './battle/stats';
 import { UnitCard, UnitDetails } from './battle/UnitPanels';
 import { SettingsPanel } from './SettingsPanel';
 import { settings } from '../state/settings';
@@ -45,7 +45,25 @@ interface Props {
 
 type Panel = 'none' | 'menu' | 'log' | 'help' | 'settings' | 'unit';
 
-/** Modes where the player is mid-decision; the unit card would only get in the way. */
+/**
+ * Modes where the player is mid-decision, in a dialog or picker: the unit card would only get in
+ * the way, and the round banner never covers them.
+ */
+/**
+ * Modes where the player is mid-decision, in a dialog or picker: the unit card would only get in
+ * the way, and the round banner never covers them.
+ */
+/** Modes that put a dialog or a picker over the map. */
+const OVERLAY_MODES: readonly Mode['kind'][] = [
+  'attackMenu',
+  'forecast',
+  'facing',
+  'reaction',
+  'closeUp',
+  'xp',
+  'levelUp',
+  'ended',
+];
 const BUSY_MODES = [
   'forecast',
   'reaction',
@@ -256,6 +274,15 @@ export function BattleScreen({
               return { x: p.x, y: p.y - 24 };
             });
         },
+        // While the movement range shows, the bar keeps off its tiles where it can.
+        keepClear: () => {
+          const mode = ctl.mode;
+          if (mode.kind !== 'move') return [];
+          return [...mode.reach.values()].flatMap((r) => {
+            const end = r.path[r.path.length - 1];
+            return end ? [view.tileScreenPosition(end)] : [];
+          });
+        },
       },
     [view, ctl],
   );
@@ -287,7 +314,11 @@ export function BattleScreen({
         onRotate={(d) => viewRef.current?.rotate(d)}
         onMenu={() => setPanel('menu')}
       />
-      <RoundBanner round={state.round} enabled={state.outcome === 'ongoing'} />
+      {/* Never over a dialog: a reaction can open the moment a round begins. */}
+      <RoundBanner
+        round={state.round}
+        enabled={state.outcome === 'ongoing' && !BUSY_MODES.includes(mode.kind) && panel === 'none'}
+      />
       <Toasts notices={notices} />
 
       <div class="hud-bottom-left">

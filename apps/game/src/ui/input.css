@@ -1,36 +1,35 @@
 /*
- * Keyboard, gamepad and accessibility rules shared by every screen. Loaded last, after the
- * Maltese theme, so focus rings and readable small print win over decoration.
+ * Keyboard, gamepad and accessibility rules shared by every screen. Loaded after the page base,
+ * so focus rings win over decoration.
  */
 
-/* Prompts follow the last input: key letters, or pad glyphs (Ⓐ Ⓑ LB …) after a gamepad. */
+/*
+ * Prompts (KeyHint, a <kbd class="key"> inside a design-system button) follow the last input:
+ * key letters with a mouse or keyboard, pad glyphs (Ⓐ Ⓑ LB …) after a gamepad, nothing on touch.
+ * Their look is in design/components.css (.ds-btn .key).
+ */
+.key {
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .key {
+    display: inline-block;
+  }
+}
 :root[data-input='keyboard'] .key,
 :root[data-input='gamepad'] .key {
   display: inline-block;
 }
-.key {
-  opacity: 0.9;
-}
-.key.pad {
-  border-radius: 999px;
-  padding: 0 6px;
-}
 
 /* Every control shows where focus is; with a pad, always (programmatic focus included). */
 :focus-visible {
-  outline: 3px solid #ffd76a;
+  outline: 3px solid var(--ds-focus);
   outline-offset: 2px;
 }
 :root[data-input='gamepad'] :focus {
-  outline: 3px solid #ffd76a;
+  outline: 3px solid var(--ds-focus);
   outline-offset: 2px;
-  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.65);
-}
-
-/* Touch targets: the level-up + buttons and the unit card's Details were 36px tall. */
-.btn.icon.raise {
-  min-height: 44px;
-  height: 44px;
+  box-shadow: var(--ds-focus-halo);
 }
 
 /* Reduced motion: no decorative animation or easing anywhere. */
@@ -49,14 +48,4 @@
 :root[data-suspended] *::before,
 :root[data-suspended] *::after {
   animation-play-state: paused !important;
-}
-
-/* Small print readable on the dark ground (contrast ≥ 4.5:1). */
-.log-lines .empty {
-  opacity: 0.8;
-}
-
-/* Small print readable on the dark ground (contrast ≥ 4.5:1). */
-.build-note {
-  opacity: 0.8;
 }

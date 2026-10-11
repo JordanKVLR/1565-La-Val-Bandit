@@ -19,8 +19,9 @@ import {
 import type { TabItem } from '../design';
 import { SkillList } from '../SkillList';
 import { TechniqueCard } from './TechniqueCard';
-import type { CostPreview } from './StatBars';
-import { ATTRIBUTE_BAR_MAX, gearNote, Portrait } from './StatBars';
+import type { CostPreview } from './stats';
+import { Portrait } from './Portrait';
+import { ATTRIBUTE_BAR_MAX, gearNote } from './stats';
 import { STAT_INFO } from './statInfo';
 import { rangeText } from './attackText';
 import { frameName, gearName, portraitIdFor, unitFigure } from './vb';

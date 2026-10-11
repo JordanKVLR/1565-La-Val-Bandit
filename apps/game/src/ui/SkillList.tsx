@@ -1,42 +1,11 @@
 import type { Skill } from '@m1565/core';
-import { t, tParts } from '../i18n';
-
-/** A small padlock, drawn so a locked skill reads by shape as well as by being greyed. */
-export function Padlock({ size = 14 }: { size?: number }) {
-  return (
-    <svg
-      class="skill-lock"
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-      />
-      <rect x="2.5" y="7" width="11" height="8" rx="1.5" fill="currentColor" />
-      <rect x="7.2" y="9.5" width="1.6" height="3" rx="0.8" fill="var(--skill-lock-hole, #000)" />
-    </svg>
-  );
-}
-
-/** A four-pointed star for an active skill (shape, not colour, marks it). */
-function ActiveMark() {
-  return (
-    <svg class="skill-mark" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M8 0.5 10 6 15.5 8 10 10 8 15.5 6 10 0.5 8 6 6Z" fill="currentColor" />
-    </svg>
-  );
-}
+import { t } from '../i18n';
+import { Icon } from './design';
 
 /**
- * A pilot's skills: active ones with a star and "Active", locked ones greyed with a padlock and
- * "Unlocks at Lv N". `fresh` marks skills just gained (shown with a "New" tag).
+ * A pilot's skills as hairline rows (styles in pilot.css): active ones with a star and "Active",
+ * locked ones dimmed, on a dashed rule, with a padlock and "Unlocks at Lv N", so the state reads
+ * by shape and wording as well as tone. `fresh` marks skills just gained (a "New" tag).
  */
 export function SkillList({
   skills,
@@ -68,7 +37,7 @@ export function SkillList({
               description: s.description ?? '',
             })}
           >
-            <span class="skill-icon">{locked ? <Padlock /> : <ActiveMark />}</span>
+            <Icon name={locked ? 'lock' : 'star'} class="skill-icon" />
             <span class="skill-body">
               <span class="skill-head">
                 <b class="skill-name">{s.name}</b>
@@ -83,19 +52,5 @@ export function SkillList({
         );
       })}
     </ul>
-  );
-}
-
-/** "New skill: X" lines for a level-up announcement. */
-export function NewSkills({ names }: { names: readonly string[] }) {
-  if (!names.length) return null;
-  return (
-    <p class="skill-announce" data-testid="new-skill">
-      {names.map((name) => (
-        <span key={name}>
-          <ActiveMark /> {tParts('skills.newSkill', { name: <b>{name}</b> })}
-        </span>
-      ))}
-    </p>
   );
 }

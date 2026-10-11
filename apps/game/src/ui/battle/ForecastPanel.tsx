@@ -9,7 +9,7 @@ import type { ForecastSide } from './forecastModel';
 import { forecastModel } from './forecastModel';
 import { reasonText } from './reasons';
 import { ScrollArea } from './ScrollArea';
-import { Portrait } from './StatBars';
+import { Portrait } from './Portrait';
 import { frameName, portraitIdFor } from './vb';
 
 /** Command names, as in the classic reaction menu ("Attack" is Attack back). */

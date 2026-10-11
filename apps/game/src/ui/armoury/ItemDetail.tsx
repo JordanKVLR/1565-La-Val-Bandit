@@ -7,7 +7,6 @@ import { rangeText } from '../battle/attackText';
 import { STAT_INFO } from '../battle/statInfo';
 import { Button, Chip, Divider, Hint, Icon, Panel, Stat, StatGrid } from '../design';
 import { usePrompt } from '../KeyHint';
-import { Padlock } from '../SkillList';
 import { ItemIcon } from './ItemIcon';
 import type { Action, ActionId, Mode, ShelfEntry } from './model';
 import { actionsFor, iconVariant, itemDescription, itemName, nameOf, previewFor } from './model';
@@ -296,7 +295,7 @@ export function ItemDetail({
               data-testid="action-reason"
               role="status"
             >
-              {error ? <Icon name="warning" /> : <Padlock size={13} />}
+              {error ? <Icon name="warning" /> : <Icon name="lock" />}
               <span>{reason}</span>
             </p>
           )}

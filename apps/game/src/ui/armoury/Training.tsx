@@ -1,12 +1,8 @@
 import type { StatName } from '@m1565/core';
 import type { Library, RosterEntry } from '@m1565/content';
-import { characterSkills } from '@m1565/content';
-import { summarize } from '../../campaign/inventory';
 import { t } from '../../i18n';
-import { ATTRIBUTE_BAR_MAX, gearNote } from '../battle/StatBars';
-import { STAT_INFO } from '../battle/statInfo';
-import { Button, Chip, Hint, Meter, Sheet, Stat, StatGrid } from '../design';
-import { SkillList } from '../SkillList';
+import { Button, Chip, Sheet } from '../design';
+import { PilotAttributes, PilotSkills } from '../PilotAttributes';
 import { nameOf } from './model';
 import { PilotFace } from './PilotFace';
 
@@ -38,9 +34,6 @@ export function TrainingSheet({
   const step = (d: number) => onPilot(roster[(i + d + roster.length) % roster.length]!.characterId);
   const name = nameOf(lib, entry.characterId);
   const points = entry.statPoints ?? 0;
-  const summary = summarize(lib, entry);
-  const skills = characterSkills(lib, entry.characterId);
-  const frame = lib.frames.get(entry.frame);
   return (
     <Sheet
       label={t('armoury.training')}
@@ -69,7 +62,7 @@ export function TrainingSheet({
       }
     >
       <div class="tr-grid">
-        <section class="tr-main" aria-label={t('unit.attributes')}>
+        <div class="tr-main">
           <div class="tr-pilot">
             {roster.length > 1 && (
               <Button
@@ -105,57 +98,14 @@ export function TrainingSheet({
               />
             )}
           </div>
-          <h3 class="ar-label">{t('unit.attributes')}</h3>
-          <div class={`tr-attrs${points > 0 ? ' can-raise' : ''}`}>
-            {STAT_INFO.map((s) => {
-              const base = entry.stats[s.key];
-              const geared = summary.stats[s.key];
-              const diff = geared - base;
-              return (
-                <div class="tr-attr" key={s.key}>
-                  <Meter
-                    label={s.label}
-                    title={s.help}
-                    kind="neutral"
-                    value={geared}
-                    max={ATTRIBUTE_BAR_MAX}
-                    valueText={diff ? `${geared} ${gearNote(diff)}` : `${geared}`}
-                  />
-                  {points > 0 && (
-                    <Button
-                      class="tr-raise"
-                      label={t('roster.raise', { stat: s.label, pilot: name })}
-                      icon="plus"
-                      iconOnly
-                      size="sm"
-                      disabled={base >= ATTRIBUTE_BAR_MAX}
-                      onClick={() => onRaise(entry.characterId, s.key)}
-                    />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <StatGrid columns={2} class="tr-stats">
-            {frame && <Stat label={t('unit.move')} value={frame.move} />}
-            <Stat label={t('stat.hp')} value={summary.hp} />
-          </StatGrid>
-          <h3 class="ar-label">{t('unit.tab.techniques')}</h3>
-          <Hint
-            class="tr-tech"
-            text={
-              summary.techniques.length
-                ? summary.techniques.join(t('common.listSep'))
-                : t('roster.noTechniques')
-            }
+          <PilotAttributes
+            lib={lib}
+            entry={entry}
+            name={name}
+            onRaise={(stat) => onRaise(entry.characterId, stat)}
           />
-        </section>
-        {skills.length > 0 && (
-          <section class="tr-skills" aria-label={t('roster.skills')}>
-            <h3 class="ar-label">{t('roster.skills')}</h3>
-            <SkillList skills={skills} level={entry.level} testId="roster-skills" />
-          </section>
-        )}
+        </div>
+        <PilotSkills lib={lib} entry={entry} />
       </div>
     </Sheet>
   );

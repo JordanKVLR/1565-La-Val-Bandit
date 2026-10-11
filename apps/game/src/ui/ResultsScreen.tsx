@@ -7,7 +7,7 @@ import { useStore } from '../state/store';
 import type { IconName } from './design';
 import { Button, Chip, Divider, Icon, Meter, Panel, Sheet } from './design';
 import { resultLineText } from './results';
-import { RosterStats } from './RosterStats';
+import { PilotAttributes, PilotSkills } from './PilotAttributes';
 
 const LINE_ICON: Record<ResultLine['kind'], IconName> = {
   scudi: 'plus',
@@ -130,15 +130,32 @@ export function ResultsScreen({
           closeLabel={t('common.close')}
           onClose={() => setRaising(null)}
           footer={
-            <Button variant="primary" label={t('common.done')} onClick={() => setRaising(null)} />
+            <Button
+              variant="primary"
+              label={t('common.done')}
+              navDefault
+              onClick={() => setRaising(null)}
+            />
           }
         >
-          <RosterStats
-            lib={lib}
-            entry={open}
-            showSkills
-            onRaise={(stat) => session.raiseStat(open.characterId, stat)}
-          />
+          <div class="fe-raise">
+            {(open.statPoints ?? 0) > 0 ? (
+              <Chip
+                tone="gold"
+                icon="plus"
+                label={t('roster.pointsToSpend', { n: open.statPoints ?? 0 })}
+              />
+            ) : (
+              <Chip tone="neutral" icon={null} label={t('armoury.noPoints')} />
+            )}
+            <PilotAttributes
+              lib={lib}
+              entry={open}
+              name={nameOf(open.characterId)}
+              onRaise={(stat) => session.raiseStat(open.characterId, stat)}
+            />
+            <PilotSkills lib={lib} entry={open} />
+          </div>
         </Sheet>
       )}
     </main>

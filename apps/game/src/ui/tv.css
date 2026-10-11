@@ -64,7 +64,7 @@
   width: calc(100% + 2 * var(--tv-safe-x));
   height: calc(100% + 2 * var(--tv-safe-y));
 }
-:root[data-display='tv'] :is(.modal, .ds-sheet) {
+:root[data-display='tv'] .ds-sheet {
   inset: calc(-1 * var(--tv-safe-y)) calc(-1 * var(--tv-safe-x));
   padding: calc(var(--tv-safe-y) + 12px) calc(var(--tv-safe-x) + 12px);
 }

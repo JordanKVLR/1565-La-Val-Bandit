@@ -10,6 +10,8 @@ export interface AnchorSource {
   subscribe: (onChange: () => void) => () => void;
   /** Points the bar should not cover, in the same pixels (e.g. the other units). */
   avoid?: () => readonly Point[];
+  /** Points the bar should keep clear where it can (e.g. the tiles of the movement range). */
+  keepClear?: () => readonly Point[];
 }
 
 /**
@@ -49,7 +51,7 @@ export function useAnchor(
         { width: el.offsetWidth, height: el.offsetHeight },
         { width: layer.clientWidth, height: layer.clientHeight },
         config.current.insets(layer),
-        { ...config.current.opts, avoid: source.avoid?.() },
+        { ...config.current.opts, avoid: source.avoid?.(), keepClear: source.keepClear?.() },
       );
       const transform = `translate(${at.x}px, ${at.y}px)`;
       if (transform === last) return;
