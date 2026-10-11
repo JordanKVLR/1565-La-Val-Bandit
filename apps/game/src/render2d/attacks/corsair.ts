@@ -595,10 +595,16 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
       const p = hitPoint(c);
       fx.impactFrame(0.07);
       fx.layer('back', 0.9, (ctx, k) => {
-        ctx.globalAlpha = Math.sin(k * Math.PI) * 0.7;
-        ctx.fillStyle = CRIM;
+        // A soft blood-red bloom, not a flat disc (a hard-edged circle read as a sticker).
+        const cy = p.y + 0.8 + k * 0.6;
+        const g = ctx.createRadialGradient(p.x, cy, 0.1, p.x, cy, 1.7);
+        g.addColorStop(0, CRIM);
+        g.addColorStop(0.55, `${CRIM}99`);
+        g.addColorStop(1, `${CRIM}00`);
+        ctx.globalAlpha = Math.sin(k * Math.PI) * 0.75;
+        ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(p.x, p.y + 0.8 + k * 0.6, 1.5, 0, TAU);
+        ctx.arc(p.x, cy, 1.7, 0, TAU);
         ctx.fill();
       });
       fx.flash('#ff7a8a', 0.3, 0.2);
@@ -695,11 +701,12 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
     },
     follow: (c) => {
       const fx = eng(c);
-      if (c.hit && c.t >= c.impact + 0.3 && fx.once('haul')) {
+      if (c.hit && !c.defeated && c.t >= c.impact + 0.3 && fx.once('haul')) {
         const f = c.defender.anchors().feet;
         fx.dust({ x: f.x, y: 0 }, { n: 8 });
         fx.speedLines({ dir: c.dir === 1 ? Math.PI : 0, color: '#c9d4d8', life: 0.3, n: 12 });
-        fx.word({ x: f.x - c.dir * 0.2, y: 2.3 }, 'HAUL!', { color: BRASS, size: 0.46, life: 0.6 });
+        // Low, over the dragged feet, clear of CLANK! up at the hit point and of K.O.!
+        fx.word({ x: f.x - c.dir * 0.6, y: 0.4 }, 'HAUL!', { color: BRASS, size: 0.46, life: 0.6 });
       }
     },
   },

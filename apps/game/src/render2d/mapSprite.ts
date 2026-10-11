@@ -15,12 +15,12 @@ import type { Rig } from './contract';
 import { createRig } from './rig';
 
 /** Figure-space extent of a sprite cell (units are ~0.55 of a figure's height). */
-const CELL_W = 2.5;
-const CELL_H = 2.3;
-const FOOT = 0.1;
+export const CELL_W = 2.5;
+export const CELL_H = 2.3;
+export const FOOT = 0.1;
 /** World size of one figure unit on the map. */
 export const FIGURE_UNIT = 0.86;
-const IDLE_MS = 1000 / 12;
+export const IDLE_MS = 1000 / 12;
 
 export const LUNGE_S = 0.38;
 export const HURT_S = 0.4;
@@ -97,6 +97,8 @@ export class MapFigure {
   /** The unit faces away from the camera: drawn slightly shaded. */
   away = false;
   walking = false;
+  /** Set whenever the texture was redrawn; the view clears it after reading. */
+  redrawn = false;
   readonly anim: MapAnim = { walk: null, lunge: -1, hurt: -1, ko: -1 };
   private readonly rig: Rig;
   private readonly canvas: HTMLCanvasElement;
@@ -107,7 +109,10 @@ export class MapFigure {
   private readonly ppu: number;
   private clock: number;
   private last = 0;
+  /** Minimum gap between idle redraws; BattleView stretches it when many units stand on the map. */
+  idleMs = IDLE_MS;
   private lastDraw = -1e9;
+  private phase: number;
   private dirty = true;
   private lastMirror = false;
   private lastAway = false;
@@ -119,6 +124,7 @@ export class MapFigure {
     this.base = { ...guardFor(spec.weaponType) };
     this.pose = { ...this.base };
     this.clock = seed * 1.7;
+    this.phase = (seed * 0.37) % 1;
     this.canvas = document.createElement('canvas');
     this.canvas.width = Math.round(CELL_W * ppu);
     this.canvas.height = Math.round(CELL_H * ppu);
@@ -188,10 +194,11 @@ export class MapFigure {
     if (a.ko >= KO_FALL_S) {
       this.sprite.material.opacity = clamp01(1 - (a.ko - KO_FALL_S) / KO_FADE_S);
     }
-    const due = busy || this.dirty || (idle && nowMs - this.lastDraw >= IDLE_MS);
+    const due = busy || this.dirty || (idle && nowMs - this.lastDraw >= this.idleMs);
     if (due && (visible || busy)) {
       this.draw();
-      this.lastDraw = nowMs;
+      // Spread the idle redraws of many units over time instead of all landing on one frame.
+      this.lastDraw = nowMs - (this.lastDraw < 0 ? this.phase * this.idleMs : 0);
     }
     return busy || (a.ko >= 0 && !this.gone);
   }
@@ -223,6 +230,7 @@ export class MapFigure {
       ctx.globalCompositeOperation = 'source-over';
     }
     this.texture.needsUpdate = true;
+    this.redrawn = true;
   }
 
   dispose(): void {

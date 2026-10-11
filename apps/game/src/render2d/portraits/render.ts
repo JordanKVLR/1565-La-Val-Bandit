@@ -184,6 +184,27 @@ function backdrop(c: Ctx, art: CastArt): void {
   c.restore();
 }
 
+const backdrops = new Map<string, HTMLCanvasElement>();
+
+/** Draws the backdrop from a per-cast offscreen canvas sized for the current scale. */
+function drawCachedBackdrop(c: Ctx, art: CastArt): boolean {
+  if (typeof document === 'undefined' || typeof c.getTransform !== 'function') return false;
+  const px = Math.min(512, Math.max(32, Math.ceil(c.getTransform().a * U)));
+  const key = `${art.id}|${px}`;
+  let cv = backdrops.get(key);
+  if (!cv) {
+    cv = document.createElement('canvas');
+    cv.width = cv.height = px;
+    const g = cv.getContext('2d');
+    if (!g) return false;
+    g.scale(px / U, px / U);
+    backdrop(g, art);
+    backdrops.set(key, cv);
+  }
+  c.drawImage(cv, 0, 0, U, U);
+  return true;
+}
+
 export interface DrawOpts {
   /** Show a backdrop (default true). */
   bg?: boolean;
@@ -218,7 +239,10 @@ export function drawPortraitU(c: Ctx, id: string, expression: Expression, o: Dra
   c.beginPath();
   c.rect(0, 0, U, U);
   c.clip();
-  if (o.bg !== false) backdrop(c, art);
+  if (o.bg !== false) {
+    // Animated frames reuse the static backdrop from an offscreen canvas.
+    if (t === undefined || !drawCachedBackdrop(c, art)) backdrop(c, art);
+  }
   const z = art.zoom ?? 1.25;
   c.translate(100, 206);
   c.scale(z, z);

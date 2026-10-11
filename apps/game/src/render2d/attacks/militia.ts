@@ -1194,7 +1194,7 @@ export const MILITIA_SCRIPTS: AttackScripts = {
         fx.slowmo(0.28, 0.25);
         fx.word({ x: m.x + c.dir * 0.5, y: m.y + 0.5 }, 'PHT!', {
           color: '#7fe0ff',
-          size: 0.34,
+          size: 0.44,
           life: 0.5,
         });
         fx.sprite({

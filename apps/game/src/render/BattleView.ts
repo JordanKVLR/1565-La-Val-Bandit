@@ -38,7 +38,11 @@ import { createUnitSprite, drawUnit } from './unitSprite';
 import { measureCanvas, renderPixelRatio } from './resolution';
 import { settings } from '../state/settings';
 import {
+  CELL_H,
+  CELL_W,
   FIGURE_UNIT,
+  FOOT,
+  IDLE_MS,
   MapFigure,
   cameraFacing,
   disposeRingTextures,
@@ -52,6 +56,10 @@ const TRIANGLES_PER_TILE = 12;
 const MIN_ZOOM = 0.6;
 const MAX_ZOOM = 2.8;
 const TAP_SLOP_PX = 8;
+const IDLE_MIN_MS = IDLE_MS;
+const IDLE_MAX_MS = 500;
+/** Idle frames may take about 1/IDLE_DUTY of the time between them. */
+const IDLE_DUTY = 10;
 
 export interface UnitVisual extends UnitLook {
   readonly id: string;
@@ -158,7 +166,14 @@ export class BattleView {
   private mode: '2d' | '3d' = settings.get().renderMode === '3d' ? '3d' : '2d';
   private lastList: readonly UnitVisual[] = [];
   private readonly unsubscribeSettings: () => void;
-  private idleTimer: ReturnType<typeof setInterval> | undefined;
+  private idleTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Current idle-frame interval; the governor stretches it when the main thread lags. */
+  private idleMs = IDLE_MIN_MS;
+  private idleLate = 0;
+  private idleWait = 0;
+  /** Smoothed main-thread cost (ms) of one idle-only frame. */
+  private idleCost = 0;
+  private idleDue = 0;
   private readonly reduced = prefersReducedMotion();
   private readonly ppu = Math.min(140, Math.max(90, 72 * (window.devicePixelRatio || 1)));
   private readonly tweens = new Set<Tween>();
@@ -169,6 +184,8 @@ export class BattleView {
   private dragStart: { x: number; y: number; moved: boolean } | undefined;
   private pinchDistance = 0;
   private frameRequested = false;
+  /** Anything but sprite idling changed: the next frame redraws the whole canvas. */
+  private fullRedraw = true;
   private disposed = false;
 
   constructor(
@@ -182,7 +199,7 @@ export class BattleView {
       readonly onCancel?: () => void;
     } = {},
   ) {
-    this.renderer = new WebGLRenderer({ canvas, antialias: true });
+    this.renderer = new WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
     this.scene.background = new Color(0x2a1f2e);
 
     this.scene.add(new HemisphereLight(0xe8f0ff, 0x6b5a3a, 1.3));
@@ -225,17 +242,35 @@ export class BattleView {
       this.mode = mode;
       this.rebuildUnits();
     });
-    this.idleTimer = setInterval(() => {
-      // Idle breathing at ~12 fps, only while the tab shows and sprites exist.
+    this.scheduleIdle();
+  }
+
+  /**
+   * Idle breathing runs at ~12 fps while the tab shows and sprites exist. A governor keeps it to
+   * roughly a tenth of the main thread: it times the idle frames and how late the timer fires
+   * (a slow device, software GL, a starved page) and stretches the interval towards 2 fps when
+   * they cost more than that; fast devices stay at 12 fps.
+   */
+  private scheduleIdle(): void {
+    this.idleDue = performance.now() + this.idleMs;
+    this.idleTimer = setTimeout(() => {
+      if (this.disposed) return;
+      const late = Math.max(0, performance.now() - this.idleDue);
+      this.idleLate = this.idleLate * 0.7 + late * 0.3;
+      this.idleMs = Math.min(
+        IDLE_MAX_MS,
+        Math.max(IDLE_MIN_MS, this.idleCost * IDLE_DUTY + (this.idleLate + this.idleWait) * 4),
+      );
       if (this.mode === '2d' && !this.reduced && this.units.size && !document.hidden)
-        this.requestRender();
-    }, 83);
+        this.requestRender(true);
+      this.scheduleIdle();
+    }, this.idleMs);
   }
 
   dispose(): void {
     this.disposed = true;
     this.unsubscribeSettings();
-    if (this.idleTimer) clearInterval(this.idleTimer);
+    if (this.idleTimer) clearTimeout(this.idleTimer);
     for (const node of [...this.units.values(), ...this.dying]) this.removeNode(node, false);
     this.units.clear();
     this.dying.clear();
@@ -714,17 +749,88 @@ export class BattleView {
   }
 
   /** Render on demand; keeps rendering only while tweens run, to save battery on phones. */
-  private requestRender(): void {
+  private requestRender(idleOnly = false): void {
+    if (!idleOnly) this.fullRedraw = true;
     if (this.frameRequested || this.disposed) return;
     this.frameRequested = true;
+    const requestedAt = performance.now();
     requestAnimationFrame((now) => {
       this.frameRequested = false;
       if (this.disposed) return;
+      const started = performance.now();
+      const idleOnly = !this.fullRedraw && !this.tweens.size;
       for (const t of [...this.tweens]) if (t(now)) this.tweens.delete(t);
       const animating = this.mode === '2d' ? this.updateFigures(now) : false;
-      this.renderer.render(this.scene, this.camera);
+      this.paint(animating);
+      if (idleOnly && !animating) {
+        this.idleCost = this.idleCost * 0.7 + (performance.now() - started) * 0.3;
+        // How long the browser took to hand out the frame beyond a normal vsync wait: it grows
+        // when the compositor or GPU is behind.
+        const wait = Math.max(0, started - requestedAt - 20);
+        this.idleWait = this.idleWait * 0.7 + wait * 0.3;
+      }
       if (this.tweens.size || animating) this.requestRender();
     });
+  }
+
+  /**
+   * Draws a frame. When only idling sprites changed their textures, just the screen rectangle
+   * around them is redrawn (scissored) instead of the whole map, which is what keeps idle
+   * breathing cheap on slow GPUs; an idle tick where nothing is due draws nothing.
+   */
+  private paint(animating: boolean): void {
+    const full = this.fullRedraw || animating || this.tweens.size > 0 || this.mode !== '2d';
+    this.fullRedraw = false;
+    const r = this.renderer;
+    if (full) {
+      for (const n of this.units.values()) if (n.fig) n.fig.redrawn = false;
+      r.render(this.scene, this.camera);
+      return;
+    }
+    const box = this.idleRect();
+    if (!box) return;
+    r.setScissorTest(true);
+    r.setScissor(box.x, box.y, box.w, box.h);
+    r.render(this.scene, this.camera);
+    r.setScissorTest(false);
+  }
+
+  /** Canvas rectangle (CSS pixels, y up) around the sprites redrawn this frame, or null. */
+  private idleRect(): { x: number; y: number; w: number; h: number } | null {
+    const size = this.renderer.getSize(new Vector2());
+    let x0 = Infinity;
+    let y0 = Infinity;
+    let x1 = -Infinity;
+    let y1 = -Infinity;
+    const right = new Vector3().setFromMatrixColumn(this.camera.matrixWorld, 0);
+    const up = new Vector3().setFromMatrixColumn(this.camera.matrixWorld, 1);
+    const p = new Vector3();
+    const w = CELL_W * FIGURE_UNIT;
+    const h = CELL_H * FIGURE_UNIT;
+    for (const n of this.units.values()) {
+      const f = n.fig;
+      if (!f?.redrawn) continue;
+      f.redrawn = false;
+      for (const sx of [-0.5, 0.5])
+        for (const sy of [-FOOT / CELL_H, 1 - FOOT / CELL_H]) {
+          p.copy(f.sprite.position)
+            .addScaledVector(right, sx * w)
+            .addScaledVector(up, sy * h)
+            .project(this.camera);
+          x0 = Math.min(x0, p.x);
+          x1 = Math.max(x1, p.x);
+          y0 = Math.min(y0, p.y);
+          y1 = Math.max(y1, p.y);
+        }
+    }
+    if (x0 === Infinity) return null;
+    const pad = 3;
+    const left = Math.max(0, Math.floor(((x0 + 1) / 2) * size.x) - pad);
+    const bottom = Math.max(0, Math.floor(((y0 + 1) / 2) * size.y) - pad);
+    const rightPx = Math.min(size.x, Math.ceil(((x1 + 1) / 2) * size.x) + pad);
+    const top = Math.min(size.y, Math.ceil(((y1 + 1) / 2) * size.y) + pad);
+    if (rightPx <= left || top <= bottom) return null;
+    return { x: left, y: bottom, w: rightPx - left, h: top - bottom };
   }
 
   /** Steps the 2D figures: camera-relative mirroring, idle/walk/strike frames, KO removal. */
@@ -732,6 +838,8 @@ export class BattleView {
     const angle = Math.PI / 4 + (this.rotation * Math.PI) / 2;
     const idle = !this.reduced && !document.hidden;
     let busy = false;
+    // With many units standing, each redraws less often (and out of step with the others).
+    const idleMs = IDLE_MS * Math.max(1, Math.ceil(this.units.size / 10));
     const v = new Vector3();
     const step = (node: UnitNode): boolean => {
       const fig = node.fig;
@@ -739,6 +847,7 @@ export class BattleView {
       const cf = cameraFacing(node.facing, angle);
       fig.mirror = cf.mirror;
       fig.away = cf.away;
+      fig.idleMs = idleMs;
       v.copy(node.pos).project(this.camera);
       const visible = Math.abs(v.x) < 1.15 && v.y > -1.2 && v.y < 1.3;
       return fig.update(now, idle, visible);

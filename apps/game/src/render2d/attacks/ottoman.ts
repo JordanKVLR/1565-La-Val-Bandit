@@ -261,14 +261,16 @@ function moonSweep(
   main: string,
   accent: string,
   grow = 0.5,
+  opts: { where?: 'back' | 'front'; alpha?: number } = {},
 ): void {
   const f0 = face(a0, c.dir);
   const f1 = face(a1, c.dir);
-  eng(c).layer('front', life, (ctx, k) => {
+  const gain = opts.alpha ?? 0.68;
+  eng(c).layer(opts.where ?? 'front', life, (ctx, k) => {
     const e = 1 - (1 - k) * (1 - k);
     const rot = f0 + (f1 - f0) * e;
     const rr = r * (0.7 + grow * e);
-    const a = 1 - k * k;
+    const a = (1 - k * k) * gain;
     ctx.globalCompositeOperation = 'lighter';
     fillCrescent(ctx, at.x, at.y, rr * 1.12, rot, accent, a * 0.6);
     fillCrescent(ctx, at.x, at.y, rr, rot, main, a);
@@ -351,6 +353,22 @@ function spiritSteeds(
     const f = c.attacker.anchors().feet;
     const tt = k * (life + 0.15);
     const fade = Math.min(1, tt * 6) * (tt > life ? Math.max(0, 1 - (tt - life) / 0.15) : 1);
+    // A dark underlay first so the spirit horse still reads against the bright sky/ground
+    // (additive light alone washes out), then the glowing body on top.
+    ctx.globalCompositeOperation = 'source-over';
+    for (let i = count - 1; i >= 0; i--) {
+      const lag = i * 0.55 * scale;
+      ghostHorse(
+        ctx,
+        f.x - c.dir * (0.1 + lag),
+        0.0 + i * 0.015,
+        scale * (1 - i * 0.08) * 1.05,
+        tt * 22 + i * 1.3,
+        c.dir,
+        accent,
+        fade * (0.38 - i * 0.08),
+      );
+    }
     ctx.globalCompositeOperation = 'lighter';
     for (let i = count - 1; i >= 0; i--) {
       const lag = i * 0.55 * scale;
@@ -362,7 +380,7 @@ function spiritSteeds(
         tt * 22 + i * 1.3,
         c.dir,
         i === 0 ? main : accent,
-        fade * (0.6 - i * 0.12),
+        fade * (0.85 - i * 0.15),
       );
     }
   });
@@ -733,7 +751,10 @@ const twinMoons: AttackScript = {
       fx.glow(a.tip, { radius: 0.3, color: '#bfe0ff', life: 0.12 });
     if (c.t >= t1 && fx.once('cut1')) {
       const at = { x: a.chest.x + c.dir * 0.35, y: a.chest.y + 0.5 };
-      moonSweep(c, at, 0.95, 1.9, 0.1, 0.3, '#ffffff', '#7fb4ff', 0.5);
+      moonSweep(c, at, 0.95, 1.9, 0.1, 0.3, '#ffffff', '#7fb4ff', 0.5, {
+        where: 'back',
+        alpha: 0.8,
+      });
       fx.arc(at, {
         radius: 1.2,
         from: face(2.4, c.dir),
@@ -748,7 +769,14 @@ const twinMoons: AttackScript = {
           { x: p.x, y: p.y + 0.4 },
           { n: 8, color: '#dff0ff', speed: 5, dir: face(0.8, c.dir), spread: 1.6 },
         );
-        fx.word({ x: p.x, y: p.y + 1.1 }, 'ONE', { color: '#bfe0ff', size: 0.34, life: 0.45 });
+        // Only an unblocked first cut counts; a guard gets the HOLD! word alone, and the
+        // word sits well left of the second moon so the two never stack.
+        if (c.reaction !== 'defend')
+          fx.word({ x: p.x - c.dir * 0.5, y: p.y + 1.35 }, 'ONE', {
+            color: '#bfe0ff',
+            size: 0.4,
+            life: 0.45,
+          });
         fx.shake(0.04, 0.8);
       }
     }
@@ -759,21 +787,13 @@ const twinMoons: AttackScript = {
     const p = hitPoint(c);
     const lo = { x: p.x, y: p.y - 0.15 };
     // the second moon sweeps the opposite way: together they make an X
-    moonSweep(c, lo, 1.0, -2.0, 0.3, 0.4, '#ffffff', '#7fb4ff', 0.5);
+    moonSweep(c, lo, 1.0, -2.0, 0.3, 0.4, '#ffffff', '#7fb4ff', 0.5, { alpha: 0.5 });
     if (o === 'hit') {
       fx.layer('front', 0.55, (ctx, k) => {
         ctx.globalCompositeOperation = 'lighter';
         const e = 1 - (1 - k) * (1 - k);
         const r = 0.8 + 0.5 * e;
-        fillCrescent(
-          ctx,
-          p.x,
-          p.y + 0.1,
-          r,
-          face(0.75, c.dir) + e * 0.3,
-          '#ffffff',
-          (1 - k) * 0.95,
-        );
+        fillCrescent(ctx, p.x, p.y + 0.1, r, face(0.75, c.dir) + e * 0.3, '#ffffff', (1 - k) * 0.5);
         fillCrescent(
           ctx,
           p.x,
@@ -781,7 +801,7 @@ const twinMoons: AttackScript = {
           r,
           face(-0.75, c.dir) - e * 0.3,
           '#9cc8ff',
-          (1 - k) * 0.95,
+          (1 - k) * 0.5,
         );
         fillStar8(ctx, p.x, p.y + 0.1, 0.35 + 0.3 * e, k * 4, '#ffffff', 1 - k);
       });
@@ -796,7 +816,7 @@ const twinMoons: AttackScript = {
         size: 0.035,
       });
       fx.ring(p, { color: '#9cc8ff', radius: 1.1, life: 0.4, width: 0.08 });
-      fx.word({ x: p.x, y: p.y + 1.0 }, 'TWIN!', { color: '#dff0ff', size: 0.58, life: 0.85 });
+      fx.word({ x: p.x, y: p.y + 1.2 }, 'TWIN!', { color: '#dff0ff', size: 0.58, life: 0.85 });
     } else if (o === 'block') {
       guardCrack(c, '#dff0ff', '#7fb4ff');
     } else {

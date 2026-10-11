@@ -21,6 +21,7 @@ function reducedMotion(): boolean {
 }
 
 const TWEEN = 0.18;
+const FRAME_MS = 1000 / 15 - 2;
 
 /**
  * A vector portrait on a canvas. Decorative: always aria-hidden (the dialogue text carries the
@@ -75,17 +76,22 @@ export function Portrait({
     }
   }, [expression, animated, castId]);
 
-  // The animation loop (about 30 fps, paused while hidden).
+  // The animation loop (about 15 fps, paused while hidden; none for reduced motion).
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const live = animated && !reducedMotion();
     if (!live && tween.current >= 1) return;
-    let raf = 0;
-    let last = 0;
-    const t0 = performance.now();
-    const loop = (now: number) => {
-      raf = requestAnimationFrame(loop);
-      if (document.hidden || now - last < 33) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let last = performance.now();
+    const t0 = last;
+    const loop = () => {
+      timer = undefined;
+      if (document.hidden) {
+        // Paused while hidden: look again in a moment.
+        timer = setTimeout(loop, 250);
+        return;
+      }
+      const now = performance.now();
       const dt = (now - last) / 1000;
       last = now;
       if (tween.current < 1) {
@@ -93,10 +99,10 @@ export function Portrait({
         cur.current = lerpExpr(from.current, target.current, ease(tween.current));
       }
       redraw.current(live ? (now - t0) / 1000 : undefined);
-      if (!live && tween.current >= 1) cancelAnimationFrame(raf);
+      if (live || tween.current < 1) timer = setTimeout(loop, FRAME_MS);
     };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    timer = setTimeout(loop, 0);
+    return () => clearTimeout(timer);
   }, [animated, expression, castId]);
 
   return (

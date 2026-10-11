@@ -756,6 +756,33 @@ class FxImpl implements FxEngine {
     w.color = o.color ?? '#ffd24a';
     w.size = o.size ?? 0.55;
     w.rot = o.rot ?? (this.rng() - 0.5) * 0.3;
+    this.separateWord(w);
+  }
+
+  /**
+   * Nudges a new word out of the way of words that are still clearly visible, so two
+   * onomatopoeia ("CLANK!" + "HAUL!", an attack word + "K.O.!") never print over each other.
+   * Prefers moving up; falls back to below when the view's top is in the way.
+   */
+  private separateWord(w: Word): void {
+    const halfW = (t: string, size: number) => t.length * 0.3 * size + 0.1;
+    const halfH = (size: number) => size * 0.55;
+    // Settle where the word will really be drawn (drawWord clamps to the view top).
+    const top = this.view.maxY - w.size * 0.7 - 0.3;
+    w.y = Math.min(w.y, top);
+    for (let pass = 0; pass < 4; pass++) {
+      let moved = false;
+      for (const o of this.words.items) {
+        if (!o.alive || o === w || o.age > o.life * 0.75) continue;
+        const gapX = halfW(w.text, w.size) + halfW(o.text, o.size);
+        const gapY = halfH(w.size) + halfH(o.size);
+        if (Math.abs(w.x - o.x) >= gapX || Math.abs(w.y - o.y) >= gapY) continue;
+        const up = o.y + gapY + 0.03;
+        w.y = up <= top ? up : Math.max(0.35, o.y - gapY - 0.03);
+        moved = true;
+      }
+      if (!moved) break;
+    }
   }
 
   sprite(o: {
@@ -1242,9 +1269,9 @@ class FxImpl implements FxEngine {
     const fade = u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3;
     if (fade <= 0 || pop <= 0) return;
     const sc = (w.size / 100) * pop * (1 + 0.06 * u);
-    const hw = w.text.length * 0.3 * w.size + 0.1;
+    const hw = w.text.length * 0.3 * w.size + 0.3;
     const wx = Math.max(this.view.minX + hw, Math.min(this.view.maxX - hw, w.x));
-    const wy = Math.min(this.view.maxY - w.size * 0.7, w.y + u * 0.35);
+    const wy = Math.min(this.view.maxY - w.size * 0.7, w.y + u * 0.2);
     ctx.save();
     ctx.translate(wx, wy);
     ctx.rotate(w.rot);
@@ -1431,7 +1458,7 @@ class FxImpl implements FxEngine {
     // Impact frame: stark white with black wedges.
     if (this.frameLeft > 0) {
       const u = 1 - this.frameLeft / this.frameLife;
-      ctx.globalAlpha = u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3;
+      ctx.globalAlpha = 0.9 * (u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = '#0b0b0f';
