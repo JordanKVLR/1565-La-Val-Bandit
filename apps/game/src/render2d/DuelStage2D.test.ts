@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { AttackStyle, Reaction, WeaponType } from '@m1565/core';
-import { DuelStage2D } from './DuelStage2D';
+import { DuelStage2D, FIT_UNITS, MAX_UNIT_HEIGHT, MAX_ZOOM, duelScale } from './DuelStage2D';
 import { fakeCanvas } from './testKit';
 
 const STYLES: [AttackStyle, WeaponType][] = [
@@ -105,5 +105,31 @@ describe('DuelStage2D', () => {
       return steps;
     };
     expect(mk()).toBe(mk());
+  });
+});
+
+describe('duel framing', () => {
+  const FIGURE_UNITS = 2.3; // a fighter, plume included, in world units
+  it('keeps the fighters near half the canvas height on phone and TV canvases', () => {
+    for (const [w, h] of [
+      [640, 300],
+      [851, 393],
+      [1280, 720],
+      [1920, 1080],
+      [2560, 1080],
+      [1024, 768],
+    ] as const) {
+      const rest = (FIGURE_UNITS * duelScale(w, h)) / h;
+      expect(rest).toBeLessThanOrEqual(0.53);
+      expect(rest).toBeGreaterThanOrEqual(0.33);
+      // Even at the zoom cap they stay inside the frame.
+      expect(rest * MAX_ZOOM).toBeLessThanOrEqual(0.7);
+    }
+  });
+
+  it('fits the pair across the width, and pulls back for a standoff', () => {
+    expect(duelScale(640, 1000)).toBeCloseTo(640 / FIT_UNITS);
+    expect(duelScale(4000, 300)).toBeCloseTo(300 * MAX_UNIT_HEIGHT);
+    expect(duelScale(640, 300, 1.4)).toBeLessThan(duelScale(640, 300));
   });
 });
