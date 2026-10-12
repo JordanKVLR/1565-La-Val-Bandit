@@ -215,11 +215,11 @@ export interface LoadoutSummary {
   readonly stats: PilotStats;
   readonly hp: number;
   readonly move: number;
-  /** Raw damage before the technique's power: (POW + WEP) × damagePerPoint, rounded. */
+  /** Raw damage before the technique's power: (POW + WEP) × damagePerPoint × damageScale, rounded. */
   readonly damage: number;
   /** Hit-chance bonus from DEX. */
   readonly accuracy: number;
-  /** Damage blocked per hit: DEF × defDamagePerPoint (armaturas have no armour). */
+  /** Damage blocked per hit: DEF × defDamagePerPoint × damageScale (armaturas have no armour), to one decimal. */
   readonly block: number;
   /** Weapon type and reach, e.g. "firearm 2–4". */
   readonly reach: string;
@@ -255,9 +255,9 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     stats,
     hp: maxHpFor(entry.level, stats.bas, frame?.hp ?? 0, b),
     move: frame?.move ?? 0,
-    damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint),
+    damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint * b.damageScale),
     accuracy: stats.dex * b.dexHitFactor,
-    block: Math.round(stats.def * b.defDamagePerPoint),
+    block: Math.round(stats.def * b.defDamagePerPoint * b.damageScale * 10) / 10,
     reach: weapon ? `${t(`weaponType.${weapon.type}`)} ${range}` : '',
     techniques,
   };

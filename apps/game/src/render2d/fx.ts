@@ -46,11 +46,51 @@ export interface FxEngine extends Fx {
   /** A high-contrast white frame with black radial wedges for `life` seconds (finishers). */
   impactFrame(life?: number): void;
   /** Visible world rectangle (set by the stage each frame); words are kept inside it. */
-  readonly view: { minX: number; maxX: number; maxY: number };
+  readonly view: FxView;
   /** Fewer, cheaper particles (phones). */
   setLow(low: boolean): void;
   /** Number of live pooled effects, for tests and budgets. */
   liveCount(): number;
+}
+
+/** Visible world rectangle plus the screen metrics words are sized against. */
+export interface FxView {
+  minX: number;
+  maxX: number;
+  maxY: number;
+  /** Screen pixels per world unit, including camera zoom (set by the stage each frame). */
+  px: number;
+  /** Canvas size in CSS pixels. */
+  sw: number;
+  sh: number;
+}
+
+/**
+ * Words are sized relative to the canvas, not the world, so they stay an accent at any zoom.
+ * The `size` the scripts pass (0.3 small .. 0.95 K.O.) maps onto this fraction of the canvas
+ * height (em height): ordinary words land near 5-7%, the biggest near 11%.
+ */
+export function wordFraction(size: number): number {
+  return Math.max(0.045, Math.min(0.115, 0.055 + (size - 0.34) * 0.1));
+}
+/** Widest a word may be, as a fraction of the canvas width. */
+export const WORD_MAX_WIDTH = 0.35;
+/** Rough advance of the heavy display face, in ems per character. */
+const WORD_EM_PER_CHAR = 0.56;
+
+/** Font size in screen pixels for a word of script size `size` and `chars` letters. */
+export function wordPixels(size: number, chars: number, sw: number, sh: number): number {
+  const em = wordFraction(size) * sh;
+  const widthCap = (WORD_MAX_WIDTH * sw) / (Math.max(1, chars) * WORD_EM_PER_CHAR);
+  return Math.min(em, widthCap);
+}
+
+/**
+ * Soft cap for the world-unit size of comic shapes (rings, glows, burst rays): small shapes are
+ * untouched, big ones grow at under half rate so a finisher never wipes out the frame.
+ */
+export function softSize(v: number): number {
+  return v <= 1 ? v : 1 + (v - 1) * 0.45;
 }
 
 // ───────────────────────────── helpers ─────────────────────────────
@@ -328,7 +368,7 @@ class FxImpl implements FxEngine {
   calm = false;
   step = 0;
   timeScale = 1;
-  readonly view = { minX: -4, maxX: 4, maxY: 3 };
+  readonly view: FxView = { minX: -4, maxX: 4, maxY: 3, px: 80, sw: 640, sh: 300 };
   readonly cam = { dx: 0, dy: 0, roll: 0, zoom: 1, px: 0, py: 1 };
 
   private rng: () => number = makeRng(1565);
@@ -697,7 +737,7 @@ class FxImpl implements FxEngine {
     r.y = at.y;
     r.age = 0;
     r.life = o.life ?? 0.42;
-    r.radius = o.radius ?? 1.1;
+    r.radius = softSize(o.radius ?? 1.1);
     r.width = o.width ?? 0.09;
     r.color = o.color ?? '#fff1c4';
     r.flat = o.flat ?? 1;
@@ -709,7 +749,7 @@ class FxImpl implements FxEngine {
     b.y = at.y;
     b.age = 0;
     b.life = o.life ?? 0.34;
-    b.len = o.length ?? 1;
+    b.len = softSize(o.length ?? 1);
     b.n = Math.min(16, Math.max(5, o.n ?? 11));
     b.color = o.color ?? '#ffd24a';
     b.rot = this.rng() * TAU;
@@ -738,7 +778,7 @@ class FxImpl implements FxEngine {
     g.y = at.y;
     g.age = 0;
     g.life = o.life ?? 0.3;
-    g.radius = o.radius ?? 0.8;
+    g.radius = softSize(o.radius ?? 0.8);
     g.color = o.color ?? '#fff1b8';
   }
 
@@ -764,11 +804,17 @@ class FxImpl implements FxEngine {
    * onomatopoeia ("CLANK!" + "HAUL!", an attack word + "K.O.!") never print over each other.
    * Prefers moving up; falls back to below when the view's top is in the way.
    */
+  /** The em size of a word in world units at the current zoom (screen-relative sizing). */
+  private worldEm(text: string, size: number): number {
+    const v = this.view;
+    return wordPixels(size, text.length, v.sw, v.sh) / Math.max(1, v.px);
+  }
+
   private separateWord(w: Word): void {
-    const halfW = (t: string, size: number) => t.length * 0.3 * size + 0.1;
-    const halfH = (size: number) => size * 0.55;
+    const halfW = (t: string, size: number) => t.length * 0.3 * this.worldEm(t, size) + 0.1;
+    const halfH = (size: number) => this.worldEm(w.text, size) * 0.55;
     // Settle where the word will really be drawn (drawWord clamps to the view top).
-    const top = this.view.maxY - w.size * 0.7 - 0.3;
+    const top = this.view.maxY - this.worldEm(w.text, w.size) * 0.7 - 0.3;
     w.y = Math.min(w.y, top);
     for (let pass = 0; pass < 4; pass++) {
       let moved = false;
@@ -1268,10 +1314,11 @@ class FxImpl implements FxEngine {
     const pop = easeOutBack(clamp01(u / 0.16));
     const fade = u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3;
     if (fade <= 0 || pop <= 0) return;
-    const sc = (w.size / 100) * pop * (1 + 0.06 * u);
-    const hw = w.text.length * 0.3 * w.size + 0.3;
+    const em = this.worldEm(w.text, w.size);
+    const sc = (em / 100) * pop * (1 + 0.06 * u);
+    const hw = w.text.length * 0.3 * em + 0.3;
     const wx = Math.max(this.view.minX + hw, Math.min(this.view.maxX - hw, w.x));
-    const wy = Math.min(this.view.maxY - w.size * 0.7, w.y + u * 0.2);
+    const wy = Math.min(this.view.maxY - em * 0.7, w.y + u * 0.2);
     ctx.save();
     ctx.translate(wx, wy);
     ctx.rotate(w.rot);
@@ -1458,7 +1505,7 @@ class FxImpl implements FxEngine {
     // Impact frame: stark white with black wedges.
     if (this.frameLeft > 0) {
       const u = 1 - this.frameLeft / this.frameLife;
-      ctx.globalAlpha = 0.9 * (u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3);
+      ctx.globalAlpha = 0.72 * (u < 0.7 ? 1 : 1 - (u - 0.7) / 0.3);
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, w, h);
       ctx.fillStyle = '#0b0b0f';

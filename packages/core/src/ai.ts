@@ -222,7 +222,11 @@ function scoreAttack(
     .filter((e) => e.id !== target.id && manhattan(e.pos, dest) <= e.mov + maxReach(e))
     .reduce(
       (sum, e) =>
-        sum + Math.max(1, (e.pow + e.wep) * b.damagePerPoint - unit.def * b.defDamagePerPoint),
+        sum +
+        Math.max(
+          1,
+          ((e.pow + e.wep) * b.damagePerPoint - unit.def * b.defDamagePerPoint) * b.damageScale,
+        ),
       0,
     );
   score -= danger * (profile === 'defensive' ? 0.5 : 0.1);

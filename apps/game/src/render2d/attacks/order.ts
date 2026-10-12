@@ -85,13 +85,15 @@ function crossPop(
   edge = CREAM,
   rot = 0,
 ): void {
+  // Big crosses are capped so a finisher stamp never covers the fighters.
+  const R = (r <= 1.2 ? r : 1.2 + (r - 1.2) * 0.5) * 0.8;
   eng(c).layer('front', life, (ctx, k) => {
     const grow = 1 - (1 - Math.min(1, k * 3)) ** 3;
     ctx.globalAlpha = k < 0.6 ? 1 : (1 - k) / 0.4;
-    crossPath(ctx, at.x, at.y, r * (0.35 + 0.65 * grow), rot + k * 0.5);
+    crossPath(ctx, at.x, at.y, R * (0.35 + 0.65 * grow), rot + k * 0.5);
     ctx.fillStyle = fill;
     ctx.fill();
-    ctx.lineWidth = r * 0.07;
+    ctx.lineWidth = R * 0.07;
     ctx.strokeStyle = edge;
     ctx.stroke();
   });

@@ -242,7 +242,10 @@ export function UnitDetails({
               <Stat
                 label={t('unit.blocks')}
                 value={t('unit.blocksValue', {
-                  n: Math.round(unit.def * state.balance.defDamagePerPoint),
+                  n:
+                    Math.round(
+                      unit.def * state.balance.defDamagePerPoint * state.balance.damageScale * 10,
+                    ) / 10,
                 })}
               />
             </StatGrid>
