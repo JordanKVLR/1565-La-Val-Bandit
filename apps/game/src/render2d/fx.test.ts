@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createFx } from './fx';
+import { createFx, wordFraction, wordPixels, WORD_MAX_WIDTH } from './fx';
 import { fakeCtx } from './testKit';
 
 const run = (fx: ReturnType<typeof createFx>, secs: number) => {
@@ -129,5 +129,53 @@ describe('fx engine', () => {
       fx.drawScreen(c, 640, 360);
     }
     expect(ended).toBe(1);
+  });
+});
+
+describe('word sizing', () => {
+  /** Draws one word and returns its on-screen font size in pixels (world scale x font size). */
+  function drawnPx(text: string, size: number, sw: number, sh: number, px: number): number {
+    const fx = createFx(1);
+    Object.assign(fx.view, { px, sw, sh, minX: -20, maxX: 20, maxY: 20 });
+    fx.word({ x: 0, y: 1 }, text, { size, life: 1 });
+    for (let i = 0; i < 18; i++) fx.update(1 / 60); // past the pop-in
+    let scaleX = 0;
+    const base = fakeCtx();
+    const ctx = new Proxy(base, {
+      get(t, k: string) {
+        if (k === 'scale')
+          return (x: number) => {
+            scaleX = Math.abs(x);
+          };
+        return (t as unknown as Record<string, unknown>)[k];
+      },
+    });
+    fx.drawFront(ctx);
+    fx.drawBack(ctx);
+    return scaleX * 100 * px;
+  }
+
+  it('keeps the biggest word near 11% of the canvas height at any size and zoom', () => {
+    for (const [w, h] of [
+      [640, 300],
+      [851, 393],
+      [1280, 720],
+      [1920, 1080],
+    ] as const)
+      for (const zoom of [60, 90, 200]) {
+        const big = drawnPx('K.O.!', 0.95, w, h, zoom);
+        expect(big / h).toBeLessThanOrEqual(0.125);
+        expect(big / h).toBeGreaterThan(0.08);
+        const small = drawnPx('TAP', 0.34, w, h, zoom);
+        expect(small / h).toBeLessThan(0.075);
+        expect(small / h).toBeGreaterThan(0.04);
+      }
+  });
+
+  it('orders emphasis and caps the width at about a third of the canvas', () => {
+    expect(wordFraction(0.9)).toBeGreaterThan(wordFraction(0.5));
+    expect(wordFraction(5)).toBeLessThanOrEqual(0.115);
+    const px = wordPixels(0.95, 12, 640, 300);
+    expect(px * 0.56 * 12).toBeLessThanOrEqual(640 * WORD_MAX_WIDTH + 0.01);
   });
 });

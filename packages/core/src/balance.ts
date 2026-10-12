@@ -34,6 +34,12 @@ export interface BalanceConfig {
   readonly damagePerPoint: number;
   /** Damage blocked per point of DEF (armaturas have no armour of their own). */
   readonly defDamagePerPoint: number;
+  /**
+   * The one knob for how lethal blows are: multiplies every blow's damage after DEF has been
+   * taken off (so DEF, technique power, height, rear and Defend keep their relative weight).
+   * 1 = the raw formula; 0.6 means a typical unit survives 4–5 rear hits (ADR 0014).
+   */
+  readonly damageScale: number;
   readonly heightHitPerStep: number;
   readonly heightDamagePerStep: number;
   readonly heightDamageMaxSteps: number;
@@ -148,6 +154,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   aglEvadeFactor: 2,
   damagePerPoint: 1.6,
   defDamagePerPoint: 1.5,
+  damageScale: 0.6,
   heightHitPerStep: 5,
   heightDamagePerStep: 0.1,
   heightDamageMaxSteps: 3,

@@ -90,7 +90,9 @@ describe('inventory', () => {
       lib.weapons.get('bastard-sword')!.bonus.wep! - lib.weapons.get('arming-sword')!.bonus.wep!;
     expect(after.stats.wep - before.stats.wep).toBe(wep);
     expect(after.damage).toBe(
-      Math.round((after.stats.pow + after.stats.wep) * lib.balance.damagePerPoint),
+      Math.round(
+        (after.stats.pow + after.stats.wep) * lib.balance.damagePerPoint * lib.balance.damageScale,
+      ),
     );
     expect(after.damage).toBeGreaterThan(before.damage);
     expect(after.block).toBeGreaterThan(before.block);

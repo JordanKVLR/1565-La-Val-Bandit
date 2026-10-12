@@ -64,10 +64,14 @@ and WEP (9–12 points in all), heavy ones leaning on DEF and BAS, light ones on
 | **POW**   | Power: damage of every attack                |
 | **DEX**   | Dexterity: +2% hit chance per point          |
 | **AGL**   | Agility: −2% to be hit per point; turn order |
-| **DEF**   | Defence: −1.5 damage taken per point         |
+| **DEF**   | Defence: blocks 1.5 raw damage per point     |
 | **WEP**   | Weapon skill: damage, like POW               |
 
 **Max HP** = level × 2 + BAS × 4 + 10 + armatura HP.
+
+**Damage** = ((POW + WEP) × 1.6 × technique power × height × rear − DEF × 1.5) × `damageScale` (0.6),
+then Defend ×0.5 and skills. `damageScale` is the single lethality knob (ADR 0014): at 0.6 a typical
+unit takes about 4–5 rear basic hits, 6–7 front hits and 12+ defended hits to kill.
 
 **Turn order:** each round, units act in descending `AGL + d6` (seeded RNG), shown as a
 queue on the HUD.

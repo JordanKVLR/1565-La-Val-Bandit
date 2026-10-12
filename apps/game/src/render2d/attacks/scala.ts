@@ -414,7 +414,7 @@ const overpressure: AttackScript = {
       });
       fx.speedLines({ color: '#ffffff', life: 0.4, n: 40 });
       fx.punch(p, 1.28, 0.6);
-      fx.wash('#e8392e', 0.35, 0.6);
+      fx.wash('#e8392e', 0.24, 0.6);
       fx.impactFrame(0.05);
     } else {
       fx.ring({ x: p.x, y: 0.2 }, { color: '#ffd0a0', radius: 2.0, life: 0.5, width: 0.1 });

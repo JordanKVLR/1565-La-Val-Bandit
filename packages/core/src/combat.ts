@@ -427,10 +427,13 @@ export function damageFor(
       : reaction === 'counter'
         ? b.counterFailMult
         : 1;
-  // DEF blocks first; Defend then halves what gets through (so a defended blow is about half),
+  // DEF blocks first, then damageScale sets how lethal blows are overall; Defend then halves what gets through (so a defended blow is about half),
   // and the target's skills take their share last.
   const blocked = target.def * b.defDamagePerPoint * (1 - n.pierce);
-  return Math.max(1, Math.round((n.baseDamage - blocked) * mult * (1 - n.reduction)));
+  return Math.max(
+    1,
+    Math.round((n.baseDamage - blocked) * b.damageScale * mult * (1 - n.reduction)),
+  );
 }
 
 /**

@@ -18,6 +18,7 @@
   "aglEvadeFactor": 2,
   "damagePerPoint": 1.6,
   "defDamagePerPoint": 1.5,
+  "damageScale": 0.6,
   "heightHitPerStep": 5,
   "heightDamagePerStep": 0.1,
   "heightDamageMaxSteps": 3,

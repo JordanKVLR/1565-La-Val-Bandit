@@ -91,6 +91,23 @@ interface Run {
 
 const SEED = 1565;
 
+/** World units across the frame that the fighter pair, their weapons and the fx fit into. */
+export const FIT_UNITS = 9;
+/** Share of the canvas height one world unit may take (a fighter is ~2.3 units tall: about 50%). */
+export const MAX_UNIT_HEIGHT = 0.225;
+/** The base push-in, and the most the push-in and a punch zoom may magnify together. */
+export const PUSH_IN = 0.07;
+export const MAX_ZOOM = 1.28;
+
+/**
+ * Pixels per world unit. Responsive: fit the whole pair (plus `extra` units of standoff) across
+ * the width, but never let a fighter grow beyond about half of the canvas height, so a very wide
+ * TV and a very short phone canvas both frame well.
+ */
+export function duelScale(w: number, h: number, extra = 0): number {
+  return Math.min(w / (FIT_UNITS + extra), h * MAX_UNIT_HEIGHT);
+}
+
 export class DuelStage2D {
   readonly fx: FxEngine;
   private readonly ctx: CanvasRenderingContext2D | null;
@@ -114,6 +131,7 @@ export class DuelStage2D {
   private camPan = 0;
   private camZoom = 1;
   private camSide = 1;
+  private fitExtra = 0;
   private skip = false;
   private readonly seed: number;
 
@@ -306,6 +324,7 @@ export class DuelStage2D {
 
     // Poses.
     const sep = this.sep(run, t);
+    this.fitExtra = -2 * sep;
     sampleInto(this.poseA, run.atkGuard, move.keys, t);
     this.poseA.x += sep;
     if (t >= move.impact) sampleInto(this.poseD, run.defGuard, run.defKeys, t - move.impact);
@@ -379,7 +398,7 @@ export class DuelStage2D {
         t < move.impact
           ? ease(Math.min(1, t / Math.max(0.01, move.impact)))
           : 1 - ease(Math.min(1, (t - move.impact) / 0.6));
-      this.camZoom = 1 + 0.12 * push;
+      this.camZoom = 1 + PUSH_IN * push;
       this.camPan = ctx.dir * 0.22 * push;
     } else {
       this.camZoom = 1;
@@ -406,6 +425,7 @@ export class DuelStage2D {
     run.atk.flash = 0;
     this.camZoom = 1;
     this.camPan = 0;
+    this.fitExtra = 0;
     run.resolve();
   }
 
@@ -519,10 +539,12 @@ export class DuelStage2D {
     const g = this.ctx;
     if (!g || this.disposed || !this.w) return;
     const { w, h } = this;
-    const scale = Math.min(w / 8.6, h * 0.31);
+    const scale = duelScale(w, h, this.fitExtra);
     const groundY = h * 0.8;
     const fx = this.fx;
     const cam = fx.cam;
+    // The push-in and the punch zoom together never magnify the fighters past MAX_ZOOM.
+    const punchZoom = Math.min(cam.zoom, MAX_ZOOM / this.camZoom);
     const run = this.run;
     const midX = (this.leftRig.baseX + this.rightRig.baseX) / 2;
     const px = w / 2 + (midX + this.camSide * 0.25 * (this.camZoom - 1) * 4) * scale;
@@ -533,15 +555,19 @@ export class DuelStage2D {
       groundY,
       scale,
       camX: this.camPan,
-      zoom: this.camZoom * cam.zoom,
+      zoom: this.camZoom * punchZoom,
       pivotX: px,
       pivotY: py,
       time: this.clock,
     };
-    const hz = w / 2 / scale / (this.camZoom * cam.zoom);
+    const zoom = this.camZoom * punchZoom;
+    const hz = w / 2 / scale / zoom;
     fx.view.minX = this.camPan - hz + 0.1;
     fx.view.maxX = this.camPan + hz - 0.1;
-    fx.view.maxY = Math.min(3.0, 0.9 + (groundY / scale - 0.9) / (this.camZoom * cam.zoom) - 0.1);
+    fx.view.maxY = Math.min(3.0, 0.9 + (groundY / scale - 0.9) / zoom - 0.1);
+    fx.view.px = scale * zoom;
+    fx.view.sw = w;
+    fx.view.sh = h;
     g.setTransform(this.ratio, 0, 0, this.ratio, 0, 0);
     g.clearRect(0, 0, w, h);
     this.backdrop.draw(g, view);
@@ -556,11 +582,11 @@ export class DuelStage2D {
     g.translate(px, py);
     g.scale(this.camZoom, this.camZoom);
     g.translate(-px, -py);
-    if (cam.zoom > 1) {
+    if (punchZoom > 1) {
       const qx = w / 2 + (cam.px - this.camPan) * scale;
       const qy = groundY - cam.py * scale;
       g.translate(qx, qy);
-      g.scale(cam.zoom, cam.zoom);
+      g.scale(punchZoom, punchZoom);
       g.translate(-qx, -qy);
     }
     g.translate(w / 2 - this.camPan * scale, groundY);

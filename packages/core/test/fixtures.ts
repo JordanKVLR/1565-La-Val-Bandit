@@ -84,6 +84,7 @@ export const TEST_BALANCE = {
   ...DEFAULT_BALANCE,
   baseHit: 75,
   damagePerPoint: 2,
+  damageScale: 1,
   xpHitBase: 30,
   xpDamageShare: 100,
   xpDefeat: 150,
