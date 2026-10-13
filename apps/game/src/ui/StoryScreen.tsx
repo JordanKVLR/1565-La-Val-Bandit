@@ -6,9 +6,6 @@ import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
 import type { StageState } from '../campaign/types';
 import { useStore } from '../state/store';
-import { settings } from '../state/settings';
-import { Portrait } from '../render2d/portraits/Portrait';
-import { expressionForLine, hasPortrait, isExpression } from '../render2d/portraits';
 import { t } from '../i18n';
 import { Button, cx, Divider, Icon } from './design';
 import { usePrompt } from './KeyHint';
@@ -137,14 +134,6 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
   }, [onMenu, screen.choices]);
 
   const portrait = speaker ? portraitUrl(speaker.id) : undefined;
-  const render2d = useStore(settings).renderMode === '2d';
-  const art2d = !!speaker && render2d && hasPortrait(speaker.id);
-  // The Ink script has no mood tags yet; a `mood` on the line (if the runner ever adds one) wins.
-  const mood = (line as { mood?: unknown } | null | undefined)?.mood;
-  const expression = useMemo(
-    () => (isExpression(mood) ? mood : expressionForLine(line?.text ?? '', speaker?.id)),
-    [mood, line?.text, speaker?.id],
-  );
 
   return (
     <main class="fe-story" onClick={onTap} data-testid="story-screen">
@@ -191,11 +180,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
           )}
           {line && (
             <section
-              class={cx(
-                'fe-dialogue',
-                !speaker && 'is-narration',
-                (portrait || art2d) && 'has-portrait',
-              )}
+              class={cx('fe-dialogue', !speaker && 'is-narration', portrait && 'has-portrait')}
               aria-live="polite"
             >
               {speaker && (
@@ -204,9 +189,7 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
                   style={{ backgroundColor: speaker.color }}
                   aria-hidden="true"
                 >
-                  {art2d && speaker ? (
-                    <Portrait castId={speaker.id} expression={expression} animated={done} />
-                  ) : portrait ? (
+                  {portrait ? (
                     <img src={portrait} alt="" />
                   ) : (
                     speaker.name.replace(/^(Fra|La) /, '').charAt(0)

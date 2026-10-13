@@ -6,8 +6,6 @@ import { settings } from '../../state/settings';
 import { t } from '../../i18n';
 import { usePrompt } from '../KeyHint';
 import { Meter, SideMark } from '../design';
-import { Portrait } from '../../render2d/portraits/Portrait';
-import { hasPortrait, type Expression } from '../../render2d/portraits';
 
 interface Props {
   data: CloseUpData;
@@ -19,14 +17,6 @@ interface Popup {
   readonly side: 'left' | 'right';
   readonly text: string;
   readonly kind: 'dmg' | 'miss' | 'xp' | 'level';
-}
-
-/** Which 2D portrait stands for a duellist: the cast member, else a generic fighter, else none. */
-function castFor(side: CloseUpSide): string | null {
-  if (hasPortrait(side.id)) return side.id;
-  const m = side.figure.model;
-  if (m === 'machine' || m === 'barge' || m === 'tower') return null;
-  return side.side === 'enemy' ? 'janissary' : 'soldier';
 }
 
 /**
@@ -44,11 +34,6 @@ export function CloseUp({ data, onDone }: Props) {
   const [popups, setPopups] = useState<Popup[]>([]);
   // The banner names the technique in play: the attack, then the one used to strike back.
   const [title, setTitle] = useState(data.attackName);
-  const [mood, setMood] = useState<{ left: Expression; right: Expression }>({
-    left: 'determined',
-    right: 'determined',
-  });
-  const render2d = settings.get().renderMode === '2d';
   const prompt = usePrompt();
   const doneRef = useRef(onDone);
   doneRef.current = onDone;
@@ -96,13 +81,6 @@ export function CloseUp({ data, onDone }: Props) {
                     : 'hit',
             );
             setHp((h) => ({ ...h, [s.result.targetId]: s.result.targetHp }));
-            // Faces react: the striker is pleased by a hit and furious at a miss; the target
-            // winces, gloats at a miss, or is crushed when beaten.
-            setMood((m) => ({
-              ...m,
-              [atkSide]: s.result.hit ? (s.result.defeated ? 'smug' : 'determined') : 'angry',
-              [defSide]: s.result.defeated ? 'sad' : s.result.hit ? 'angry' : 'smug',
-            }));
             if (s.repelled) pop({ side: defSide, text: t('closeUp.counter'), kind: 'level' });
             else
               pop({
@@ -150,17 +128,12 @@ export function CloseUp({ data, onDone }: Props) {
       </div>
     );
   };
-  const speaker = (s: CloseUpSide, where: 'left' | 'right') => {
-    const cast = render2d ? castFor(s) : null;
-    return (
-      <div class={`bhud-avatar cu-avatar side-${s.side}`} aria-hidden="true">
-        <div class={`portrait portrait-${s.side}`}>
-          {cast ? <Portrait castId={cast} expression={mood[where]} animated /> : s.initial}
-        </div>
-        <SideMark side={s.side} />
-      </div>
-    );
-  };
+  const speaker = (s: CloseUpSide) => (
+    <div class={`bhud-avatar cu-avatar side-${s.side}`} aria-hidden="true">
+      <div class={`portrait portrait-${s.side}`}>{s.initial}</div>
+      <SideMark side={s.side} />
+    </div>
+  );
 
   return (
     <div
@@ -186,12 +159,12 @@ export function CloseUp({ data, onDone }: Props) {
       </div>
       <div class="cu-lines">
         <div class={`cu-line ${data.left.side}`}>
-          {speaker(data.left, 'left')}
+          {speaker(data.left)}
           <p class={lines.left ? 'is-speaking' : ''}>{lines.left}</p>
         </div>
         <div class={`cu-line right ${data.right.side}`}>
           <p class={lines.right ? 'is-speaking' : ''}>{lines.right}</p>
-          {speaker(data.right, 'right')}
+          {speaker(data.right)}
         </div>
       </div>
     </div>
