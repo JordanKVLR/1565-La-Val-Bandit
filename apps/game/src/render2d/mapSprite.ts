@@ -5,13 +5,13 @@
  * Presentation only: BattleView tells it what happened.
  */
 import { CanvasTexture, LinearFilter, SRGBColorSpace, Sprite, SpriteMaterial } from 'three';
-import { loadLibrary } from '@m1565/content';
-import type { Library } from '@m1565/content';
 import type { Facing } from '@m1565/core';
 import { DIRECTIONS } from '@m1565/core';
-import type { FigureSpec, Pose } from '../render/Armatura';
+import type { Pose } from '../render/Armatura';
 import { POSE_KEYS, guardFor } from '../render/Armatura';
-import type { Rig } from './contract';
+import type { PersonFigureSpec, Rig, RigSpec } from './contract';
+import { PEOPLE, FALLBACK_PERSON } from './figures/peopleCast';
+import { personPose } from './figures/people';
 import { createRig } from './rig';
 
 /** Figure-space extent of a sprite cell (units are ~0.55 of a figure's height). */
@@ -40,7 +40,7 @@ export interface MapAnim {
 }
 
 /** Writes the pose for the current animation state over `base` into `out`. */
-export function mapPose(out: Pose, base: Pose, a: MapAnim): Pose {
+export function mapPose(out: Pose, base: Pose, a: MapAnim, person = false): Pose {
   for (const k of POSE_KEYS) out[k] = base[k];
   if (a.walk !== null) {
     const s = Math.sin(a.walk);
@@ -52,6 +52,7 @@ export function mapPose(out: Pose, base: Pose, a: MapAnim): Pose {
     out.y += Math.abs(s) * 0.05;
     out.lean += 0.07;
     out.sL = base.sL + s * 0.25;
+    if (person) out.sR = base.sR - s * 0.25;
   }
   if (a.lunge >= 0) {
     const u = clamp01(a.lunge / LUNGE_S);
@@ -105,6 +106,7 @@ export class MapFigure {
   private readonly ctx: CanvasRenderingContext2D | null;
   private readonly texture: CanvasTexture;
   private readonly base: Pose;
+  private readonly isPerson: boolean;
   private readonly pose: Pose;
   private readonly ppu: number;
   private clock: number;
@@ -118,10 +120,12 @@ export class MapFigure {
   private lastAway = false;
   private disposed = false;
 
-  constructor(spec: FigureSpec, ppu = 96, seed = 0) {
+  constructor(spec: RigSpec, ppu = 96, seed = 0) {
     this.ppu = ppu;
     this.rig = createRig(spec, 0, 1);
-    this.base = { ...guardFor(spec.weaponType) };
+    const person = (spec as Partial<PersonFigureSpec>).person;
+    this.isPerson = !!person;
+    this.base = person ? personPose(person) : { ...guardFor(spec.weaponType) };
     this.pose = { ...this.base };
     this.clock = seed * 1.7;
     this.phase = (seed * 0.37) % 1;
@@ -210,7 +214,7 @@ export class MapFigure {
     this.dirty = false;
     this.lastMirror = this.mirror;
     this.lastAway = this.away;
-    mapPose(this.pose, this.base, this.anim);
+    mapPose(this.pose, this.base, this.anim, this.isPerson);
     rig.pose = this.pose;
     rig.time = this.clock;
     rig.facing = this.mirror ? -1 : 1;
@@ -253,42 +257,19 @@ export function cameraFacing(facing: Facing, angle: number): { mirror: boolean; 
 
 // ── Story actors without a figure ───────────────────────────
 
-let lib: Library | undefined;
-
-const GENERIC: Record<string, Pick<FigureSpec, 'model' | 'weaponType' | 'frameClass'>> = {
-  valette: { model: 'knight', weaponType: 'blade', frameClass: 'heavy' },
-  scala: { model: 'militia', weaponType: 'blade', frameClass: 'medium' },
-  pawlu: { model: 'militia', weaponType: 'polearm', frameClass: 'medium' },
-  turgut: { model: 'corsair', weaponType: 'blade', frameClass: 'medium' },
-  mustafa: { model: 'janissary', weaponType: 'blade', frameClass: 'heavy' },
-  piali: { model: 'janissary', weaponType: 'blade', frameClass: 'medium' },
-  villager: { model: 'militia', weaponType: 'polearm', frameClass: 'light' },
-  'villager-man': { model: 'militia', weaponType: 'blunt', frameClass: 'medium' },
-  soldier: { model: 'militia', weaponType: 'blade', frameClass: 'medium' },
-  janissary: { model: 'janissary', weaponType: 'blade', frameClass: 'medium' },
-};
-
-/** A figure for a story actor: the cast member's own frame and weapon, or a generic stand-in. */
-export function storyFigureSpec(id: string, color: string): FigureSpec {
-  try {
-    lib ??= loadLibrary();
-    const ch = lib.characters.get(id);
-    if (ch) {
-      const frame = lib.frames.get(ch.frame);
-      const weapon = lib.weapons.get(ch.weapon);
-      return {
-        model: lib.frameModels.get(ch.frame) ?? 'militia',
-        weaponType: weapon?.type ?? 'blade',
-        frameClass: frame?.class ?? 'medium',
-        accent: color,
-        ...(ch.livery === 'hero' ? { hero: true } : {}),
-      };
-    }
-  } catch {
-    // fall through to the generic rig
-  }
-  const g = GENERIC[id] ?? { model: 'militia', weaponType: 'blade', frameClass: 'medium' };
-  return { ...g, accent: color } as FigureSpec;
+/**
+ * A figure for a story actor: the cast member as a plain person (never an armatura; those belong
+ * to battles). Unknown ids become an ordinary villager. The side colour shows as a sash tail and
+ * an armband.
+ */
+export function storyFigureSpec(id: string, color: string): PersonFigureSpec {
+  return {
+    model: 'militia',
+    weaponType: 'blade',
+    frameClass: 'medium',
+    accent: color,
+    person: PEOPLE[id] ?? FALLBACK_PERSON,
+  };
 }
 
 // ── Flat ground ring (shadow + side marker) ─────────────────

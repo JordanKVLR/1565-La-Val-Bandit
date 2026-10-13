@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { POSE_KEYS, guardFor } from '../render/Armatura';
+import { loadLibrary } from '@m1565/content';
+import { POSE_KEYS, figureSpec, guardFor } from '../render/Armatura';
 import type { Pose } from '../render/Armatura';
 import { settings } from '../state/settings';
+import { personPose } from './figures/people';
+import { FALLBACK_PERSON, PEOPLE } from './figures/peopleCast';
 import { cameraFacing, mapFlash, mapPose, storyFigureSpec } from './mapSprite';
 import { createDuelStage, currentMode } from './stageFactory';
 
@@ -42,10 +45,67 @@ describe('camera-relative facing', () => {
 });
 
 describe('story figures', () => {
-  it('builds a rig spec from the cast and falls back to a generic one', () => {
-    expect(storyFigureSpec('ninu', '#2f5fa8').hero).toBe(true);
-    expect(storyFigureSpec('kateri', '#3f8a6a').weaponType).toBe('firearm');
-    expect(storyFigureSpec('nobody', '#777777').model).toBe('militia');
+  it('draws every cast member as a plain person, never an armatura', () => {
+    const ids = [...loadLibrary().cast.keys()];
+    expect(ids.length).toBeGreaterThanOrEqual(20);
+    for (const id of ids) {
+      const spec = storyFigureSpec(id, '#336699');
+      expect(spec.person).toBe(PEOPLE[id]);
+      expect(spec.person).toBeDefined();
+      expect(spec.accent).toBe('#336699');
+    }
+    // distinct looks for distinct people
+    expect(new Set(ids.map((id) => JSON.stringify(PEOPLE[id]))).size).toBe(ids.length);
+  });
+
+  it('falls back to an average villager for unknown ids', () => {
+    const spec = storyFigureSpec('nobody', '#777777');
+    expect(spec.person).toBe(FALLBACK_PERSON);
+    expect(spec.person.build).toBe('average');
+  });
+
+  it('keeps the people free of weapons, armour and helmets', () => {
+    const allowedProps = ['book', 'tool', 'lantern', 'wrench', 'quill', 'banner', 'scroll'];
+    for (const p of Object.values(PEOPLE)) {
+      if (p.prop) expect(allowedProps).toContain(p.prop);
+      expect([
+        'none',
+        'cap',
+        'flatcap',
+        'straw',
+        'scarf',
+        'veil',
+        'turban',
+        'bork',
+        'hood',
+        'band',
+        'goggles',
+      ]).toContain(p.headwear?.kind ?? 'none');
+    }
+  });
+
+  it('leaves battle figures unchanged', () => {
+    const lib = loadLibrary();
+    const ninu = lib.characters.get('ninu');
+    expect(ninu).toBeDefined();
+    const unit = {
+      frameId: ninu?.frame ?? '',
+      frameClass: lib.frames.get(ninu?.frame ?? '')?.class ?? 'medium',
+      weapon: lib.weapons.get(ninu?.weapon ?? '') as never,
+      characterId: 'ninu',
+    };
+    const spec = figureSpec(lib, unit, '#2f5fa8');
+    expect(spec).toMatchObject({ hero: true, accent: '#2f5fa8' });
+    expect('person' in spec).toBe(false);
+  });
+
+  it('stands people on a relaxed pose and swings their arms when walking', () => {
+    const spec = storyFigureSpec('ninu', '#2f5fa8');
+    const base = personPose(spec.person);
+    expect(base.sR).toBeLessThan(0.5);
+    const walk = mapPose({ ...base }, base, { walk: 1.2, lunge: -1, hurt: -1, ko: -1 }, true);
+    expect(walk.sR).not.toBe(base.sR);
+    for (const k of POSE_KEYS) expect(Number.isFinite(walk[k])).toBe(true);
   });
 });
 

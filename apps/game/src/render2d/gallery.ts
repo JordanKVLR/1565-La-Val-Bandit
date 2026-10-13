@@ -2,6 +2,8 @@
  * Dev-only gallery of every 2D figure (open /gallery2d.html with `pnpm dev`). Query:
  * ?model=knight&weapon=blade&class=heavy&hero=1&accent=%232a6fd6&view=strip|grid&anim=0&flash=0.8&face=-1
  * Without filters it shows every model x class x weapon in the guard pose, then a pose strip.
+ * ?people=1 shows every story person (cast.json) instead: &id=<cast id> for one large, &walk=1 to
+ * walk them, &face=-1 to mirror, &big=1 for large cells, &small=1 for the phone size (about 100px tall).
  */
 import { ARMATURA_MODELS } from '@m1565/content';
 import type { ArmaturaModel } from '@m1565/content';
@@ -11,6 +13,9 @@ import type { Pose } from '../render/Armatura';
 import { moveFor } from '../render/duelMoves';
 import type { Rig } from './contract';
 import { createRig } from './rig';
+import { PEOPLE } from './figures/peopleCast';
+import { mapPose, storyFigureSpec } from './mapSprite';
+import { personPose } from './figures/people';
 
 const WEAPONS: WeaponType[] = ['blade', 'polearm', 'blunt', 'firearm', 'explosive'];
 const CLASSES: FrameClass[] = ['light', 'medium', 'heavy'];
@@ -116,8 +121,51 @@ function stripPoses(weapon: WeaponType): { name: string; pose: Pose }[] {
   ];
 }
 
+/** The story people: one cell per cast id, optionally walking, as the diorama draws them. */
+function peopleMain(root: HTMLElement): void {
+  const only = q.get('id');
+  const ids = Object.keys(PEOPLE).filter((id) => !only || id === only);
+  const big = !!only;
+  const small = q.get('small') === '1';
+  const walk = q.get('walk') === '1';
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  root.append(grid);
+  const walkers: { rig: Rig; base: Pose }[] = [];
+  for (const id of ids) {
+    const rig = createRig(storyFigureSpec(id, '#2a6fd6'), 0, q.get('face') === '-1' ? -1 : 1);
+    const person = PEOPLE[id];
+    const base = person ? personPose(person) : rig.pose;
+    rig.pose = { ...base };
+    if (walk) walkers.push({ rig, base });
+    if (big) addCell(grid, rig, 420, 460, 200, id, 0.5);
+    else if (q.get('big') === '1') addCell(grid, rig, 290, 450, 175, id, 0.5);
+    else if (small) addCell(grid, rig, 120, 150, 58, id, 0.5);
+    else addCell(grid, rig, 200, 270, 105, id, 0.5);
+  }
+  const t0 = performance.now();
+  const frame = (): void => {
+    const t = (performance.now() - t0) / 1000;
+    for (const w of walkers)
+      mapPose(
+        w.rig.pose,
+        w.base,
+        { walk: (t * 11) % (Math.PI * 2), lunge: -1, hurt: -1, ko: -1 },
+        true,
+      );
+    for (const c of cells) render(c, t);
+    requestAnimationFrame(frame);
+  };
+  frame();
+  document.title = 'gallery ready';
+}
+
 function main(): void {
   const root = document.getElementById('root') as HTMLElement;
+  if (q.get('people') === '1') {
+    peopleMain(root);
+    return;
+  }
   const accent = q.get('accent') ?? '#2a6fd6';
   const hero = q.get('hero') === '1';
   const models = pick<ArmaturaModel>('model', ARMATURA_MODELS);

@@ -80,4 +80,100 @@ export interface Look {
   over?(f: F): void;
   /** Weapon style hint: curved for sabres. */
   readonly sabre?: boolean;
+  /** People: their own palette (cloth = garment, armour = sleeves, wood = legs, dark = hair). */
+  readonly palette?: Palette;
+  /** Head size multiplier (default 1.12). */
+  readonly headScale?: number;
+}
+
+// ── People (story diorama) ───────────────────────────────────
+
+/**
+ * How a plain person (no armatura) looks. Render2d only; the story diorama builds one per cast
+ * id (`figures/peopleCast.ts`) and the rig draws it with `figures/people.ts`. All colours are
+ * hex strings; the side colour (`FigureSpec.accent`) is worn as a sash, scarf and armband.
+ */
+export type Build = 'slim' | 'average' | 'broad' | 'stout';
+export type HairStyle = 'bald' | 'short' | 'curly' | 'messy' | 'long' | 'tied' | 'bun' | 'bob';
+export type BeardStyle = 'none' | 'stubble' | 'short' | 'full' | 'long';
+export type HeadwearKind =
+  | 'none'
+  | 'cap'
+  | 'flatcap'
+  | 'straw'
+  | 'scarf'
+  | 'veil'
+  | 'turban'
+  | 'bork'
+  | 'hood'
+  | 'band'
+  | 'goggles';
+export type OutfitKind =
+  'tunic' | 'doublet' | 'vest' | 'robe' | 'coat' | 'apron' | 'dress' | 'skirt';
+export type ShoeKind = 'boots' | 'shoes' | 'sandals';
+/** Small hand-held things. Never weapons. */
+export type PropKind = 'book' | 'tool' | 'lantern' | 'wrench' | 'quill' | 'banner' | 'scroll';
+
+export interface PersonHeadwear {
+  readonly kind: HeadwearKind;
+  readonly color: string;
+  /** Band, cap under a turban, or hem colour. */
+  readonly trim?: string;
+  /** Feather colours (plume) on caps and turbans. */
+  readonly plume?: readonly string[];
+  /** A jewel or badge on turbans and borks. */
+  readonly gem?: string;
+  /** A taller turban. */
+  readonly tall?: boolean;
+}
+
+export interface PersonOutfit {
+  readonly kind: OutfitKind;
+  /** The visible garment colour (vest, tunic, robe, coat). */
+  readonly main: string;
+  /** Shirt under a vest, coat or doublet. */
+  readonly under: string;
+  readonly trim: string;
+  /** Trousers or hose. */
+  readonly legs: string;
+  /** Sleeve colour when it differs from `main` (defaults to `under` for vests, else `main`). */
+  readonly sleeve?: string;
+  readonly sleeves?: 'long' | 'rolled' | 'bare';
+  /** Skirt colour for `skirt`, apron colour for `apron`. */
+  readonly skirt?: string;
+  /** Fur collar and hem. */
+  readonly fur?: string;
+  /** Embroidered band down the front. */
+  readonly band?: boolean;
+  /** The white eight-pointed cross of the Order on the chest (original vector). */
+  readonly emblem?: 'cross8';
+  /** A ruff or white collar. */
+  readonly collar?: string;
+}
+
+export interface PersonLook {
+  readonly skin: string;
+  readonly hair: string;
+  readonly hairStyle: HairStyle;
+  readonly beard?: BeardStyle;
+  readonly moustache?: 'thin' | 'full' | 'handlebar';
+  /** Colour of beard and moustache (default: the hair colour). */
+  readonly facial?: string;
+  readonly build: Build;
+  /** Height multiplier around 1 (0.9 short .. 1.08 tall). */
+  readonly height?: number;
+  readonly headwear?: PersonHeadwear;
+  readonly outfit: PersonOutfit;
+  readonly cloak?: string;
+  readonly belt: string;
+  /** A wide waist sash (Ottoman or corsair dress). */
+  readonly sash?: string;
+  readonly shoes: { readonly kind: ShoeKind; readonly color: string };
+  readonly prop?: PropKind;
+  /** A pendant on the chest (a charm, a cross, pearls). */
+  readonly charm?: string;
+  readonly earring?: string;
+  readonly blush?: boolean;
+  /** Lip colour (women's faces). */
+  readonly lips?: string;
 }
