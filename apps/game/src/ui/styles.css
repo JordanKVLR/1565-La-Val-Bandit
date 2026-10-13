@@ -52,10 +52,3 @@ body,
   gap: var(--ds-space-2);
   max-width: min(300px, 40 * var(--vw));
 }
-
-/* 2D vector portraits (render2d/portraits) fill their frame */
-.portrait2d {
-  display: block;
-  width: 100%;
-  height: 100%;
-}

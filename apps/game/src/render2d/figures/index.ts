@@ -7,7 +7,7 @@ export { paletteFor } from './palette';
 export { styleFor, tipUV, drawWeapon } from './weapons';
 export type { WeaponStyle } from './weapons';
 export { drawShield } from './humans';
-export type { F, Look, LimbStyle, Palette, Part } from './types';
+export type { F, Look, LimbStyle, Palette, Part, PersonLook } from './types';
 
 const LOOKS: Record<ArmaturaModel, Look> = {
   knight,

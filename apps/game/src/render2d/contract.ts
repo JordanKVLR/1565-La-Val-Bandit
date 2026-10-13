@@ -12,8 +12,20 @@
  */
 import type { Pose, FigureSpec } from '../render/Armatura';
 import type { Move } from '../render/duelMoves';
+import type { PersonLook } from './figures/types';
 
 export type { Pose, FigureSpec };
+
+/**
+ * A figure for a plain person (the story diorama): the usual spec plus a `person` look that the
+ * rig draws instead of an armatura. The model/weapon fields are inert stand-ins. Render2d only.
+ */
+export interface PersonFigureSpec extends FigureSpec {
+  readonly person: PersonLook;
+}
+
+/** What the rig accepts: an armatura spec or a person spec. */
+export type RigSpec = FigureSpec | PersonFigureSpec;
 
 /** Vector in world units. */
 export interface V2 {
@@ -41,7 +53,7 @@ export interface FighterAnchors {
  * no DOM, no allocation per frame beyond small temporaries.
  */
 export interface Rig {
-  readonly spec: FigureSpec;
+  readonly spec: RigSpec;
   /** World-space base x of the fighter (before pose.x) and its facing (1 = right, -1 = left). */
   baseX: number;
   facing: 1 | -1;

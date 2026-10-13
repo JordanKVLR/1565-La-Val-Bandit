@@ -1,8 +1,15 @@
-import type { FighterAnchors, FigureSpec, Pose, Rig, V2 } from './contract';
+import type { FighterAnchors, Pose, PersonFigureSpec, Rig, RigSpec, V2 } from './contract';
 import { MELEE_GUARD, guardFor } from '../render/Armatura';
 import { K, OW, ell, limb, sw } from './figures/kit';
 import { drawShield, drawWeapon, lookFor, paletteFor, styleFor, tipUV } from './figures/index';
-import type { F, LimbStyle, Look, WeaponStyle } from './figures/index';
+import type { F, LimbStyle, Look, PersonLook, WeaponStyle } from './figures/index';
+import {
+  PERSON_GIRTH,
+  PERSON_LEGS,
+  PERSON_SCALE,
+  personLookFor,
+  personPose,
+} from './figures/people';
 
 /**
  * Side-view 2D skeleton driven by the same `Pose` as the 3D rig (render/Armatura.ts). Limb
@@ -61,7 +68,7 @@ function newJoints(): Joints {
 const num = (v: number): number => (Number.isFinite(v) ? v : 0);
 
 class Rig2D implements Rig {
-  readonly spec: FigureSpec;
+  readonly spec: RigSpec;
   baseX: number;
   facing: 1 | -1;
   pose: Pose;
@@ -76,7 +83,14 @@ class Rig2D implements Rig {
   private readonly tuv = { u: 0, v: 0 };
   private readonly shielded: boolean;
   private readonly barge: boolean;
-  private readonly cs: number;
+  /** Set for plain people (story diorama): no weapon, own scale and look. */
+  private readonly person: PersonLook | undefined;
+  /** Uniform figure scale (people are smaller than armaturas). */
+  private readonly sc: number;
+  /** Leg length multiplier (people have shorter legs than armaturas). */
+  private readonly legK: number;
+  /** Arm and leg girth multiplier. */
+  private readonly armG: number;
   private lastT = Number.NaN;
   private lastX = 0;
   private drag = 0;
@@ -88,19 +102,24 @@ class Rig2D implements Rig {
   private rot = 0;
   private pivY = 0;
 
-  constructor(spec: FigureSpec, baseX = 0, facing: 1 | -1 = 1) {
+  constructor(spec: RigSpec, baseX = 0, facing: 1 | -1 = 1) {
     this.spec = spec;
     this.baseX = baseX;
     this.facing = facing;
-    this.pose = { ...MELEE_GUARD, ...guardFor(spec.weaponType) };
-    this.look = lookFor(spec.model);
+    const person = (spec as Partial<PersonFigureSpec>).person;
+    this.person = person;
+    this.pose = person ? personPose(person) : { ...MELEE_GUARD, ...guardFor(spec.weaponType) };
+    this.look = person ? personLookFor(person) : lookFor(spec.model);
+    this.legK = person ? PERSON_LEGS : 1;
+    this.sc = person ? PERSON_SCALE * (person.height ?? 1) : 1;
     this.style = styleFor(spec.model, spec.weaponType);
     this.barge = spec.model === 'barge';
     const cls = spec.frameClass === 'heavy' ? 2 : spec.frameClass === 'light' ? 0 : 1;
     const machine = spec.model === 'machine' || spec.model === 'tower';
-    this.cs = cls;
+    this.armG = person ? PERSON_GIRTH[person.build] : (GIRTH[cls] ?? 1);
     const w = spec.weaponType;
     this.shielded =
+      !person &&
       (spec.model === 'sipahi' || w === 'blunt') &&
       w !== 'firearm' &&
       w !== 'polearm' &&
@@ -108,13 +127,13 @@ class Rig2D implements Rig {
     this.f = {
       ctx: null as unknown as CanvasRenderingContext2D,
       spec,
-      g: (GIRTH[cls] ?? 1) * (machine ? 1.1 : 1),
+      g: person ? this.armG : this.armG * (machine ? 1.1 : 1),
       cls,
       hero: !!spec.hero,
       t: 0,
       drag: 0,
       acc: sw(spec.accent),
-      p: paletteFor(spec),
+      p: this.look.palette ?? paletteFor(spec),
       pose: this.pose,
       down: 0,
       armAngR: 0,
@@ -133,8 +152,8 @@ class Rig2D implements Rig {
     const t = this.time;
     const machine = this.spec.model === 'machine' || this.spec.model === 'tower';
     const breath = Math.sin(t * 2.2);
-    const bob = machine ? Math.sin(t * 3.1) * 0.014 : breath * 0.008;
-    j.hipY = HIP_Y + bob;
+    const bob = machine ? Math.sin(t * 3.1) * 0.014 : breath * (this.person ? 0.012 : 0.008);
+    j.hipY = (THIGH + SHIN) * this.legK + bob;
     j.sa = num(p.lean) + Math.sin(t * 2.2) * 0.012;
     const sn = Math.sin(j.sa);
     const cs = Math.cos(j.sa);
@@ -182,7 +201,8 @@ class Rig2D implements Rig {
 
   /** Figure-local to world. */
   private world(lx: number, ly: number, out: V2): V2 {
-    const dy = ly - this.pivY;
+    lx *= this.sc;
+    const dy = ly * this.sc - this.pivY;
     const c = Math.cos(this.rot);
     const s = Math.sin(this.rot);
     const x = lx * c - dy * s;
@@ -207,11 +227,13 @@ class Rig2D implements Rig {
       head: at(HEAD_X, HEAD_Y),
       hand: this.world(j.hx, j.hy, { x: 0, y: 0 }),
       offHand: this.world(j.lhx, j.lhy, { x: 0, y: 0 }),
-      tip: this.world(
-        j.hx + v * Math.cos(a) + u * Math.sin(a),
-        j.hy + v * Math.sin(a) - u * Math.cos(a),
-        { x: 0, y: 0 },
-      ),
+      tip: this.person
+        ? this.world(j.hx, j.hy, { x: 0, y: 0 })
+        : this.world(
+            j.hx + v * Math.cos(a) + u * Math.sin(a),
+            j.hy + v * Math.sin(a) - u * Math.cos(a),
+            { x: 0, y: 0 },
+          ),
       feet: this.world(0, 0, { x: 0, y: 0 }),
     };
   }
@@ -253,6 +275,7 @@ class Rig2D implements Rig {
     ctx.translate(0, this.pivY);
     ctx.rotate(this.rot);
     ctx.translate(0, -this.pivY);
+    ctx.scale(this.sc, this.sc);
     // Re-apply the facing so that scale is (facing*spin*zoom) but the translate stays in world.
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -275,7 +298,8 @@ class Rig2D implements Rig {
     look.torso(f);
     ctx.save();
     ctx.translate(HEAD_X, HEAD_Y);
-    ctx.scale(1.12, 1.12);
+    const hs = look.headScale ?? 1.12;
+    ctx.scale(hs, hs);
     look.head(f);
     ctx.restore();
     look.front?.(f);
@@ -303,6 +327,7 @@ class Rig2D implements Rig {
   /** A two-handed grip: the off hand closes over the weapon so the hold reads. */
   private offHandOverlay(): void {
     const w = this.spec.weaponType;
+    if (this.person) return;
     if (w !== 'polearm' && w !== 'firearm') return;
     const j = this.j;
     const dx = Math.sin(j.wa);
@@ -326,7 +351,7 @@ class Rig2D implements Rig {
     const j = this.j;
     const look = this.look;
     const L = this.limbs;
-    const g = (GIRTH[this.cs] ?? 1) * L.arm;
+    const g = this.armG * L.arm;
     const sway = Math.sin(this.time * 2.2) * 0.02;
     ctx.save();
     ctx.translate(0, j.hipY);
@@ -344,7 +369,7 @@ class Rig2D implements Rig {
     ctx.translate(0, -FORE);
     if (!far) {
       ctx.rotate(num(p.wR));
-      drawWeapon(f, this.style);
+      if (!this.person) drawWeapon(f, this.style);
       look.hand(f, false);
     } else {
       look.hand(f, true);
@@ -359,22 +384,22 @@ class Rig2D implements Rig {
     const j = this.j;
     const look = this.look;
     const L = this.limbs;
-    const g = (GIRTH[this.cs] ?? 1) * L.leg;
+    const g = this.armG * L.leg;
     const h = far ? num(p.hL) : num(p.hR);
     const k = far ? num(p.kL) : num(p.kR);
     ctx.save();
     ctx.translate(0, j.hipY);
     ctx.rotate(h);
     const rt = 0.11 * g;
-    limb(ctx, f.p[L.thigh], 0, 0, 0, -THIGH, rt, rt * 0.78, 0.03);
+    limb(ctx, f.p[L.thigh], 0, 0, 0, -THIGH * this.legK, rt, rt * 0.78, 0.03);
     look.thigh?.(f, far);
-    ctx.translate(0, -THIGH);
+    ctx.translate(0, -THIGH * this.legK);
     ctx.rotate(k);
     const rs = 0.084 * g;
-    limb(ctx, f.p[L.shin], 0, 0, 0, -SHIN, rs, rs * 0.78, 0.028);
+    limb(ctx, f.p[L.shin], 0, 0, 0, -SHIN * this.legK, rs, rs * 0.78, 0.028);
     ell(ctx, f.p[L.shin], 0, 0, rs * 0.9, rs * 0.9, 0, 0.02, 0);
     look.shin?.(f, far);
-    ctx.translate(0, -SHIN);
+    ctx.translate(0, -SHIN * this.legK);
     // The foot stays mostly flat while the shin swings.
     ctx.rotate(-(h + k) * 0.75);
     look.boot(f, far);
@@ -385,6 +410,6 @@ class Rig2D implements Rig {
 void OW;
 
 /** Creates the 2D rig for a figure spec. */
-export function createRig(spec: FigureSpec, baseX = 0, facing: 1 | -1 = 1): Rig {
+export function createRig(spec: RigSpec, baseX = 0, facing: 1 | -1 = 1): Rig {
   return new Rig2D(spec, baseX, facing);
 }

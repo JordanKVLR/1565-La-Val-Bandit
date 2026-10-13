@@ -1,8 +1,11 @@
-import { ARMATURA_MODELS } from '@m1565/content';
+import { ARMATURA_MODELS, loadLibrary } from '@m1565/content';
 import type { FrameClass, WeaponType } from '@m1565/core';
 import { describe, expect, it } from 'vitest';
 import { POSE_KEYS, guardFor } from '../render/Armatura';
 import type { Pose } from '../render/Armatura';
+import { PEOPLE } from './figures/peopleCast';
+import { personPose } from './figures/people';
+import { storyFigureSpec } from './mapSprite';
 import { createRig } from './rig';
 
 const WEAPONS: WeaponType[] = ['blade', 'polearm', 'blunt', 'firearm', 'explosive'];
@@ -131,6 +134,51 @@ describe('2D rig', () => {
     for (const f of [0, 0.5, 1, 7, -1, Number.NaN]) {
       rig.flash = f;
       expect(() => rig.draw(ctx)).not.toThrow();
+    }
+  });
+});
+
+describe('2D rig people', () => {
+  const ids = [...loadLibrary().cast.keys()];
+
+  it('has a look for every cast member', () => {
+    for (const id of ids) expect(PEOPLE[id]).toBeDefined();
+  });
+
+  it('draws every cast person at the extreme poses without throwing', () => {
+    for (const id of ids) {
+      const person = PEOPLE[id]!;
+      for (const facing of [1, -1] as const) {
+        const rig = createRig(storyFigureSpec(id, '#2a6fd6'), 0.5, facing);
+        const ctx = fakeCtx();
+        for (const [i, p] of EXTREME.entries()) {
+          rig.pose = { ...personPose(person), ...p };
+          rig.time = i * 0.37;
+          rig.flash = i % 3 === 0 ? 0.9 : 0;
+          expect(() => rig.draw(ctx)).not.toThrow();
+        }
+        expect((ctx as unknown as { depth: () => number }).depth()).toBe(0);
+      }
+    }
+  });
+
+  it('keeps anchors finite and a person shorter than an armatura', () => {
+    const tall = createRig(spec('knight', 'blade', 'medium'), 0, 1).anchors().head.y;
+    for (const id of ids) {
+      const rig = createRig(storyFigureSpec(id, '#2a6fd6'), 1.2, -1);
+      for (const key of POSE_KEYS)
+        for (const v of [-3, 0, 3]) {
+          rig.pose = { ...personPose(PEOPLE[id]!), [key]: v };
+          for (const p of Object.values(rig.anchors())) {
+            expect(Number.isFinite(p.x)).toBe(true);
+            expect(Number.isFinite(p.y)).toBe(true);
+          }
+        }
+      rig.pose = personPose(PEOPLE[id]!);
+      const a = rig.anchors();
+      expect(a.feet.y).toBeCloseTo(0, 5);
+      expect(a.head.y).toBeGreaterThan(1.0);
+      expect(a.head.y).toBeLessThan(tall);
     }
   });
 });
