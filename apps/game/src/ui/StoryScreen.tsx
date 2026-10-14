@@ -1,6 +1,6 @@
 import type { Library } from '@m1565/content';
 import { loadMap, mapSources } from '@m1565/content';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { GameSession, Screen } from '../campaign/GameSession';
 import { portraitUrl } from '../render/art';
 import { BattleView } from '../render/BattleView';
@@ -121,7 +121,8 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
 
   // Keyboard and gamepad: Enter/Space (pad Ⓐ) continue, Esc or the pad's Menu button open the
   // menu. Choices are buttons, reached with the arrows (see ui/input.ts).
-  useEffect(() => {
+  // A layout effect, so the handler exists the moment the screen is visible.
+  useLayoutEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
       if (document.querySelector('[role="dialog"]')) return;

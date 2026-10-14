@@ -1,7 +1,7 @@
 import type { BattleSetup, BattleState, Facing } from '@m1565/core';
 import { attackFpCost, findUnit, getTile, terrainAt, unitAt } from '@m1565/core';
 import type { Library } from '@m1565/content';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { t } from '../i18n';
 import { BattleView } from '../render/BattleView';
 import { BattleController } from '../scenes/BattleController';
@@ -128,7 +128,8 @@ export function BattleScreen({
   // arrows move the tile cursor · Enter/Space select or confirm · Esc back (or the menu) ·
   // M move · A attack · E end turn · U undo · [ ] cycle units · , . rotate · + − zoom.
   // On `document`, so these run before the generic focus fallbacks on `window` (ui/input.ts).
-  useEffect(() => {
+  // A layout effect, so the handler exists the moment the battle is visible.
+  useLayoutEffect(() => {
     const ARROWS: Record<string, CursorDir> = {
       ArrowUp: 'up',
       ArrowDown: 'down',

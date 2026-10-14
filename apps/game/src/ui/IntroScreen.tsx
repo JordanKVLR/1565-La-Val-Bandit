@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { music } from '../platform/audio';
 import { settings } from '../state/settings';
 import { t } from '../i18n';
@@ -34,7 +34,9 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
   const scale = introScale(window.innerWidth, window.innerHeight, window.devicePixelRatio || 1);
   const src = `${import.meta.env.BASE_URL}intro/index.html?scale=${scale}`;
 
-  useEffect(() => {
+  // A layout effect: Esc (Skip) works the moment the cinematic is on screen, not after the next
+  // idle callback, which a slow machine can push back past a key press.
+  useLayoutEffect(() => {
     music('none');
     const el = new Audio(`${import.meta.env.BASE_URL}music/under-the-red-sun.mp3`);
     el.preload = 'auto';
