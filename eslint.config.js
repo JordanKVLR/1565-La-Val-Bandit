@@ -48,7 +48,6 @@ export default tseslint.config(
       'apps/desktop/dist/**',
       'apps/game/test-results/**',
       'apps/game/playwright-report/**',
-      'apps/game/public/intro/**',
       'docs/trailer/src/malta_geo.js',
       'docs/trailer/build*/**',
       'docs/trailer/footage/**',

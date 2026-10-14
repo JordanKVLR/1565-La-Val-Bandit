@@ -4,47 +4,39 @@ import { settings } from '../state/settings';
 import { t } from '../i18n';
 import { Button, Icon } from './design';
 import { usePrompt } from './KeyHint';
-import { introFinished, introScale, introTime, introVolume } from './intro';
+import { INTRO_SOURCES, introVolume } from './intro';
 
-type IntroWindow = Window & { ready?: Promise<void>; renderFrame?: (t: number) => Promise<void> };
-
-/** Give up and go straight to the game if the cinematic page has not loaded by then. */
+/** Give up and go straight to the game if the video has not become playable by then. */
 const LOAD_TIMEOUT_MS = 15000;
 
 /**
- * The opening cinematic (docs/adr/0006-opening-cinematic.md): the canvas page in public/intro/
- * draws each frame, this screen drives its clock from Under the Red Sun and offers Skip.
+ * The opening cinematic (docs/adr/0014-opening-cinematic-video.md): a 43.2 s video with the song
+ * mixed in. It plays on every New Game, ends the screen when it ends, and offers Skip. A video that
+ * cannot load or decode (the single-file preview has none) never holds the player back.
  */
 export function IntroScreen({ onDone }: { onDone: () => void }) {
-  const frame = useRef<HTMLIFrameElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
   const [loaded, setLoaded] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const done = useRef(false);
-  const audio = useRef<HTMLAudioElement | null>(null);
   const blockedRef = useRef(false);
   const unblock = useRef(() => {});
   const finish = () => {
     if (done.current) return;
     done.current = true;
-    audio.current?.pause();
+    video.current?.pause();
     onDone();
   };
 
   const prompt = usePrompt();
-  const scale = introScale(window.innerWidth, window.innerHeight, window.devicePixelRatio || 1);
-  const src = `${import.meta.env.BASE_URL}intro/index.html?scale=${scale}`;
+  const base = import.meta.env.BASE_URL;
 
   // A layout effect: Esc (Skip) works the moment the cinematic is on screen, not after the next
   // idle callback, which a slow machine can push back past a key press.
   useLayoutEffect(() => {
     music('none');
-    const el = new Audio(`${import.meta.env.BASE_URL}music/under-the-red-sun.mp3`);
-    el.preload = 'auto';
+    const el = video.current!;
     el.volume = introVolume(settings.get().musicVolume);
-    audio.current = el;
-    let audioOk = true;
-    el.addEventListener('error', () => (audioOk = false));
-    el.addEventListener('ended', finish);
     const unsubscribe = settings.subscribe(() => {
       el.volume = introVolume(settings.get().musicVolume);
     });
@@ -54,79 +46,69 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
     window.addEventListener('keydown', onKey);
     const onHidden = () => {
       if (document.hidden) el.pause();
-      else if (!done.current && audioOk && !blockedRef.current) void el.play().catch(() => {});
+      else if (!done.current && !blockedRef.current) void el.play().catch(() => {});
     };
     document.addEventListener('visibilitychange', onHidden);
+    const giveUp = window.setTimeout(finish, LOAD_TIMEOUT_MS);
 
-    let raf = 0;
-    let busy = false;
-    let wall0: number | null = null;
-    let started = false;
-    const giveUp = window.setTimeout(() => {
-      if (!(frame.current?.contentWindow as IntroWindow | null)?.renderFrame) finish();
-    }, LOAD_TIMEOUT_MS);
-
-    const start = async () => {
-      if (started) return;
-      started = true;
-      const win = frame.current?.contentWindow as IntroWindow | null;
-      if (!win?.renderFrame) return finish();
-      await win.ready;
+    // Start at once: iOS Safari only loads a video once play() has been asked for.
+    const onPlaying = () => {
       window.clearTimeout(giveUp);
       setLoaded(true);
-      try {
-        await el.play();
-      } catch {
-        // No user gesture yet (opened from a link or a reload): wait for a tap.
-        blockedRef.current = true;
-        setBlocked(true);
-      }
-      const tick = async () => {
-        raf = requestAnimationFrame(() => void tick());
-        if (busy || done.current) return;
-        if (blockedRef.current) return;
-        // Without the song (failed to load), carry on from where it stopped on a wall clock.
-        if (!audioOk && wall0 === null) wall0 = performance.now() - el.currentTime * 1000;
-        const wall = wall0 === null ? 0 : (performance.now() - wall0) / 1000;
-        const t = introTime(audioOk ? el.currentTime : null, wall);
-        if (introFinished(t)) return finish();
-        busy = true;
-        try {
-          await win.renderFrame!(t);
-        } finally {
-          busy = false;
-        }
-      };
-      void tick();
     };
-    const iframe = frame.current!;
-    const onLoad = () => void start();
-    iframe.addEventListener('load', onLoad);
-    // The page may already have loaded from cache before this effect ran.
-    if (iframe.contentDocument?.readyState === 'complete' && iframe.contentWindow) {
-      if ((iframe.contentWindow as IntroWindow).renderFrame) void start();
-    }
+    el.addEventListener('playing', onPlaying);
+    el.addEventListener('ended', finish);
+    // A decode failure partway through. (Load failures arrive on the last <source>, see below.)
+    el.addEventListener('error', finish);
+    el.play().catch((e: unknown) => {
+      const name = (e as { name?: string } | null)?.name;
+      if (name === 'NotAllowedError') {
+        // No user gesture yet (opened from a link or a reload): wait for a tap.
+        window.clearTimeout(giveUp);
+        blockedRef.current = true;
+        setLoaded(true);
+        setBlocked(true);
+      } else if (name === 'NotSupportedError') finish();
+    });
     unblock.current = () => {
       blockedRef.current = false;
       setBlocked(false);
-      void el.play().catch(() => (audioOk = false));
+      void el.play().catch(finish);
     };
 
     return () => {
-      cancelAnimationFrame(raf);
       window.clearTimeout(giveUp);
-      iframe.removeEventListener('load', onLoad);
       window.removeEventListener('keydown', onKey);
       document.removeEventListener('visibilitychange', onHidden);
       unsubscribe();
       el.pause();
       el.removeAttribute('src');
+      el.load();
     };
   }, []);
 
   return (
     <div class="intro-screen" role="region" aria-label={t('intro.title')}>
-      <iframe ref={frame} src={src} title={t('intro.title')} tabIndex={-1} />
+      <video
+        ref={video}
+        class="intro-video"
+        aria-label={t('intro.title')}
+        data-testid="intro-video"
+        playsInline
+        preload="auto"
+        tabIndex={-1}
+      >
+        {INTRO_SOURCES.map((s, i) => (
+          <source
+            key={s.file}
+            src={`${base}${s.file}`}
+            type={s.type}
+            // The browser tries the sources in order; only the last one failing is the end of the
+            // road (a <source> error does not bubble to the <video>).
+            onError={i === INTRO_SOURCES.length - 1 ? finish : undefined}
+          />
+        ))}
+      </video>
       {!loaded && (
         <p class="intro-loading" role="status">
           <Icon name="cross" class="intro-loading__mark" />

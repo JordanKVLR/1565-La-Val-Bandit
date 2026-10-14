@@ -18,11 +18,10 @@ from `apps/game/public/music/under-the-red-sun.mp3`. Only the trailer's scenes n
 
 ## In the game
 
-The game plays the opening cinematic live from `src/`, not from the MP4. On every dev or build
-run, `apps/game/vite-plugin-intro.ts` copies the scripts and fonts into
-`apps/game/public/intro/`. Edits here reach the game on the next build. Keep
-`window.renderFrame(t)` and `window.ready` working, since the game relies on them. See
-`docs/adr/0006-opening-cinematic.md`.
+The game no longer reads anything from this folder. It used to play the four-minute opening
+cinematic live from `src/`; it now plays a 43-second video from `apps/game/public/cinematic/`
+(see `docs/adr/0014-opening-cinematic-video.md`). The trailer and the old cinematic render from
+here as before, for use outside the game.
 
 ## Rebuild
 
