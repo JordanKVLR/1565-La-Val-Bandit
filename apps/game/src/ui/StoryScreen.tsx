@@ -108,8 +108,15 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
     if (!done) finish();
     else session.advance();
   };
+  // The key handler below is installed once and reads the latest of these on every key, so a key
+  // pressed right after the screen changes (before any effect re-runs) is judged by what is
+  // on screen now, not by the previous render.
   const tapRef = useRef(onTap);
   tapRef.current = onTap;
+  const choicesOpen = useRef(false);
+  choicesOpen.current = !!screen.choices;
+  const menuRef = useRef(onMenu);
+  menuRef.current = onMenu;
   const prompt = usePrompt();
 
   // Keyboard and gamepad: Enter/Space (pad Ⓐ) continue, Esc or the pad's Menu button open the
@@ -121,17 +128,17 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
       const target = e.target as HTMLElement | null;
       if (e.key === 'Escape' || e.key === 'ContextMenu') {
         e.preventDefault();
-        onMenu();
+        menuRef.current();
       } else if (e.key === 'Enter' || e.key === ' ') {
         if (target?.closest('button')?.matches(':focus-visible')) return;
-        if (screen.choices) return;
+        if (choicesOpen.current) return;
         e.preventDefault();
         tapRef.current();
       }
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [onMenu, screen.choices]);
+  }, []);
 
   const portrait = speaker ? portraitUrl(speaker.id) : undefined;
 

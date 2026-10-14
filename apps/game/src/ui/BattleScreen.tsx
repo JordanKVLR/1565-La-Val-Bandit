@@ -88,7 +88,15 @@ export function BattleScreen({
   );
   const { state, mode, inspected, log, notices } = useStore(ctl.view);
   // Only one overlay at a time: opening one closes whatever else was open.
-  const [panel, setPanel] = useState<Panel>('none');
+  const [panel, setPanelState] = useState<Panel>('none');
+  // The key handler below is installed once and reads the panel from here, so a key pressed
+  // right after a panel opens (before Preact re-runs any effect) is never handled as if the
+  // panel were still closed.
+  const panelRef = useRef<Panel>(panel);
+  const setPanel = (next: Panel | ((p: Panel) => Panel)) => {
+    panelRef.current = typeof next === 'function' ? next(panelRef.current) : next;
+    setPanelState(panelRef.current);
+  };
   const close = () => setPanel('none');
   const prompt = usePrompt();
   const phone = useMediaQuery(PHONE_QUERY);
@@ -138,9 +146,10 @@ export function BattleScreen({
         setPanel((p) => (p === 'none' ? 'menu' : 'none'));
         return;
       }
+      const panel = panelRef.current;
       if (e.key === 'Escape') {
         used();
-        if (panel !== 'none') close();
+        if (panel !== 'none') setPanel('none');
         else if (m.kind === 'command') setPanel('menu');
         else ctl.cancel();
         return;
@@ -210,7 +219,7 @@ export function BattleScreen({
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [ctl, panel]);
+  }, [ctl]);
 
   // Progress is saved after every command (the player's and the AI's), so a console suspend or
   // a killed app resumes from the last thing that happened. The state only changes between
