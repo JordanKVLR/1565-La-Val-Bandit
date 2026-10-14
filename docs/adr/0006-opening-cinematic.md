@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted.
+Superseded by [ADR 0014](0014-opening-cinematic-video.md): the game now plays a 43-second
+video instead of this renderer.
 
 ## Context
 

@@ -2,7 +2,6 @@ import { inkPlugin } from '@m1565/content/vite-plugin-ink';
 import preact from '@preact/preset-vite';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import { introPlugin } from './vite-plugin-intro';
 
 // BASE_PATH lets the same build serve from a sub-path (GitHub Pages: /<repo>/) or from root.
 // Single-file preview build (no service worker) for sharing as a claude.ai page.
@@ -15,7 +14,6 @@ export default defineConfig({
   base,
   plugins: [
     inkPlugin(),
-    introPlugin(),
     preact(),
     VitePWA({
       disable: singleFile || native,
@@ -24,12 +22,8 @@ export default defineConfig({
       // Precache the art too, so portraits and textures work offline once installed.
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,json,woff2}'],
-        // The opening cinematic is its own page (intro/index.html?scale=…): serve it from the
-        // precache despite the query, and never swap it for the app shell.
-        ignoreURLParametersMatching: [/^scale$/, /^utm_/, /^fbclid$/],
-        navigateFallbackDenylist: [/\/intro\//],
-        // Music is too big to precache: each track is cached the first time it plays, then
-        // served from the cache (with range requests, as audio players ask for).
+        // Music and the opening cinematic are too big to precache: each is cached the first time
+        // it plays, then served from the cache (with range requests, as media players ask for).
         runtimeCaching: [
           {
             urlPattern: ({ url }) => url.pathname.endsWith('.mp3'),
@@ -39,6 +33,16 @@ export default defineConfig({
               rangeRequests: true,
               cacheableResponse: { statuses: [200] },
               expiration: { maxEntries: 4 },
+            },
+          },
+          {
+            urlPattern: ({ url }) => /\/cinematic\/.*\.(mp4|webm)$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'cinematic',
+              rangeRequests: true,
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 2 },
             },
           },
         ],
