@@ -9,7 +9,7 @@ import { ScrollArea } from './ScrollArea';
 import { TechniqueEffects, techniqueEffects, TechniqueNumbers } from './TechniqueCard';
 
 /**
- * The active unit's learned techniques (locked ones stay hidden until unlocked), in the place
+ * The active unit's learned techniques (ones the pilot's level still holds back show as locked), in the place
  * the action bar stood: beside the unit on wide screens, docked bottom right on phones. Each row
  * gives the name and every number; the description is one tap away (ⓘ). A technique that can't
  * be used says why.
@@ -28,8 +28,9 @@ export function AttackMenu({
   const [open, setOpen] = useState<string | null>(null);
   const unit = ctl.active();
   if (!unit) return null;
-  // Only techniques the pilot has learned are listed; discovering new ones is part of the game.
-  const options = ctl.attackOptions().filter((o) => o.unlocked);
+  // Learned techniques are listed, plus those only the pilot's level still holds back (shown
+  // locked with the level they open at); ones waiting on attributes stay a surprise.
+  const options = ctl.attackOptions().filter((o) => o.unlocked || o.unlockLevel !== undefined);
   return (
     <section
       ref={panel}
@@ -57,18 +58,23 @@ export function AttackMenu({
       <Divider class="ov-rule" />
       <ScrollArea class="ov-attack__scroll">
         <ul class="ov-techs">
-          {options.map(({ attack, affordable, targets }) => {
-            const usable = affordable && targets.length > 0;
-            const reason = !affordable
-              ? t('attackMenu.noAp')
-              : !targets.length
-                ? t('attackMenu.noTarget')
-                : '';
+          {options.map(({ attack, unlocked, unlockLevel, affordable, targets }) => {
+            const usable = unlocked && affordable && targets.length > 0;
+            const reason = !unlocked
+              ? t('tech.unlocksAt', { level: unlockLevel ?? 1 })
+              : !affordable
+                ? t('attackMenu.noAp')
+                : !targets.length
+                  ? t('attackMenu.noTarget')
+                  : '';
             const expanded = open === attack.id;
             const moreId = `tech-more-${attack.id}`;
             const hasMore = !!attack.description || techniqueEffects(attack).length > 0;
             return (
-              <li key={attack.id} class={`ov-tech${expanded ? ' is-open' : ''}`}>
+              <li
+                key={attack.id}
+                class={`ov-tech${expanded ? ' is-open' : ''}${unlocked ? '' : ' is-locked'}`}
+              >
                 <div class="ov-tech__row">
                   <button
                     type="button"
@@ -86,7 +92,7 @@ export function AttackMenu({
                     />
                     {reason && (
                       <span class="am-reason">
-                        <Icon name="warning" class="am-reason__icon" />
+                        <Icon name={unlocked ? 'warning' : 'lock'} class="am-reason__icon" />
                         {reason}
                       </span>
                     )}

@@ -3,12 +3,12 @@
     "id": "ninu",
     "name": "Ninu",
     "stats": {
-      "bas": 5,
-      "pow": 7,
-      "dex": 6,
-      "agl": 7,
+      "bas": 4,
+      "pow": 6,
+      "dex": 5,
+      "agl": 6,
       "def": 4,
-      "wep": 6
+      "wep": 5
     },
     "growth": {
       "bas": 50,

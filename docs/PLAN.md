@@ -117,16 +117,16 @@ This section follows the classic Vanguard Bandits framework (see §1: mechanics,
 | **Avoid**       | +20 FP                   | The hit rolls at the normal chance; if it lands, full damage                                                                                                                                                                   |
 | **Attack back** | technique AP + FP, as FP | Take the hit (+15% to be hit); if you survive, strike back with a technique you choose that reaches (all its hits and effects apply). Only techniques that keep FP ≤ 100 are offered; the AI strikes back with its main attack |
 | **Counter**     | +20 FP                   | A gamble: chance = 10% + 1% × ((your DEX + AGL) − (attacker DEX + AGL)), clamped 5–35%. Success: you take nothing and the attacker takes 1.25× the incoming damage. Failure: you take 1.25×                                    |
-| **Do nothing**  | free                     | Take the hit (+15% to be hit)                                                                                                                                                                                                  |
 
 The reaction menu always appears, listing every reaction; ones that can't be used are greyed out
 with the reason. **Direction matters:** from the front, all are offered. From the side: Defend,
 Avoid and Attack back. From the **rear** a unit can only Avoid. Techniques that block counters also
-block Attack back and Counter. A Spent unit (FP 100) can only Do nothing.
+block Attack back and Counter. There is no "do nothing" option: a defender that can react must pick one of the real reactions (the
+AI too). Only a Spent unit (FP 100) cannot react, and the blow then lands un-reacted (+15% to be hit).
 Attackers turn to face their target, and a defender that survives turns to face its attacker.
 
 **Hit chance** = clamp(5, 95):
-`65 + technique accuracy + DEX×2 − target AGL×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties` (+15 when the target attacks back or does nothing)
+`65 + technique accuracy + DEX×2 − target AGL×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties` (+15 when the target attacks back or is too Spent to react)
 
 - Facing bonus: front 0, side +10, rear +25. Rear hits also deal ×1.25 damage.
 - **Assist:** +5% for each ally adjacent to the target and able to act, up to +15%.
@@ -184,16 +184,21 @@ skippable on tap.
 
 - **XP during battle** (classic rules): XP comes **only from landing a blow**. A hit earns
   30 + 100 × (damage ÷ target max HP), so more damage earns slightly more, and a defeating blow
-  adds 150. Head-on hits earn ×1, side ×0.8, rear ×0.5 (the defeat bonus isn't reduced). XP scales with the level gap:
+  adds 200. Head-on hits earn ×1, side ×0.8, rear ×0.5 (the defeat bonus isn't reduced). XP scales with the level gap:
   ×(1 + 0.2 × (target level − attacker level)), limited to ×0.1–×3. Reactions that don't land
   a blow earn nothing. Only the player's side earns XP.
+  The rates were halved (75 / 200 / 400 before) because kills now take more hits (ADR 0014, 0015):
+  a front-line pilot gains about one level per early battle, fewer later as the level gap shrinks.
 - **Levels:** 500 XP per level; leftover XP carries over. Each level-up happens the moment it's
   earned, mid-battle, and gives +2 max HP and **3 attribute points the player assigns** (AI
   allies spend theirs on their lowest attribute). Unspent points can be spent later.
 - **Techniques:** each frame faction (Order, militia, Ottoman, corsair, Scala) has its own list of
   attacks (`packages/content/data/attacks.json`, 46 in total). What a pilot can learn depends on
-  the weapon type and frame weight class; when they can use it depends on stat requirements. Locked techniques are hidden; the
-  game announces "New technique learned" when raising a stat unlocks one.
+  the weapon type and frame weight class; when they can use it depends on a **pilot level** (`level` in `attacks.json`, 3 to 14) and on
+  stat requirements: both must be met (ADR 0015). Nobody has more than the two starters at levels 1-2;
+  entry techniques open at levels 3-4, mid ones at 6-9, advanced ones at 10-14 (curve in
+  `docs/ATTACKS.md`). Techniques held back only by level are listed locked with "Unlocks at level N";
+  the level-up panel and log announce "New technique" when a level or a stat unlocks one.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.
 - **Skills** (ADR 0008): each named pilot has three passive skills of their own, unlocked at

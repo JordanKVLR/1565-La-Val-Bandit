@@ -1,4 +1,5 @@
 import type { PilotStats, StatName, UnitState } from '@m1565/core';
+import { isAttackUnlocked } from '@m1565/core';
 import { t } from '../../i18n';
 import { Button, Chip, Hint, Meter, Sheet } from '../design';
 import { ATTRIBUTE_BAR_MAX, gearNote } from './stats';
@@ -9,7 +10,7 @@ interface Props {
   /** The unit: its top-level attributes include gear, `pilot` holds its own. */
   unit: PilotStats &
     Pick<UnitState, 'name' | 'level' | 'statPoints' | 'maxHp' | 'pilot'> &
-    Partial<Pick<UnitState, 'skills'>>;
+    Partial<Pick<UnitState, 'skills' | 'attacks'>>;
   title?: string;
   onRaise: (stat: StatName) => void;
   onDone: () => void;
@@ -19,7 +20,7 @@ interface Props {
 /**
  * Spend level-up points on any of the six attributes: each row names the attribute, says what
  * it does, shows it as a meter (gear's share in brackets) and has a 44 px raise button.
- * Techniques stay a surprise.
+ * Techniques that open at this level are announced beside the new skills.
  */
 export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props) {
   const canRaise = unit.statPoints > 0;
@@ -56,6 +57,9 @@ export function LevelUpPanel({ unit, title, onRaise, onDone, doneLabel }: Props)
         />
         <NewSkillLines
           names={(unit.skills ?? []).filter((s) => s.level === unit.level).map((s) => s.name)}
+          techniques={(unit.attacks ?? [])
+            .filter((a) => (a.level ?? 1) === unit.level && isAttackUnlocked(unit.level, unit, a))
+            .map((a) => a.name)}
         />
       </div>
       <ul class="ov-attrs">

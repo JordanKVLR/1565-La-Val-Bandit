@@ -152,6 +152,13 @@ export function UnitDetails({
   const [page, setPage] = useState<Page>('stats');
   // Enemies' techniques stay a mystery; your own are listed.
   const techniques = unit.side === 'player' ? unlockedAttacks(unit) : [];
+  // Techniques only the pilot's level holds back are listed too, locked, in the order they open.
+  const upcoming =
+    unit.side === 'player'
+      ? unit.attacks
+          .filter((a) => (a.level ?? 1) > unit.level)
+          .sort((a, b) => (a.level ?? 1) - (b.level ?? 1))
+      : [];
   const reach = attackRange(unit.attacks[0]!, unit.weapon);
   const tabs: TabItem<Page>[] = [
     { id: 'stats', label: t('unit.tab.stats') },
@@ -280,6 +287,15 @@ export function UnitDetails({
                   attack={a}
                   weapon={unit.weapon}
                   fpCost={attackFpCost(state, unit, a)}
+                />
+              ))}
+              {upcoming.map((a) => (
+                <TechniqueCard
+                  key={a.id}
+                  attack={a}
+                  weapon={unit.weapon}
+                  fpCost={attackFpCost(state, unit, a)}
+                  unlockLevel={a.level ?? 1}
                 />
               ))}
             </div>

@@ -185,6 +185,8 @@ export const AttackSchema = z
     accuracyBonus: z.number().int().optional(),
     apBonus: z.number().int().min(0).optional(),
     requires: statReq,
+    /** Pilot level at which the technique opens (stat requirements must also be met). */
+    level: z.number().int().min(1).max(30).default(1),
     description: z.string(),
   })
   .refine((a) => (a.minRange ?? 1) <= (a.maxRange ?? 99), 'minRange must be <= maxRange');

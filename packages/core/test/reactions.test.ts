@@ -8,6 +8,8 @@ import {
   counterChance,
   createBattle,
   forecastAttack,
+  chooseReaction,
+  NO_REACTION,
   REACTIONS,
   reactionChoices,
   requireUnit,
@@ -50,22 +52,23 @@ const reactions = (s: BattleState) =>
   availableReactions(s, requireUnit(s, 't'), requireUnit(s, 'a'));
 
 describe('facing rules', () => {
-  it('head-on: defend, avoid, attack back, counter, or do nothing', () => {
-    expect(reactions(duel('north'))).toEqual(['defend', 'avoid', 'attackBack', 'counter', 'none']);
+  it('head-on: defend, avoid, attack back or counter', () => {
+    expect(reactions(duel('north'))).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
   });
 
   it('from the side: no counter', () => {
-    expect(reactions(duel('east'))).toEqual(['defend', 'avoid', 'attackBack', 'none']);
+    expect(reactions(duel('east'))).toEqual(['defend', 'avoid', 'attackBack']);
   });
 
-  it('from behind: avoid or do nothing', () => {
-    expect(reactions(duel('south'))).toEqual(['avoid', 'none']);
+  it('from behind: avoid only', () => {
+    expect(reactions(duel('south'))).toEqual(['avoid']);
   });
 
   it('lists every reaction with the reason it is unavailable', () => {
     const s = duel('south');
     const choices = reactionChoices(s, requireUnit(s, 't'), requireUnit(s, 'a'));
     expect(choices.map((c) => c.reaction)).toEqual(REACTIONS);
+    expect(REACTIONS).not.toContain(NO_REACTION);
     expect(choices.find((c) => c.reaction === 'defend')).toMatchObject({
       available: false,
       reason: { code: 'rearNoDefend' },
@@ -95,15 +98,15 @@ describe('facing rules', () => {
     const all = reasons(spent);
     for (const r of ['defend', 'avoid', 'attackBack', 'counter'] as const)
       expect(all[r]).toEqual({ code: 'spent' });
-    expect(all.none).toBeUndefined();
+    expect(Object.keys(all)).not.toContain('none');
   });
 
-  it('reacting needs no AP, but a Spent unit (FP full) can only do nothing', () => {
+  it('reacting needs no AP, but a Spent unit (FP full) cannot react at all', () => {
     const base = duel('north');
     const broke = { ...base, units: base.units.map((u) => (u.id === 't' ? { ...u, ap: 0 } : u)) };
-    expect(reactions(broke)).toEqual(['defend', 'avoid', 'attackBack', 'counter', 'none']);
+    expect(reactions(broke)).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
     const spent = { ...base, units: base.units.map((u) => (u.id === 't' ? { ...u, fp: 100 } : u)) };
-    expect(reactions(spent)).toEqual(['none']);
+    expect(reactions(spent)).toEqual([]);
   });
 });
 
@@ -115,12 +118,11 @@ describe('reaction and attack costs', () => {
     return { fp: t.fp, ap: t.ap, attacker: requireUnit(state, 'a') };
   };
 
-  it('defend costs 30 FP, avoid and counter 20, doing nothing 0, and none cost AP', () => {
+  it('defend costs 30 FP, avoid and counter 20, and none cost AP', () => {
     // Fixture pilots have SPI 0, so costs are exact.
     expect(fpAfter('defend')).toMatchObject({ fp: 30, ap: 60 });
     expect(fpAfter('avoid')).toMatchObject({ fp: 20, ap: 60 });
     expect(fpAfter('counter')).toMatchObject({ fp: 20, ap: 60 });
-    expect(fpAfter('none')).toMatchObject({ fp: 0, ap: 60 });
   });
 
   it("attack back pays the technique's AP and FP as FP, and spends no AP", () => {
@@ -137,7 +139,7 @@ describe('reaction and attack costs', () => {
     const a = requireUnit(s, 'a');
     const attack = a.attacks[0]!;
     expect(attackFpCost(s, a, attack)).toBe(5);
-    expect(fpAfter('none').attacker.fp).toBe(5);
+    expect(fpAfter('defend').attacker.fp).toBe(5);
   });
 });
 
@@ -435,5 +437,45 @@ describe('XP only for landing blows', () => {
 
   it('striking back earns XP when the blow lands', () => {
     expect(enemyAttacks('attackBack').xp).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe('no "do nothing" choice', () => {
+  const withFp = (fp: number) => {
+    const base = duel('north');
+    return { ...base, units: base.units.map((u) => (u.id === 't' ? { ...u, fp } : u)) };
+  };
+
+  it('rejects an un-reacted blow while the defender can afford a reaction', () => {
+    const s = withFp(99);
+    expect(availableReactions(s, requireUnit(s, 't'), requireUnit(s, 'a'))).not.toEqual([]);
+    expect(() =>
+      applyCommand(s, { type: 'attack', unitId: 'a', targetId: 't', reaction: NO_REACTION }),
+    ).toThrow(/not available/);
+  });
+
+  it('lets the blow land un-reacted only when the defender is Spent', () => {
+    const s = withFp(100);
+    const { state, events } = applyCommand(s, {
+      type: 'attack',
+      unitId: 'a',
+      targetId: 't',
+      reaction: NO_REACTION,
+    });
+    expect(requireUnit(state, 't').fp).toBe(100);
+    expect(events.some((e) => e.type === 'attackResolved' && e.reaction === NO_REACTION)).toBe(
+      true,
+    );
+    expect(() =>
+      applyCommand(s, { type: 'attack', unitId: 'a', targetId: 't', reaction: 'avoid' }),
+    ).toThrow(/not available/);
+  });
+
+  it('the AI always picks a real reaction when it can afford one, none when Spent', () => {
+    for (const fp of [0, 50, 99]) {
+      const s = withFp(fp);
+      expect(REACTIONS).toContain(chooseReaction(s, 't', 'a'));
+    }
+    expect(chooseReaction(withFp(100), 't', 'a')).toBe(NO_REACTION);
   });
 });

@@ -1,5 +1,5 @@
 import type { Attack } from './attacks';
-import { meetsRequirements } from './attacks';
+import { isAttackUnlocked } from './attacks';
 import type { Reaction } from './combat';
 import {
   attackBackOptions,
@@ -7,6 +7,7 @@ import {
   attackFpCost,
   attackInRange,
   availableReactions,
+  NO_REACTION,
   canAct,
   counterChance,
   damageFor,
@@ -15,6 +16,7 @@ import {
   reactionFpCost,
   reflectDamage,
   strikeNumbers,
+  unlockedAttacks,
   xpFor,
 } from './combat';
 import type { BattleEvent, StatName, StrikeResult } from './events';
@@ -99,12 +101,16 @@ export function applyCommand(
       if (target.defeated || !isHostile(unit, target)) throw new CommandError('Invalid target');
       const attack = unit.attacks.find((a) => a.id === (cmd.attackId ?? 'basic'));
       if (!attack) throw new CommandError(`Unknown attack "${cmd.attackId}"`);
-      if (!meetsRequirements(unitStats(unit), attack))
+      if (!isAttackUnlocked(unit.level, unitStats(unit), attack))
         throw new CommandError(`${attack.name} is not unlocked yet`);
       if (!attackInRange(attack, unit.weapon, unit.pos, target.pos))
         throw new CommandError('Target out of range');
       if (unit.ap < attack.apCost) throw new CommandError('Not enough AP');
-      if (!availableReactions(state, target, unit, unit.pos, attack).includes(cmd.reaction)) {
+      const options = availableReactions(state, target, unit, unit.pos, attack);
+      // Reacting is not optional: the blow is un-reacted only when the defender can afford nothing.
+      const allowed =
+        options.length === 0 ? cmd.reaction === NO_REACTION : options.includes(cmd.reaction);
+      if (!allowed) {
         throw new CommandError(`Reaction "${cmd.reaction}" is not available`);
       }
       if (cmd.reaction === 'attackBack' && cmd.backAttackId !== undefined) {
@@ -178,6 +184,7 @@ function gainXp(
   unit.xp += amount;
   while (unit.xp >= b.xpPerLevel) {
     unit.xp -= b.xpPerLevel;
+    const known = new Set(unlockedAttacks(unit).map((a) => a.id));
     unit.level += 1;
     refreshMaxHp(state, unit);
     unit.statPoints += b.statPointsPerLevel;
@@ -194,12 +201,14 @@ function gainXp(
         unit.statPoints -= 1;
       }
     }
+    const newTechniques = unlockedAttacks(unit).filter((a) => !known.has(a.id));
     events.push({
       type: 'levelUp',
       unitId: unit.id,
       level: unit.level,
       statPoints: unit.statPoints,
       ...(unlocked.length ? { newSkills: unlocked.map((s) => s.id) } : {}),
+      ...(newTechniques.length ? { newTechniques: newTechniques.map((a) => a.id) } : {}),
     });
   }
   return amount;
@@ -240,7 +249,7 @@ function resolveAttack(
     if (success) {
       // The blow is turned aside and driven back into the attacker at 1.25×.
       const n = strikeNumbers(state, attacker, target, attacker.pos, attack);
-      const incoming = damageFor(state, n, target, 'none') * (attack.hits ?? 1);
+      const incoming = damageFor(state, n, target, NO_REACTION) * (attack.hits ?? 1);
       strikes.push({
         attackerId: attacker.id,
         targetId: target.id,
@@ -268,9 +277,9 @@ function resolveAttack(
     }
     if (reaction === 'attackBack' && !target.defeated && !attacker.defeated) {
       // A strike back is a full technique: every hit and effect applies.
-      retaliation = strikeOnce(state, target, attacker, backAttack, 'none', pending);
+      retaliation = strikeOnce(state, target, attacker, backAttack, NO_REACTION, pending);
       for (let i = 1; i < (backAttack.hits ?? 1) && !attacker.defeated; i++) {
-        followUps.push(strikeOnce(state, target, attacker, backAttack, 'none', pending));
+        followUps.push(strikeOnce(state, target, attacker, backAttack, NO_REACTION, pending));
       }
     }
   }

@@ -311,6 +311,9 @@ export const en = {
   'tech.hit': 'Hit',
   'tech.range': 'Range',
   'tech.needs': 'Needs {requirements}',
+  'tech.unlocksAt': 'Unlocks at level {level}',
+  'tech.ariaLocked': '{name}: locked, unlocks at level {level}',
+  'tech.newTechnique': 'New technique: {name}',
 
   // ── Combat forecast and reactions ───────────────────────────────────────────────────
   'forecast.label': 'Combat forecast',
@@ -326,11 +329,12 @@ export const en = {
   'forecast.backChoice': '{attack} · FP {fp}',
   'forecast.fp': 'FP {n}',
   'forecast.go': 'Go!',
+  'forecast.spent': 'Too spent to react: the blow will land.',
   'reaction.defend': 'Defend',
   'reaction.avoid': 'Avoid',
   'reaction.attackBack': 'Attack',
   'reaction.counter': 'Counter',
-  'reaction.none': 'Do nothing',
+  'reaction.none': 'No reaction',
   'reason.outOfReach': 'Out of reach',
   'reason.tooTired': 'Too tired (needs {fp} FP)',
   'reason.spent': 'Too fatigued (FP full)',
@@ -357,7 +361,8 @@ export const en = {
     one: '{n} point to spend · Max HP {hp}',
     other: '{n} points to spend · Max HP {hp}',
   },
-  'levelUp.hint': 'New techniques unlock as your attributes grow. Experiment to find them.',
+  'levelUp.hint':
+    'Techniques open at set levels, once your attributes meet their needs. Raise the right ones.',
   'levelUp.saveForLater': 'Save points for later',
 
   // ── Battle overlays: technique list, forecast, reactions, dialogs ──────────────────
@@ -476,7 +481,7 @@ export const en = {
     'M Move · A Attack · E End turn · U Undo · arrows move a tile cursor · Enter or Space confirm · Esc or right-click go back. Every control, gamepad included, is on the Controls page.',
   'help.rules.techniques': 'Techniques',
   'help.rules.techniquesText':
-    "Every pilot starts with two attacks for their weapon: blades Slash (accurate, lighter) and Thrust; polearms Thrust and Long Thrust (reaches 2 tiles, less accurate); maces Bash and Smash; guns Fire (2–4 tiles) and a Stock Strike up close as strong as a Slash. Each faction adds its own techniques, learned as your attributes grow. The stronger a technique, the more AP and FP it costs and the less accurate it is: FP is 5 plus 45 for every step of power above ×1.0, and anything fired or thrown costs 20 FP more. Open a unit's techniques to read what each one does.",
+    "Every pilot starts with two attacks for their weapon: blades Slash (accurate, lighter) and Thrust; polearms Thrust and Long Thrust (reaches 2 tiles, less accurate); maces Bash and Smash; guns Fire (2–4 tiles) and a Stock Strike up close as strong as a Slash. Each faction adds its own techniques, which open at set levels (from level 3) once your attributes are high enough. The stronger a technique, the more AP and FP it costs and the less accurate it is: FP is 5 plus 45 for every step of power above ×1.0, and anything fired or thrown costs 20 FP more. Open a unit's techniques to read what each one does.",
   'help.rules.xp': 'XP and levels',
   'help.rules.xpText':
     'XP comes only from landing a blow: about 30 for a hit, a little more the more damage it does, and a large bonus for a defeating blow. Head-on hits earn the most, rear attacks the least; stronger enemies give more, weaker ones less. Defending and dodging earn nothing. Every 500 XP is a level: more HP and 3 attribute points.',
@@ -494,7 +499,7 @@ export const en = {
     "Fatigue. Your own attacks add their technique's FP (Slash and Thrust: 5). Reacting is what tires you most. At the end of your turn every 3 AP left unspent removes 2 FP, so a turn spent waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a turn.",
   'help.rules.reactions': 'Reactions',
   'help.rules.reactionsText':
-    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. From the front only, <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto the attacker at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker improves the odds. From behind you can only Avoid. <b>Do nothing</b> costs nothing.",
+    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. From the front only, <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto the attacker at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker improves the odds. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
   'help.rules.position': 'Position',
   'help.rules.positionText':
     'Hits from the side (+10%) and rear (+25%, ×1.25 damage) are deadlier, so face the enemy at the end of your turn. Higher ground adds accuracy and damage. Each ally next to your target adds +5% (up to +15%).',

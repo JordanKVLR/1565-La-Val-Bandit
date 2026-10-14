@@ -14,7 +14,7 @@ import {
   loadTerrains,
   mapSources,
 } from '../src';
-import { activeSkills, createBattle, DEFAULT_BALANCE } from '@m1565/core';
+import { activeSkills, createBattle, DEFAULT_BALANCE, unlockedAttacks } from '@m1565/core';
 import castData from '../data/cast.json';
 
 describe('content', () => {
@@ -185,11 +185,57 @@ describe('attacks', () => {
     expect(bare).toEqual([]);
   });
 
+  it('open gradually: every technique has an unlock level, none before level 3', () => {
+    for (const a of lib.attacks) {
+      expect(a.level, a.id).toBeGreaterThanOrEqual(3);
+      expect(a.level, a.id).toBeLessThanOrEqual(14);
+      const total = a.power * (a.hits ?? 1);
+      // Cheap, light techniques with modest stat needs are the entry tier; heavy ones are the late game.
+      const need = Object.values(a.requires).reduce((n: number, v) => n + (v ?? 0), 0);
+      if (total <= 1.15 && need <= 10) expect(a.level, a.id).toBeLessThanOrEqual(4);
+      if (total >= 1.55) expect(a.level, a.id).toBeGreaterThanOrEqual(10);
+    }
+    expect(lib.attacks.filter((a) => a.level <= 4).length).toBeGreaterThanOrEqual(10);
+    expect(lib.attacks.filter((a) => a.level >= 10).length).toBeGreaterThanOrEqual(10);
+  });
+
+  it('leave every pilot of level 1 or 2, in every battle, with only the two starters', () => {
+    for (const id of Object.keys(battleSources)) {
+      const { units } = createBattle(loadBattle(id, lib)).state;
+      for (const u of units.filter((x) => x.level <= 2)) {
+        expect(unlockedAttacks(u).length, `${id}/${u.id}`).toBe(2);
+      }
+    }
+  });
+
+  it('give story characters their first technique as the story reaches level 3-4', () => {
+    const count = (battle: string, unitId: string) => {
+      const { units } = createBattle(loadBattle(battle, lib)).state;
+      return unlockedAttacks(units.find((u) => u.id === unitId)!).length;
+    };
+    expect(count('b1-marsaxlokk', 'ninu')).toBe(2);
+    expect(count('b6-kalkara-chapel', 'ninu')).toBe(3); // Level 4: Hook-Cut
+    expect(count('a5-scala-engine', 'ninu')).toBeGreaterThanOrEqual(4);
+  });
+
   it('are attached to battle units by frame faction, weapon type and frame class', () => {
     const setup = loadBattle('b1-marsaxlokk', lib);
     const ninu = setup.units.find((u) => u.id === 'ninu')!;
     expect(ninu.attacks?.every((a) => a.id.startsWith('militia-'))).toBe(true);
     expect(ninu.attacks?.some((a) => a.id === 'militia-hook-cut')).toBe(true);
+  });
+});
+
+describe('militia starting stats', () => {
+  const lib = loadLibrary();
+  const total = (id: string) =>
+    Object.values(lib.characters.get(id)!.stats).reduce((n: number, v) => n + v, 0);
+
+  it('keep Ninu at a raw total of 30, no stat below 3 and not above his peers', () => {
+    const ninu = lib.characters.get('ninu')!;
+    expect(total('ninu')).toBe(30);
+    for (const v of Object.values(ninu.stats)) expect(v).toBeGreaterThanOrEqual(3);
+    for (const peer of ['ganni', 'kateri']) expect(total('ninu')).toBeLessThanOrEqual(total(peer));
   });
 });
 

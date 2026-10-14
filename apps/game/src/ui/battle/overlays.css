@@ -225,6 +225,19 @@
 .am-reason__icon {
   color: var(--ds-danger);
 }
+.ov-tech.is-locked .am-name,
+.ov-tc.is-locked > :not(.ov-tc__lock):not(.ov-tc__head) {
+  opacity: 0.55;
+}
+.ov-tech.is-locked .am-reason__icon,
+.ov-tc__lock .am-reason__icon {
+  color: var(--ds-text-3);
+}
+.ov-tc__lock {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-1);
+}
 .ov-tech__more {
   padding: 0 var(--ds-space-2) var(--ds-space-2);
   animation: ds-fade-in var(--ds-dur-base) var(--ds-ease-out);

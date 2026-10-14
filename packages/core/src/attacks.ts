@@ -34,6 +34,11 @@ export interface Attack {
   /** The target cannot choose Counter against this attack. */
   readonly noCounter?: boolean;
   readonly requires: Partial<PilotStats>;
+  /**
+   * Pilot level at which the technique opens up (default 1). A technique is usable only when the
+   * pilot's level reaches this AND the stats meet `requires` (ADR 0015).
+   */
+  readonly level?: number;
   readonly description?: string;
 }
 
@@ -177,9 +182,14 @@ export function attackRange(attack: Attack, weapon: Weapon): { min: number; max:
   return { min: attack.minRange ?? weapon.minRange, max: attack.maxRange ?? weapon.maxRange };
 }
 
-/** True when the unit's attributes (gear included) meet every requirement. */
+/** True when the unit's attributes (gear included) meet every stat requirement (level aside). */
 export function meetsRequirements(stats: PilotStats, attack: Attack): boolean {
   return (Object.keys(attack.requires) as Array<keyof PilotStats>).every(
     (k) => stats[k] >= (attack.requires[k] ?? 0),
   );
+}
+
+/** True when a pilot of this level and these stats (gear included) may use the technique. */
+export function isAttackUnlocked(level: number, stats: PilotStats, attack: Attack): boolean {
+  return level >= (attack.level ?? 1) && meetsRequirements(stats, attack);
 }

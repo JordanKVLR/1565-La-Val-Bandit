@@ -82,6 +82,7 @@ export function TechniqueCard({
   fpCost = attack.fpCost,
   stats,
   compact = false,
+  unlockLevel,
 }: {
   attack: Attack;
   weapon: Weapon;
@@ -90,10 +91,18 @@ export function TechniqueCard({
   /** The pilot's attributes, to show unmet requirements. */
   stats?: PilotStats;
   compact?: boolean;
+  /** Set for a technique the pilot's level doesn't reach yet: the card shows as locked. */
+  unlockLevel?: number;
 }) {
   const req = requirementText(attack, stats);
+  const locked = unlockLevel !== undefined;
   return (
-    <article class={cx('ov-tc', compact && 'ov-tc--compact')}>
+    <article
+      class={cx('ov-tc', compact && 'ov-tc--compact', locked && 'is-locked')}
+      aria-label={
+        locked ? t('tech.ariaLocked', { name: attack.name, level: unlockLevel }) : undefined
+      }
+    >
       <header class="ov-tc__head">
         <h4 class="ov-tc__name">{attack.name}</h4>
         <Chip icon={null} class="ov-tc__style" label={t(`attackStyle.${attack.style}`)} />
@@ -101,6 +110,12 @@ export function TechniqueCard({
       {attack.description && <p class="ov-tc__desc">{attack.description}</p>}
       <TechniqueEffects attack={attack} />
       <TechniqueNumbers attack={attack} weapon={weapon} fpCost={fpCost} />
+      {locked && (
+        <p class="ov-tc__req ov-tc__lock">
+          <Icon name="lock" class="am-reason__icon" />
+          {t('tech.unlocksAt', { level: unlockLevel })}
+        </p>
+      )}
       {!compact && req && <p class="ov-tc__req">{t('tech.needs', { requirements: req })}</p>}
     </article>
   );

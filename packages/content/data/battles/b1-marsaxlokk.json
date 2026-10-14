@@ -27,38 +27,26 @@
       "facing": "north"
     },
     {
-      "id": "militia-1",
-      "name": "Militia Ġanni",
-      "stats": {
-        "pow": 5,
-        "dex": 5,
-        "agl": 5
-      },
+      "id": "ganni",
+      "character": "ganni",
       "side": "player",
       "controller": "human",
       "level": 1,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [4, 8],
-      "facing": "north",
-      "portrait": "ganni"
+      "facing": "north"
     },
     {
-      "id": "militia-2",
-      "name": "Militia Rożi",
-      "stats": {
-        "pow": 4,
-        "dex": 7,
-        "agl": 5
-      },
+      "id": "rozi",
+      "character": "rozi",
       "side": "player",
       "controller": "human",
       "level": 1,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [6, 8],
-      "facing": "north",
-      "portrait": "rozi"
+      "facing": "north"
     },
     {
       "id": "levend-1",

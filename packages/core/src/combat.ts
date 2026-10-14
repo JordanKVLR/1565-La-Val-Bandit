@@ -1,5 +1,5 @@
 import type { Attack } from './attacks';
-import { attackRange, basicAttack, meetsRequirements } from './attacks';
+import { attackRange, basicAttack, isAttackUnlocked } from './attacks';
 import type { Coord, Facing } from './grid';
 import { DIRECTIONS, manhattan } from './grid';
 import type { SkillContext } from './skills';
@@ -25,14 +25,23 @@ import { isHostile, unitStats } from './units';
  * - attackBack: take the hit, then strike back if still standing and in range (front or side)
  * - counter: high risk, high reward, head-on only. A small chance to turn the blow back on the
  *   attacker at 1.25×; on failure the defender takes the blow at 1.25×.
- * - none: do nothing and take the blow (always offered)
+ * - none: NOT a choice. The engine's internal value for a blow nobody reacted to (a strike back,
+ *   a reflected counter, or a defender too Spent to react). It is never offered or accepted while
+ *   the defender can afford a real reaction.
  *
  * Reactions never cost AP, only FP, and a Spent unit (FP at max) can't react at all.
  */
 export type Reaction = 'defend' | 'avoid' | 'attackBack' | 'counter' | 'none';
 export type FacingZone = 'front' | 'side' | 'rear';
 
-export const REACTIONS: readonly Reaction[] = ['defend', 'avoid', 'attackBack', 'counter', 'none'];
+/** The internal value for a blow that is not reacted to; never a menu entry. */
+export const NO_REACTION = 'none' satisfies Reaction;
+
+/** The reactions a defender can choose between, in menu order ('none' is not among them). */
+export const REACTIONS: readonly Reaction[] = ['defend', 'avoid', 'attackBack', 'counter'];
+
+/** Every value `forecastAttack` tabulates: the real reactions plus the un-reacted blow. */
+const FORECAST_KEYS: readonly Reaction[] = [...REACTIONS, NO_REACTION];
 
 /** Where the attacker stands relative to the way the target is facing. */
 export function facingZone(targetPos: Coord, targetFacing: Facing, attackerPos: Coord): FacingZone {
@@ -71,10 +80,13 @@ export function canAct(state: BattleState, unit: UnitState): boolean {
   return !unit.defeated && unit.fp < state.balance.fpMax;
 }
 
-/** Attacks whose stat requirements the pilot currently meets (always includes the basic one). */
+/**
+ * Attacks the pilot can use now: level reached and stat requirements met (always includes the
+ * starters).
+ */
 export function unlockedAttacks(unit: UnitState): Attack[] {
   const stats = unitStats(unit);
-  return unit.attacks.filter((a) => meetsRequirements(stats, a));
+  return unit.attacks.filter((a) => isAttackUnlocked(unit.level, stats, a));
 }
 
 export function findAttack(unit: UnitState, attackId: string | undefined): Attack {
@@ -106,7 +118,7 @@ export type UnavailableReason =
   | { readonly code: 'outOfReach' }
   /** Paying this technique's FP would take the defender past full fatigue. */
   | { readonly code: 'tooTired'; readonly fpCost: number }
-  /** The defender's FP is full (Spent): it can only do nothing. */
+  /** The defender's FP is full (Spent): it cannot react. */
   | { readonly code: 'spent' }
   | { readonly code: 'rearNoDefend' }
   | { readonly code: 'rearNoStrikeBack' }
@@ -159,7 +171,7 @@ export function attackBackOptions(
   const stats = unitStats(defender);
   const fpLeft = state.balance.fpMax - defender.fp;
   return defender.attacks
-    .filter((a) => meetsRequirements(stats, a))
+    .filter((a) => isAttackUnlocked(defender.level, stats, a))
     .map((attack) => {
       const fpCost = attackBackFpCost(attack, defender);
       const reason: UnavailableReason | undefined =
@@ -229,7 +241,7 @@ export function reactionFpCost(
     case 'attackBack':
       return attackBackFpCost(attackBackWith(state, defender, attackerPos, backAttackId), defender);
     case 'none':
-      return 0;
+      return 0; // internal only: nothing was chosen, nothing is paid
   }
 }
 
@@ -282,11 +294,10 @@ export function reactionChoices(
             ? unanswerable(attack)
             : undefined,
     ),
-    choice('none', undefined),
   ];
 }
 
-/** Reactions the defender can use against this attack ('none' is always among them). */
+/** Reactions the defender can choose against this attack; empty only when it is too Spent to react. */
 export function availableReactions(
   state: BattleState,
   defender: UnitState,
@@ -500,7 +511,7 @@ export function forecastAttack(
   const reactions = availableReactions(state, target, attacker, from, attack);
   const hitChance = {} as Record<Reaction, number>;
   const damage = {} as Record<Reaction, number>;
-  for (const r of REACTIONS) {
+  for (const r of FORECAST_KEYS) {
     hitChance[r] = hitChanceFor(state, n, r);
     damage[r] = damageFor(state, n, target, r);
   }
@@ -531,8 +542,8 @@ export function forecastAttack(
         attackName: backAttack.name,
         hits: backAttack.hits ?? 1,
         fpCost: attackBackFpCost(backAttack, target),
-        hitChance: hitChanceFor(state, back, 'none'),
-        damage: damageFor(state, back, movedAttacker, 'none'),
+        hitChance: hitChanceFor(state, back, NO_REACTION),
+        damage: damageFor(state, back, movedAttacker, NO_REACTION),
       },
     };
   }

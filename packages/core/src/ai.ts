@@ -5,6 +5,7 @@ import {
   availableReactions,
   canAct,
   facingToward,
+  NO_REACTION,
   forecastAttack,
   reactionFpCost,
   unlockedAttacks,
@@ -32,9 +33,12 @@ export function chooseReaction(
     attacker.attacks.find((a) => a.id === (attackId ?? 'basic')) ?? attacker.attacks[0];
   const f = forecastAttack(state, attacker, defender, attacker.pos, attack);
   const fpLeft = state.balance.fpMax - defender.fp;
-  let best: Reaction = 'none';
+  const options = availableReactions(state, defender, attacker, attacker.pos, attack);
+  // Too Spent to react: the blow lands un-reacted. Otherwise one real reaction must be chosen.
+  if (options.length === 0) return NO_REACTION;
+  let best: Reaction = options[0]!;
   let bestScore = Infinity;
-  for (const r of availableReactions(state, defender, attacker, attacker.pos, attack)) {
+  for (const r of options) {
     let score: number;
     if (r === 'counter' && f.counter) {
       // Gamble: with probability `chance` the blow is reflected, otherwise it lands at 1.25×.
@@ -200,7 +204,7 @@ function scoreAttack(
 ): number {
   const f = forecastAttack(state, unit, target, dest, attack);
   // Assume the defender avoids when it can: the least favourable common case for us.
-  const r: Reaction = f.reactions.includes('avoid') ? 'avoid' : (f.reactions[0] ?? 'none');
+  const r: Reaction = f.reactions.includes('avoid') ? 'avoid' : (f.reactions[0] ?? NO_REACTION);
   const p = f.hitChance[r] / 100;
   const dmg = f.damage[r] * f.hits;
   let score = p * dmg;

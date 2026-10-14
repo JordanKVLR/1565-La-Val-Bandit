@@ -107,7 +107,7 @@ describe('forecast', () => {
 
   it('offers attack back only in reach; reactions need FP, not AP', () => {
     const { state, a, t } = duel();
-    const all = ['defend', 'avoid', 'attackBack', 'counter', 'none'];
+    const all = ['defend', 'avoid', 'attackBack', 'counter'];
     expect(availableReactions(state, t, a)).toEqual(all);
     // A gunner can't fire at point-blank range but strikes back with the stock.
     const gunner = { ...t, weapon: GUN, attacks: starterAttacks(GUN) };
@@ -115,11 +115,11 @@ describe('forecast', () => {
     expect(attackBackWith(state, gunner, a.pos).name).toBe('Stock Strike');
     // With no melee option it can't strike back, but a Counter needs no reach.
     const fireOnly = { ...gunner, attacks: gunner.attacks.slice(0, 1) };
-    expect(availableReactions(state, fireOnly, a)).toEqual(['defend', 'avoid', 'counter', 'none']);
+    expect(availableReactions(state, fireOnly, a)).toEqual(['defend', 'avoid', 'counter']);
     const broke = { ...t, ap: 0 };
     expect(availableReactions(state, broke, a)).toEqual(all);
     const spent = { ...t, fp: 100 };
-    expect(availableReactions(state, spent, a)).toEqual(['none']);
+    expect(availableReactions(state, spent, a)).toEqual([]);
   });
 
   it('forecasts the strike back and the counter gamble', () => {
