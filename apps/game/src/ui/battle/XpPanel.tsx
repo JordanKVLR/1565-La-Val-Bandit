@@ -12,17 +12,32 @@ export interface XpGain {
   readonly xpAfter: number;
   /** Names of pilot skills gained with the level-ups in this exchange. */
   readonly newSkills?: readonly string[];
+  /** Names of techniques that opened up with the level-ups in this exchange. */
+  readonly newTechniques?: readonly string[];
 }
 
 /** "New skill: X" lines (a level-up announcement), each with the active-skill star. */
-export function NewSkillLines({ names }: { names: readonly string[] }) {
-  if (!names.length) return null;
+export function NewSkillLines({
+  names,
+  techniques = [],
+}: {
+  names: readonly string[];
+  /** Technique names opened by the same level-up, announced the same way. */
+  techniques?: readonly string[];
+}) {
+  if (!names.length && !techniques.length) return null;
   return (
     <ul class="ov-newskills" data-testid="new-skill">
       {names.map((name) => (
         <li key={name}>
           <Icon name="star" class="ov-newskills__mark" />
           <span>{tParts('skills.newSkill', { name: <b>{name}</b> })}</span>
+        </li>
+      ))}
+      {techniques.map((name) => (
+        <li key={`tech-${name}`} data-testid="new-technique">
+          <Icon name="star" class="ov-newskills__mark" />
+          <span>{tParts('tech.newTechnique', { name: <b>{name}</b> })}</span>
         </li>
       ))}
     </ul>
@@ -106,7 +121,7 @@ export function XpPanel({
                   })}
                 </small>
               </div>
-              <NewSkillLines names={g.newSkills ?? []} />
+              <NewSkillLines names={g.newSkills ?? []} techniques={g.newTechniques ?? []} />
             </li>
           );
         })}

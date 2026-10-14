@@ -64,6 +64,8 @@ export type BattleEvent =
       readonly statPoints: number;
       /** Ids of pilot skills that became active at this level. */
       readonly newSkills?: readonly string[];
+      /** Ids of techniques that opened up at this level (level and stats now both met). */
+      readonly newTechniques?: readonly string[];
     }
   /** A skill restored HP at the start of the unit's turn. */
   | {

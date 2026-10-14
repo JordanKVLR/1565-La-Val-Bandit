@@ -1,5 +1,5 @@
 import type { ComponentChildren, JSX } from 'preact';
-import { useEffect, useRef } from 'preact/hooks';
+import { useLayoutEffect, useRef } from 'preact/hooks';
 import { Button } from './Button';
 import type { IconName } from './Icon';
 import { cx, nextTrapIndex } from './logic';
@@ -70,7 +70,9 @@ export function Sheet({
   const panel = useRef<HTMLElement>(null);
   const heading = title === undefined ? label : title;
 
-  useEffect(() => {
+  // A layout effect: focus moves in before the first paint, so a key pressed the moment the
+  // dialog is visible can never run before it (or have its own focus move undone by it).
+  useLayoutEffect(() => {
     const before = document.activeElement as HTMLElement | null;
     const root = panel.current;
     if (root) {

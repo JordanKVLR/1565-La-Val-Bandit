@@ -10,6 +10,7 @@
     "requires": {
       "pow": 9
     },
+    "level": 3,
     "description": "A diagonal stroke drawn from shoulder to hip, the first cut every novice of the Order learns in the Birgu yards. Hits harder than a plain slash."
   },
   {
@@ -23,6 +24,7 @@
     "requires": {
       "dex": 10
     },
+    "level": 4,
     "description": "A straight lunge aimed at the seams between plates, taught to knights who walked to Jerusalem and back. The point pierces, ignoring part of the target's DEF.",
     "pierce": 0.3
   },
@@ -37,6 +39,7 @@
     "requires": {
       "pow": 12
     },
+    "level": 7,
     "description": "Both arms of the armatura drive one crushing blow down onto the foe's guard. Shakes the pilot inside, adding heavy fatigue on top of the damage.",
     "fatigue": 15
   },
@@ -53,6 +56,7 @@
       "agl": 10,
       "bas": 8
     },
+    "level": 8,
     "description": "Two cuts traced like the arms of the eight-pointed cross, one rising and one falling. Strikes twice, each blow lighter than a full swing.",
     "hits": 2
   },
@@ -69,6 +73,7 @@
       "dex": 11,
       "bas": 5
     },
+    "level": 12,
     "description": "A great two-handed overhead blow delivered as if holding the last breach at St Elmo. Only medium or heavy frames carry its weight; one of the Order's hardest strikes."
   },
   {
@@ -82,6 +87,7 @@
     "requires": {
       "pow": 9
     },
+    "level": 3,
     "description": "The shield boss is rammed forward into the enemy's chest plate before they can set their feet. Leaves no opening to counter and tires the foe.",
     "noCounter": true,
     "fatigue": 10
@@ -97,6 +103,7 @@
     "requires": {
       "pow": 13
     },
+    "level": 7,
     "description": "A swinging mace blow to the helm that sets the whole harness ringing like the bells of San Lorenzo. Heavy damage and severe fatigue for the pilot struck.",
     "fatigue": 20
   },
@@ -112,6 +119,7 @@
       "pow": 10,
       "agl": 8
     },
+    "level": 5,
     "description": "A short galloping rush with the polearm couched under the arm, in the manner of Aragonese jousters. Strong charge that reaches up to two tiles.",
     "minRange": 1,
     "maxRange": 2
@@ -128,6 +136,7 @@
       "dex": 12,
       "def": 7
     },
+    "level": 6,
     "description": "The pike is levelled and held firm, a single point standing for a whole Spanish square. A disciplined thrust that cannot be countered or answered.",
     "noCounter": true
   },
@@ -144,6 +153,7 @@
       "agl": 11,
       "bas": 6
     },
+    "level": 11,
     "description": "The full weight of a medium armatura behind a lowered polearm, boilers roaring. A devastating charge from up to two tiles away.",
     "minRange": 1,
     "maxRange": 2
@@ -159,6 +169,7 @@
     "requires": {
       "agl": 9
     },
+    "level": 3,
     "description": "A sharp curling cut learned gutting fish on the Marsaxlokk quays. A quick blade stroke that hits a little harder than a plain slash."
   },
   {
@@ -173,6 +184,7 @@
       "agl": 11,
       "dex": 8
     },
+    "level": 7,
     "description": "A false step to one side, then two short cuts from the other, a trick of the Żejtun lanes. Strikes twice for light damage each.",
     "hits": 2
   },
@@ -187,6 +199,7 @@
     "requires": {
       "pow": 12
     },
+    "level": 6,
     "description": "A wide sweeping cut swung like a sickle through the summer wheat. Hits hard and leaves the target winded, adding fatigue.",
     "fatigue": 15
   },
@@ -202,6 +215,7 @@
       "pow": 15,
       "agl": 10
     },
+    "level": 11,
     "description": "A full overhead chop with the strength used to split carob logs. Slow to gather but one of the heaviest blows a militiaman can land."
   },
   {
@@ -215,6 +229,7 @@
     "requires": {
       "dex": 8
     },
+    "level": 3,
     "description": "A quick two-handed jab with the polearm from behind a field wall. Reaches up to two tiles away.",
     "minRange": 1,
     "maxRange": 2
@@ -230,6 +245,7 @@
     "requires": {
       "pow": 11
     },
+    "level": 6,
     "description": "The butt is planted against the limestone and the point driven home as the foe comes on. Strong reach-two thrust that leaves no chance to counter.",
     "noCounter": true,
     "minRange": 1,
@@ -248,6 +264,7 @@
       "pow": 10,
       "bas": 7
     },
+    "level": 9,
     "description": "A broad low sweep of the polearm, as the coastal watch fends off landing parties. Reaches two tiles and tires the target badly.",
     "minRange": 1,
     "maxRange": 2,
@@ -264,6 +281,7 @@
     "requires": {
       "dex": 9
     },
+    "level": 4,
     "description": "A slow, careful shot, matchlock braced and breath held until the moment is right. Far more accurate (+25%), ignores half the target's DEF and hits harder (x1.2).",
     "pierce": 0.5,
     "accuracyBonus": 37,
@@ -281,6 +299,7 @@
       "pow": 9,
       "dex": 11
     },
+    "level": 7,
     "description": "The arquebus is loaded with a double measure of powder and ball, risking the barrel. A heavier shot than any normal volley."
   },
   {
@@ -295,6 +314,7 @@
       "dex": 13,
       "bas": 7
     },
+    "level": 9,
     "description": "Two quick shots from alternating firing positions behind the bastion parapet. Hits twice, each for reduced damage.",
     "hits": 2
   },
@@ -310,6 +330,7 @@
       "dex": 16,
       "agl": 10
     },
+    "level": 12,
     "description": "A patient shot aimed at the vision slit or a boiler joint. Hits hard and pierces, ignoring a large part of the target's DEF.",
     "pierce": 0.4
   },
@@ -324,6 +345,7 @@
     "requires": {
       "dex": 9
     },
+    "level": 3,
     "description": "A curving draw-cut that follows the line of the kilij's blade. A clean strike, a little harder than a plain slash."
   },
   {
@@ -338,6 +360,7 @@
       "pow": 12,
       "dex": 9
     },
+    "level": 7,
     "description": "A heavy overhead cut delivered with the full discipline of the Sultan's household infantry. Powerful single blow."
   },
   {
@@ -353,6 +376,7 @@
       "dex": 10,
       "bas": 8
     },
+    "level": 9,
     "description": "Two crescent cuts in quick succession, one high and one low. Strikes twice for lighter damage each.",
     "hits": 2
   },
@@ -369,6 +393,7 @@
       "dex": 13,
       "def": 4
     },
+    "level": 13,
     "description": "A perfect drawing slash reserved for veterans in medium frames, aimed at joints and seams. Very heavy damage that pierces part of the target's DEF.",
     "pierce": 0.3
   },
@@ -383,6 +408,7 @@
     "requires": {
       "dex": 9
     },
+    "level": 3,
     "description": "A measured tüfek shot fired from a braced stance, as drilled in the ortas. A dependable standard shot."
   },
   {
@@ -396,6 +422,7 @@
     "requires": {
       "dex": 12
     },
+    "level": 6,
     "description": "Two shots in quick succession, a second barrel or a fast reload. Hits twice for reduced damage each.",
     "hits": 2
   },
@@ -410,6 +437,7 @@
     "requires": {
       "dex": 15
     },
+    "level": 10,
     "description": "A long-barrelled tüfek shot laid carefully on a weak point. Hits hard and pierces part of the target's DEF.",
     "pierce": 0.35
   },
@@ -424,6 +452,7 @@
     "requires": {
       "agl": 10
     },
+    "level": 5,
     "description": "A light armatura sweeps in at speed with lance lowered, in the manner of the provincial cavalry. A strong charge reaching up to two tiles.",
     "minRange": 1,
     "maxRange": 2
@@ -440,6 +469,7 @@
       "agl": 12,
       "dex": 9
     },
+    "level": 6,
     "description": "The lance tip dips as if to strike low, then darts high. A reach-two thrust that leaves no chance to counter.",
     "noCounter": true,
     "minRange": 1,
@@ -457,6 +487,7 @@
       "agl": 15,
       "pow": 11
     },
+    "level": 12,
     "description": "Light frames gallop in at full speed and drive the lance through. A crushing charge from up to two tiles that leaves the target badly fatigued.",
     "fatigue": 20,
     "minRange": 1,
@@ -473,6 +504,7 @@
     "requires": {
       "dex": 9
     },
+    "level": 4,
     "description": "A clay pot of burning naphtha is hurled to burst against the target's plates. Moderate damage and the heat tires the pilot inside.",
     "fatigue": 15
   },
@@ -487,6 +519,7 @@
     "requires": {
       "dex": 12
     },
+    "level": 6,
     "description": "A bomb packed with iron scraps and thick smoke is lobbed at the foe. Modest damage, but the choking cloud adds heavy fatigue.",
     "fatigue": 25
   },
@@ -502,6 +535,7 @@
       "dex": 15,
       "pow": 9
     },
+    "level": 11,
     "description": "A cask of blazing pitch is flung to coat the armatura in fire. Heavy damage, and the heat in the cockpit causes heavy fatigue.",
     "fatigue": 25
   },
@@ -516,6 +550,7 @@
     "requires": {
       "agl": 9
     },
+    "level": 3,
     "description": "A quick cut delivered while leaping across a galley's rail. A nimble strike, slightly harder than a plain slash."
   },
   {
@@ -530,6 +565,7 @@
       "agl": 12,
       "bas": 7
     },
+    "level": 7,
     "description": "Two light cuts made while dancing across a pitching deck. Strikes twice for reduced damage each.",
     "hits": 2
   },
@@ -545,6 +581,7 @@
       "pow": 11,
       "agl": 10
     },
+    "level": 8,
     "description": "A wide sweeping cut flung with the swing of a ship's boom. Hits hard and tires the target.",
     "fatigue": 15
   },
@@ -561,6 +598,7 @@
       "pow": 12,
       "bas": 5
     },
+    "level": 12,
     "description": "A whirling full-body sweep of the blade, the signature of the Barbary raiders. Very heavy and pierces part of the target's DEF.",
     "pierce": 0.25
   },
@@ -575,6 +613,7 @@
     "requires": {
       "pow": 9
     },
+    "level": 4,
     "description": "An iron hook is thrown into the target's plates and hauled tight. Little damage, but it cannot be countered and badly tires the target.",
     "noCounter": true,
     "fatigue": 20
@@ -590,6 +629,7 @@
     "requires": {
       "pow": 12
     },
+    "level": 8,
     "description": "The armatura is hooked and wrenched off balance, then driven into the ground. Heavy blow that adds heavy fatigue.",
     "fatigue": 20
   },
@@ -604,6 +644,7 @@
     "requires": {
       "pow": 8
     },
+    "level": 4,
     "description": "A steam piston fires the fist forward with a hiss and a crack. A strong blunt strike even for a weak pilot."
   },
   {
@@ -617,6 +658,7 @@
     "requires": {
       "pow": 10
     },
+    "level": 8,
     "description": "Valves open fully and the arm falls like a forge hammer. Very heavy damage that also adds heavy fatigue.",
     "fatigue": 20
   },
@@ -632,6 +674,7 @@
       "pow": 12,
       "bas": 6
     },
+    "level": 12,
     "description": "The boiler is pushed beyond its safe limit for one shattering blow. Immense damage that pierces part of the target's DEF.",
     "pierce": 0.3
   },
@@ -646,6 +689,7 @@
     "requires": {
       "dex": 8
     },
+    "level": 6,
     "description": "A charge of grapeshot is fired from a hull-mounted gun. Hits twice, each for reduced damage.",
     "hits": 2
   },
@@ -660,6 +704,7 @@
     "requires": {
       "dex": 10
     },
+    "level": 9,
     "description": "A heavy iron bolt is driven from a steam launcher. Hard-hitting and pierces part of the target's DEF.",
     "pierce": 0.4
   },
@@ -675,6 +720,7 @@
       "dex": 12,
       "pow": 10
     },
+    "level": 14,
     "description": "Every gun on a heavy machine fires at once in a single roar. Hits twice with heavy damage; only heavy frames carry enough guns.",
     "hits": 2
   }

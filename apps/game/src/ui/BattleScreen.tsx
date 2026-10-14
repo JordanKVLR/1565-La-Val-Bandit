@@ -1,7 +1,7 @@
 import type { BattleSetup, BattleState, Facing } from '@m1565/core';
 import { attackFpCost, findUnit, getTile, terrainAt, unitAt } from '@m1565/core';
 import type { Library } from '@m1565/content';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { t } from '../i18n';
 import { BattleView } from '../render/BattleView';
 import { BattleController } from '../scenes/BattleController';
@@ -88,7 +88,15 @@ export function BattleScreen({
   );
   const { state, mode, inspected, log, notices } = useStore(ctl.view);
   // Only one overlay at a time: opening one closes whatever else was open.
-  const [panel, setPanel] = useState<Panel>('none');
+  const [panel, setPanelState] = useState<Panel>('none');
+  // The key handler below is installed once and reads the panel from here, so a key pressed
+  // right after a panel opens (before Preact re-runs any effect) is never handled as if the
+  // panel were still closed.
+  const panelRef = useRef<Panel>(panel);
+  const setPanel = (next: Panel | ((p: Panel) => Panel)) => {
+    panelRef.current = typeof next === 'function' ? next(panelRef.current) : next;
+    setPanelState(panelRef.current);
+  };
   const close = () => setPanel('none');
   const prompt = usePrompt();
   const phone = useMediaQuery(PHONE_QUERY);
@@ -120,7 +128,8 @@ export function BattleScreen({
   // arrows move the tile cursor · Enter/Space select or confirm · Esc back (or the menu) ·
   // M move · A attack · E end turn · U undo · [ ] cycle units · , . rotate · + − zoom.
   // On `document`, so these run before the generic focus fallbacks on `window` (ui/input.ts).
-  useEffect(() => {
+  // A layout effect, so the handler exists the moment the battle is visible.
+  useLayoutEffect(() => {
     const ARROWS: Record<string, CursorDir> = {
       ArrowUp: 'up',
       ArrowDown: 'down',
@@ -138,9 +147,10 @@ export function BattleScreen({
         setPanel((p) => (p === 'none' ? 'menu' : 'none'));
         return;
       }
+      const panel = panelRef.current;
       if (e.key === 'Escape') {
         used();
-        if (panel !== 'none') close();
+        if (panel !== 'none') setPanel('none');
         else if (m.kind === 'command') setPanel('menu');
         else ctl.cancel();
         return;
@@ -210,7 +220,7 @@ export function BattleScreen({
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [ctl, panel]);
+  }, [ctl]);
 
   // Progress is saved after every command (the player's and the AI's), so a console suspend or
   // a killed app resumes from the last thing that happened. The state only changes between

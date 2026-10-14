@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { music } from '../platform/audio';
 import { settings } from '../state/settings';
 import { t } from '../i18n';
@@ -31,7 +31,9 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
   const prompt = usePrompt();
   const base = import.meta.env.BASE_URL;
 
-  useEffect(() => {
+  // A layout effect: Esc (Skip) works the moment the cinematic is on screen, not after the next
+  // idle callback, which a slow machine can push back past a key press.
+  useLayoutEffect(() => {
     music('none');
     const el = video.current!;
     el.volume = introVolume(settings.get().musicVolume);

@@ -1,5 +1,5 @@
 import type { PilotStats, StatBonus } from '@m1565/core';
-import { effectiveStats, maxHpFor, meetsRequirements, starterAttacks } from '@m1565/core';
+import { effectiveStats, isAttackUnlocked, maxHpFor, starterAttacks } from '@m1565/core';
 import type { Library, RosterEntry, ShopItem } from '@m1565/content';
 import { ALLEGIANCE_FACTIONS, attackPool } from '@m1565/content';
 import { t } from '../i18n';
@@ -248,7 +248,7 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
   const techniques =
     frame && weapon
       ? [...starterAttacks(weapon), ...attackPool(lib, frame, weapon)]
-          .filter((a) => meetsRequirements(stats, a))
+          .filter((a) => isAttackUnlocked(entry.level, stats, a))
           .map((a) => a.name)
       : [];
   return {

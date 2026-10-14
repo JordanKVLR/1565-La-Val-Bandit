@@ -35,7 +35,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 3,
+      "level": 4,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [4, 9],

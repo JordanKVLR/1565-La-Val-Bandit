@@ -23,13 +23,14 @@ import {
   reactionChoices,
   attackBackOptions,
   chooseReaction,
+  NO_REACTION,
   CommandError,
   coordKey,
   createBattle,
   findUnit,
   forecastAttack,
   livingUnits,
-  meetsRequirements,
+  isAttackUnlocked,
   unitStats,
   planAiTurn,
   reachableTiles,
@@ -108,6 +109,8 @@ export interface CloseUpData {
 export interface AttackOption {
   readonly attack: Attack;
   readonly unlocked: boolean;
+  /** Set when the pilot's level is what keeps the technique locked: the level it opens at. */
+  readonly unlockLevel?: number;
   readonly affordable: boolean;
   readonly targets: readonly string[];
 }
@@ -508,7 +511,10 @@ export class BattleController {
     const resolve = this.pendingReaction;
     const mode = this.mode;
     if (!resolve || mode.kind !== 'reaction') return;
-    if (!mode.choices.some((c) => c.reaction === r && c.available)) return;
+    const canReact = mode.choices.some((c) => c.available);
+    // A real reaction must be available; 'none' is accepted only when nothing can be afforded.
+    if (canReact ? !mode.choices.some((c) => c.reaction === r && c.available) : r !== NO_REACTION)
+      return;
     if (r === 'attackBack' && backAttackId !== undefined) {
       const defender = findUnit(this.state, mode.defenderId);
       const attacker = findUnit(this.state, mode.attackerId);
@@ -598,7 +604,8 @@ export class BattleController {
     const stats = unitStats(unit);
     return unit.attacks.map((attack) => ({
       attack,
-      unlocked: meetsRequirements(stats, attack),
+      unlocked: isAttackUnlocked(unit.level, stats, attack),
+      ...((attack.level ?? 1) > unit.level ? { unlockLevel: attack.level } : {}),
       affordable: unit.ap >= attack.apCost,
       targets: this.targetsFor(unit, attack.id),
     }));
@@ -771,7 +778,7 @@ export class BattleController {
     const attacker = findUnit(this.state, attackerId)!;
     const defender = findUnit(this.state, defenderId)!;
     const attack = this.attackOf(attacker, attackId);
-    // Always ask, even when "Do nothing" is the only option, so the player sees why.
+    // Always ask, even when the defender is too spent to react, so the player sees why.
     const choices = reactionChoices(this.state, defender, attacker, attacker.pos, attack);
     const forecast = forecastAttack(this.state, attacker, defender, attacker.pos, attack);
     this.renderer?.select(defender.pos);
@@ -881,6 +888,10 @@ export class BattleController {
         if (unit && ev.newSkills)
           for (const name of skillNames(unit, ev.newSkills))
             this.pushLog(t('log.newSkill', { name }));
+        for (const id of ev.newTechniques ?? []) {
+          const technique = unit?.attacks.find((a) => a.id === id)?.name ?? id;
+          this.pushLog(t('log.learnedTechnique', { name: unit?.name ?? ev.unitId, technique }));
+        }
         break;
       }
       case 'unitRecovered': {
@@ -1098,9 +1109,12 @@ export function xpGains(
     }
   }
   const learned = new Map<string, string[]>();
+  const techniques = new Map<string, string[]>();
   for (const ev of events) {
-    if (ev.type !== 'levelUp' || !ev.newSkills) continue;
-    learned.set(ev.unitId, [...(learned.get(ev.unitId) ?? []), ...ev.newSkills]);
+    if (ev.type !== 'levelUp') continue;
+    if (ev.newSkills) learned.set(ev.unitId, [...(learned.get(ev.unitId) ?? []), ...ev.newSkills]);
+    if (ev.newTechniques)
+      techniques.set(ev.unitId, [...(techniques.get(ev.unitId) ?? []), ...ev.newTechniques]);
   }
   const out: XpGain[] = [];
   for (const [unitId, xp] of earned) {
@@ -1116,6 +1130,13 @@ export function xpGains(
       levelAfter: now.level,
       xpAfter: now.xp,
       ...(learned.has(unitId) ? { newSkills: skillNames(now, learned.get(unitId)!) } : {}),
+      ...(techniques.has(unitId)
+        ? {
+            newTechniques: techniques
+              .get(unitId)!
+              .map((id) => now.attacks.find((a) => a.id === id)?.name ?? id),
+          }
+        : {}),
     });
   }
   return out;

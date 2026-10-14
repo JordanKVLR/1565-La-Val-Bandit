@@ -1,5 +1,5 @@
 import type { AttackForecast, BattleState, Reaction, ReactionChoice, UnitState } from '@m1565/core';
-import { attackBackOptions, chooseReaction, forecastAttack } from '@m1565/core';
+import { attackBackOptions, chooseReaction, forecastAttack, NO_REACTION } from '@m1565/core';
 import { useState } from 'preact/hooks';
 import { t } from '../../i18n';
 import type { IconName } from '../design';
@@ -150,8 +150,8 @@ export function ForecastPanel({
   onCancel,
   heading,
 }: Props) {
-  const firstChoice =
-    choices?.find((c) => c.available && c.reaction !== 'none')?.reaction ?? 'none';
+  // The first real reaction is pre-selected; 'none' only when the defender is too Spent to react.
+  const firstChoice = choices?.find((c) => c.available)?.reaction ?? NO_REACTION;
   const [picked, setPicked] = useState<Reaction>(firstChoice);
   // Attack back opens a technique list; the default is the main attack (or what reaches).
   const [backId, setBackId] = useState<string | undefined>(f.retaliation?.attackId);
@@ -291,6 +291,11 @@ export function ForecastPanel({
             <>
               <span class="ov-label">{t('overlay.reaction.pick')}</span>
               <ScrollArea class="ov-options">
+                {choices.every((c) => !c.available) && (
+                  <p class="ov-option__reason" role="status">
+                    {t('forecast.spent')}
+                  </p>
+                )}
                 {choices.map((c) => {
                   const on = c.reaction === picked;
                   return (
