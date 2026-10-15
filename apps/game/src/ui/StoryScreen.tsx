@@ -149,6 +149,14 @@ export function StoryScreen({ session, lib, onMenu }: Props) {
       <div class="fe-story__shade" aria-hidden="true" />
       <div class="fe-story__menu" onClick={(e) => e.stopPropagation()}>
         <Button iconOnly icon="menu" label={t('common.menu')} onClick={onMenu} />
+        {session.inCamp && (
+          <Button
+            variant="ghost"
+            label={t('camp.skip')}
+            testId="skip-camp"
+            onClick={() => session.skipCamp()}
+          />
+        )}
       </div>
 
       {screen.card && (

@@ -2,6 +2,7 @@ export * from './attacks';
 export * from './ai';
 export * from './balance';
 export * from './battle';
+export * from './bonds';
 export * from './combat';
 export * from './difficulty';
 export * from './commands';

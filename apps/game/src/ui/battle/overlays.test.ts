@@ -109,6 +109,7 @@ describe('hit chips', () => {
     terrain: -5,
     tired: -10,
     skills: 0,
+    bond: 0,
   };
 
   it('list every term that applies, signed with a real minus, and none that is zero', () => {
@@ -121,6 +122,7 @@ describe('hit chips', () => {
       'Tired −10%',
       'Not dodging +15%',
     ]);
+    expect(hitChips({ ...parts, bond: 6 }, 'front', 0)).toContain('Bond +6%');
   });
 
   it('omits the flank chip from the front, and the not-dodging chip when the target dodges', () => {

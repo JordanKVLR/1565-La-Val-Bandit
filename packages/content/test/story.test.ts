@@ -21,6 +21,7 @@ const COMMANDS = [
   'scudi',
   'save',
   'end',
+  'endcamp',
 ];
 
 /** Every text line in the compiled story, reachable or not (ink stores them as "^text"). */

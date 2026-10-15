@@ -5,7 +5,8 @@
 //   exit <castId>...             remove characters from the stage
 //   join <characterId> [frame] [weapon]   add a pilot to the roster
 //   battle <battleId>            play a battle; the story continues after victory
-//   prep                         open the preparation screen (loadouts, shop)
+//   prep                         open the preparation screen (loadouts, shop, camp talks)
+//   endcamp                      end of a camp talk (only inside camp.ink)
 //   scudi <n>                    give money
 //   end                          end of the current content
 // Lines written "NAME: text" are spoken by the cast member whose speaker tag is NAME.
@@ -15,5 +16,6 @@ INCLUDE act1.ink
 INCLUDE route_cross.ink
 INCLUDE route_island.ink
 INCLUDE route_crescent.ink
+INCLUDE camp.ink
 
 -> prologue

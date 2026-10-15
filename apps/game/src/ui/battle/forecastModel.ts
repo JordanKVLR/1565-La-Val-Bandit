@@ -127,6 +127,7 @@ export function hitChips(parts: HitParts, zone: FacingZone, noDodge: number): st
     parts.terrain ? t('overlay.mod.terrain', n(parts.terrain)) : null,
     parts.tired ? t('overlay.mod.tired', n(parts.tired)) : null,
     parts.skills ? t('overlay.mod.skills', n(parts.skills)) : null,
+    parts.bond ? t('overlay.mod.bond', n(parts.bond)) : null,
     noDodge ? t('overlay.mod.noDodge', n(noDodge)) : null,
   ].filter((c): c is string => c !== null);
 }

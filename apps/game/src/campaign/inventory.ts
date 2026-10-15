@@ -1,6 +1,6 @@
 import type { PilotStats, StatBonus } from '@m1565/core';
 import { effectiveStats, isAttackUnlocked, maxHpFor, starterAttacks } from '@m1565/core';
-import type { Library, RosterEntry, ShopItem } from '@m1565/content';
+import type { Library, Recipe, RosterEntry, ShopItem } from '@m1565/content';
 import { ALLEGIANCE_FACTIONS, attackPool } from '@m1565/content';
 import { t } from '../i18n';
 
@@ -181,6 +181,56 @@ export function sell(lib: Library, h: Holdings, kind: ItemKind, id: string): Hol
     scudi: h.scudi + Math.floor(price / 2),
     stores: addItem(h.stores, kind, id, -1),
   };
+}
+
+export interface WorkshopHoldings extends Holdings {
+  /** Salvaged parts. */
+  readonly parts: number;
+}
+
+/** Why a recipe can't be made right now, or undefined if it can. */
+export function craftBlocked(
+  h: WorkshopHoldings,
+  recipe: Recipe,
+  holderId?: string,
+): 'scudi' | 'parts' | 'ingredient' | undefined {
+  if (h.scudi < recipe.scudi) return 'scudi';
+  if (h.parts < recipe.parts) return 'parts';
+  if (!recipe.from) return undefined;
+  if (holderId !== undefined) {
+    const holder = h.roster.find((r) => r.characterId === holderId);
+    return holder && equipped(holder, recipe.from.kind) === recipe.from.id
+      ? undefined
+      : 'ingredient';
+  }
+  return countOf(h.stores, recipe.from.kind, recipe.from.id) > 0 ? undefined : 'ingredient';
+}
+
+/**
+ * Makes a Workshop item. The scudi and parts are spent; an upgrade consumes the spare it is made
+ * from, or replaces the copy a pilot has fitted (pass `holderId`) so it stays in their hands.
+ */
+export function craft(
+  lib: Library,
+  h: WorkshopHoldings,
+  recipe: Recipe,
+  holderId?: string,
+): WorkshopHoldings {
+  const exists = recipe.result.kind === 'weapon' ? lib.weapons : lib.gear;
+  if (!exists.has(recipe.result.id)) throw new Error(`Unknown result "${recipe.result.id}"`);
+  const blocked = craftBlocked(h, recipe, holderId);
+  if (blocked) throw new Error(`Can't craft ${recipe.id}: ${blocked}`);
+  let { roster, stores } = h;
+  if (recipe.from && holderId !== undefined) {
+    const slot = SLOT[recipe.result.kind];
+    roster = roster.map((r) =>
+      r.characterId === holderId ? { ...r, [slot]: recipe.result.id } : r,
+    );
+  } else {
+    if (recipe.from) stores = addItem(stores, recipe.from.kind, recipe.from.id, -1);
+    stores = addItem(stores, recipe.result.kind, recipe.result.id);
+  }
+  return { roster, stores, scudi: h.scudi - recipe.scudi, parts: h.parts - recipe.parts };
 }
 
 /** What the Armoury has on the shelves for this side, given the battles won so far. */

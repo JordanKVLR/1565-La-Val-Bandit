@@ -9,6 +9,7 @@ import type { CharacterProgress, Library, RosterEntry } from '@m1565/content';
 export type ResultLine =
   | { readonly kind: 'scudi'; readonly amount: number }
   | { readonly kind: 'salvage'; readonly frame: string }
+  | { readonly kind: 'parts'; readonly amount: number }
   | {
       readonly kind: 'pilot';
       readonly name: string;

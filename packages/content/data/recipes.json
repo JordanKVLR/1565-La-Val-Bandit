@@ -1,0 +1,200 @@
+[
+  {
+    "id": "temper-arming-sword",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-arming-sword"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "arming-sword"
+    }
+  },
+  {
+    "id": "temper-bastard-sword",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-bastard-sword"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "bastard-sword"
+    }
+  },
+  {
+    "id": "temper-mace-shield",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-mace-shield"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "mace-shield"
+    }
+  },
+  {
+    "id": "temper-pike",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-pike"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "pike"
+    }
+  },
+  {
+    "id": "temper-arquebus",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-arquebus"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "arquebus"
+    }
+  },
+  {
+    "id": "temper-cutlass",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-cutlass"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "cutlass"
+    }
+  },
+  {
+    "id": "temper-kilij",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-kilij"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "kilij"
+    }
+  },
+  {
+    "id": "temper-tufek",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-tufek"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "tufek"
+    }
+  },
+  {
+    "id": "temper-sipahi-lance",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-sipahi-lance"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "sipahi-lance"
+    }
+  },
+  {
+    "id": "temper-grenado",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-grenado"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "grenado"
+    }
+  },
+  {
+    "id": "temper-boat-hook",
+    "result": {
+      "kind": "weapon",
+      "id": "tempered-boat-hook"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b3-sciberras",
+    "from": {
+      "kind": "weapon",
+      "id": "boat-hook"
+    }
+  },
+  {
+    "id": "forge-kateris-spring",
+    "result": {
+      "kind": "amulet",
+      "id": "kateris-spring"
+    },
+    "scudi": 100,
+    "parts": 4,
+    "after": "b6-kalkara-chapel",
+    "from": null
+  },
+  {
+    "id": "forge-balbis-pen",
+    "result": {
+      "kind": "amulet",
+      "id": "balbis-pen"
+    },
+    "scudi": 80,
+    "parts": 4,
+    "after": "b7-st-elmo-ravelin",
+    "from": null
+  },
+  {
+    "id": "forge-tower-bolt",
+    "result": {
+      "kind": "charm",
+      "id": "tower-bolt"
+    },
+    "scudi": 150,
+    "parts": 5,
+    "after": "b9-fall-of-st-elmo",
+    "from": null
+  },
+  {
+    "id": "forge-sappers-lamp",
+    "result": {
+      "kind": "charm",
+      "id": "sappers-lamp"
+    },
+    "scudi": 120,
+    "parts": 4,
+    "after": "b5-tigne",
+    "from": null
+  }
+]

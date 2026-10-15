@@ -1396,3 +1396,74 @@
 :root[data-display='tv'] .armoury.wide .shelf-mode .ar-coin {
   display: none;
 }
+
+/* ── Camp talks and the Workshop ──────────────────────────────────────── */
+.ab-camp .ds-badge {
+  margin-left: var(--ds-space-1);
+}
+.camp-intro,
+.camp-empty {
+  margin: 0 0 var(--ds-space-3);
+  color: var(--ds-text-3);
+  font-size: var(--ds-text-sm);
+}
+.camp-h {
+  margin: var(--ds-space-3) 0 var(--ds-space-2);
+  font-size: var(--ds-text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.camp-list,
+.camp-bonds,
+.ws-list {
+  display: grid;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.camp-talk,
+.ws-recipe {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  min-height: 48px;
+  padding: var(--ds-space-2) var(--ds-space-3);
+  border: 1px solid var(--ds-hairline);
+  border-radius: var(--ds-radius-md);
+}
+.camp-talk__text,
+.ws-recipe__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.camp-talk__text small,
+.ws-recipe__text small {
+  color: var(--ds-text-3);
+}
+.camp-bond {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+}
+.camp-bond > span:first-child {
+  flex: 1;
+}
+.bond-pips i {
+  font-style: normal;
+  letter-spacing: 0.15em;
+}
+.bond-pips i.on {
+  color: var(--ds-gold);
+}
+.ws-cost,
+.ws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-1);
+  justify-content: flex-end;
+}
+.ws-actions .ds-btn {
+  min-height: 44px;
+}
