@@ -1,5 +1,5 @@
 import type { Attack, PilotStats, Weapon } from '@m1565/core';
-import { attackRange } from '@m1565/core';
+import { attackRange, techniqueRank } from '@m1565/core';
 import { t } from '../../i18n';
 import { Chip, cx, Icon } from '../design';
 import { rangeText, requirementText, techniqueEffects } from './attackText';
@@ -76,6 +76,9 @@ export function TechniqueEffects({ attack }: { attack: Attack }) {
  * A technique explained in full: name and style, description, plain-language effects and every
  * number. Used in the unit details sheet; the attack list shows the same pieces on demand.
  */
+/** Techniques unlocked at this level or later are a pool's masters. */
+const MASTER_LEVEL = 13;
+
 export function TechniqueCard({
   attack,
   weapon,
@@ -106,6 +109,17 @@ export function TechniqueCard({
       <header class="ov-tc__head">
         <h4 class="ov-tc__name">{attack.name}</h4>
         <Chip icon={null} class="ov-tc__style" label={t(`attackStyle.${attack.style}`)} />
+        {attack.level !== undefined && attack.level >= 3 && (
+          <Chip
+            icon={attack.level >= MASTER_LEVEL ? 'star' : null}
+            class="ov-tc__rank"
+            label={
+              attack.level >= MASTER_LEVEL
+                ? t('tech.master')
+                : t('tech.rank', { n: techniqueRank(attack.level) })
+            }
+          />
+        )}
       </header>
       {attack.description && <p class="ov-tc__desc">{attack.description}</p>}
       <TechniqueEffects attack={attack} />

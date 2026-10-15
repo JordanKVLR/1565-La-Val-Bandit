@@ -13,8 +13,16 @@ import {
   loadMap,
   loadTerrains,
   mapSources,
+  resolveTechnique,
 } from '../src';
-import { activeSkills, createBattle, DEFAULT_BALANCE, unlockedAttacks } from '@m1565/core';
+import {
+  activeSkills,
+  createBattle,
+  DEFAULT_BALANCE,
+  techniqueValue,
+  techniqueValueTarget,
+  unlockedAttacks,
+} from '@m1565/core';
 import castData from '../data/cast.json';
 
 describe('content', () => {
@@ -156,17 +164,88 @@ describe('attacks', () => {
     }
   });
 
-  it('cost more AP and FP, and lose accuracy, the stronger they are', () => {
-    const ninu = lib.characters.get('ninu')!;
-    const techs = attackPool(lib, lib.frames.get('cavaliere')!, lib.weapons.get('arming-sword')!);
-    expect(ninu).toBeDefined();
-    const byPower = [...techs].sort((a, b) => a.power * (a.hits ?? 1) - b.power * (b.hits ?? 1));
-    for (let i = 1; i < byPower.length; i++) {
-      const [lo, hi] = [byPower[i - 1]!, byPower[i]!];
-      expect(hi.apCost, hi.id).toBeGreaterThanOrEqual(lo.apCost);
-      expect(hi.fpCost, hi.id).toBeGreaterThanOrEqual(lo.fpCost);
-      expect(hi.accuracy, hi.id).toBeLessThanOrEqual(lo.accuracy);
+  /** Every technique as the engine sees it, with its faction and the weapon types it suits. */
+  const resolved = lib.attacks.map((data) => ({
+    data,
+    attack: resolveTechnique(data, lib.balance),
+  }));
+  const pools = new Map<string, typeof resolved>();
+  for (const r of resolved)
+    for (const w of r.data.weaponTypes) {
+      const key = `${r.data.faction}/${w}`;
+      pools.set(key, [...(pools.get(key) ?? []), r]);
     }
+
+  it('are worth what their level promises: the value standard (ADR 0017)', () => {
+    for (const { data, attack } of resolved) {
+      const target = techniqueValueTarget(data.level, lib.balance);
+      const value = techniqueValue(attack, lib.balance);
+      expect(
+        Math.abs(value / target - 1),
+        `${data.id} is worth ${value.toFixed(2)}, target ${target.toFixed(2)}`,
+      ).toBeLessThanOrEqual(lib.balance.techValueTolerance);
+    }
+  });
+
+  it('only get better with level, within each faction and weapon pool', () => {
+    for (const [key, list] of pools) {
+      const sorted = [...list].sort((a, b) => a.data.level - b.data.level);
+      for (let i = 1; i < sorted.length; i++) {
+        const [lo, hi] = [sorted[i - 1]!, sorted[i]!];
+        expect(
+          techniqueValue(hi.attack, lib.balance),
+          `${key}: ${hi.data.id} (Lv ${hi.data.level}) vs ${lo.data.id} (Lv ${lo.data.level})`,
+        ).toBeGreaterThanOrEqual(techniqueValue(lo.attack, lib.balance) - 0.03);
+        // The POW a player reads must climb too (a flurry's strikes are lighter by design).
+        if (hi.data.level > lo.data.level && (hi.data.hits ?? 1) === 1 && (lo.data.hits ?? 1) === 1)
+          expect(hi.data.power, `${key}: POW of ${hi.data.id}`).toBeGreaterThanOrEqual(
+            lo.data.power,
+          );
+      }
+    }
+  });
+
+  it('are never worse than a starter strike for the AP they cost', () => {
+    for (const { data, attack } of resolved) {
+      // A starter strike is worth 1.0 for 30 AP.
+      expect(
+        techniqueValue(attack, lib.balance) / (attack.apCost / 30),
+        data.id,
+      ).toBeGreaterThanOrEqual(0.98);
+    }
+  });
+
+  it('spread their unlocks: a pool opens early, every few levels, and ends with a master technique', () => {
+    for (const [key, list] of pools) {
+      const levels = [...new Set(list.map((r) => r.data.level))].sort((a, b) => a - b);
+      expect(levels.length, key).toBeGreaterThanOrEqual(4);
+      expect(levels[0]!, key).toBeLessThanOrEqual(4);
+      expect(levels[levels.length - 1]!, key).toBeGreaterThanOrEqual(13);
+      for (let i = 1; i < levels.length; i++)
+        expect(levels[i]! - levels[i - 1]!, key).toBeLessThanOrEqual(3);
+    }
+  });
+
+  it('give every flurry armour-piercing strikes, so two light blows are never worse than one', () => {
+    for (const { data } of resolved)
+      if ((data.hits ?? 1) > 1) expect(data.pierce ?? 0, data.id).toBeGreaterThanOrEqual(0.4);
+  });
+
+  it('describe exactly what they do: every effect in the text is in the numbers, and the reverse', () => {
+    for (const { data } of resolved) {
+      const d = data.description.toLowerCase();
+      const says = (re: RegExp) => re.test(d);
+      expect(says(/pierces|ignores/), `${data.id} pierce`).toBe((data.pierce ?? 0) > 0);
+      expect(says(/tires the target/), `${data.id} fatigue`).toBe((data.fatigue ?? 0) > 0);
+      expect(says(/cannot be countered/), `${data.id} counter`).toBe(Boolean(data.noCounter));
+      expect(says(/strikes twice/), `${data.id} strikes`).toBe((data.hits ?? 1) > 1);
+      if (data.weaponTypes.includes('polearm'))
+        expect(says(/reaches two tiles/), `${data.id} reach`).toBe(data.maxRange === 2);
+    }
+  });
+
+  it('keep the shipped technique count', () => {
+    expect(lib.attacks).toHaveLength(71);
   });
 
   it('give every faction techniques for each weapon it fields', () => {
@@ -192,7 +271,7 @@ describe('attacks', () => {
       const total = a.power * (a.hits ?? 1);
       // Cheap, light techniques with modest stat needs are the entry tier; heavy ones are the late game.
       const need = Object.values(a.requires).reduce((n: number, v) => n + (v ?? 0), 0);
-      if (total <= 1.15 && need <= 10) expect(a.level, a.id).toBeLessThanOrEqual(4);
+      if (total <= 1.15 && need <= 10) expect(a.level, a.id).toBeLessThanOrEqual(6);
       if (total >= 1.55) expect(a.level, a.id).toBeGreaterThanOrEqual(10);
     }
     expect(lib.attacks.filter((a) => a.level <= 4).length).toBeGreaterThanOrEqual(10);

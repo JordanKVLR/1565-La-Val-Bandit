@@ -1,5 +1,5 @@
 import type { BattleSetup, BattleState, Facing } from '@m1565/core';
-import { attackFpCost, findUnit, getTile, terrainAt, unitAt } from '@m1565/core';
+import { attackFpCost, findUnit, getTile, terrainAt, unitAt, xpToNextLevel } from '@m1565/core';
 import type { Library } from '@m1565/content';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { t } from '../i18n';
@@ -390,7 +390,7 @@ export function BattleScreen({
       {mode.kind === 'xp' && (
         <XpPanel
           gains={mode.gains}
-          xpPerLevel={state.balance.xpPerLevel}
+          xpToNext={(level) => xpToNextLevel(level, state.balance)}
           onDone={() => ctl.finishXp()}
         />
       )}

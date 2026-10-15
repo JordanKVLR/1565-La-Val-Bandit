@@ -62,10 +62,19 @@ export interface BalanceConfig {
   readonly xpFront: number;
   readonly xpSide: number;
   readonly xpRear: number;
-  /** XP needed for each level. Always the same amount; leftover XP carries over. */
+  /** Multiplier on all XP earned (the global rate). */
+  readonly xpScale: number;
+  /** XP to go from level 1 to level 2; each later level costs `xpLevelCostGrowth` more (leftover XP carries over). */
   readonly xpPerLevel: number;
-  /** XP changes by this fraction per level the target is above (+) or below (−) the attacker. */
-  readonly xpLevelFactor: number;
+  readonly xpLevelCostGrowth: number;
+  /**
+   * The level-gap multiplier on a hit's XP, by how far the target's level is above (+) or below
+   * (−) the attacker's. Above: 1 + `xpGapBonus` × gap + `xpGapCurve` × gap², at most `xpMaxFactor`.
+   * Below: `xpGapDecay` ^ |gap|, at least `xpMinFactor`.
+   */
+  readonly xpGapBonus: number;
+  readonly xpGapCurve: number;
+  readonly xpGapDecay: number;
   readonly xpMinFactor: number;
   readonly xpMaxFactor: number;
   /** Attribute points granted per level-up. */
@@ -98,6 +107,31 @@ export interface BalanceConfig {
   readonly techFpMin: number;
   readonly techAccPerPower: number;
   readonly techAccMax: number;
+  /**
+   * Faction techniques are costed by `techniqueStats`: the same AP and FP per power, but a much
+   * smaller accuracy tax (`techniqueAccPerPower` instead of `techAccPerPower`), and each rank
+   * (2 levels of the technique's unlock level) cuts FP by `techRankFpDiscount`, AP by
+   * `techRankApDiscount` and adds `techRankAccBonus` accuracy, so a master technique is both
+   * stronger and more economical than an early one.
+   */
+  readonly techniqueAccPerPower: number;
+  readonly techRankAccBonus: number;
+  readonly techRankFpDiscount: number;
+  readonly techRankApDiscount: number;
+  /**
+   * The value standard (see `techniqueValue`): a technique unlocked at level L is worth
+   * `techValueBase + techValuePerLevel × (L − 3)` starter attacks, within `techValueTolerance`.
+   * `techValueFatigue` is the damage-equivalent of 1 FP of fatigue inflicted, `techValueNoCounter`
+   * that of making a blow uncounterable, and the `techRef…` numbers describe the reference target
+   * (raw damage at power 1, and DEF) the damage is measured against.
+   */
+  readonly techValueBase: number;
+  readonly techValuePerLevel: number;
+  readonly techValueTolerance: number;
+  readonly techValueFatigue: number;
+  readonly techValueNoCounter: number;
+  readonly techRefRaw: number;
+  readonly techRefDef: number;
   /** Counter: success chance = base + factor × ((DEX + AGL) of defender − of attacker), clamped. */
   readonly counterBaseChance: number;
   readonly counterStatFactor: number;
@@ -171,10 +205,14 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   xpFront: 1,
   xpSide: 0.8,
   xpRear: 0.5,
+  xpScale: 1.25,
   xpPerLevel: 500,
-  xpLevelFactor: 0.2,
-  xpMinFactor: 0.1,
-  xpMaxFactor: 3,
+  xpLevelCostGrowth: 0.06,
+  xpGapBonus: 0.3,
+  xpGapCurve: 0.05,
+  xpGapDecay: 0.72,
+  xpMinFactor: 0.05,
+  xpMaxFactor: 4,
   statPointsPerLevel: 3,
   statMax: 32,
   hpPerLevel: 2,
@@ -194,6 +232,17 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   techFpMin: 5,
   techAccPerPower: 60,
   techAccMax: 20,
+  techniqueAccPerPower: 15,
+  techRankAccBonus: 2,
+  techRankFpDiscount: 0.05,
+  techRankApDiscount: 0.03,
+  techValueBase: 1.1,
+  techValuePerLevel: 0.09,
+  techValueTolerance: 0.12,
+  techValueFatigue: 0.12,
+  techValueNoCounter: 0.4,
+  techRefRaw: 30,
+  techRefDef: 8,
   counterBaseChance: 10,
   counterStatFactor: 1,
   counterMinChance: 5,
@@ -236,5 +285,56 @@ export function techniqueCost(
     apCost: Math.max(b.techApMin, round5(b.techApBase + b.techApPerPower * p)),
     fpCost: Math.max(b.techFpMin, Math.round(b.techFpBase + b.techFpPerPower * p)) + ranged,
     accuracy: Math.min(b.techAccMax, Math.round(-b.techAccPerPower * p)) || 0,
+  };
+}
+
+/** XP to go from `level` to the next one: `xpPerLevel`, rising by `xpLevelCostGrowth` per level. */
+export function xpToNextLevel(level: number, b: BalanceConfig): number {
+  const steps = Math.max(0, Math.floor(level) - 1);
+  return Math.round((b.xpPerLevel * (1 + b.xpLevelCostGrowth * steps)) / 5) * 5;
+}
+
+/**
+ * The level-gap multiplier on XP: tougher targets pay more (1 + 0.30·gap + 0.05·gap², capped),
+ * weaker ones much less (0.72 per level below, floored).
+ */
+export function xpGapFactor(gap: number, b: BalanceConfig): number {
+  if (gap >= 0) return Math.min(b.xpMaxFactor, 1 + b.xpGapBonus * gap + b.xpGapCurve * gap * gap);
+  return Math.max(b.xpMinFactor, Math.pow(b.xpGapDecay, -gap));
+}
+
+/** A technique's rank: one for every two levels of its unlock level (level 3 is rank 1). */
+export function techniqueRank(level: number): number {
+  return Math.floor((Math.max(1, level) - 1) / 2);
+}
+
+/**
+ * AP, FP and accuracy of a faction technique: the shared formula with the smaller accuracy tax
+ * and the rank discounts (see `BalanceConfig.techniqueAccPerPower`). Starters use `techniqueCost`.
+ */
+export function techniqueStats(
+  power: number,
+  hits: number,
+  level: number,
+  b: BalanceConfig,
+  style?: string,
+): { apCost: number; fpCost: number; accuracy: number } {
+  const p = power * hits - 1;
+  const rank = techniqueRank(level);
+  const round5 = (v: number) => Math.round(v / 5) * 5;
+  const ranged = style !== undefined && RANGED_STYLES.has(style) ? b.rangedFpSurcharge : 0;
+  return {
+    apCost: Math.max(
+      b.techApMin,
+      round5((b.techApBase + b.techApPerPower * p) * (1 - b.techRankApDiscount * rank)),
+    ),
+    fpCost:
+      Math.max(
+        b.techFpMin,
+        Math.round((b.techFpBase + b.techFpPerPower * p) * (1 - b.techRankFpDiscount * rank)),
+      ) + ranged,
+    accuracy:
+      Math.min(b.techAccMax, Math.round(-b.techniqueAccPerPower * p) + b.techRankAccBonus * rank) ||
+      0,
   };
 }

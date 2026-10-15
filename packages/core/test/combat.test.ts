@@ -126,7 +126,7 @@ describe('forecast', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
     // The defender strikes back with Slash: 80 + 20 = 100 → 95 (cap); (24 + 6) × 0.8 = 24
-    expect(f.retaliation).toEqual({
+    expect(f.retaliation).toMatchObject({
       attackId: 'basic',
       attackName: 'Slash',
       hits: 1,

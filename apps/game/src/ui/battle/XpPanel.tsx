@@ -50,11 +50,12 @@ export function NewSkillLines({
  */
 export function XpPanel({
   gains,
-  xpPerLevel,
+  xpToNext,
   onDone,
 }: {
   gains: readonly XpGain[];
-  xpPerLevel: number;
+  /** XP a unit needs to go from the given level to the next. */
+  xpToNext: (level: number) => number;
   onDone: () => void;
 }) {
   // Start at the old value, then let the meter's transition carry it to the new one.
@@ -91,6 +92,7 @@ export function XpPanel({
         {gains.map((g) => {
           const levelled = g.levelAfter > g.levelBefore;
           const start = levelled ? 0 : g.xpBefore;
+          const xpPerLevel = xpToNext(g.levelAfter);
           return (
             <li key={g.unitId} class="ov-xp__gain">
               <div class="ov-xp__head">

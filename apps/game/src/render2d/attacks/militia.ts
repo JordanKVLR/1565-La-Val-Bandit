@@ -2,6 +2,7 @@
  * Militia attack scripts: Maltese farmers, fishermen and arquebusiers fighting with improvised
  * tools. Homespun palette: earth, wheat, limestone and Maltese red. Pure presentation.
  */
+import { withVariants } from './variants';
 import type { Key, Move } from '../../render/duelMoves';
 import type { AttackScripts, FxContext, V2 } from '../contract';
 import { eng, face, hitPoint, outcomeOf } from './styleDefaults';
@@ -351,7 +352,7 @@ function reticle(c: FxContext, at: V2, r0: number, r1: number, col: string, life
 
 const up = Math.PI / 2;
 
-export const MILITIA_SCRIPTS: AttackScripts = {
+const MILITIA_BASE: AttackScripts = {
   // ── Fisherman's Hook-Cut: a low crouch, then a curling cut that draws a fish-hook in the air ──
   'militia-hook-cut': {
     palette: { main: '#dfeeea', accent: '#d7503a', dark: '#243a3c' },
@@ -1260,3 +1261,11 @@ export const MILITIA_SCRIPTS: AttackScripts = {
     },
   },
 };
+
+/** The newer techniques borrow a related script, in their own accent colour. */
+export const MILITIA_SCRIPTS: AttackScripts = withVariants(MILITIA_BASE, {
+  'militia-last-stand': ['militia-carob-split', '#ff9a5a'],
+  'militia-gaff-hook': ['militia-watchtower-sweep', '#8fd0c8'],
+  'militia-wallbreaker': ['militia-brace-and-drive', '#e0c27a'],
+  'militia-braced-shot': ['militia-aimed-shot', '#ffd36b'],
+});

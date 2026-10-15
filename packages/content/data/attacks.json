@@ -6,12 +6,12 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 1.15,
+    "power": 1.05,
     "requires": {
       "pow": 9
     },
     "level": 3,
-    "description": "A diagonal stroke drawn from shoulder to hip, the first cut every novice of the Order learns in the Birgu yards. Hits harder than a plain slash."
+    "description": "A diagonal stroke drawn from shoulder to hip, the first cut every novice of the Order learns in the Birgu yards. Hits a little harder than a plain strike."
   },
   {
     "id": "order-pilgrim-thrust",
@@ -20,13 +20,13 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "thrust",
-    "power": 1.0,
+    "power": 1.1,
+    "pierce": 0.1,
     "requires": {
       "dex": 10
     },
-    "level": 4,
-    "description": "A straight lunge aimed at the seams between plates, taught to knights who walked to Jerusalem and back. The point pierces, ignoring part of the target's DEF.",
-    "pierce": 0.3
+    "level": 5,
+    "description": "A straight lunge aimed at the seams between plates, taught to knights who walked to Jerusalem and back. Pierces part of the target's DEF."
   },
   {
     "id": "order-shieldbreaker",
@@ -35,13 +35,13 @@
     "weaponTypes": ["blade", "blunt"],
     "frameClasses": [],
     "style": "overhead",
-    "power": 1.3,
+    "power": 1.15,
+    "fatigue": 10,
     "requires": {
       "pow": 12
     },
     "level": 7,
-    "description": "Both arms of the armatura drive one crushing blow down onto the foe's guard. Shakes the pilot inside, adding heavy fatigue on top of the damage.",
-    "fatigue": 15
+    "description": "Both arms of the armatura drive one crushing blow down onto the foe's guard. Tires the target."
   },
   {
     "id": "order-eight-point",
@@ -50,15 +50,33 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 0.7,
+    "power": 0.65,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "dex": 13,
       "agl": 10,
       "bas": 8
     },
-    "level": 8,
-    "description": "Two cuts traced like the arms of the eight-pointed cross, one rising and one falling. Strikes twice, each blow lighter than a full swing.",
-    "hits": 2
+    "level": 9,
+    "description": "Two cuts traced like the arms of the eight-pointed cross, one rising and one falling. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "order-stoccata-lunga",
+    "name": "Stoccata Lunga",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.3,
+    "accuracyBonus": 10,
+    "requires": {
+      "dex": 14,
+      "agl": 9
+    },
+    "level": 11,
+    "description": "A long, precise lunge in the Italian manner, learned in the fencing hall of the Auberge of Italy. Hits hard and is very accurate."
   },
   {
     "id": "order-last-rampart",
@@ -67,14 +85,15 @@
     "weaponTypes": ["blade"],
     "frameClasses": ["medium", "heavy"],
     "style": "overhead",
-    "power": 1.6,
+    "power": 1.45,
+    "fatigue": 10,
     "requires": {
       "pow": 16,
       "dex": 11,
       "bas": 5
     },
-    "level": 12,
-    "description": "A great two-handed overhead blow delivered as if holding the last breach at St Elmo. Only medium or heavy frames carry its weight; one of the Order's hardest strikes."
+    "level": 13,
+    "description": "A great two-handed overhead blow delivered as if holding the last breach at St Elmo. Hits very hard and tires the target. Only medium or heavy frames carry its weight."
   },
   {
     "id": "order-shield-bash",
@@ -83,14 +102,29 @@
     "weaponTypes": ["blunt"],
     "frameClasses": [],
     "style": "bash",
-    "power": 0.9,
+    "power": 1.05,
+    "noCounter": true,
     "requires": {
       "pow": 9
     },
     "level": 3,
-    "description": "The shield boss is rammed forward into the enemy's chest plate before they can set their feet. Leaves no opening to counter and tires the foe.",
-    "noCounter": true,
-    "fatigue": 10
+    "description": "The shield boss is rammed forward into the enemy's chest plate before they can set their feet. Cannot be countered."
+  },
+  {
+    "id": "order-rim-strike",
+    "name": "Rim Strike",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.1,
+    "fatigue": 5,
+    "accuracyBonus": 2,
+    "requires": {
+      "dex": 9
+    },
+    "level": 5,
+    "description": "The shield rim snaps up under the chin of the enemy's helm. Tires the target."
   },
   {
     "id": "order-bell-ringer",
@@ -99,30 +133,46 @@
     "weaponTypes": ["blunt"],
     "frameClasses": [],
     "style": "overhead",
-    "power": 1.35,
+    "power": 1.15,
+    "fatigue": 10,
     "requires": {
       "pow": 13
     },
     "level": 7,
-    "description": "A swinging mace blow to the helm that sets the whole harness ringing like the bells of San Lorenzo. Heavy damage and severe fatigue for the pilot struck.",
-    "fatigue": 20
+    "description": "A swinging mace blow to the helm that sets the whole harness ringing like the bells of San Lorenzo. Tires the target."
   },
   {
-    "id": "order-aragon-lance",
-    "name": "Lance of Aragon",
+    "id": "order-helm-splitter",
+    "name": "Helm Splitter",
     "faction": "order",
-    "weaponTypes": ["polearm"],
+    "weaponTypes": ["blunt"],
     "frameClasses": [],
-    "style": "charge",
-    "power": 1.25,
+    "style": "overhead",
+    "power": 1.2,
+    "pierce": 0.4,
     "requires": {
-      "pow": 10,
-      "agl": 8
+      "pow": 14,
+      "dex": 9
     },
-    "level": 5,
-    "description": "A short galloping rush with the polearm couched under the arm, in the manner of Aragonese jousters. Strong charge that reaches up to two tiles.",
-    "minRange": 1,
-    "maxRange": 2
+    "level": 10,
+    "description": "A flanged mace brought down on the crest of a helmet with a woodsman's swing. Hits hard and pierces about half of the target's DEF."
+  },
+  {
+    "id": "order-knell-of-saint-john",
+    "name": "Knell of Saint John",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.45,
+    "fatigue": 10,
+    "requires": {
+      "pow": 16,
+      "bas": 8,
+      "def": 6
+    },
+    "level": 13,
+    "description": "One toll of the great bell of the Conventual Church, made flesh in iron. Hits very hard and tires the target."
   },
   {
     "id": "order-hedge-of-pikes",
@@ -131,14 +181,50 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "thrust",
-    "power": 1.0,
+    "power": 1.05,
+    "noCounter": true,
     "requires": {
       "dex": 12,
       "def": 7
     },
-    "level": 6,
-    "description": "The pike is levelled and held firm, a single point standing for a whole Spanish square. A disciplined thrust that cannot be countered or answered.",
-    "noCounter": true
+    "level": 3,
+    "description": "The pike is levelled and held firm, a single point standing for a whole Spanish square. Cannot be countered."
+  },
+  {
+    "id": "order-aragon-lance",
+    "name": "Lance of Aragon",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "charge",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.15,
+    "requires": {
+      "pow": 10,
+      "agl": 8
+    },
+    "level": 5,
+    "description": "A short galloping rush with the polearm couched under the arm, in the manner of Aragonese jousters. Reaches two tiles."
+  },
+  {
+    "id": "order-halberd-hook",
+    "name": "Halberd Hook",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.2,
+    "fatigue": 5,
+    "noCounter": true,
+    "requires": {
+      "pow": 11,
+      "dex": 10
+    },
+    "level": 8,
+    "description": "The hook behind the halberd blade catches a belt or a stirrup and drags the target off balance. Hits hard, tires the target, cannot be countered and reaches two tiles."
   },
   {
     "id": "order-knights-charge",
@@ -147,16 +233,36 @@
     "weaponTypes": ["polearm"],
     "frameClasses": ["medium"],
     "style": "charge",
-    "power": 1.5,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.35,
+    "pierce": 0.2,
     "requires": {
       "pow": 15,
       "agl": 11,
       "bas": 6
     },
     "level": 11,
-    "description": "The full weight of a medium armatura behind a lowered polearm, boilers roaring. A devastating charge from up to two tiles away.",
+    "description": "The full weight of a medium armatura behind a lowered polearm, boilers roaring. Hits hard, pierces part of the target's DEF and reaches two tiles. Only medium frames carry its weight."
+  },
+  {
+    "id": "order-charge-of-the-langues",
+    "name": "Charge of the Langues",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["medium"],
+    "style": "charge",
     "minRange": 1,
-    "maxRange": 2
+    "maxRange": 2,
+    "power": 1.45,
+    "fatigue": 10,
+    "requires": {
+      "pow": 14,
+      "agl": 10,
+      "bas": 6
+    },
+    "level": 13,
+    "description": "Knights of every Langue lower their lances together and ride as one body. Hits very hard, tires the target and reaches two tiles. Only medium frames carry its weight."
   },
   {
     "id": "militia-hook-cut",
@@ -165,12 +271,12 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 1.1,
+    "power": 1.05,
     "requires": {
       "agl": 9
     },
     "level": 3,
-    "description": "A sharp curling cut learned gutting fish on the Marsaxlokk quays. A quick blade stroke that hits a little harder than a plain slash."
+    "description": "A sharp curling cut learned gutting fish on the Marsaxlokk quays. Hits a little harder than a plain strike."
   },
   {
     "id": "militia-zejtun-feint",
@@ -179,14 +285,16 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 0.65,
+    "power": 0.55,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "agl": 11,
       "dex": 8
     },
-    "level": 7,
-    "description": "A false step to one side, then two short cuts from the other, a trick of the Żejtun lanes. Strikes twice for light damage each.",
-    "hits": 2
+    "level": 5,
+    "description": "A false step to one side, then two short cuts from the other, a trick of the Żejtun lanes. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
   },
   {
     "id": "militia-harvest-swing",
@@ -195,13 +303,13 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "sweep",
-    "power": 1.3,
+    "power": 1.15,
+    "fatigue": 10,
     "requires": {
       "pow": 12
     },
-    "level": 6,
-    "description": "A wide sweeping cut swung like a sickle through the summer wheat. Hits hard and leaves the target winded, adding fatigue.",
-    "fatigue": 15
+    "level": 7,
+    "description": "A wide sweeping cut swung like a sickle through the summer wheat. Tires the target."
   },
   {
     "id": "militia-carob-split",
@@ -210,13 +318,30 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "overhead",
-    "power": 1.55,
+    "power": 1.4,
     "requires": {
       "pow": 15,
       "agl": 10
     },
-    "level": 11,
-    "description": "A full overhead chop with the strength used to split carob logs. Slow to gather but one of the heaviest blows a militiaman can land."
+    "level": 10,
+    "description": "A full overhead chop with the strength used to split carob logs. Hits very hard."
+  },
+  {
+    "id": "militia-last-stand",
+    "name": "Last Stand",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.45,
+    "fatigue": 10,
+    "requires": {
+      "pow": 16,
+      "agl": 11,
+      "def": 5
+    },
+    "level": 13,
+    "description": "No retreat is left, so no part of the body is spared in the swing. Hits very hard and tires the target."
   },
   {
     "id": "militia-pitchfork-jab",
@@ -225,14 +350,14 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "thrust",
-    "power": 1.0,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.05,
     "requires": {
       "dex": 8
     },
     "level": 3,
-    "description": "A quick two-handed jab with the polearm from behind a field wall. Reaches up to two tiles away.",
-    "minRange": 1,
-    "maxRange": 2
+    "description": "A quick two-handed jab with the polearm from behind a field wall. Reaches two tiles."
   },
   {
     "id": "militia-brace-and-drive",
@@ -241,15 +366,15 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "thrust",
-    "power": 1.3,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.1,
+    "noCounter": true,
     "requires": {
       "pow": 11
     },
-    "level": 6,
-    "description": "The butt is planted against the limestone and the point driven home as the foe comes on. Strong reach-two thrust that leaves no chance to counter.",
-    "noCounter": true,
-    "minRange": 1,
-    "maxRange": 2
+    "level": 5,
+    "description": "The butt is planted against the limestone and the point driven home as the foe comes on. Cannot be countered and reaches two tiles."
   },
   {
     "id": "militia-watchtower-sweep",
@@ -258,17 +383,55 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "sweep",
+    "minRange": 1,
+    "maxRange": 2,
     "power": 1.2,
+    "fatigue": 10,
     "requires": {
       "agl": 12,
       "pow": 10,
       "bas": 7
     },
-    "level": 9,
-    "description": "A broad low sweep of the polearm, as the coastal watch fends off landing parties. Reaches two tiles and tires the target badly.",
+    "level": 8,
+    "description": "A broad low sweep of the polearm, as the coastal watch fends off landing parties. Hits hard, tires the target and reaches two tiles."
+  },
+  {
+    "id": "militia-gaff-hook",
+    "name": "Gaff Hook",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
     "minRange": 1,
     "maxRange": 2,
-    "fatigue": 20
+    "power": 1.25,
+    "fatigue": 10,
+    "noCounter": true,
+    "requires": {
+      "pow": 11,
+      "agl": 11
+    },
+    "level": 10,
+    "description": "A fisherman's gaff dragged across the enemy's footing. Hits hard, tires the target, cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "militia-wallbreaker",
+    "name": "Wallbreaker",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.45,
+    "fatigue": 10,
+    "requires": {
+      "pow": 14,
+      "agl": 10,
+      "bas": 7
+    },
+    "level": 13,
+    "description": "A long spear driven into the head of a scaling ladder and heaved back. Hits very hard, tires the target and reaches two tiles."
   },
   {
     "id": "militia-aimed-shot",
@@ -277,15 +440,13 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "shot",
-    "power": 1.2,
+    "power": 1.1,
+    "pierce": 0.15,
     "requires": {
       "dex": 9
     },
     "level": 4,
-    "description": "A slow, careful shot, matchlock braced and breath held until the moment is right. Far more accurate (+25%), ignores half the target's DEF and hits harder (x1.2).",
-    "pierce": 0.5,
-    "accuracyBonus": 37,
-    "apBonus": 15
+    "description": "A slow, careful shot, matchlock braced and breath held until the moment is right. Pierces part of the target's DEF."
   },
   {
     "id": "militia-double-charge",
@@ -294,13 +455,13 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "shot",
-    "power": 1.35,
+    "power": 1.2,
     "requires": {
       "pow": 9,
       "dex": 11
     },
-    "level": 7,
-    "description": "The arquebus is loaded with a double measure of powder and ball, risking the barrel. A heavier shot than any normal volley."
+    "level": 6,
+    "description": "The arquebus is loaded with a double measure of powder and ball, risking the barrel. Hits hard."
   },
   {
     "id": "militia-crossfire",
@@ -309,14 +470,33 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "volley",
-    "power": 0.65,
+    "power": 0.6,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "dex": 13,
       "bas": 7
     },
-    "level": 9,
-    "description": "Two quick shots from alternating firing positions behind the bastion parapet. Hits twice, each for reduced damage.",
-    "hits": 2
+    "level": 8,
+    "description": "Two quick shots from alternating firing positions behind the bastion parapet. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "militia-braced-shot",
+    "name": "Braced Shot",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.25,
+    "pierce": 0.3,
+    "accuracyBonus": 1,
+    "requires": {
+      "dex": 13,
+      "bas": 7
+    },
+    "level": 10,
+    "description": "The arquebus is laid on the parapet wall and the shot taken on the breath. Hits hard and pierces part of the target's DEF."
   },
   {
     "id": "militia-sharpshooter",
@@ -325,14 +505,14 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "shot",
-    "power": 1.2,
+    "power": 1.45,
+    "pierce": 0.4,
     "requires": {
       "dex": 16,
       "agl": 10
     },
-    "level": 12,
-    "description": "A patient shot aimed at the vision slit or a boiler joint. Hits hard and pierces, ignoring a large part of the target's DEF.",
-    "pierce": 0.4
+    "level": 13,
+    "description": "A patient shot aimed at the vision slit or a boiler joint. Hits very hard and pierces about half of the target's DEF."
   },
   {
     "id": "ottoman-crescent-slash",
@@ -341,12 +521,28 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 1.15,
+    "power": 1.05,
     "requires": {
       "dex": 9
     },
     "level": 3,
-    "description": "A curving draw-cut that follows the line of the kilij's blade. A clean strike, a little harder than a plain slash."
+    "description": "A curving draw-cut that follows the line of the kilij's blade. Hits a little harder than a plain strike."
+  },
+  {
+    "id": "ottoman-drawing-cut",
+    "name": "Drawing Cut",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.1,
+    "accuracyBonus": 4,
+    "requires": {
+      "dex": 10,
+      "agl": 9
+    },
+    "level": 5,
+    "description": "The yatagan's curve slides through the target's guard in a single pulling stroke. Is accurate."
   },
   {
     "id": "ottoman-janissary-oath",
@@ -355,13 +551,13 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "overhead",
-    "power": 1.4,
+    "power": 1.3,
     "requires": {
       "pow": 12,
       "dex": 9
     },
-    "level": 7,
-    "description": "A heavy overhead cut delivered with the full discipline of the Sultan's household infantry. Powerful single blow."
+    "level": 8,
+    "description": "A heavy overhead cut delivered with the full discipline of the Sultan's household infantry. Hits hard."
   },
   {
     "id": "ottoman-twin-moons",
@@ -370,15 +566,17 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 0.7,
+    "power": 0.65,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "agl": 12,
       "dex": 10,
       "bas": 8
     },
-    "level": 9,
-    "description": "Two crescent cuts in quick succession, one high and one low. Strikes twice for lighter damage each.",
-    "hits": 2
+    "level": 10,
+    "description": "Two crescent cuts in quick succession, one high and one low. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
   },
   {
     "id": "ottoman-sultans-edge",
@@ -387,15 +585,15 @@
     "weaponTypes": ["blade"],
     "frameClasses": ["medium"],
     "style": "slash",
-    "power": 1.6,
+    "power": 1.45,
+    "fatigue": 10,
     "requires": {
       "pow": 15,
       "dex": 13,
       "def": 4
     },
     "level": 13,
-    "description": "A perfect drawing slash reserved for veterans in medium frames, aimed at joints and seams. Very heavy damage that pierces part of the target's DEF.",
-    "pierce": 0.3
+    "description": "A perfect drawing slash reserved for veterans in medium frames, aimed at joints and seams. Hits very hard and tires the target. Only medium frames carry its weight."
   },
   {
     "id": "ottoman-steady-volley",
@@ -404,12 +602,12 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "shot",
-    "power": 1.0,
+    "power": 1.05,
     "requires": {
       "dex": 9
     },
     "level": 3,
-    "description": "A measured tüfek shot fired from a braced stance, as drilled in the ortas. A dependable standard shot."
+    "description": "A measured tüfek shot fired from a braced stance, as drilled in the ortas. Hits a little harder than a plain strike."
   },
   {
     "id": "ottoman-rolling-fire",
@@ -418,13 +616,31 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "volley",
-    "power": 0.6,
+    "power": 0.55,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "dex": 12
     },
     "level": 6,
-    "description": "Two shots in quick succession, a second barrel or a fast reload. Hits twice for reduced damage each.",
-    "hits": 2
+    "description": "Two shots in quick succession, a second barrel or a fast reload. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-tufek-salvo",
+    "name": "Tufek Salvo",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.2,
+    "fatigue": 10,
+    "requires": {
+      "pow": 10,
+      "dex": 11
+    },
+    "level": 8,
+    "description": "Two ranks fire as one and the powder-smoke closes in around the target. Hits hard and tires the target."
   },
   {
     "id": "ottoman-orta-marksman",
@@ -433,29 +649,33 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "shot",
-    "power": 1.3,
+    "power": 1.25,
+    "pierce": 0.3,
+    "accuracyBonus": 1,
     "requires": {
       "dex": 15
     },
     "level": 10,
-    "description": "A long-barrelled tüfek shot laid carefully on a weak point. Hits hard and pierces part of the target's DEF.",
-    "pierce": 0.35
+    "description": "A long-barrelled tüfek shot laid carefully on a weak point. Hits hard and pierces part of the target's DEF."
   },
   {
-    "id": "ottoman-sipahi-charge",
-    "name": "Sipahi Charge",
+    "id": "ottoman-fire-line-of-the-orta",
+    "name": "Fire Line of the Orta",
     "faction": "ottoman",
-    "weaponTypes": ["polearm"],
-    "frameClasses": ["light"],
-    "style": "charge",
-    "power": 1.3,
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.7,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 10,
     "requires": {
-      "agl": 10
+      "dex": 15,
+      "agl": 10,
+      "bas": 7
     },
-    "level": 5,
-    "description": "A light armatura sweeps in at speed with lance lowered, in the manner of the provincial cavalry. A strong charge reaching up to two tiles.",
-    "minRange": 1,
-    "maxRange": 2
+    "level": 13,
+    "description": "The whole orta fires in order, rank behind rank. Strikes twice for lighter damage each, is very accurate and pierces about half of the target's DEF."
   },
   {
     "id": "ottoman-lance-feint",
@@ -464,16 +684,69 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "thrust",
-    "power": 1.0,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.05,
+    "noCounter": true,
     "requires": {
       "agl": 12,
       "dex": 9
     },
-    "level": 6,
-    "description": "The lance tip dips as if to strike low, then darts high. A reach-two thrust that leaves no chance to counter.",
-    "noCounter": true,
+    "level": 3,
+    "description": "The lance tip dips as if to strike low, then darts high. Cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "ottoman-sipahi-charge",
+    "name": "Sipahi Charge",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["light"],
+    "style": "charge",
     "minRange": 1,
-    "maxRange": 2
+    "maxRange": 2,
+    "power": 1.15,
+    "requires": {
+      "agl": 10
+    },
+    "level": 5,
+    "description": "A light armatura sweeps in at speed with lance lowered, in the manner of the provincial cavalry. Reaches two tiles. Only light frames carry its weight."
+  },
+  {
+    "id": "ottoman-hooked-spear-pull",
+    "name": "Hooked Spear Pull",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.2,
+    "fatigue": 5,
+    "noCounter": true,
+    "requires": {
+      "agl": 12,
+      "pow": 10
+    },
+    "level": 8,
+    "description": "A hooked lance-head catches the strap of a shield and tears it away. Hits hard, tires the target, cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "ottoman-akinji-sweep",
+    "name": "Akinji Sweep",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "sweep",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.25,
+    "fatigue": 15,
+    "requires": {
+      "agl": 13,
+      "pow": 10
+    },
+    "level": 10,
+    "description": "The raiders of the frontier sweep their lances low across a line of men. Hits hard, tires the target and reaches two tiles."
   },
   {
     "id": "ottoman-thunder-of-hooves",
@@ -482,16 +755,16 @@
     "weaponTypes": ["polearm"],
     "frameClasses": ["light"],
     "style": "charge",
-    "power": 1.6,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.45,
+    "fatigue": 10,
     "requires": {
       "agl": 15,
       "pow": 11
     },
-    "level": 12,
-    "description": "Light frames gallop in at full speed and drive the lance through. A crushing charge from up to two tiles that leaves the target badly fatigued.",
-    "fatigue": 20,
-    "minRange": 1,
-    "maxRange": 2
+    "level": 13,
+    "description": "Light frames gallop in at full speed and drive the lance through. Hits very hard, tires the target and reaches two tiles. Only light frames carry its weight."
   },
   {
     "id": "ottoman-fire-pot",
@@ -505,8 +778,7 @@
       "dex": 9
     },
     "level": 4,
-    "description": "A clay pot of burning naphtha is hurled to burst against the target's plates. Moderate damage and the heat tires the pilot inside.",
-    "fatigue": 15
+    "description": "A clay pot of burning naphtha is hurled to burst against the target's plates. Hits a little harder than a plain strike."
   },
   {
     "id": "ottoman-smoke-and-iron",
@@ -515,13 +787,31 @@
     "weaponTypes": ["explosive"],
     "frameClasses": [],
     "style": "throw",
-    "power": 1.0,
+    "power": 1.15,
+    "fatigue": 5,
     "requires": {
       "dex": 12
     },
     "level": 6,
-    "description": "A bomb packed with iron scraps and thick smoke is lobbed at the foe. Modest damage, but the choking cloud adds heavy fatigue.",
-    "fatigue": 25
+    "description": "A bomb packed with iron scraps and thick smoke is lobbed at the foe. Tires the target."
+  },
+  {
+    "id": "ottoman-humbara-cluster",
+    "name": "Humbara Cluster",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 0.55,
+    "hits": 2,
+    "pierce": 0.5,
+    "fatigue": 10,
+    "requires": {
+      "dex": 13,
+      "agl": 9
+    },
+    "level": 9,
+    "description": "Two clay grenades from one hand, the second hard on the first. Strikes twice for lighter damage each, pierces about half of the target's DEF and tires the target."
   },
   {
     "id": "ottoman-burning-pitch",
@@ -530,14 +820,33 @@
     "weaponTypes": ["explosive"],
     "frameClasses": [],
     "style": "throw",
-    "power": 1.5,
+    "power": 1.15,
+    "fatigue": 25,
     "requires": {
       "dex": 15,
       "pow": 9
     },
     "level": 11,
-    "description": "A cask of blazing pitch is flung to coat the armatura in fire. Heavy damage, and the heat in the cockpit causes heavy fatigue.",
-    "fatigue": 25
+    "description": "A cask of blazing pitch is flung to coat the armatura in fire. Badly tires the target."
+  },
+  {
+    "id": "ottoman-tophane-barrage",
+    "name": "Tophane Barrage",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 0.6,
+    "hits": 2,
+    "pierce": 0.4,
+    "fatigue": 20,
+    "requires": {
+      "dex": 15,
+      "pow": 9,
+      "bas": 7
+    },
+    "level": 13,
+    "description": "The gunners of the Tophane arsenal lob a hail of fire-pots. Strikes twice for lighter damage each, pierces about half of the target's DEF and badly tires the target."
   },
   {
     "id": "corsair-boarding-slash",
@@ -546,12 +855,12 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 1.1,
+    "power": 1.05,
     "requires": {
       "agl": 9
     },
     "level": 3,
-    "description": "A quick cut delivered while leaping across a galley's rail. A nimble strike, slightly harder than a plain slash."
+    "description": "A quick cut delivered while leaping across a galley's rail. Hits a little harder than a plain strike."
   },
   {
     "id": "corsair-deck-dance",
@@ -560,14 +869,16 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "slash",
-    "power": 0.65,
+    "power": 0.55,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "agl": 12,
       "bas": 7
     },
-    "level": 7,
-    "description": "Two light cuts made while dancing across a pitching deck. Strikes twice for reduced damage each.",
-    "hits": 2
+    "level": 5,
+    "description": "Two light cuts made while dancing across a pitching deck. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
   },
   {
     "id": "corsair-salt-and-steel",
@@ -576,14 +887,33 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "sweep",
-    "power": 1.3,
+    "power": 1.2,
+    "fatigue": 10,
     "requires": {
       "pow": 11,
       "agl": 10
     },
     "level": 8,
-    "description": "A wide sweeping cut flung with the swing of a ship's boom. Hits hard and tires the target.",
-    "fatigue": 15
+    "description": "A wide sweeping cut flung with the swing of a ship's boom. Hits hard and tires the target."
+  },
+  {
+    "id": "corsair-cutlass-storm",
+    "name": "Cutlass Storm",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.55,
+    "hits": 2,
+    "pierce": 0.5,
+    "fatigue": 10,
+    "accuracyBonus": 8,
+    "requires": {
+      "agl": 14,
+      "dex": 11
+    },
+    "level": 10,
+    "description": "A flurry of cutlass work in the confusion of a boarding. Strikes twice for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target."
   },
   {
     "id": "corsair-barbary-reaper",
@@ -592,15 +922,29 @@
     "weaponTypes": ["blade"],
     "frameClasses": [],
     "style": "sweep",
-    "power": 1.55,
+    "power": 1.45,
+    "fatigue": 10,
     "requires": {
       "agl": 15,
       "pow": 12,
       "bas": 5
     },
-    "level": 12,
-    "description": "A whirling full-body sweep of the blade, the signature of the Barbary raiders. Very heavy and pierces part of the target's DEF.",
-    "pierce": 0.25
+    "level": 13,
+    "description": "A whirling full-body sweep of the blade, the signature of the Barbary raiders. Hits very hard and tires the target."
+  },
+  {
+    "id": "corsair-boat-hook-jab",
+    "name": "Boat-Hook Jab",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.05,
+    "requires": {
+      "pow": 8
+    },
+    "level": 3,
+    "description": "A short jab with the boat-hook, the same motion used to fend a boat off a quay. Hits a little harder than a plain strike."
   },
   {
     "id": "corsair-grapple",
@@ -609,14 +953,13 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "thrust",
-    "power": 0.9,
+    "power": 1.1,
+    "noCounter": true,
     "requires": {
       "pow": 9
     },
-    "level": 4,
-    "description": "An iron hook is thrown into the target's plates and hauled tight. Little damage, but it cannot be countered and badly tires the target.",
-    "noCounter": true,
-    "fatigue": 20
+    "level": 5,
+    "description": "An iron hook is thrown into the target's plates and hauled tight. Cannot be countered."
   },
   {
     "id": "corsair-keelhaul",
@@ -625,13 +968,49 @@
     "weaponTypes": ["polearm"],
     "frameClasses": [],
     "style": "bash",
-    "power": 1.3,
+    "power": 1.2,
+    "fatigue": 10,
     "requires": {
       "pow": 12
     },
     "level": 8,
-    "description": "The armatura is hooked and wrenched off balance, then driven into the ground. Heavy blow that adds heavy fatigue.",
-    "fatigue": 20
+    "description": "The armatura is hooked and wrenched off balance, then driven into the ground. Hits hard and tires the target."
+  },
+  {
+    "id": "corsair-harpoon-thrust",
+    "name": "Harpoon Thrust",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.25,
+    "pierce": 0.3,
+    "requires": {
+      "pow": 12,
+      "dex": 11
+    },
+    "level": 10,
+    "description": "A whaler's thrust that bites deep behind the plates. Hits hard, pierces part of the target's DEF and reaches two tiles."
+  },
+  {
+    "id": "corsair-drowning-hook",
+    "name": "Drowning Hook",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.45,
+    "fatigue": 10,
+    "noCounter": true,
+    "requires": {
+      "pow": 13,
+      "agl": 12,
+      "bas": 6
+    },
+    "level": 13,
+    "description": "The hook sets in the armour and the target is dragged down like a catch hauled overboard. Hits very hard, tires the target and cannot be countered."
   },
   {
     "id": "scala-piston-strike",
@@ -640,12 +1019,27 @@
     "weaponTypes": ["blunt"],
     "frameClasses": [],
     "style": "bash",
-    "power": 1.25,
+    "power": 1.1,
     "requires": {
       "pow": 8
     },
     "level": 4,
-    "description": "A steam piston fires the fist forward with a hiss and a crack. A strong blunt strike even for a weak pilot."
+    "description": "A steam piston fires the fist forward with a hiss and a crack. Hits a little harder than a plain strike."
+  },
+  {
+    "id": "scala-valve-release",
+    "name": "Valve Release",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.15,
+    "fatigue": 5,
+    "requires": {
+      "pow": 9
+    },
+    "level": 6,
+    "description": "A hiss of steam into the joints just before the blow lands. Tires the target."
   },
   {
     "id": "scala-steam-hammer",
@@ -654,13 +1048,29 @@
     "weaponTypes": ["blunt"],
     "frameClasses": [],
     "style": "overhead",
-    "power": 1.5,
+    "power": 1.2,
+    "fatigue": 10,
     "requires": {
       "pow": 10
     },
     "level": 8,
-    "description": "Valves open fully and the arm falls like a forge hammer. Very heavy damage that also adds heavy fatigue.",
-    "fatigue": 20
+    "description": "Valves open fully and the arm falls like a forge hammer. Hits hard and tires the target."
+  },
+  {
+    "id": "scala-governor-slam",
+    "name": "Governor Slam",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.25,
+    "pierce": 0.3,
+    "requires": {
+      "pow": 12,
+      "bas": 6
+    },
+    "level": 10,
+    "description": "A governor wheel spun up to speed and released into the blow. Hits hard and pierces part of the target's DEF."
   },
   {
     "id": "scala-overpressure",
@@ -669,14 +1079,29 @@
     "weaponTypes": ["blunt"],
     "frameClasses": [],
     "style": "bash",
-    "power": 1.8,
+    "power": 1.45,
+    "fatigue": 10,
     "requires": {
       "pow": 12,
       "bas": 6
     },
-    "level": 12,
-    "description": "The boiler is pushed beyond its safe limit for one shattering blow. Immense damage that pierces part of the target's DEF.",
-    "pierce": 0.3
+    "level": 13,
+    "description": "The boiler is pushed beyond its safe limit for one shattering blow. Hits very hard and tires the target."
+  },
+  {
+    "id": "scala-rivet-shot",
+    "name": "Rivet Shot",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.1,
+    "pierce": 0.2,
+    "requires": {
+      "dex": 8
+    },
+    "level": 4,
+    "description": "A rivet gun pressed into service as a weapon: accurate, and it pierces a little of the target's DEF. Pierces part of the target's DEF."
   },
   {
     "id": "scala-grapeshot",
@@ -685,13 +1110,15 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "volley",
-    "power": 0.7,
+    "power": 0.55,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 6,
     "requires": {
       "dex": 8
     },
     "level": 6,
-    "description": "A charge of grapeshot is fired from a hull-mounted gun. Hits twice, each for reduced damage.",
-    "hits": 2
+    "description": "A charge of grapeshot is fired from a hull-mounted gun. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
   },
   {
     "id": "scala-siege-bolt",
@@ -700,13 +1127,32 @@
     "weaponTypes": ["firearm"],
     "frameClasses": [],
     "style": "shot",
-    "power": 1.4,
+    "power": 1.25,
+    "pierce": 0.3,
     "requires": {
       "dex": 10
     },
     "level": 9,
-    "description": "A heavy iron bolt is driven from a steam launcher. Hard-hitting and pierces part of the target's DEF.",
-    "pierce": 0.4
+    "description": "A heavy iron bolt is driven from a steam launcher. Hits hard and pierces part of the target's DEF."
+  },
+  {
+    "id": "scala-chain-shot",
+    "name": "Chain Shot",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.6,
+    "hits": 2,
+    "pierce": 0.4,
+    "fatigue": 10,
+    "accuracyBonus": 6,
+    "requires": {
+      "dex": 11,
+      "bas": 6
+    },
+    "level": 11,
+    "description": "Two linked balls on a chain that tear through rigging and plate. Strikes twice for lighter damage each, is accurate, pierces about half of the target's DEF and tires the target."
   },
   {
     "id": "scala-broadside",
@@ -715,13 +1161,16 @@
     "weaponTypes": ["firearm"],
     "frameClasses": ["heavy"],
     "style": "volley",
-    "power": 0.9,
+    "power": 0.6,
+    "hits": 2,
+    "pierce": 0.5,
+    "fatigue": 10,
+    "accuracyBonus": 12,
     "requires": {
       "dex": 12,
       "pow": 10
     },
     "level": 14,
-    "description": "Every gun on a heavy machine fires at once in a single roar. Hits twice with heavy damage; only heavy frames carry enough guns.",
-    "hits": 2
+    "description": "Every gun on a heavy machine fires at once in a single roar. Strikes twice for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target. Only heavy frames carry its weight."
   }
 ]

@@ -2,6 +2,7 @@
  * Corsair attack scripts: Barbary raiders. Boarding leaps, ropes and grapples, salt spray and
  * deck-dancing acrobatics. Palette: teal sea, crimson sashes, foam white and brass.
  */
+import { withVariants } from './variants';
 import type { Key, Move } from '../../render/duelMoves';
 import type { AttackScripts, FxContext, V2 } from '../contract';
 import { eng, face, hitPoint, outcomeOf } from './styleDefaults';
@@ -173,7 +174,7 @@ function splash(c: FxContext, x: number, n: number, height: number): void {
   fx.ring({ x, y: 0.03 }, { color: TEAL, radius: 2.1, life: 0.6, width: 0.07, flat: 0.22 });
 }
 
-export const CORSAIR_SCRIPTS: AttackScripts = {
+const CORSAIR_BASE: AttackScripts = {
   // ── Boarding Slash: leap the rail in an arc, cut on the way down ──
   'corsair-boarding-slash': {
     palette: { main: FOAM, accent: CRIM, dark: '#0b2a33' },
@@ -797,6 +798,14 @@ export const CORSAIR_SCRIPTS: AttackScripts = {
     },
   },
 };
+
+/** The newer techniques borrow a related script, in their own accent colour. */
+export const CORSAIR_SCRIPTS: AttackScripts = withVariants(CORSAIR_BASE, {
+  'corsair-cutlass-storm': ['corsair-deck-dance', '#ffd0d8'],
+  'corsair-boat-hook-jab': ['corsair-grapple', '#b8f0ea'],
+  'corsair-harpoon-thrust': ['corsair-keelhaul', '#9fe0ff'],
+  'corsair-drowning-hook': ['corsair-grapple', '#6fb0d8'],
+});
 
 /** Adds a haul-back lean after the impact (the target is dragged in). */
 function hauled(m: Move, adv: number): Move {

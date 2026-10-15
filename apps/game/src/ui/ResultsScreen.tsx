@@ -1,4 +1,5 @@
 import type { Library } from '@m1565/content';
+import { xpToNextLevel } from '@m1565/core';
 import { useState } from 'preact/hooks';
 import type { GameSession, Screen } from '../campaign/GameSession';
 import type { ResultLine } from '../campaign/progression';
@@ -85,7 +86,7 @@ export function ResultsScreen({
                     kind="xp"
                     label={t('stat.xp')}
                     value={r.xp}
-                    max={lib.balance.xpPerLevel}
+                    max={xpToNextLevel(r.level, lib.balance)}
                     thin
                     {...(line ? { title: resultLineText(line) } : {})}
                   />

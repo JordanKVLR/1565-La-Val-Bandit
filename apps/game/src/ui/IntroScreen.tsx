@@ -7,7 +7,7 @@ import { usePrompt } from './KeyHint';
 import { INTRO_SOURCES, introVolume } from './intro';
 
 /** Give up and go straight to the game if the video has not become playable by then. */
-const LOAD_TIMEOUT_MS = 15000;
+const LOAD_TIMEOUT_MS = 12000;
 
 /**
  * The opening cinematic (docs/adr/0014-opening-cinematic-video.md): a 43.2 s video with the song
@@ -68,7 +68,10 @@ export function IntroScreen({ onDone }: { onDone: () => void }) {
         blockedRef.current = true;
         setLoaded(true);
         setBlocked(true);
-      } else if (name === 'NotSupportedError') finish();
+      } else if (name !== 'AbortError') {
+        // Anything but a refused autoplay or an interrupted load means it cannot play: move on.
+        finish();
+      }
     });
     unblock.current = () => {
       blockedRef.current = false;

@@ -1,5 +1,6 @@
 import type { Attack } from './attacks';
 import { isAttackUnlocked } from './attacks';
+import { xpToNextLevel } from './balance';
 import type { Reaction } from './combat';
 import {
   attackBackOptions,
@@ -172,7 +173,7 @@ function refreshMaxHp(state: BattleState, unit: UnitState): void {
   unit.maxHp = next;
 }
 
-/** Adds XP and levels the unit up every `xpPerLevel`. Only the player's side earns XP. */
+/** Adds XP and levels the unit up as each level's cost is met. Only the player's side earns XP. */
 function gainXp(
   state: BattleState,
   unit: UnitState,
@@ -182,8 +183,8 @@ function gainXp(
   if (unit.side !== 'player' || amount <= 0) return 0;
   const b = state.balance;
   unit.xp += amount;
-  while (unit.xp >= b.xpPerLevel) {
-    unit.xp -= b.xpPerLevel;
+  while (unit.xp >= xpToNextLevel(unit.level, b)) {
+    unit.xp -= xpToNextLevel(unit.level, b);
     const known = new Set(unlockedAttacks(unit).map((a) => a.id));
     unit.level += 1;
     refreshMaxHp(state, unit);
@@ -225,14 +226,13 @@ function resolveAttack(
 ): void {
   const b = state.balance;
   attacker.ap -= attack.apCost;
-  attacker.fp = Math.min(b.fpMax, attacker.fp + attackFpCost(state, attacker, attack));
-  // Reactions cost the defender FP only, never AP.
-  // Chosen before paying, so the FP check sees the defender's fatigue as it was.
+  // Reactions cost the defender FP only, never AP. Both sides' FP is paid after the exchange, so
+  // the Tired penalty (+/-10 to hit) is judged on the fatigue each side came in with, exactly as the
+  // forecast shows it. Paying first would let a strike or a strike back tire its own striker
+  // partway through, a hidden penalty the forecast never mentioned.
+  const attackFp = attackFpCost(state, attacker, attack);
   const backAttack = attackBackWith(state, target, attacker.pos, backAttackId);
-  target.fp = Math.min(
-    b.fpMax,
-    target.fp + reactionFpCost(state, target, reaction, attacker.pos, backAttack.id),
-  );
+  const reactionFp = reactionFpCost(state, target, reaction, attacker.pos, backAttack.id);
   attacker.facing = facingToward(attacker.pos, target.pos, attacker.facing);
 
   const pending: BattleEvent[] = [];
@@ -283,7 +283,10 @@ function resolveAttack(
       }
     }
   }
-  if (!target.defeated) target.facing = facingToward(target.pos, attacker.pos, target.facing);
+  attacker.fp = Math.min(b.fpMax, attacker.fp + attackFp);
+  target.fp = Math.min(b.fpMax, target.fp + reactionFp);
+  // The defender keeps the facing it ended its turn with: being struck does not turn it, so
+  // choosing which way to face still matters (flank and rear attacks stay flank and rear).
   events.push({
     type: 'attackResolved',
     reaction,

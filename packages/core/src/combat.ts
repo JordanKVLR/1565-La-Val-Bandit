@@ -1,5 +1,6 @@
 import type { Attack } from './attacks';
 import { attackRange, basicAttack, isAttackUnlocked } from './attacks';
+import { xpGapFactor } from './balance';
 import type { Coord, Facing } from './grid';
 import { DIRECTIONS, manhattan } from './grid';
 import type { SkillContext } from './skills';
@@ -327,9 +328,28 @@ export function counterChance(
   );
 }
 
+/**
+ * Where a strike's hit chance comes from, in percentage points, so the combat panel can show
+ * every term (the technique's own accuracy, DEX against the target's AGL, flank, height, allies,
+ * the target's ground, fatigue and skills). They sum with the base hit to `baseHit`.
+ */
+export interface HitParts {
+  readonly technique: number;
+  /** Attacker's DEX against the target's AGL. */
+  readonly stats: number;
+  readonly flank: number;
+  readonly height: number;
+  readonly assist: number;
+  /** Negative: the target's ground makes it harder to hit. */
+  readonly terrain: number;
+  readonly tired: number;
+  readonly skills: number;
+}
+
 export interface StrikeNumbers {
   /** Hit chance before the defender's reaction is applied. */
   readonly baseHit: number;
+  readonly hitParts: HitParts;
   readonly baseDamage: number;
   readonly zone: FacingZone;
   readonly heightDiff: number;
@@ -385,17 +405,26 @@ export function strikeNumbers(
     flank: zone !== 'front',
   };
   const skillHit = skillHitModifier(state, attacker, from, target, ctx);
+  const hitParts: HitParts = {
+    technique: attack.accuracy,
+    stats: attacker.dex * b.dexHitFactor - target.agl * b.aglEvadeFactor,
+    flank: zoneHit,
+    height: heightDiff * b.heightHitPerStep,
+    assist,
+    terrain: -(terrainAt(state, target.pos)?.avoid ?? 0),
+    tired,
+    skills: skillHit,
+  };
   const baseHit =
     b.baseHit +
-    attack.accuracy +
-    attacker.dex * b.dexHitFactor -
-    target.agl * b.aglEvadeFactor +
-    heightDiff * b.heightHitPerStep +
-    zoneHit +
-    assist -
-    (terrainAt(state, target.pos)?.avoid ?? 0) +
-    tired +
-    skillHit;
+    hitParts.technique +
+    hitParts.stats +
+    hitParts.height +
+    hitParts.flank +
+    hitParts.assist +
+    hitParts.terrain +
+    hitParts.tired +
+    hitParts.skills;
   const heightMult = 1 + clamp(heightDiff, 0, b.heightDamageMaxSteps) * b.heightDamagePerStep;
   const zoneMult = zone === 'rear' ? b.rearDamageMult : 1;
   const raw =
@@ -407,6 +436,7 @@ export function strikeNumbers(
     skillDamageMult(attacker, ctx);
   return {
     baseHit,
+    hitParts,
     baseDamage: raw,
     zone,
     heightDiff,
@@ -461,21 +491,24 @@ export function xpFor(
   defeated: boolean,
 ): number {
   const b = state.balance;
-  const level = clamp(
-    1 + (target.level - attacker.level) * b.xpLevelFactor,
-    b.xpMinFactor,
-    b.xpMaxFactor,
-  );
+  const level = xpGapFactor(target.level - attacker.level, b);
   const direction = zone === 'front' ? b.xpFront : zone === 'side' ? b.xpSide : b.xpRear;
   const share = Math.min(1, damage / Math.max(1, target.maxHp));
   const hit = (b.xpHitBase + b.xpDamageShare * share) * direction;
-  return Math.max(1, Math.round((hit + (defeated ? b.xpDefeat : 0)) * level * xpMult(attacker)));
+  return Math.max(
+    1,
+    Math.round((hit + (defeated ? b.xpDefeat : 0)) * level * b.xpScale * xpMult(attacker)),
+  );
 }
 
 export interface AttackForecast {
   readonly attack: Attack;
   readonly hits: number;
   readonly zone: FacingZone;
+  /** The terms of the attacker's hit chance (see `HitParts`). */
+  readonly hitParts: HitParts;
+  /** The level-gap multiplier on the XP this attack earns (above 1: a tougher foe, below: a weaker one). */
+  readonly xpGap: number;
   readonly heightDiff: number;
   readonly assist: number;
   readonly reactions: readonly Reaction[];
@@ -492,6 +525,9 @@ export interface AttackForecast {
     /** Per strike. */
     readonly hitChance: number;
     readonly damage: number;
+    /** The terms of the strike back's hit chance, and the zone it lands on. */
+    readonly hitParts: HitParts;
+    readonly zone: FacingZone;
   };
   /** Present when the target could Counter: success chance and the damage it would reflect. */
   readonly counter?: { readonly chance: number; readonly reflect: number };
@@ -520,6 +556,8 @@ export function forecastAttack(
     attack,
     hits,
     zone: n.zone,
+    hitParts: n.hitParts,
+    xpGap: Math.round(xpGapFactor(target.level - attacker.level, state.balance) * 100) / 100,
     heightDiff: n.heightDiff,
     assist: n.assist,
     reactions,
@@ -544,6 +582,8 @@ export function forecastAttack(
         fpCost: attackBackFpCost(backAttack, target),
         hitChance: hitChanceFor(state, back, NO_REACTION),
         damage: damageFor(state, back, movedAttacker, NO_REACTION),
+        hitParts: back.hitParts,
+        zone: back.zone,
       },
     };
   }

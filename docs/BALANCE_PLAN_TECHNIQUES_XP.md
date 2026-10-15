@@ -1,6 +1,6 @@
 # Technique and XP rethink: plan
 
-Status: **draft for approval. No code has been changed.** Written after the first playtest
+Status: **implemented** (ADRs 0016 and 0017); ladder calibrated to 1.10 + 0.09 per level (see ADR 0017). Draft numbers below are the original proposal. Written after the first playtest
 feedback (XP too low; the high-level techniques do not make sense). Every number below was
 measured from the current data or produced by a throwaway script; none of it ships until you
 have approved the direction and the simulation pass has confirmed it.
