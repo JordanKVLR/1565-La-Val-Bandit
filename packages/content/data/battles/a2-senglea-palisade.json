@@ -172,5 +172,57 @@
         "agl": 7
       }
     }
+  ],
+  "script": [
+    {
+      "id": "second-wave",
+      "when": {
+        "type": "round",
+        "round": 6
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "A second wave of boats out of Marsamxett! They mean to cut the stakes.",
+          "speaker": "balbi"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "lev-4",
+              "side": "enemy",
+              "controller": "ai",
+              "level": 6,
+              "frame": "levend",
+              "weapon": "cutlass",
+              "at": [6, 1],
+              "facing": "south",
+              "ai": "aggressive",
+              "name": "Levend",
+              "stats": {
+                "pow": 11,
+                "dex": 9,
+                "agl": 7
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 9,
+      "scudi": 220,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 170,
+      "parts": 1
+    }
   ]
 }

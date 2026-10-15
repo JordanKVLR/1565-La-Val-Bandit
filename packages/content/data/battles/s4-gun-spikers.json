@@ -1,0 +1,97 @@
+{
+  "id": "s4-gun-spikers",
+  "name": "Spiking the Guns",
+  "map": "b5-tigne",
+  "seed": 903,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "gun-captain"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [5, 9],
+      [7, 9],
+      [8, 9],
+      [9, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 4,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "gun-captain",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 4,
+      "frame": "cavaliere",
+      "weapon": "arming-sword",
+      "at": [3, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Knight of Provence",
+      "stats": {
+        "pow": 7,
+        "dex": 6,
+        "agl": 4
+      }
+    },
+    {
+      "id": "gunner-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "haddiem",
+      "weapon": "pike",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 5
+      }
+    },
+    {
+      "id": "gunner-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "haddiem",
+      "weapon": "arming-sword",
+      "at": [8, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Militia Raider",
+      "stats": {
+        "pow": 6,
+        "dex": 5,
+        "agl": 5
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 5,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

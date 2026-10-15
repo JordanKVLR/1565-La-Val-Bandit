@@ -252,6 +252,13 @@ export const en = {
   'objective.allFall': 'all your units fall',
   'objective.unitFalls': '{name} falls',
   /** Joins alternative objectives: "Defeat Mustafa or Hold out for 5 rounds". */
+  'objective.bonus.title': 'Optional',
+  'objective.bonus.rounds': { one: 'Win within {n} round', other: 'Win within {n} rounds' },
+  'objective.bonus.noLosses': 'Lose no one',
+  'objective.bonus.keepAlive': 'Keep {name} standing',
+  'objective.bonus.line': '{goal} · +{scudi} scudi, +{parts} parts',
+  'results.goalMet': 'Goal met: {goal} (+{scudi} scudi, +{parts} parts)',
+  'results.goalMissed': 'Goal missed: {goal}',
   'objective.or': ' or ',
   /** Battle HUD chrome (ui/battle/BattleChrome.tsx): objectives toggle, queue, map buttons. */
   'battleHud.objectives': 'Objectives',
@@ -444,6 +451,11 @@ export const en = {
   'log.levelUp': '★ {name} reached level {level}!',
   'log.newSkill': '✦ New skill: {name}',
   'log.recovers': '{name} recovers {n} HP ({skill}).',
+  'log.said': '{name}: {text}',
+  'log.reinforced': {
+    one: 'Reinforcements arrive: {n} unit.',
+    other: 'Reinforcements arrive: {n} units.',
+  },
   'log.round': '— Round {n} —',
   'log.counters':
     "{target} COUNTERS {attacker}'s {attack} ({chance}% chance): {damage} damage reflected.",
@@ -567,12 +579,15 @@ export const en = {
   'armoury.workshop': 'Workshop',
   'camp.title': 'Camp talks',
   'camp.intro':
-    'Between battles the company talks. Each talk deepens a bond; bonded friends fight better within two tiles of each other: +hit, +damage dealt and less damage taken, more at higher ranks.',
+    'Between battles the company talks, and sometimes takes a small fight on the side. Each talk deepens a bond; bonded friends fight better within two tiles of each other. Skirmishes pay scudi and parts and cost nothing if lost.',
   'camp.talks': 'Talks',
   'camp.none':
     'Nothing to talk about yet. Win another battle, and the company will find something to say.',
   'camp.listen': 'Listen',
   'camp.bonds': 'Bonds',
+  'camp.skirmishes': 'Skirmishes',
+  'camp.noSkirmish': 'No skirmishes yet. Win another battle and the scouts will bring word of one.',
+  'camp.fight': 'Fight',
   'camp.and': 'and',
   'camp.noBond': 'No bond yet',
   'camp.rank': 'Bond rank {n} of 3',

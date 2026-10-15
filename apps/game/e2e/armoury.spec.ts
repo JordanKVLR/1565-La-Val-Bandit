@@ -79,3 +79,36 @@ test('expensive purchases ask for a second tap', async ({ page }) => {
   await expect(page.getByTestId('action-reason')).toContainText('more scudi');
   await expect(page.getByTestId('action-buy-equip')).toBeDisabled();
 });
+
+test('camp talks play and return to the Armoury; the Workshop crafts from parts', async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('./?armoury');
+  await expect(page.getByTestId('armoury-screen')).toBeVisible();
+
+  await page.getByTestId('camp').click();
+  await expect(page.getByTestId('camp-sheet')).toBeVisible();
+  await expect(page.getByTestId('camp-talk-kateri-springs')).toBeVisible();
+  await expect(page.getByTestId('camp-bonds')).toContainText('Ninu');
+  await page
+    .getByTestId('camp-talk-kateri-springs')
+    .getByRole('button', { name: 'Listen' })
+    .click();
+  await expect(page.getByTestId('story-screen')).toBeVisible();
+  await page.getByTestId('skip-camp').click();
+  await expect(page.getByTestId('armoury-screen')).toBeVisible();
+  // The talk is heard: it no longer shows, and the bond has a rank.
+  await page.getByTestId('camp').click();
+  await expect(page.getByTestId('camp-talk-kateri-springs')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Done' }).click();
+
+  await page.getByTestId('workshop').click();
+  await expect(page.getByTestId('workshop-sheet')).toBeVisible();
+  await expect(page.getByTestId('parts-count')).toContainText('12');
+  await page.getByTestId('recipe-temper-pike').getByRole('button', { name: 'Use spare' }).click();
+  await expect(page.getByTestId('parts-count')).toContainText('8');
+  await page.getByRole('button', { name: 'Done' }).click();
+  expect(errors).toEqual([]);
+});

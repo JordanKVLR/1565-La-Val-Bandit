@@ -8,6 +8,7 @@ import {
   bondRankFor,
   campVars,
   battleSources,
+  loadBattle,
   loadLibrary,
 } from '../src';
 
@@ -139,5 +140,48 @@ describe('workshop recipes', () => {
     expect(availableRecipes(lib, []).length).toBe(0);
     const later = availableRecipes(lib, ['b3-sciberras', 'b5-tigne']);
     expect(later.length).toBeGreaterThan(5);
+  });
+});
+
+describe('skirmishes', () => {
+  it('are real battles with a squad, following a real battle, with unique ids', () => {
+    expect(new Set(lib.skirmishes.map((s) => s.id)).size).toBe(lib.skirmishes.length);
+    for (const s of lib.skirmishes) {
+      expect(s.id in battleSources, s.id).toBe(true);
+      expect(s.after in battleSources, `${s.id} after ${s.after}`).toBe(true);
+      const src = battleSources[s.id as keyof typeof battleSources] as { squad?: unknown };
+      expect(src.squad, s.id).toBeDefined();
+    }
+  });
+
+  it('every route has some, and the early game has a few for everyone', () => {
+    const plain = lib.skirmishes.filter((s) => !s.route);
+    expect(plain.length).toBeGreaterThanOrEqual(4);
+    for (const route of ['cross', 'island', 'crescent'])
+      expect(lib.skirmishes.filter((s) => s.route === route).length, route).toBeGreaterThanOrEqual(
+        2,
+      );
+  });
+
+  it('the squad is the company as it stands, Ninu first, as many as there are tiles', () => {
+    const roster = ['ninu', 'kateri', 'deniz'].map((id) => ({
+      characterId: id,
+      level: 7,
+      xp: 0,
+      statPoints: 0,
+      stats: lib.characters.get(id)!.stats,
+      frame: lib.characters.get(id)!.frame,
+      weapon: lib.characters.get(id)!.weapon,
+      charm: null,
+      amulet: null,
+    }));
+    const setup = loadBattle('s1-wells-patrol', lib, roster);
+    const mine = setup.units.filter((u) => u.side === 'player');
+    expect(mine.map((u) => u.id)).toEqual(['ninu', 'kateri', 'deniz']);
+    expect(mine.every((u) => u.level === 7)).toBe(true);
+    // Without a roster the stand-ins fight at the skirmish's own level.
+    const bare = loadBattle('s1-wells-patrol', lib);
+    expect(bare.units.filter((u) => u.side === 'player').length).toBeGreaterThanOrEqual(3);
+    expect(bare.units.find((u) => u.id === 'ninu')!.level).toBe(2);
   });
 });

@@ -3,7 +3,7 @@ import type { ComponentChildren } from 'preact';
 import { useEffect, useId, useState } from 'preact/hooks';
 import { t, tParts } from '../../i18n';
 import { Button, Icon, Panel, SideMark } from '../design';
-import { describeObjectives } from './objectives';
+import { describeBonus, describeObjectives } from './objectives';
 
 /**
  * The battle HUD's chrome (docs/DESIGN.md): the brief in the top-left corner (battle name,
@@ -44,6 +44,7 @@ export function BattleBrief({
   const id = useId();
   const ongoing = state.outcome === 'ongoing';
   const { win, lose } = describeObjectives(state);
+  const bonus = describeBonus(state);
   return (
     <header class="bhud-top" hidden={hidden}>
       <Panel elevation={2} compact class="bhud-brief">
@@ -79,6 +80,20 @@ export function BattleBrief({
               <Icon name="warning" class="bhud-obj__icon" />
               <span>{labelled(tParts('battle.lose', { conditions: <span>{lose}</span> }))}</span>
             </p>
+            {bonus.length > 0 && (
+              <ul
+                class="bhud-obj__bonus"
+                data-testid="bonus-goals"
+                aria-label={t('objective.bonus.title')}
+              >
+                {bonus.map((line) => (
+                  <li key={line}>
+                    <Icon name="star" class="bhud-obj__icon" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
       </Panel>

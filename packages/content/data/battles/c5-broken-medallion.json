@@ -144,5 +144,19 @@
         "agl": 8
       }
     }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 8,
+      "scudi": 180,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 140,
+      "parts": 1
+    }
   ]
 }

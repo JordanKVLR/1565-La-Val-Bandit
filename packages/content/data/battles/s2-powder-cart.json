@@ -1,0 +1,97 @@
+{
+  "id": "s2-powder-cart",
+  "name": "The Powder Cart",
+  "map": "b3-sciberras",
+  "seed": 901,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "quartermaster"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [0, 9],
+      [3, 9],
+      [6, 9],
+      [8, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 3,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "quartermaster",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "humbaraci",
+      "weapon": "grenado",
+      "at": [0, 0],
+      "facing": "south",
+      "ai": "hold",
+      "name": "Topçu Aga",
+      "stats": {
+        "pow": 6,
+        "dex": 7,
+        "agl": 4
+      }
+    },
+    {
+      "id": "guard-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
+      }
+    },
+    {
+      "id": "guard-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [11, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 7,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

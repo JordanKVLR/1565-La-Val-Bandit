@@ -1,0 +1,113 @@
+{
+  "id": "s3-night-picket",
+  "name": "The Night Picket",
+  "map": "b1-marsaxlokk",
+  "seed": 902,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [0, 9],
+      [3, 9],
+      [6, 9],
+      [8, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 4,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "picket-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [5, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
+      }
+    },
+    {
+      "id": "picket-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [6, 1],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
+      }
+    },
+    {
+      "id": "picket-c",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [7, 1],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
+      }
+    },
+    {
+      "id": "picket-d",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 2],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 6,
+      "scudi": 180,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 140,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "s10-galley-guard",
+  "name": "The Galley Guard",
+  "map": "c6-boat-road",
+  "seed": 909,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [2, 9],
+      [4, 9],
+      [5, 9],
+      [6, 9],
+      [8, 9]
+    ],
+    "facing": "north",
+    "level": 6,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "guard-c",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [2, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "guard-d",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "guard-e",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 5,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [10, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Algerian Reis",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 6
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 6,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

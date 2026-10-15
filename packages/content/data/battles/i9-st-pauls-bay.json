@@ -192,5 +192,19 @@
         "agl": 6
       }
     }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 9,
+      "scudi": 220,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "anastagi",
+      "scudi": 170,
+      "parts": 1
+    }
   ]
 }

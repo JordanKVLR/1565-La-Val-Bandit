@@ -278,6 +278,32 @@ export const BattleUnitSchema = z
   })
   .refine((u) => u.character || (u.name && u.stats), 'unit needs a character or a name + stats');
 
+export type BattleUnit = z.infer<typeof BattleUnitSchema>;
+
+const scriptAction = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('message'), text: z.string().min(1), speaker: id.optional() }),
+  z.object({ type: z.literal('terrain'), terrain: id, tiles: z.array(coord).min(1) }),
+  z.object({ type: z.literal('reinforce'), units: z.array(BattleUnitSchema).min(1) }),
+]);
+
+/** Something the battle does by itself: reinforcements, a changed map, a spoken line. */
+export const ScriptedEventSchema = z.object({
+  id,
+  when: z.discriminatedUnion('type', [
+    z.object({ type: z.literal('round'), round: z.number().int().min(1) }),
+    z.object({ type: z.literal('defeated'), unitId: id }),
+  ]),
+  actions: z.array(scriptAction).min(1),
+});
+
+const reward = { scudi: z.number().int().min(0), parts: z.number().int().min(0) };
+/** An optional goal: extra scudi and parts if it is met when the battle is won. */
+export const BonusGoalSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('rounds'), max: z.number().int().min(1), ...reward }),
+  z.object({ type: z.literal('noLosses'), ...reward }),
+  z.object({ type: z.literal('keepAlive'), unitId: id, ...reward }),
+]);
+
 export const BattleSourceSchema = z.object({
   id,
   name: z.string().min(1),
@@ -294,12 +320,40 @@ export const BattleSourceSchema = z.object({
     )
     .min(1),
   defeat: z.array(z.object({ type: z.literal('protect'), unitId: id })).default([]),
-  units: z.array(BattleUnitSchema).min(2),
+  /**
+   * The player's company fills these start tiles from the roster, in order (Ninu first). Without
+   * a roster (tests), `fallback` characters at `level` stand in. Used by skirmishes.
+   */
+  squad: z
+    .object({
+      tiles: z.array(coord).min(1),
+      facing,
+      level: z.number().int().min(1),
+      fallback: z.array(id).min(1),
+    })
+    .optional(),
+  units: z.array(BattleUnitSchema).min(1),
   /** Armaturas recovered from the field after a victory, added to the player's stores. */
   salvage: z.array(id).default([]),
+  /** Events the battle fires by itself (reinforcements, ground changes, lines). */
+  script: z.array(ScriptedEventSchema).default([]),
+  /** Optional goals for extra reward. */
+  bonus: z.array(BonusGoalSchema).default([]),
 });
 
 export type BattleSource = z.infer<typeof BattleSourceSchema>;
+
+/** An optional fight offered at camp once its battle's chapter is behind the company. */
+export const SkirmishSchema = z.object({
+  /** The battle file (also the id). */
+  id,
+  title: z.string().min(1),
+  blurb: z.string().min(1),
+  /** Battle id that must be won first. */
+  after: id,
+  route: z.enum(['cross', 'island', 'crescent']).optional(),
+});
+export type Skirmish = z.infer<typeof SkirmishSchema>;
 
 const barkLines = z.array(z.string().min(1)).min(1);
 export const BarkSetSchema = z.object({

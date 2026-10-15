@@ -30,6 +30,7 @@ import { requireUnit } from './state';
 import { endTurn, finish } from './turns';
 import type { UnitState } from './units';
 import { isHostile, maxHpFor, STAT_NAMES, unitStats } from './units';
+import { runScript } from './script';
 import { evaluateOutcome } from './victory';
 
 export type Command =
@@ -137,6 +138,9 @@ export function applyCommand(
     }
   }
 
+  for (const e of [...events]) {
+    if (e.type === 'unitDefeated') runScript(state, events, { type: 'defeated', unitId: e.unitId });
+  }
   const outcome = evaluateOutcome(state);
   if (outcome !== 'ongoing') finish(state, outcome, events);
   else if (unit.defeated) endTurn(state, events);

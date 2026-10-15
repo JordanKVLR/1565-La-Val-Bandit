@@ -1,0 +1,96 @@
+{
+  "id": "s7-sapper-nest",
+  "name": "The Sapper Nest",
+  "map": "a4-siege-tower",
+  "seed": 906,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [0, 9],
+      [3, 9],
+      [5, 9],
+      [8, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 7,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "sapper-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [0, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sapper-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [6, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sapper-c",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "reis",
+      "weapon": "cutlass",
+      "at": [11, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Algerian Reis",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 6
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 14,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

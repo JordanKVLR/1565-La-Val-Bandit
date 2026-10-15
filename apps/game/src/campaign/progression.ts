@@ -1,4 +1,4 @@
-import type { BattleState, StatName } from '@m1565/core';
+import type { BattleState, BonusGoal, StatName } from '@m1565/core';
 import { xpToNextLevel } from '@m1565/core';
 import type { CharacterProgress, Library, RosterEntry } from '@m1565/content';
 
@@ -10,6 +10,14 @@ export type ResultLine =
   | { readonly kind: 'scudi'; readonly amount: number }
   | { readonly kind: 'salvage'; readonly frame: string }
   | { readonly kind: 'parts'; readonly amount: number }
+  | {
+      readonly kind: 'goal';
+      /** The optional goal, as the battle set it. */
+      readonly goal: BonusGoal;
+      readonly met: boolean;
+      /** Name of the unit a keep-alive goal is about. */
+      readonly unitName: string;
+    }
   | {
       readonly kind: 'pilot';
       readonly name: string;

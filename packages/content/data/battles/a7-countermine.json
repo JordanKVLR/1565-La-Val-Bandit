@@ -202,5 +202,18 @@
         "agl": 6
       }
     }
+  ],
+  "bonus": [
+    {
+      "type": "noLosses",
+      "scudi": 240,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "balbi",
+      "scudi": 185,
+      "parts": 1
+    }
   ]
 }

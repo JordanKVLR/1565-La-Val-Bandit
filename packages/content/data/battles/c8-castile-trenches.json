@@ -194,5 +194,19 @@
       }
     }
   ],
-  "salvage": ["yeniceri"]
+  "salvage": ["yeniceri"],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 9,
+      "scudi": 220,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 170,
+      "parts": 1
+    }
+  ]
 }

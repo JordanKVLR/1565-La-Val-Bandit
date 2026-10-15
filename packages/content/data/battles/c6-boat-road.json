@@ -132,5 +132,19 @@
       }
     }
   ],
-  "salvage": ["levend"]
+  "salvage": ["levend"],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 6,
+      "scudi": 180,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 140,
+      "parts": 1
+    }
+  ]
 }

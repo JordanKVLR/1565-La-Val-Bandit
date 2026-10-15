@@ -102,5 +102,19 @@
       },
       "portrait": "scala"
     }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 4,
+      "scudi": 180,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 140,
+      "parts": 1
+    }
   ]
 }

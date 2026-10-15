@@ -550,9 +550,9 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
           testId="camp"
           onClick={() => setSheet('camp')}
         >
-          {session.campTalks().length > 0 && (
+          {session.campTalks().length + session.skirmishes().length > 0 && (
             <span class="ds-badge" aria-hidden="true">
-              {session.campTalks().length}
+              {session.campTalks().length + session.skirmishes().length}
             </span>
           )}
         </Button>
@@ -627,9 +627,11 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
         <CampSheet
           lib={lib}
           talks={session.campTalks()}
+          skirmishes={session.skirmishes()}
           scores={session.bondScores()}
           present={roster.map((r) => r.characterId)}
           onListen={(id) => session.startCamp(id)}
+          onFight={(id) => session.startSkirmish(id)}
           onClose={() => setSheet(null)}
         />
       )}

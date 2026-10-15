@@ -410,3 +410,30 @@
     font-size: var(--ds-text-xl);
   }
 }
+
+/* Optional goals share the objective panel: hidden until it opens, each with a star. */
+.bhud-obj__bonus {
+  display: none;
+  margin: 0;
+  padding: 0 0 var(--ds-space-1);
+  list-style: none;
+  font-size: var(--ds-text-xs);
+  line-height: var(--ds-leading-tight);
+  color: var(--ds-text-2);
+}
+.bhud-obj__bonus li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-2);
+}
+.bhud-obj.is-open .bhud-obj__bonus,
+.bhud-obj:has(:focus-visible) .bhud-obj__bonus {
+  display: grid;
+  gap: var(--ds-space-1);
+}
+@media (hover: hover) {
+  .bhud-obj:hover .bhud-obj__bonus {
+    display: grid;
+    gap: var(--ds-space-1);
+  }
+}

@@ -1,5 +1,13 @@
-import type { BattleSetup, BattleState, Difficulty, Facing, StatName } from '@m1565/core';
+import type {
+  BattleSetup,
+  BattleState,
+  BonusGoal,
+  Difficulty,
+  Facing,
+  StatName,
+} from '@m1565/core';
 import {
+  bonusResults,
   DEFAULT_DIFFICULTY,
   deserializeBattle,
   difficultyMods,
@@ -15,7 +23,7 @@ import {
   isBattleId,
   loadBattle,
 } from '@m1565/content';
-import type { CampScene, Recipe } from '@m1565/content';
+import type { CampScene, Recipe, Skirmish } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
 import { reportAchievementEvent } from '../platform/achievements';
 import type { SlotId } from '../platform/storage';
@@ -224,9 +232,16 @@ export class GameSession {
   finishBattle(outcome: 'victory' | 'defeat' | 'quit', state: BattleState): void {
     const screen = this.state.screen;
     if (screen.kind !== 'battle') return;
+    const skirmish = this.isSkirmish(screen.battleId);
     if (outcome === 'quit') {
       this.saveBattleProgress(state);
       this.show({ kind: 'title' });
+      return;
+    }
+    if (outcome === 'defeat' && skirmish) {
+      // A lost skirmish costs nothing: the company returns to camp.
+      this.show({ kind: 'prep' });
+      this.autosave();
       return;
     }
     if (outcome === 'defeat') {
@@ -247,9 +262,14 @@ export class GameSession {
     const b = this.lib.balance;
     const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
     const noLosses = !state.units.some((u) => u.side === 'player' && u.defeated);
-    const parts = b.partsVictory + b.partsPerEnemy * fallen.length;
+    // Optional goals: each met one pays its own scudi and parts.
+    const goals = bonusResults(state);
+    const goalScudi = goals.reduce((n, g) => n + (g.met ? g.goal.scudi : 0), 0);
+    const goalParts = goals.reduce((n, g) => n + (g.met ? g.goal.parts : 0), 0);
+    const parts = b.partsVictory + b.partsPerEnemy * fallen.length + goalParts;
     const reward = this.scudiIncome(
-      b.rewardVictory +
+      goalScudi +
+        b.rewardVictory +
         fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
         (noLosses ? b.rewardNoLosses : 0),
     );
@@ -274,7 +294,7 @@ export class GameSession {
       parts: this.state.parts + parts,
       completedBattles,
     });
-    this.runner.setVar('last_battle', screen.battleId);
+    if (!skirmish) this.runner.setVar('last_battle', screen.battleId);
     reportAchievementEvent({
       type: 'battleWon',
       battle: screen.battleId,
@@ -289,6 +309,12 @@ export class GameSession {
       lines: [
         { kind: 'scudi', amount: reward },
         { kind: 'parts', amount: parts },
+        ...goals.map((g): ResultLine => ({
+          kind: 'goal',
+          goal: g.goal,
+          met: g.met,
+          unitName: goalUnitName(state, g.goal),
+        })),
         ...salvaged,
         ...lines,
       ],
@@ -330,6 +356,13 @@ export class GameSession {
   }
 
   closeResults(): void {
+    const screen = this.state.screen;
+    // A skirmish ends back at camp; the story waits where it was.
+    if (screen.kind === 'results' && this.isSkirmish(screen.battleId)) {
+      this.show({ kind: 'prep' });
+      this.autosave();
+      return;
+    }
     this.advance();
   }
 
@@ -405,6 +438,7 @@ export class GameSession {
     this.patch({
       roster,
       scudi: 1500,
+      parts: 12,
       stores: { 'weapon:pike': 1, 'charm:charm-pow-1': 1, 'frame:moschetta': 1, 'frame:levend': 1 },
       completedBattles: [
         'b1-marsaxlokk',
@@ -547,6 +581,29 @@ export class GameSession {
     this.lastStep = camp.lastStep;
     this.patch({ stage: camp.stage, campDone: [...this.state.campDone, camp.id] });
     this.show({ kind: 'prep' });
+    this.autosave();
+  }
+
+  private isSkirmish(battleId: string): boolean {
+    return this.lib.skirmishes.some((s) => s.id === battleId);
+  }
+
+  /** Skirmishes on offer at camp: unlocked by a won battle, on this route, not yet won. */
+  skirmishes(): Skirmish[] {
+    const route = String(this.runner.getVar('route') ?? '');
+    return this.lib.skirmishes.filter(
+      (s) =>
+        this.state.completedBattles.includes(s.after) &&
+        !this.state.completedBattles.includes(s.id) &&
+        (!s.route || s.route === route),
+    );
+  }
+
+  /** Sends the company out on a skirmish from the preparation screen. */
+  startSkirmish(id: string): void {
+    if (this.camp || this.state.screen.kind !== 'prep') return;
+    if (!this.skirmishes().some((s) => s.id === id)) return;
+    this.startBattle(id);
     this.autosave();
   }
 
@@ -772,6 +829,12 @@ export class GameSession {
     if (ok && slot === 'auto') this.dirty = false;
     return ok;
   }
+}
+
+/** Name of the unit a keep-alive goal is about ('' for the other goals). */
+function goalUnitName(state: BattleState, goal: BonusGoal): string {
+  if (goal.type !== 'keepAlive') return '';
+  return state.units.find((u) => u.id === goal.unitId)?.name ?? goal.unitId;
 }
 
 /** Fills any attribute or slot a save lacks from the character's base values. */

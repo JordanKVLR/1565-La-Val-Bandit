@@ -1,5 +1,6 @@
 import type { ResultLine } from '../campaign/progression';
 import { t } from '../i18n';
+import { goalText } from './battle/objectives';
 
 /** One line of the victory summary in the player's language. */
 export function resultLineText(line: ResultLine): string {
@@ -10,6 +11,12 @@ export function resultLineText(line: ResultLine): string {
       return t('results.salvaged', { name: line.frame });
     case 'parts':
       return t('results.parts', { n: line.amount });
+    case 'goal': {
+      const goal = goalText(line.goal, () => line.unitName);
+      return line.met
+        ? t('results.goalMet', { goal, scudi: line.goal.scudi, parts: line.goal.parts })
+        : t('results.goalMissed', { goal });
+    }
     case 'pilot': {
       const { name, level, xp, xpPerLevel: max } = line;
       return line.levels > 0

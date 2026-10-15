@@ -157,5 +157,19 @@
       }
     }
   ],
-  "salvage": ["lanza"]
+  "salvage": ["lanza"],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 6,
+      "scudi": 200,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 155,
+      "parts": 1
+    }
+  ]
 }

@@ -1,4 +1,4 @@
-import type { CampScene, Library } from '@m1565/content';
+import type { CampScene, Library, Skirmish } from '@m1565/content';
 import { bondRankFor } from '@m1565/content';
 import { t } from '../../i18n';
 import { Button, Chip, Sheet } from '../design';
@@ -25,16 +25,20 @@ export function RankPips({ rank }: { rank: number }) {
 export function CampSheet({
   lib,
   talks,
+  skirmishes,
   scores,
   present,
   onListen,
+  onFight,
   onClose,
 }: {
   lib: Library;
   talks: readonly CampScene[];
+  skirmishes: readonly Skirmish[];
   scores: Readonly<Record<string, number>>;
   present: readonly string[];
   onListen: (id: string) => void;
+  onFight: (id: string) => void;
   onClose: () => void;
 }) {
   const bonds = lib.bondTable.bonds.filter((b) => present.includes(b.a) && present.includes(b.b));
@@ -73,6 +77,29 @@ export function CampSheet({
                 icon="chevronRight"
                 label={t('camp.listen')}
                 onClick={() => onListen(c.id)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+      <h3 class="camp-h">{t('camp.skirmishes')}</h3>
+      {skirmishes.length === 0 ? (
+        <p class="camp-empty" data-testid="skirmish-empty">
+          {t('camp.noSkirmish')}
+        </p>
+      ) : (
+        <ul class="camp-list" data-testid="skirmish-list">
+          {skirmishes.map((s) => (
+            <li key={s.id} class="camp-talk" data-testid={`skirmish-${s.id}`}>
+              <div class="camp-talk__text">
+                <b>{s.title}</b>
+                <small>{s.blurb}</small>
+              </div>
+              <Button
+                variant="primary"
+                icon="chevronRight"
+                label={t('camp.fight')}
+                onClick={() => onFight(s.id)}
               />
             </li>
           ))}

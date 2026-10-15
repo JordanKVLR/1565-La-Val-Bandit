@@ -173,5 +173,88 @@
       }
     }
   ],
-  "salvage": ["kaptan"]
+  "salvage": ["kaptan"],
+  "script": [
+    {
+      "id": "glacis",
+      "when": {
+        "type": "round",
+        "round": 3
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "More janissaries on the glacis! They never stop coming.",
+          "speaker": "balbi"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "jan-5",
+              "side": "enemy",
+              "controller": "ai",
+              "level": 3,
+              "frame": "yeniceri",
+              "weapon": "kilij",
+              "at": [2, 0],
+              "facing": "south",
+              "ai": "aggressive",
+              "name": "Yeniçeri",
+              "stats": {
+                "pow": 6,
+                "dex": 5,
+                "agl": 5
+              }
+            },
+            {
+              "id": "jan-6",
+              "side": "enemy",
+              "controller": "ai",
+              "level": 3,
+              "frame": "yeniceri",
+              "weapon": "tufek",
+              "at": [9, 0],
+              "facing": "south",
+              "ai": "defensive",
+              "name": "Yeniçeri",
+              "stats": {
+                "pow": 5,
+                "dex": 6,
+                "agl": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hold",
+      "when": {
+        "type": "round",
+        "round": 5
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "Hold the ravelin! If it falls, they are at our gates!",
+          "speaker": "luis"
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 8,
+      "scudi": 220,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "luis",
+      "scudi": 170,
+      "parts": 1
+    }
+  ]
 }

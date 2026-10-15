@@ -212,6 +212,7 @@ export class BattleView {
   private readonly ppu = Math.min(140, Math.max(90, 72 * (window.devicePixelRatio || 1)));
   private readonly tweens = new Set<Tween>();
   private terrain: Mesh | undefined;
+  private gridLines: LineSegments | undefined;
   private readonly atlas: TerrainAtlas = createTerrainAtlas();
   private rotation = 0;
   private zoom = 1;
@@ -225,7 +226,7 @@ export class BattleView {
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
-    private readonly map: BattleMap,
+    private map: BattleMap,
     private readonly onTileTap: (c: Coord) => void,
     private readonly input: {
       /** The tile under a mouse pointer (PC), or null when it leaves the map. */
@@ -758,12 +759,26 @@ export class BattleView {
 
     const grid = new BufferGeometry();
     grid.setAttribute('position', new Float32BufferAttribute(outline, 3));
-    this.scene.add(
-      new LineSegments(
-        grid,
-        new LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18 }),
-      ),
+    this.gridLines = new LineSegments(
+      grid,
+      new LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.18 }),
     );
+    this.scene.add(this.gridLines);
+  }
+
+  /** The ground changed mid-battle (a scripted event): redraw the terrain from the new map. */
+  refreshTerrain(map: BattleMap): void {
+    this.map = map;
+    for (const old of [this.terrain, this.gridLines]) {
+      if (!old) continue;
+      this.scene.remove(old);
+      old.geometry.dispose();
+      (old.material as { dispose(): void }).dispose();
+    }
+    this.buildTerrain();
+    void applyTerrainArt(this.atlas).then((changed) => changed && this.requestRender());
+    this.fullRedraw = true;
+    this.requestRender();
   }
 
   private updateCamera(): void {
