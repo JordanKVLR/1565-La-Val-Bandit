@@ -55,7 +55,10 @@ export function chooseReaction(
       }
     }
     // Fatigue is the price of reacting: spending the last of it leaves the unit defenceless.
-    const fp = reactionFpCost(state, defender, r, attacker.pos);
+    const fp = reactionFpCost(state, defender, r, attacker.pos, undefined, {
+      attacker,
+      attack: f.attack,
+    });
     score += fp * 0.12 + (fp >= fpLeft ? 6 : 0);
     if (score < bestScore) {
       bestScore = score;
@@ -264,7 +267,8 @@ function scoreAttack(
         sum +
         Math.max(
           1,
-          ((e.pow + e.wep) * b.damagePerPoint - unit.def * b.defDamagePerPoint) * b.damageScale,
+          ((e.pow + e.weapon.power) * b.damagePerPoint - unit.def * b.defDamagePerPoint) *
+            b.damageScale,
         ),
       0,
     );

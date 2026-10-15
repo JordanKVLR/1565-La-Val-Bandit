@@ -58,7 +58,7 @@ describe('starter attacks', () => {
   });
 
   it('technique requirements check all six attributes', () => {
-    const stats = { bas: 0, pow: 20, dex: 5, agl: 20, def: 0, wep: 0 };
+    const stats = { bas: 0, pow: 20, dex: 5, agl: 20, def: 0, int: 0 };
     const tech = { ...starterAttacks(SWORD)[1]!, requires: { pow: 10, dex: 7 } };
     expect(meetsRequirements(stats, tech)).toBe(false);
     expect(meetsRequirements({ ...stats, dex: 7 }, tech)).toBe(true);

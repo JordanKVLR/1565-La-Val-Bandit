@@ -1,7 +1,7 @@
 import type { StatName } from '@m1565/core';
 import { t } from '../../i18n';
 
-const STATS: readonly StatName[] = ['bas', 'pow', 'dex', 'agl', 'def', 'wep'];
+const STATS: readonly StatName[] = ['bas', 'pow', 'dex', 'agl', 'def', 'int'];
 
 /**
  * Labels and one-line explanations for the six pilot attributes (the classic framework). The
@@ -24,14 +24,14 @@ export const STAT_INFO: ReadonlyArray<{
 /** The short label of one attribute, e.g. "POW". */
 export const statLabel = (key: StatName): string => t(`stat.${key}`);
 
-/** "WEP+4 · DEX+1" for a gear bonus (negative values shown with a minus). */
+/** "INT+4 · DEX+1" for a gear bonus (negative values shown with a minus). */
 export function bonusText(bonus: Partial<Record<StatName, number>>): string {
   return bonusParts(bonus)
     .map((p) => p.text)
     .join(t('common.sep'));
 }
 
-/** Each nonzero bonus as text with its value, e.g. { text: "WEP+4", value: 4 }. */
+/** Each nonzero bonus as text with its value, e.g. { text: "INT+4", value: 4 }. */
 export function bonusParts(
   bonus: Partial<Record<StatName, number>>,
 ): { readonly text: string; readonly value: number }[] {

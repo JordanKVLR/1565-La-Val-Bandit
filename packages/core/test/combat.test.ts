@@ -134,7 +134,7 @@ describe('forecast', () => {
       hitChance: 95,
       damage: 24,
     });
-    // equal DEX + AGL: 10% base chance; reflects the Thrust's 30 × 1.25 = 37.5 → 38
-    expect(f.counter).toEqual({ chance: 10, reflect: 38 });
+    // equal DEX + AGL: 15 base + 3 × INT 5 = 30%; reflects the Thrust's 30 × (1.25 + 0.05 × 5) = 45
+    expect(f.counter).toEqual({ chance: 30, reflect: 45 });
   });
 });

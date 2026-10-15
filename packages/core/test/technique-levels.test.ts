@@ -57,7 +57,7 @@ const withXp = (s: ReturnType<typeof duel>, xp: number) => ({
 
 describe('technique unlock levels', () => {
   it('needs the level AND the stats: either one missing keeps it locked', () => {
-    const stats = { bas: 5, pow: 6, dex: 6, agl: 6, def: 0, wep: 5 };
+    const stats = { bas: 5, pow: 6, dex: 6, agl: 6, def: 0, int: 5 };
     expect(meetsRequirements(stats, GATED)).toBe(true);
     expect(isAttackUnlocked(2, stats, GATED)).toBe(false);
     expect(isAttackUnlocked(3, stats, GATED)).toBe(true);

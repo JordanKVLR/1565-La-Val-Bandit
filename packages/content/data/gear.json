@@ -64,7 +64,7 @@
     "name": "Carob Charm",
     "kind": "charm",
     "bonus": {
-      "bas": 1
+      "bas": 2
     },
     "price": 120,
     "description": "Carved from a village tree; the harness feels sturdier."
@@ -74,7 +74,7 @@
     "name": "Olive-Wood Charm",
     "kind": "charm",
     "bonus": {
-      "bas": 2
+      "bas": 4
     },
     "price": 220,
     "description": "Carved from a village tree; the harness feels sturdier."
@@ -84,7 +84,7 @@
     "name": "Fig-Heart Charm",
     "kind": "charm",
     "bonus": {
-      "bas": 4
+      "bas": 8
     },
     "price": 450,
     "description": "Carved from a village tree; the harness feels sturdier."
@@ -124,7 +124,7 @@
     "name": "Pilgrim's Shell",
     "kind": "amulet",
     "bonus": {
-      "dex": 1
+      "dex": 2
     },
     "price": 100,
     "description": "A scallop shell from a pilgrimage; a steadier aim."
@@ -134,7 +134,7 @@
     "name": "Coral Horn",
     "kind": "amulet",
     "bonus": {
-      "agl": 1
+      "agl": 2
     },
     "price": 100,
     "description": "A red coral charm against the evil eye."
@@ -144,7 +144,7 @@
     "name": "Bizzilla Token",
     "kind": "amulet",
     "bonus": {
-      "bas": 1
+      "bas": 3
     },
     "price": 100,
     "description": "A scrap of Gozitan lace, a keepsake from home."
@@ -154,18 +154,19 @@
     "name": "Oath Ring",
     "kind": "amulet",
     "bonus": {
-      "wep": 2
+      "int": 4
     },
     "price": 220,
-    "description": "Sworn on a blade; the wearer fights with it like a part of the arm."
+    "description": "Sworn on a blade; the wearer reads an opponent's intent and turns it back on them."
   },
   {
     "id": "navigator-medal",
     "name": "Navigator's Medal",
     "kind": "amulet",
     "bonus": {
-      "dex": 2,
-      "agl": 1
+      "dex": 3,
+      "agl": 2,
+      "int": 1
     },
     "price": 360,
     "description": "Struck for the galley pilots of the Order."
@@ -175,10 +176,63 @@
     "name": "Grand Master's Favour",
     "kind": "amulet",
     "bonus": {
-      "pow": 2,
-      "def": 2
+      "pow": 3,
+      "def": 3,
+      "bas": 3
     },
     "price": 600,
     "description": "A token from La Valette himself."
+  },
+  {
+    "id": "charm-int-1",
+    "name": "Cipher Charm",
+    "kind": "charm",
+    "bonus": {
+      "int": 1
+    },
+    "price": 120,
+    "description": "A tin plate scratched with the Order's cipher; it keeps the wearer thinking a step ahead."
+  },
+  {
+    "id": "charm-int-2",
+    "name": "Cipher Charm II",
+    "kind": "charm",
+    "bonus": {
+      "int": 2
+    },
+    "price": 220,
+    "description": "A bronze cipher plate, its marks worn smooth from being checked in the dark."
+  },
+  {
+    "id": "charm-int-3",
+    "name": "Cipher Charm III",
+    "kind": "charm",
+    "bonus": {
+      "int": 4
+    },
+    "price": 450,
+    "description": "A silver cipher plate engraved by the Order's scribes; the wearer answers blows before they land."
+  },
+  {
+    "id": "scholars-seal",
+    "name": "Scholar's Seal",
+    "kind": "amulet",
+    "bonus": {
+      "int": 3,
+      "dex": 1
+    },
+    "price": 260,
+    "description": "A signet from the Auberge's library. Whoever carries it learns to read a duel like a page."
+  },
+  {
+    "id": "madonna-medal",
+    "name": "Madonna Medal",
+    "kind": "amulet",
+    "bonus": {
+      "bas": 4,
+      "def": 1
+    },
+    "price": 320,
+    "description": "Struck with Our Lady of Philermos; the wearer shrugs off wounds that would fell another."
   }
 ]

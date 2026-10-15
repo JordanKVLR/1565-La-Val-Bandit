@@ -15,7 +15,7 @@ export interface Attack {
   readonly id: string;
   readonly name: string;
   readonly style: AttackStyle;
-  /** Multiplier on raw damage, (POW + WEP) × damagePerPoint. */
+  /** Multiplier on raw damage, (POW + weapon power) × damagePerPoint. */
   readonly power: number;
   /** Added to hit chance, in percentage points. */
   readonly accuracy: number;

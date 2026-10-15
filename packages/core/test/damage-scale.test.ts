@@ -21,7 +21,7 @@ function matchup(balance: BalanceConfig, targetFacing: 'north' | 'south') {
       balance,
       map: makeMap(['ppppp', 'ppppp', 'ppppp']),
       units: [
-        unit({ id: 'a', at: { x: 2, y: 0 }, stats: { pow: 8, wep: 12 } }),
+        unit({ id: 'a', at: { x: 2, y: 0 }, stats: { pow: 15 } }),
         unit({
           id: 't',
           side: 'enemy',

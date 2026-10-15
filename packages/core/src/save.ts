@@ -2,25 +2,18 @@ import { SAVE_VERSION } from './battle';
 import type { BattleState } from './state';
 
 /**
- * Oldest battle save this build can read. Version 7 moved to the six classic attributes, gear
- * bonuses and a new XP scale; older mid-battle saves can't be converted meaningfully, so the
- * campaign restarts that battle from its beginning instead (the story save itself is kept).
+ * Oldest battle save this build can read. A save carries its own balance table and unit stats, so
+ * any change to either (version 9: INT replaced WEP, weapons carry their own power, new XP and
+ * Counter keys) leaves older saves reading undefined numbers (NaN XP). They can't be converted
+ * meaningfully, so the campaign restarts that battle from its beginning instead (the story
+ * save itself is kept). Bump this whenever the balance keys or unit fields change.
  */
-export const OLDEST_BATTLE_SAVE = 7;
+export const OLDEST_BATTLE_SAVE = 9;
 
 type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 
 /** migrations[n] upgrades a version-n save to version n+1. */
-const migrations: Record<number, Migration> = {
-  // Version 8 added pilot skills; a battle saved before them carries on without any.
-  7: (raw) => ({
-    ...raw,
-    units: ((raw.units as Record<string, unknown>[] | undefined) ?? []).map((u) => ({
-      skills: [],
-      ...u,
-    })),
-  }),
-};
+const migrations: Record<number, Migration> = {};
 
 export class OutdatedSaveError extends Error {
   constructor(version: number) {

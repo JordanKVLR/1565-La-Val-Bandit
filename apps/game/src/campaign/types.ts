@@ -24,7 +24,7 @@ export interface ChapterInfo {
   readonly subtitle: string;
 }
 
-export const CAMPAIGN_SAVE_VERSION = 3;
+export const CAMPAIGN_SAVE_VERSION = 4;
 
 export interface CampaignSave {
   readonly version: number;

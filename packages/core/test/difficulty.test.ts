@@ -13,7 +13,7 @@ import {
 } from '../src';
 
 const b = DEFAULT_BALANCE;
-const stats = { bas: 8, pow: 10, dex: 7, agl: 6, def: 5, wep: 9 };
+const stats = { bas: 8, pow: 10, dex: 7, agl: 6, def: 5, int: 9 };
 
 describe('difficulty', () => {
   it('Knight is the neutral reference balance and the default', () => {
@@ -49,7 +49,7 @@ describe('difficulty', () => {
       dex: 8,
       agl: 7,
       def: 6,
-      wep: 10,
+      int: 10,
     });
     expect(scaleEnemyStats({ ...stats, pow: 30 }, { levelBonus: 0, statMult: 2 }, 32).pow).toBe(32);
     expect(scaleEnemyStats({ ...stats, def: 1 }, { levelBonus: 0, statMult: 0.1 }, 32).def).toBe(1);

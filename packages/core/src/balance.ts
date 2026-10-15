@@ -30,7 +30,7 @@ export interface BalanceConfig {
   readonly hitMax: number;
   readonly dexHitFactor: number;
   readonly aglEvadeFactor: number;
-  /** Raw damage = (POW + WEP) × this × attack power × situational multipliers. */
+  /** Raw damage = (POW + weapon power) × this × attack power × situational multipliers. */
   readonly damagePerPoint: number;
   /** Damage blocked per point of DEF (armaturas have no armour of their own). */
   readonly defDamagePerPoint: number;
@@ -135,6 +135,12 @@ export interface BalanceConfig {
   /** Counter: success chance = base + factor × ((DEX + AGL) of defender − of attacker), clamped. */
   readonly counterBaseChance: number;
   readonly counterStatFactor: number;
+  /** + Counter chance per point of the defender's INT. */
+  readonly counterIntFactor: number;
+  /** − Counter chance against a blow from the side (rear blows cannot be countered). */
+  readonly counterSidePenalty: number;
+  /** + reflect multiplier per point of the defender's INT. */
+  readonly counterReflectPerInt: number;
   readonly counterMinChance: number;
   readonly counterMaxChance: number;
   /** On success the attacker takes this multiple of the blow; on failure the defender does. */
@@ -224,10 +230,10 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   techFpBase: 5,
   techFpPerPower: 45,
   rangedFpSurcharge: 20,
-  rewardVictory: 150,
-  rewardPerEnemy: 60,
-  rewardPerEnemyLevel: 15,
-  rewardNoLosses: 100,
+  rewardVictory: 300,
+  rewardPerEnemy: 90,
+  rewardPerEnemyLevel: 20,
+  rewardNoLosses: 150,
   armouryConfirmFraction: 0.5,
   techFpMin: 5,
   techAccPerPower: 60,
@@ -243,10 +249,13 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   techValueNoCounter: 0.4,
   techRefRaw: 30,
   techRefDef: 8,
-  counterBaseChance: 10,
+  counterBaseChance: 15,
   counterStatFactor: 1,
+  counterIntFactor: 3,
+  counterSidePenalty: 15,
+  counterReflectPerInt: 0.05,
   counterMinChance: 5,
-  counterMaxChance: 35,
+  counterMaxChance: 85,
   counterReflectMult: 1.25,
   counterFailMult: 1.25,
   squireEnemyLevel: -1,

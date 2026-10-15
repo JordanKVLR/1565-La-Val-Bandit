@@ -3,7 +3,7 @@ import { attackRange, RANGED_STYLES } from '@m1565/core';
 import { t } from '../../i18n';
 import { statLabel } from './statInfo';
 
-const STATS: readonly StatName[] = ['bas', 'pow', 'dex', 'agl', 'def', 'wep'];
+const STATS: readonly StatName[] = ['bas', 'pow', 'dex', 'agl', 'def', 'int'];
 
 /** Short tags for an attack's special properties, e.g. "×2 hits", "pierce 30%". */
 export function attackTags(a: Attack): string[] {

@@ -274,11 +274,13 @@ export function headlineDelta(before: LoadoutSummary, after: LoadoutSummary): st
     [t('stat.hp'), after.hp - before.hp],
     [t('stat.mov'), after.move - before.move],
   ];
+  // Block is a fraction (DEF × 1.5 × scale); show it to one decimal, never a float tail.
+  const shown = (n: number) => Math.round(n * 10) / 10;
   const gain = rows.reduce((a, b) => (b[1] > a[1] ? b : a));
   const loss = rows.reduce((a, b) => (b[1] < a[1] ? b : a));
   const parts = [
-    gain[1] > 0 ? t('armoury.gain', { stat: gain[0], n: gain[1] }) : null,
-    loss[1] < 0 ? t('armoury.loss', { stat: loss[0], n: -loss[1] }) : null,
+    gain[1] > 0 ? t('armoury.gain', { stat: gain[0], n: shown(gain[1]) }) : null,
+    loss[1] < 0 ? t('armoury.loss', { stat: loss[0], n: shown(-loss[1]) }) : null,
   ].filter(Boolean);
   return parts.length ? parts.join('  ') : null;
 }

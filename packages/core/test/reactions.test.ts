@@ -7,11 +7,13 @@ import {
   availableReactions,
   counterChance,
   createBattle,
+  DEFAULT_BALANCE,
   forecastAttack,
   chooseReaction,
   NO_REACTION,
   REACTIONS,
   reactionChoices,
+  reflectDamage,
   requireUnit,
   starterAttacks,
 } from '../src';
@@ -56,11 +58,11 @@ describe('facing rules', () => {
     expect(reactions(duel('north'))).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
   });
 
-  it('from the side: no counter', () => {
-    expect(reactions(duel('east'))).toEqual(['defend', 'avoid', 'attackBack']);
+  it('from the side: counter is still open, at a worse chance', () => {
+    expect(reactions(duel('east'))).toEqual(['defend', 'avoid', 'attackBack', 'counter']);
   });
 
-  it('from behind: avoid only', () => {
+  it('from behind: avoid only, no counter', () => {
     expect(reactions(duel('south'))).toEqual(['avoid']);
   });
 
@@ -85,9 +87,9 @@ describe('facing rules', () => {
       );
     expect(reasons(duel('south'))).toMatchObject({
       attackBack: { code: 'rearNoStrikeBack' },
-      counter: { code: 'frontOnly' },
+      counter: { code: 'rearNoCounter' },
     });
-    expect(reasons(duel('east')).counter).toEqual({ code: 'frontOnly' });
+    expect(reasons(duel('east')).counter).toBeUndefined();
     const head = duel('north');
     const feint = { ...requireUnit(head, 'a').attacks[0]!, name: 'Feint', noCounter: true };
     expect(reasons(head, feint)).toMatchObject({
@@ -118,11 +120,12 @@ describe('reaction and attack costs', () => {
     return { fp: t.fp, ap: t.ap, attacker: requireUnit(state, 'a') };
   };
 
-  it('defend costs 30 FP, avoid and counter 20, and none cost AP', () => {
+  it('defend costs 30 FP, avoid 20, counter 20 plus the blow FP, and none cost AP', () => {
     // Fixture pilots have SPI 0, so costs are exact.
     expect(fpAfter('defend')).toMatchObject({ fp: 30, ap: 60 });
     expect(fpAfter('avoid')).toMatchObject({ fp: 20, ap: 60 });
-    expect(fpAfter('counter')).toMatchObject({ fp: 20, ap: 60 });
+    // The attacker's Slash costs 5 FP, so countering it costs 5 + 20.
+    expect(fpAfter('counter')).toMatchObject({ fp: 25, ap: 60 });
   });
 
   it("attack back pays the technique's AP and FP as FP, and spends no AP", () => {
@@ -260,18 +263,47 @@ describe('choosing the strike back', () => {
 });
 
 describe('counter', () => {
-  it('odds rise with DEX + AGL advantage within 5–35%', () => {
-    const odds = (a: number, t: number) => {
-      const s = duel('north', { a: { dex: a, agl: a }, t: { dex: t, agl: t } });
+  it('odds rise with INT and with a DEX + AGL advantage, within 5–85%', () => {
+    const odds = (a: number, t: number, facing: 'north' | 'east' = 'north', int = 5) => {
+      const s = duel(facing, { a: { dex: a, agl: a }, t: { dex: t, agl: t, int } });
       return counterChance(s, requireUnit(s, 't'), requireUnit(s, 'a'));
     };
-    expect(odds(6, 6)).toBe(10);
-    expect(odds(6, 11)).toBe(20);
-    expect(odds(0, 32)).toBe(35);
+    expect(odds(6, 6)).toBe(30); // 15 base + 3 × INT 5
+    expect(odds(6, 11)).toBe(40);
+    expect(odds(6, 6, 'north', 10)).toBe(45);
+    expect(odds(0, 32)).toBe(85);
     expect(odds(32, 0)).toBe(5);
   });
 
-  it('on success, reflects 1.25× the blow onto the attacker and the defender is unharmed', () => {
+  it('a blow from the side lowers the odds by the side penalty', () => {
+    const at = (facing: 'north' | 'east') => {
+      const s = duel(facing, { a: { dex: 6, agl: 6 } });
+      return counterChance(s, requireUnit(s, 't'), requireUnit(s, 'a'));
+    };
+    expect(at('north') - at('east')).toBe(DEFAULT_BALANCE.counterSidePenalty);
+  });
+
+  it('INT also drives the reflected blow harder', () => {
+    const reflect = (int: number) => {
+      const s = duel('north', { t: { int } });
+      return forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't')).counter!.reflect;
+    };
+    expect(reflect(15)).toBeGreaterThan(reflect(5));
+    const s = duel('north', { t: { int: 5 } });
+    const raw = forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't')).damage.none;
+    expect(reflectDamage(s, raw, requireUnit(s, 't'))).toBe(
+      Math.round(raw * (s.balance.counterReflectMult + 5 * s.balance.counterReflectPerInt)),
+    );
+  });
+
+  it('a failed Counter is a clean hit that does 25% extra', () => {
+    const s = duel('north');
+    const f = forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't'));
+    expect(f.hitChance.counter).toBe(100);
+    expect(f.damage.counter).toBe(Math.round(f.damage.avoid * s.balance.counterFailMult));
+  });
+
+  it('on success, reflects the blow, boosted by INT, onto the attacker and the defender is unharmed', () => {
     // Search seeds for a success (10% odds) to keep the test independent of RNG order.
     for (let seed = 1; seed < 400; seed++) {
       const s = duel('north', {}, seed);
@@ -292,7 +324,7 @@ describe('counter', () => {
     throw new Error('no successful counter in 400 seeds');
   });
 
-  it('on failure, the defender takes the blow at 1.25×', () => {
+  it('on failure, the defender takes the blow at the failure multiplier', () => {
     for (let seed = 1; seed < 50; seed++) {
       const s = duel('north', {}, seed);
       const { state, events } = applyCommand(s, {
@@ -357,13 +389,12 @@ describe('attributes', () => {
     expect(hit({ dex: 10 }, { agl: 22 }) - hit({ dex: 10 }, {})).toBe(-4);
   });
 
-  it('POW and WEP both add 2 raw damage per point', () => {
+  it('POW adds 2 raw damage per point', () => {
     const dmg = (a: Partial<PilotStats>) => {
       const s = duel('north', { a });
       return forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't')).damage.none;
     };
     expect(dmg({ pow: 8 }) - dmg({ pow: 6 })).toBeCloseTo(4 * 0.8, 0); // Slash ×0.8
-    expect(dmg({ wep: 7 })).toBe(dmg({ pow: 8 }));
   });
 
   it('gear bonuses add to the pilot and are capped at 32', () => {
@@ -373,17 +404,17 @@ describe('attributes', () => {
           unit({
             id: 'a',
             at: { x: 0, y: 0 },
-            stats: { wep: 30 },
+            stats: { int: 30 },
             charm: { id: 'c', name: 'Charm', kind: 'charm', bonus: { def: 2 } },
-            amulet: { id: 'm', name: 'Amulet', kind: 'amulet', bonus: { dex: 3 } },
+            amulet: { id: 'm', name: 'Amulet', kind: 'amulet', bonus: { dex: 3, int: 4 } },
           }),
           unit({ id: 'e', side: 'enemy', at: { x: 5, y: 5 } }),
         ],
       }),
     ).state;
     const a = requireUnit(s, 'a');
-    expect(a).toMatchObject({ def: 2, dex: 9, wep: 32 });
-    expect(a.pilot).toMatchObject({ def: 0, dex: 6, wep: 30 });
+    expect(a).toMatchObject({ def: 2, dex: 9, int: 32 });
+    expect(a.pilot).toMatchObject({ def: 0, dex: 6, int: 30 });
   });
 });
 

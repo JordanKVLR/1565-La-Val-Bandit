@@ -15,7 +15,7 @@ const v2 = {
       level: 4,
       xp: 120,
       statPoints: 1,
-      stats: { bas: 7, pow: 9, dex: 8, agl: 7, def: 5, wep: 7 },
+      stats: { bas: 7, pow: 9, dex: 8, agl: 7, def: 5, int: 7 },
       frame: 'haddiem',
       weapon: 'arming-sword',
       charm: null,
@@ -35,15 +35,15 @@ const v2 = {
 };
 
 describe('campaign save migration', () => {
-  it('is at version 3', () => {
-    expect(CAMPAIGN_SAVE_VERSION).toBe(3);
+  it('is at version 4', () => {
+    expect(CAMPAIGN_SAVE_VERSION).toBe(4);
   });
 
   it('upgrades a version 2 save to Knight, first cycle, keeping everything else', () => {
     const save = migrateCampaign(lib, v2)!;
     expect(save).toEqual({
       ...v2,
-      version: 3,
+      version: 4,
       difficulty: 'knight',
       ngPlus: 0,
       ending: null,
@@ -75,7 +75,7 @@ describe('campaign save migration', () => {
       stores: undefined,
     };
     const save = migrateCampaign(lib, v1)!;
-    expect(save).toMatchObject({ version: 3, difficulty: 'knight', ngPlus: 0, ending: null });
+    expect(save).toMatchObject({ version: 4, difficulty: 'knight', ngPlus: 0, ending: null });
     expect(save.roster[0]).toMatchObject({ characterId: 'ninu', level: 3 });
     expect(save.stores).toEqual({ 'weapon:pike': 1 });
   });
@@ -98,5 +98,21 @@ describe('campaign save migration', () => {
   it('refuses saves from unknown versions', () => {
     expect(migrateCampaign(lib, { ...v2, version: 99 })).toBeNull();
     expect(migrateCampaign(lib, {})).toBeNull();
+  });
+
+  it('carries a version 3 pilot WEP over as INT', () => {
+    const { int, ...rest } = v2.roster[0]!.stats;
+    const v3 = {
+      ...v2,
+      version: 3,
+      difficulty: 'knight',
+      ngPlus: 0,
+      ending: null,
+      roster: [{ ...v2.roster[0]!, stats: { ...rest, wep: int } }],
+    };
+    const save = migrateCampaign(lib, v3 as never)!;
+    expect(save.version).toBe(4);
+    expect(save.roster[0]!.stats).toMatchObject({ int: 7 });
+    expect(save.roster[0]!.stats).not.toHaveProperty('wep');
   });
 });

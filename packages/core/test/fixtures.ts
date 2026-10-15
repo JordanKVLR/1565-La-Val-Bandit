@@ -25,12 +25,13 @@ export function makeMap(rows: string[], heights?: string[]): BattleMap {
   return { id: 'test', name: 'Test', width: rows[0]!.length, depth: rows.length, tiles };
 }
 
-/** WEP+4 like a basic arming sword. */
+/** Power 9 like a basic arming sword. */
 export const SWORD: Weapon = {
   id: 'sword',
   type: 'blade',
   name: 'Sword',
-  bonus: { wep: 4 },
+  power: 9,
+  bonus: {},
   apCost: 25,
   minRange: 1,
   maxRange: 1,
@@ -39,7 +40,8 @@ export const GUN: Weapon = {
   id: 'gun',
   type: 'firearm',
   name: 'Arquebus',
-  bonus: { wep: 3 },
+  power: 8,
+  bonus: {},
   apCost: 35,
   minRange: 2,
   maxRange: 4,
@@ -72,7 +74,7 @@ export function unit(
     weapon: SWORD,
     facing: 'north',
     ...rest,
-    stats: { bas: 5, pow: 6, dex: 6, agl: 6, def: 0, wep: 5, ...stats },
+    stats: { bas: 5, pow: 6, dex: 6, agl: 6, def: 0, int: 5, ...stats },
   };
 }
 

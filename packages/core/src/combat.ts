@@ -129,8 +129,8 @@ export type UnavailableReason =
   | { readonly code: 'attackerOutOfReach' }
   /** Every technique that reaches would cost too much FP. */
   | { readonly code: 'tooTiredToStrikeBack' }
-  /** Counter only works against attacks from the front. */
-  | { readonly code: 'frontOnly' };
+  /** Counter cannot be set against a blow from behind. */
+  | { readonly code: 'rearNoCounter' };
 
 /** One entry of the reaction menu: every reaction is listed, with why it can't be used. */
 export interface ReactionChoice {
@@ -229,6 +229,7 @@ export function reactionFpCost(
   reaction: Reaction,
   attackerPos?: Coord,
   backAttackId?: string,
+  incoming?: { readonly attacker: UnitState; readonly attack: Attack },
 ): number {
   const b = state.balance;
   const less = (cost: number) => Math.max(0, cost - reactionDiscount(defender, reaction));
@@ -238,7 +239,10 @@ export function reactionFpCost(
     case 'avoid':
       return less(b.avoidFpCost);
     case 'counter':
-      return less(b.counterFpCost);
+      // Turning a blow back costs the blow's own FP on top of the flat Counter price.
+      return less(
+        b.counterFpCost + (incoming ? attackFpCost(state, incoming.attacker, incoming.attack) : 0),
+      );
     case 'attackBack':
       return attackBackFpCost(attackBackWith(state, defender, attackerPos, backAttackId), defender);
     case 'none':
@@ -264,7 +268,14 @@ export function reactionChoices(
   const choice = (reaction: Reaction, reason: UnavailableReason | undefined): ReactionChoice => ({
     reaction,
     available: reason === undefined,
-    fpCost: reactionFpCost(state, defender, reaction, attackerPos),
+    fpCost: reactionFpCost(
+      state,
+      defender,
+      reaction,
+      attackerPos,
+      undefined,
+      attack ? { attacker, attack } : undefined,
+    ),
     ...(reason === undefined ? {} : { reason }),
   });
   const backs = attackBackOptions(state, defender, attackerPos);
@@ -289,8 +300,8 @@ export function reactionChoices(
       'counter',
       !fresh
         ? spent
-        : zone !== 'front'
-          ? { code: 'frontOnly' }
+        : zone === 'rear'
+          ? { code: 'rearNoCounter' }
           : attack?.noCounter
             ? unanswerable(attack)
             : undefined,
@@ -316,12 +327,18 @@ export function counterChance(
   state: BattleState,
   defender: UnitState,
   attacker: UnitState,
+  attackerPos: Coord = attacker.pos,
 ): number {
   const b = state.balance;
+  // A blow from the side is harder to read than one head-on.
+  const sidePenalty =
+    facingZone(defender.pos, defender.facing, attackerPos) === 'side' ? b.counterSidePenalty : 0;
   return (
     clamp(
       b.counterBaseChance +
-        b.counterStatFactor * (defender.dex + defender.agl - (attacker.dex + attacker.agl)),
+        b.counterIntFactor * defender.int +
+        b.counterStatFactor * (defender.dex + defender.agl - (attacker.dex + attacker.agl)) -
+        sidePenalty,
       b.counterMinChance,
       b.counterMaxChance,
     ) + counterBonus(defender)
@@ -428,7 +445,7 @@ export function strikeNumbers(
   const heightMult = 1 + clamp(heightDiff, 0, b.heightDamageMaxSteps) * b.heightDamagePerStep;
   const zoneMult = zone === 'rear' ? b.rearDamageMult : 1;
   const raw =
-    (attacker.pow + attacker.wep) *
+    (attacker.pow + attacker.weapon.power) *
     b.damagePerPoint *
     attack.power *
     heightMult *
@@ -591,15 +608,17 @@ export function forecastAttack(
     out = {
       ...out,
       counter: {
-        chance: counterChance(state, target, movedAttacker),
-        reflect: reflectDamage(state, damage.none * hits),
+        chance: counterChance(state, target, movedAttacker, from),
+        reflect: reflectDamage(state, damage.none * hits, target),
       },
     };
   }
   return out;
 }
 
-/** Damage a successful Counter turns back on the attacker. */
-export function reflectDamage(state: BattleState, incoming: number): number {
-  return Math.max(1, Math.round(incoming * state.balance.counterReflectMult));
+/** Damage a successful Counter turns back on the attacker: sharper wits drive the blow back harder. */
+export function reflectDamage(state: BattleState, incoming: number, defender?: UnitState): number {
+  const b = state.balance;
+  const mult = b.counterReflectMult + (defender ? b.counterReflectPerInt * defender.int : 0);
+  return Math.max(1, Math.round(incoming * mult));
 }

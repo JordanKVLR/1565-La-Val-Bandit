@@ -520,5 +520,65 @@
     "kind": "weapon",
     "allegiance": "ottoman",
     "after": "i3-marsa-raid"
+  },
+  {
+    "item": "charm-int-1",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": null
+  },
+  {
+    "item": "charm-int-1",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": null
+  },
+  {
+    "item": "charm-int-2",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "charm-int-2",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "charm-int-3",
+    "kind": "charm",
+    "allegiance": "malta",
+    "after": "b9-fall-of-st-elmo"
+  },
+  {
+    "item": "charm-int-3",
+    "kind": "charm",
+    "allegiance": "ottoman",
+    "after": "c4-corradino-heights"
+  },
+  {
+    "item": "scholars-seal",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": "b4-night-crossing"
+  },
+  {
+    "item": "scholars-seal",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
+  },
+  {
+    "item": "madonna-medal",
+    "kind": "amulet",
+    "allegiance": "malta",
+    "after": "b5-tigne"
+  },
+  {
+    "item": "madonna-medal",
+    "kind": "amulet",
+    "allegiance": "ottoman",
+    "after": "c2-marsamxett-galleys"
   }
 ]

@@ -14,6 +14,7 @@ const sword: Weapon = {
   id: 'sword',
   name: 'Sword',
   type: 'blade',
+  power: 9,
   bonus: {},
   apCost: 30,
   minRange: 1,
@@ -47,7 +48,7 @@ describe('reaction reasons', () => {
       [{ code: 'unanswerable', attackName: 'Feint' }, "Feint can't be answered"],
       [{ code: 'attackerOutOfReach' }, 'Attacker out of reach'],
       [{ code: 'tooTiredToStrikeBack' }, 'Too tired to strike back'],
-      [{ code: 'frontOnly' }, 'Only against attacks from the front'],
+      [{ code: 'rearNoCounter' }, "Can't Counter a blow from behind"],
     ];
     for (const [reason, text] of cases) expect(reasonText(reason)).toBe(text);
   });
@@ -81,14 +82,14 @@ describe('technique text', () => {
     );
     expect(techniqueEffects({ ...cut, pierce: 0.3 })[1]).toBe("Ignores 30% of the target's DEF");
     expect(requirementText(cut)).toBe('POW 12 · DEX 9');
-    const stats = { bas: 10, pow: 8, dex: 9, agl: 10, def: 10, wep: 10 };
+    const stats = { bas: 10, pow: 8, dex: 9, agl: 10, def: 10, int: 10 };
     expect(requirementText(cut, stats)).toBe('POW 12 (have 8) · DEX 9');
   });
 
   it('labels attributes and gear bonuses', () => {
-    expect(STAT_INFO.map((s) => s.label)).toEqual(['BAS', 'POW', 'DEX', 'AGL', 'DEF', 'WEP']);
+    expect(STAT_INFO.map((s) => s.label)).toEqual(['BAS', 'POW', 'DEX', 'AGL', 'DEF', 'INT']);
     expect(STAT_INFO[0]!.help).toBe('Base: +4 max HP per point');
-    expect(bonusText({ wep: 4, dex: -1 })).toBe('DEX-1 · WEP+4');
+    expect(bonusText({ int: 4, dex: -1 })).toBe('DEX-1 · INT+4');
   });
 });
 
