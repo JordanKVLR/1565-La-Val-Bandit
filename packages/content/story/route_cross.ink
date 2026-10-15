@@ -13,7 +13,9 @@ LA VALETTE: Then you know I have no right to call you anything but soldier. I to
 * [Tell him he should have told you]
     NINU: Twenty-three years, and you never once came to Żejtun.
     LA VALETTE: I came, twice. I stood at the edge of the fields and watched a boy mending nets. Then I went home and said nothing. You may judge me. God certainly will.
-- LA VALETTE: Tonight a relief force from Sicily lands at Pietra Negra, six hundred men who will try to reach us by the Kalkara shore. The Turk is watching that shore. Bring them in.
+- LA VALETTE: I was on Rhodes when it fell, a young knight of twenty-seven. Prince Cem's son Murad lived among us there, a guest of the Order for most of his life. When Suleiman took the island, he had Murad strangled and gave his women to his captains.
+LA VALETTE: Your mother was one of those children, grown. The medallion was struck in Murad's house: the Order's cross on one face, Cem's seal on the other. A promise that both families would remember. Scala calls it a key. It is a grave, and he wants to dig it up.
+LA VALETTE: Tonight a relief force from Sicily lands at Pietra Negra, six hundred men who will try to reach us by the Kalkara shore. The Turk is watching that shore. Bring them in.
 >>> prep
 >>> battle a1-piccolo-soccorso
 -> senglea
@@ -27,6 +29,10 @@ LA VALETTE: Then you know I have no right to call you anything but soldier. I to
 The Turk has dragged boats overland from Marsamxett into the Grand Harbour. At dawn they will storm Senglea from the water.
 KATERI: The Grand Master had a palisade of stakes driven into the harbour floor. Maltese swimmers fought off the Turks trying to cut it, with knives in their teeth. Can you believe that?
 BALBI: I can. I wrote it down this morning.
+>>> actor ganni 5 5 west
+ĠANNI: Believe it. I was one of them. Rożi's gone to Mdina with the militia, but someone from Żejtun had to get wet.
+NINU: Ġanni! You swam out under their guns?
+ĠANNI: With a knife in my teeth, like a corsair. The water's freezing, and the Turks are worse swimmers than they are sailors. Hold the stakes, fisherman. I'll keep the harbour side.
 NINU: Then we hold the stakes.
 >>> prep
 >>> battle a2-senglea-palisade

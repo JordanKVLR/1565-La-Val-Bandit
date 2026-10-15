@@ -5,10 +5,6 @@
   "seed": 12,
   "victory": [
     {
-      "type": "survive",
-      "rounds": 5
-    },
-    {
       "type": "rout"
     }
   ],

@@ -6,10 +6,6 @@
   "victory": [
     {
       "type": "rout"
-    },
-    {
-      "type": "survive",
-      "rounds": 4
     }
   ],
   "defeat": [

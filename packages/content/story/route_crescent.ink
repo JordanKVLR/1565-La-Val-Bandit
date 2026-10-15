@@ -32,6 +32,7 @@ NINU: I'm sorry.
 LEYLA: No. Don't be sorry. Let me look at you.
 She places her half of the medallion beside his. The two broken edges fit exactly: the cross of the Order and the seal of a prince, joined.
 LEYLA: Your father was a slave on my master's galley, and I was a slave in my master's house, though a slave in silks. I am of the line of Prince Cem. That means nothing and everything. Cem's line are exiles, and dangerous to know.
+LEYLA: My grandfather Murad was Cem's son. He grew up on Rhodes as a guest of the Knights, and when Rhodes fell the Sultan had him killed. His daughters were given away like horses. The medallion was struck in his house: the cross that sheltered us, the seal that hunted us. I broke it the night you were born.
 LEYLA: A child of mine and a knight of Malta would have been killed, or worse, used. So I gave you to Pawlu, and I kept Deniz, and I have lived with both choices.
 DENIZ: You never told me I had a brother.
 LEYLA: I never told anyone. Somehow Scala found out anyway.
@@ -187,6 +188,28 @@ NINU: He'll try to sell us to whoever wins. Or kill us all, if nobody's buying.
 DENIZ: Then we take Pawlu back before either happens. Together.
 >>> prep
 >>> battle c4-corradino-heights
+-> reunion
+
+= reunion
+>>> stage p3-camp
+>>> actor pawlu 3 3 south
+>>> actor ninu 3 4 north
+>>> actor leyla 4 4 west
+>>> actor deniz 5 4 west
+Scala's wagons burn on the heights. Deniz cuts the chain from the cage, and an old man in a torn fisherman's shirt steps down into the dust, blinking.
+PAWLU: Ninu. You came. You fool, you came.
+NINU: I always come, Pa.
+Then Pawlu sees who stands behind his son, and his hand goes to his chest.
+PAWLU: Leyla.
+LEYLA: You kept him, Pawlu. You kept him alive, and you kept him kind. I asked you for one of those things.
+PAWLU: He did the second one himself. I only fed him.
+DENIZ: Ninu tells me you rowed for Turgut Reis.
+PAWLU: Three years. Your mother used to bring water down to the benches when the overseer wasn't looking. Half the oarsmen on that galley would have died for her. One of them nearly did.
+PAWLU: Where is the Genoese?
+KATERI: Gone. Down the far side of the hill to a boat, with the colossus loaded on a raft. He's making for Kalkara.
+NINU: Kalkara. Behind Birgu, under the Grand Master's own guns.
+LEYLA: He means to sell himself to the Order now that the Turk is losing. And you, as the price of his pardon.
+DENIZ: Then we get to Kalkara first.
 -> medallion
 
 = medallion
@@ -201,6 +224,17 @@ NINU: You offered us a leash.
 DENIZ: And we don't wear leashes.
 >>> prep
 >>> battle c5-broken-medallion
+>>> stage b6-kalkara-chapel
+>>> actor ninu 5 5 north
+>>> actor deniz 4 5 north
+>>> actor scala 5 2 south
+The colossus lies broken across the chapel's altar steps, exactly where Ninu's story began. Scala climbs out of the hatch, coughing steam, and finds two blades at his throat.
+SCALA: Well? Brothers, finish it. Cem's sons always kill each other in the end. It's tradition.
+DENIZ: Not this time.
+NINU: You'll go to the Grand Master after all, Signore. Not as a merchant. As a prisoner.
+Bells are ringing across the water in Birgu. A patrol of knights is coming down the Kalkara road with torches.
+DENIZ: That's my cue to be somewhere else. Will they hang him?
+NINU: The Order has long memories and small cells. I think he'd rather hang.
 -> last_boat
 
 = last_boat
@@ -255,7 +289,7 @@ NINU: And I'll be on the shore, mending nets, pretending not to watch for your s
     DENIZ: Brothers. I still can't believe it.
     NINU: Neither can I. Go home, Deniz. Take care of her.
 }
-BALBI: This part I did not write in my chronicle. Some things belong to the people who lived them.
+BALBI: This part I did not write in my chronicle. Ninu told it to me many years later, over wine in Birgu, and made me swear to keep it out of the book. Some things belong to the people who lived them.
 >>> chapter "Ending: Two Halves" "Thank you for playing"
 >>> end
 -> END
