@@ -102,6 +102,9 @@ export interface BalanceConfig {
   readonly rewardPerEnemy: number;
   readonly rewardPerEnemyLevel: number;
   readonly rewardNoLosses: number;
+  /** Salvaged parts (for Workshop crafting): per enemy beaten, and for the victory. */
+  readonly partsPerEnemy: number;
+  readonly partsVictory: number;
   /** The Armoury asks for a second tap before spending more than this share of the purse. */
   readonly armouryConfirmFraction: number;
   readonly techFpMin: number;
@@ -137,6 +140,12 @@ export interface BalanceConfig {
   readonly counterStatFactor: number;
   /** + Counter chance per point of the defender's INT. */
   readonly counterIntFactor: number;
+  /** Tiles within which bonded allies support each other. */
+  readonly bondRange: number;
+  /** Per bond rank: + hit chance, + damage dealt (fraction), − damage taken (fraction). */
+  readonly bondHit: number;
+  readonly bondDamage: number;
+  readonly bondGuard: number;
   /** − Counter chance against a blow from the side (rear blows cannot be countered). */
   readonly counterSidePenalty: number;
   /** + reflect multiplier per point of the defender's INT. */
@@ -234,6 +243,8 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   rewardPerEnemy: 90,
   rewardPerEnemyLevel: 20,
   rewardNoLosses: 150,
+  partsPerEnemy: 1,
+  partsVictory: 1,
   armouryConfirmFraction: 0.5,
   techFpMin: 5,
   techAccPerPower: 60,
@@ -252,6 +263,10 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   counterBaseChance: 15,
   counterStatFactor: 1,
   counterIntFactor: 3,
+  bondRange: 2,
+  bondHit: 6,
+  bondDamage: 0.06,
+  bondGuard: 0.06,
   counterSidePenalty: 15,
   counterReflectPerInt: 0.05,
   counterMinChance: 5,

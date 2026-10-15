@@ -8,3 +8,12 @@ VAR obeyed_orders = 0
 VAR showed_medallion = false
 VAR route = ""
 VAR last_battle = ""
+// Bonds beyond Ninu's four main affinities; each camp talk raises one.
+VAR bond_ninu_ganni = 0
+VAR bond_ninu_rozi = 0
+VAR bond_ninu_balbi = 0
+VAR bond_kateri_balbi = 0
+VAR bond_deniz_yusuf = 0
+VAR bond_deniz_leyla = 0
+VAR bond_ninu_leyla = 0
+VAR bond_ninu_anastagi = 0

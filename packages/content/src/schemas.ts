@@ -360,3 +360,38 @@ export const ALLEGIANCE_FACTIONS = {
   malta: ['order', 'militia'],
   ottoman: ['ottoman', 'corsair'],
 } as const;
+
+const itemKind = z.enum(['weapon', 'charm', 'amulet']);
+
+/** A Workshop recipe: scudi and salvaged parts (and optionally a spare item) become an item. */
+export const RecipeSchema = z.object({
+  id,
+  /** Spare item consumed (a pilot's fitted copy is upgraded in place); null = made from parts. */
+  from: z.object({ kind: itemKind, id }).nullable(),
+  result: z.object({ kind: itemKind, id }),
+  scudi: z.number().int().min(0),
+  parts: z.number().int().min(0),
+  /** Battle id that must be won first; null = from the start. */
+  after: id.nullable(),
+});
+export type Recipe = z.infer<typeof RecipeSchema>;
+
+/** A camp talk: an optional scene (in story/camp.ink) offered at preparation. */
+export const CampSceneSchema = z.object({
+  id,
+  title: z.string().min(1),
+  /** Cast ids of everyone in the scene. */
+  with: z.array(id).min(1),
+  /** Battle id that must be won first. */
+  after: id,
+  /** Only on this route (cross, island, crescent); absent = every route. */
+  route: z.enum(['cross', 'island', 'crescent']).optional(),
+});
+export type CampScene = z.infer<typeof CampSceneSchema>;
+
+/** Bond ranks come from a story variable's score against the thresholds. */
+export const BondsSchema = z.object({
+  /** Score needed for rank 1, 2, 3. */
+  thresholds: z.tuple([z.number().int(), z.number().int(), z.number().int()]),
+  bonds: z.array(z.object({ a: id, b: id, var: z.string().regex(/^[a-z_]+$/) })),
+});

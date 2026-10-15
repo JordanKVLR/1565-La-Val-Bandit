@@ -1,0 +1,127 @@
+[
+  {
+    "id": "kateri-springs",
+    "title": "Springs and Salt",
+    "with": ["ninu", "kateri"],
+    "after": "b2-marsa-wells"
+  },
+  {
+    "id": "ganni-nets",
+    "title": "Nets and Pikes",
+    "with": ["ninu", "ganni", "rozi"],
+    "after": "b2-marsa-wells"
+  },
+  {
+    "id": "luis-discipline",
+    "title": "What Discipline Is For",
+    "with": ["ninu", "luis"],
+    "after": "b3-sciberras"
+  },
+  {
+    "id": "rozi-wind",
+    "title": "The End of the Breath",
+    "with": ["ninu", "rozi"],
+    "after": "b3-sciberras"
+  },
+  {
+    "id": "luis-rhodes",
+    "title": "The Walls of Rhodes",
+    "with": ["ninu", "luis"],
+    "after": "b4-night-crossing"
+  },
+  {
+    "id": "kateri-drawings",
+    "title": "Her Father's Margins",
+    "with": ["ninu", "kateri"],
+    "after": "b6-kalkara-chapel"
+  },
+  {
+    "id": "balbi-diary",
+    "title": "A Page for Every Name",
+    "with": ["ninu", "balbi"],
+    "after": "b7-st-elmo-ravelin"
+  },
+  {
+    "id": "balbi-kateri",
+    "title": "The Mechanic and the Scribe",
+    "with": ["kateri", "balbi"],
+    "after": "b7-st-elmo-ravelin"
+  },
+  {
+    "id": "ganni-stakes",
+    "title": "Cold Water",
+    "with": ["ninu", "ganni"],
+    "after": "a2-senglea-palisade",
+    "route": "cross"
+  },
+  {
+    "id": "kateri-mine",
+    "title": "The Short Fuse",
+    "with": ["ninu", "kateri"],
+    "after": "a7-countermine",
+    "route": "cross"
+  },
+  {
+    "id": "balbi-wall",
+    "title": "What the Wall Looked Like",
+    "with": ["ninu", "balbi"],
+    "after": "a8-st-michael",
+    "route": "cross"
+  },
+  {
+    "id": "anastagi-horse",
+    "title": "A Bluff with Spurs",
+    "with": ["ninu", "anastagi"],
+    "after": "i2-mdina-walls",
+    "route": "island"
+  },
+  {
+    "id": "rozi-bay",
+    "title": "Keep a Beach Free",
+    "with": ["ninu", "rozi"],
+    "after": "i6-zebbug-wells",
+    "route": "island"
+  },
+  {
+    "id": "ganni-well",
+    "title": "Sweet Water",
+    "with": ["ninu", "ganni"],
+    "after": "i6-zebbug-wells",
+    "route": "island"
+  },
+  {
+    "id": "deniz-brothers",
+    "title": "The Same Jaw",
+    "with": ["ninu", "deniz"],
+    "after": "c1-marsa-camp",
+    "route": "crescent"
+  },
+  {
+    "id": "leyla-supper",
+    "title": "Salt",
+    "with": ["ninu", "leyla"],
+    "after": "c2-marsamxett-galleys",
+    "route": "crescent"
+  },
+  {
+    "id": "yusuf-keel",
+    "title": "What a Father Owes",
+    "with": ["deniz", "yusuf"],
+    "after": "c2-marsamxett-galleys",
+    "route": "crescent"
+  },
+  {
+    "id": "deniz-leyla",
+    "title": "A Navigator's Mother",
+    "with": ["deniz", "leyla"],
+    "after": "c7-marsa-hospital",
+    "route": "crescent"
+  },
+  {
+    "id": "kateri-trench",
+    "title": "Under the Tower",
+    "with": ["ninu", "kateri"],
+    "after": "c8-castile-trenches",
+    "route": "crescent"
+  }
+]

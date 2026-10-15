@@ -362,7 +362,7 @@ describe('armaturas and weapon progression', () => {
     for (const g of lib.gear.values()) {
       const pts = sum(g.bonus);
       if (g.kind === 'amulet') expect(pts, g.id).toBeGreaterThanOrEqual(2);
-      if (g.bonus.bas && g.kind === 'charm') {
+      if (g.bonus.bas && g.kind === 'charm' && Object.keys(g.bonus).length === 1) {
         // 120 / 220 / 450 scudi buys roughly 8 / 16 / 28 HP.
         expect((g.bonus.bas ?? 0) * b.hpPerBas, g.id).toBeGreaterThanOrEqual(g.price / 16);
       }

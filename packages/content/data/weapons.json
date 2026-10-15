@@ -562,5 +562,156 @@
     "tier": "masterwork",
     "description": "A flanged mace of a pasha's guard, its steel head chased with silver. A badge of rank and a crushing weapon.",
     "price": 660
+  },
+  {
+    "id": "tempered-arming-sword",
+    "name": "Tempered Arming Sword",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "power": 14,
+    "bonus": {
+      "dex": 2
+    },
+    "price": 580,
+    "tier": "fine",
+    "description": "Arming Sword reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-bastard-sword",
+    "name": "Tempered Bastard Sword",
+    "type": "blade",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 1,
+    "power": 19,
+    "bonus": {},
+    "price": 700,
+    "tier": "fine",
+    "description": "Bastard Sword reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-mace-shield",
+    "name": "Tempered Mace & Shield",
+    "type": "blunt",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "power": 16,
+    "bonus": {},
+    "price": 580,
+    "tier": "fine",
+    "description": "Mace & Shield reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-pike",
+    "name": "Tempered Pike",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 16,
+    "bonus": {},
+    "price": 580,
+    "tier": "fine",
+    "description": "Pike reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-arquebus",
+    "name": "Tempered Arquebus",
+    "type": "firearm",
+    "apCost": 35,
+    "minRange": 2,
+    "maxRange": 4,
+    "power": 16,
+    "bonus": {},
+    "price": 580,
+    "tier": "fine",
+    "description": "Arquebus reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-cutlass",
+    "name": "Tempered Cutlass",
+    "type": "blade",
+    "apCost": 20,
+    "minRange": 1,
+    "maxRange": 1,
+    "power": 13,
+    "bonus": {
+      "dex": 3
+    },
+    "price": 580,
+    "tier": "fine",
+    "description": "Cutlass reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-kilij",
+    "name": "Tempered Kilij",
+    "type": "blade",
+    "apCost": 25,
+    "minRange": 1,
+    "maxRange": 1,
+    "power": 16,
+    "bonus": {
+      "dex": 3
+    },
+    "price": 700,
+    "tier": "fine",
+    "description": "Kilij reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-tufek",
+    "name": "Tempered Tüfek",
+    "type": "firearm",
+    "apCost": 35,
+    "minRange": 2,
+    "maxRange": 4,
+    "power": 17,
+    "bonus": {},
+    "price": 620,
+    "tier": "fine",
+    "description": "Tüfek reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-sipahi-lance",
+    "name": "Tempered Sipahi Lance",
+    "type": "polearm",
+    "apCost": 30,
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 17,
+    "bonus": {},
+    "price": 620,
+    "tier": "fine",
+    "description": "Sipahi Lance reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-grenado",
+    "name": "Tempered Grenado Sling",
+    "type": "explosive",
+    "apCost": 40,
+    "minRange": 2,
+    "maxRange": 3,
+    "power": 17,
+    "bonus": {},
+    "price": 620,
+    "tier": "fine",
+    "description": "Grenado Sling reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
+  },
+  {
+    "id": "tempered-boat-hook",
+    "name": "Tempered Boat Hook",
+    "type": "polearm",
+    "apCost": 20,
+    "minRange": 1,
+    "maxRange": 1,
+    "power": 11,
+    "bonus": {
+      "dex": 3
+    },
+    "price": 500,
+    "tier": "fine",
+    "description": "Boat Hook reforged in Kateri's workshop: quenched twice, rebalanced and re-edged. It hits harder than the stock pattern."
   }
 ]

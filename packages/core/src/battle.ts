@@ -29,6 +29,7 @@ export function createBattle(setup: BattleSetup): { state: BattleState; events: 
     rng: createRng(setup.seed),
     victory: [...setup.victory],
     defeat: [...(setup.defeat ?? [])],
+    ...(setup.bonds?.length ? { bonds: [...setup.bonds] } : {}),
     outcome: 'ongoing',
   };
   const events: BattleEvent[] = [];

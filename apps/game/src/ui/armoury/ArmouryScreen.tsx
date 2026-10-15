@@ -1,4 +1,5 @@
 import type { Library, RosterEntry } from '@m1565/content';
+import { availableRecipes } from '@m1565/content';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { GameSession } from '../../campaign/GameSession';
 import type { ItemKind } from '../../campaign/inventory';
@@ -18,7 +19,9 @@ import { iconVariant, itemName, nameOf, shelfSections, sideOf, tierOf } from './
 import { ArmourerEmblem, KindGlyph, ScudiCounter } from './parts';
 import { PilotFace } from './PilotFace';
 import { entryKey, Shelf, TABS } from './Shelf';
+import { CampSheet } from './Camp';
 import { TrainingSheet } from './Training';
+import { WorkshopSheet } from './Workshop';
 import './armoury.css';
 
 type BarkKind = 'greetings' | 'onBuy' | 'onSell' | 'onEquip' | 'tooPoor';
@@ -232,6 +235,7 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
   const [selected, setSelected] = useState<Selected | null>(null);
   const [confirm, setConfirm] = useState<{ key: string; action: ActionId } | null>(null);
   const [training, setTraining] = useState<'open' | 'battle' | null>(null);
+  const [sheet, setSheet] = useState<'camp' | 'workshop' | null>(null);
   const [nagged, setNagged] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<ItemKind | null>(null);
@@ -541,6 +545,24 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
           )}
         </Button>
         <Button
+          class="ab-camp"
+          label={t('armoury.camp')}
+          testId="camp"
+          onClick={() => setSheet('camp')}
+        >
+          {session.campTalks().length > 0 && (
+            <span class="ds-badge" aria-hidden="true">
+              {session.campTalks().length}
+            </span>
+          )}
+        </Button>
+        <Button
+          class="ab-workshop"
+          label={t('armoury.workshop')}
+          testId="workshop"
+          onClick={() => setSheet('workshop')}
+        />
+        <Button
           class="ab-battle"
           variant="primary"
           icon="chevronRight"
@@ -601,6 +623,28 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
         {announce}
       </div>
 
+      {sheet === 'camp' && (
+        <CampSheet
+          lib={lib}
+          talks={session.campTalks()}
+          scores={session.bondScores()}
+          present={roster.map((r) => r.characterId)}
+          onListen={(id) => session.startCamp(id)}
+          onClose={() => setSheet(null)}
+        />
+      )}
+      {sheet === 'workshop' && (
+        <WorkshopSheet
+          lib={lib}
+          recipes={availableRecipes(lib, view.completedBattles)}
+          roster={roster}
+          stores={view.stores}
+          scudi={scudi}
+          parts={view.parts}
+          onCraft={(r, holder) => session.craftItem(r, holder)}
+          onClose={() => setSheet(null)}
+        />
+      )}
       {training && (
         <TrainingSheet
           lib={lib}

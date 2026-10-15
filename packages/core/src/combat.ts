@@ -17,6 +17,7 @@ import {
 import type { BattleState } from './state';
 import { heightAt, livingUnits, terrainAt } from './state';
 import type { UnitState, Weapon } from './units';
+import { bondRankAt } from './bonds';
 import { isHostile, unitStats } from './units';
 
 /**
@@ -361,6 +362,8 @@ export interface HitParts {
   readonly terrain: number;
   readonly tired: number;
   readonly skills: number;
+  /** A bonded ally close by steadies the striker's aim. */
+  readonly bond: number;
 }
 
 export interface StrikeNumbers {
@@ -410,6 +413,7 @@ export function strikeNumbers(
   const zone = facingZone(target.pos, target.facing, from);
   const heightDiff = heightAt(state, from) - heightAt(state, target.pos);
   const assist = assistFor(state, attacker, target.pos).bonus;
+  const bondAtk = bondRankAt(state, attacker, from);
   const zoneHit = zone === 'rear' ? b.rearHitBonus : zone === 'side' ? b.sideHitBonus : 0;
   const tired =
     (attacker.fp >= b.fpTired ? -b.tiredPenalty : 0) +
@@ -431,6 +435,7 @@ export function strikeNumbers(
     terrain: -(terrainAt(state, target.pos)?.avoid ?? 0),
     tired,
     skills: skillHit,
+    bond: bondAtk * b.bondHit,
   };
   const baseHit =
     b.baseHit +
@@ -441,7 +446,8 @@ export function strikeNumbers(
     hitParts.assist +
     hitParts.terrain +
     hitParts.tired +
-    hitParts.skills;
+    hitParts.skills +
+    hitParts.bond;
   const heightMult = 1 + clamp(heightDiff, 0, b.heightDamageMaxSteps) * b.heightDamagePerStep;
   const zoneMult = zone === 'rear' ? b.rearDamageMult : 1;
   const raw =
@@ -450,7 +456,9 @@ export function strikeNumbers(
     attack.power *
     heightMult *
     zoneMult *
-    skillDamageMult(attacker, ctx);
+    skillDamageMult(attacker, ctx) *
+    (1 + bondAtk * b.bondDamage);
+  const guard = bondRankAt(state, target) * b.bondGuard;
   return {
     baseHit,
     hitParts,
@@ -460,7 +468,7 @@ export function strikeNumbers(
     assist,
     pierce: attack.pierce ?? 0,
     skillHit,
-    reduction: skillDamageReduction(target, ctx),
+    reduction: 1 - (1 - skillDamageReduction(target, ctx)) * (1 - guard),
   };
 }
 

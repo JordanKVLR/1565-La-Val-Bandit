@@ -234,5 +234,50 @@
     },
     "price": 320,
     "description": "Struck with Our Lady of Philermos; the wearer shrugs off wounds that would fell another."
+  },
+  {
+    "id": "kateris-spring",
+    "name": "Kateri's Lucky Spring",
+    "kind": "amulet",
+    "bonus": {
+      "agl": 3,
+      "dex": 2,
+      "int": 1
+    },
+    "price": 420,
+    "description": "A wound spring from the first frame Kateri ever rebuilt, fitted into a brass case. It keeps a pilot a half-step ahead."
+  },
+  {
+    "id": "balbis-pen",
+    "name": "Balbi's Pen",
+    "kind": "amulet",
+    "bonus": {
+      "int": 4,
+      "dex": 2
+    },
+    "price": 380,
+    "description": "A steel pen nib on a leather cord. Balbi swears it has written the names of three hundred dead and never blotted one."
+  },
+  {
+    "id": "tower-bolt",
+    "name": "Tower Bolt",
+    "kind": "charm",
+    "bonus": {
+      "def": 3,
+      "bas": 4
+    },
+    "price": 520,
+    "description": "A bolt from the foot of a siege tower, still blackened from the fire. Plates fitted around it do not buckle."
+  },
+  {
+    "id": "sappers-lamp",
+    "name": "Sapper's Lamp",
+    "kind": "charm",
+    "bonus": {
+      "pow": 3,
+      "dex": 2
+    },
+    "price": 440,
+    "description": "A miner's lamp rebuilt as a charm for the boiler. It lights the weak points of whatever you fight."
   }
 ]

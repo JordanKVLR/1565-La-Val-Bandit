@@ -1,6 +1,7 @@
 import type {
   Attack,
   BalanceConfig,
+  Bond,
   Difficulty,
   PilotStats,
   BattleMap,
@@ -26,10 +27,13 @@ import armourerData from '../data/armourers.json';
 import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
+import bondData from '../data/bonds.json';
+import campData from '../data/camp.json';
 import castData from '../data/cast.json';
 import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
 import gearData from '../data/gear.json';
+import recipeData from '../data/recipes.json';
 import shopData from '../data/shop.json';
 import skillData from '../data/skills.json';
 import terrainData from '../data/terrain.json';
@@ -40,6 +44,9 @@ import {
   BalanceSchema,
   BarksSchema,
   BattleSourceSchema,
+  BondsSchema,
+  CampSceneSchema,
+  RecipeSchema,
   CastSchema,
   ShopItemSchema,
   SkillBookSchema,
@@ -174,6 +181,9 @@ export function loadLibrary() {
     barks: BarksSchema.parse(barkData),
     cast: byId(CastSchema.array().parse(castData), 'cast member'),
     shop: ShopItemSchema.array().parse(shopData),
+    recipes: RecipeSchema.array().parse(recipeData),
+    camp: CampSceneSchema.array().parse(campData),
+    bondTable: BondsSchema.parse(bondData),
     armourers: ArmourersSchema.parse(armourerData),
     attacks: AttackSchema.array().parse(attackData),
     skills: skillBook.skills,
@@ -283,6 +293,8 @@ function resolveStats(
 
 /** How hard the playthrough is: enemies are scaled for the difficulty and New Game+ cycle. */
 export interface BattleOptions {
+  /** Bonds between named allies that are active in this battle (see `activeBonds`). */
+  readonly bonds?: readonly Bond[];
   readonly difficulty?: Difficulty;
   /** Completed playthroughs before this one (0 = first). */
   readonly ngPlus?: number;
@@ -395,6 +407,7 @@ export function buildBattle(
       v.type === 'escape' ? { ...v, tiles: v.tiles.map(([x, y]) => ({ x, y })) } : v,
     ),
     defeat: source.defeat,
+    ...(options.bonds?.length ? { bonds: options.bonds } : {}),
     seed: source.seed,
   };
 }
@@ -418,3 +431,5 @@ export function battleSalvage(id: BattleId): readonly string[] {
   const raw = battleSources[id];
   return raw ? BattleSourceSchema.parse(raw).salvage : [];
 }
+
+export * from './camp';

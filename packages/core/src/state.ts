@@ -1,4 +1,5 @@
 import type { BalanceConfig } from './balance';
+import type { Bond } from './bonds';
 import type { BattleMap, Coord, Facing, Tile } from './grid';
 import { getTile } from './grid';
 import type { RngState } from './rng';
@@ -41,6 +42,8 @@ export interface BattleState {
   rng: RngState;
   victory: VictoryCondition[];
   defeat: DefeatCondition[];
+  /** Bonds between named allies (absent in older saves, meaning none). */
+  bonds?: Bond[];
   outcome: Outcome;
 }
 
@@ -51,6 +54,7 @@ export interface BattleSetup {
   readonly units: readonly UnitSpec[];
   readonly victory: readonly VictoryCondition[];
   readonly defeat?: readonly DefeatCondition[];
+  readonly bonds?: readonly Bond[];
   readonly seed: number;
 }
 

@@ -7,7 +7,15 @@ import {
   xpToNextLevel,
 } from '@m1565/core';
 import type { Library, ShopItem } from '@m1565/content';
-import { battleSalvage, isBattleId, loadBattle } from '@m1565/content';
+import {
+  activeBonds,
+  availableCamp,
+  battleSalvage,
+  campVars,
+  isBattleId,
+  loadBattle,
+} from '@m1565/content';
+import type { CampScene, Recipe } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
 import { reportAchievementEvent } from '../platform/achievements';
 import type { SlotId } from '../platform/storage';
@@ -16,7 +24,7 @@ import { Store } from '../state/store';
 import type { StoryStep } from '../story/StoryRunner';
 import { StoryRunner } from '../story/StoryRunner';
 import type { Holdings, ItemKind, Stores } from './inventory';
-import { addItem, buy, equip, release, sell, swap } from './inventory';
+import { addItem, buy, craft, equip, release, sell, swap } from './inventory';
 import { migrateCampaign } from './migrate';
 import type { NewGameOptions } from './newGamePlus';
 import { refitKit } from './newGamePlus';
@@ -76,6 +84,10 @@ export interface SessionView {
   readonly ending: string | null;
   /** New Game+: gear carried-over pilots get back when they rejoin. */
   readonly kit: Readonly<Record<string, Loadout>>;
+  /** Salvaged parts for the Workshop. */
+  readonly parts: number;
+  /** Camp talks heard so far. */
+  readonly campDone: readonly string[];
 }
 
 const FACINGS: readonly Facing[] = ['north', 'east', 'south', 'west'];
@@ -88,6 +100,13 @@ const EMPTY_STAGE: StageState = { map: null, actors: {} };
 export class GameSession {
   readonly view: Store<SessionView>;
   private runner: StoryRunner;
+  /** A camp talk in progress: its own story, with the stage and line to restore afterwards. */
+  private camp: {
+    readonly runner: StoryRunner;
+    readonly id: string;
+    readonly stage: StageState;
+    readonly lastStep: StoryStep | null;
+  } | null = null;
   private battleCounter = 0;
   private startedAt = Date.now();
   private playMsBefore = 0;
@@ -121,6 +140,8 @@ export class GameSession {
       ngPlus: save?.ngPlus ?? start?.ngPlus ?? 0,
       ending: save?.ending ?? null,
       kit: save?.kit ?? carry?.kit ?? {},
+      parts: save?.parts ?? 0,
+      campDone: save?.campDone ?? [],
     });
     const cycle = save ? 0 : (start?.ngPlus ?? 0);
     if (cycle > 0) reportAchievementEvent({ type: 'newGamePlus', cycle });
@@ -171,7 +192,7 @@ export class GameSession {
   /** Runs the script until it shows something. */
   private step(): void {
     for (let guard = 0; guard < 500; guard++) {
-      const step = this.runner.next();
+      const step = (this.camp?.runner ?? this.runner).next();
       if (step.kind === 'line') {
         this.lastStep = step;
         this.show({ kind: 'story', line: step, choices: null, card: null });
@@ -183,7 +204,8 @@ export class GameSession {
         return;
       }
       if (step.kind === 'end') {
-        this.show({ kind: 'end' });
+        if (this.camp) this.finishCamp();
+        else this.show({ kind: 'end' });
         return;
       }
       if (this.runCommand(step.name, step.args)) return;
@@ -194,7 +216,7 @@ export class GameSession {
   }
 
   choose(index: number): void {
-    this.runner.choose(index);
+    (this.camp?.runner ?? this.runner).choose(index);
     this.advance();
   }
 
@@ -225,6 +247,7 @@ export class GameSession {
     const b = this.lib.balance;
     const fallen = state.units.filter((u) => u.side === 'enemy' && u.defeated);
     const noLosses = !state.units.some((u) => u.side === 'player' && u.defeated);
+    const parts = b.partsVictory + b.partsPerEnemy * fallen.length;
     const reward = this.scudiIncome(
       b.rewardVictory +
         fallen.reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0) +
@@ -248,6 +271,7 @@ export class GameSession {
       veterans,
       stores,
       scudi: this.state.scudi + reward,
+      parts: this.state.parts + parts,
       completedBattles,
     });
     this.runner.setVar('last_battle', screen.battleId);
@@ -262,7 +286,12 @@ export class GameSession {
     this.show({
       kind: 'results',
       battleId: screen.battleId,
-      lines: [{ kind: 'scudi', amount: reward }, ...salvaged, ...lines],
+      lines: [
+        { kind: 'scudi', amount: reward },
+        { kind: 'parts', amount: parts },
+        ...salvaged,
+        ...lines,
+      ],
     });
     this.autosave();
   }
@@ -459,12 +488,83 @@ export class GameSession {
   }
 
   autosave(): void {
+    // A camp talk is a detour: the save keeps the story where it was.
+    if (this.camp) return;
     const screen = this.state.screen;
     this.write('auto', screen.kind === 'battle' ? { id: screen.battleId } : null);
   }
 
   getVar(name: string): unknown {
     return this.runner.getVar(name);
+  }
+
+  /** Every bond variable's current score, for ranking bonds and choosing camp talks. */
+  bondScores(): Record<string, number> {
+    return Object.fromEntries(
+      this.lib.bondTable.bonds.map((b) => [b.var, Number(this.runner.getVar(b.var) ?? 0)]),
+    );
+  }
+
+  /** Camp talks on offer at preparation. */
+  campTalks(): CampScene[] {
+    const route = String(this.runner.getVar('route') ?? '');
+    return availableCamp(
+      this.lib,
+      this.state.completedBattles,
+      route,
+      this.state.campDone,
+      this.state.roster.map((r) => r.characterId),
+    );
+  }
+
+  /**
+   * Opens a camp talk. It runs in a story of its own, sharing the bond scores and choices of the
+   * main one, and returns to preparation when it ends; the main story is not disturbed.
+   */
+  startCamp(id: string): void {
+    if (this.camp || this.state.screen.kind !== 'prep') return;
+    if (!this.campTalks().some((c) => c.id === id)) return;
+    const runner = new StoryRunner(storyJson);
+    for (const v of campVars(this.lib)) {
+      const value = this.runner.getVar(v);
+      if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean')
+        runner.setVar(v, value);
+    }
+    runner.jumpTo(`camp_${id.replace(/-/g, '_')}`);
+    this.camp = { runner, id, stage: this.state.stage, lastStep: this.lastStep };
+    this.step();
+  }
+
+  private finishCamp(): void {
+    const camp = this.camp;
+    if (!camp) return;
+    for (const v of campVars(this.lib)) {
+      const value = camp.runner.getVar(v);
+      if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean')
+        this.runner.setVar(v, value);
+    }
+    this.camp = null;
+    this.lastStep = camp.lastStep;
+    this.patch({ stage: camp.stage, campDone: [...this.state.campDone, camp.id] });
+    this.show({ kind: 'prep' });
+    this.autosave();
+  }
+
+  /** Whether a camp talk is being played. */
+  get inCamp(): boolean {
+    return this.camp !== null;
+  }
+
+  /** Leaves a camp talk early (Esc): it counts as heard, since its effects already landed. */
+  skipCamp(): void {
+    if (this.camp) this.finishCamp();
+  }
+
+  /** Makes a Workshop item (see `craft`); `holderId` upgrades the copy that pilot has fitted. */
+  craftItem(recipe: Recipe, holderId?: string): void {
+    const r = craft(this.lib, { ...this.holdings(), parts: this.state.parts }, recipe, holderId);
+    this.patch({ roster: r.roster, stores: r.stores, scudi: r.scudi, parts: r.parts });
+    this.autosave();
   }
 
   // ── internals ──────────────────────────────────────────────────────────────
@@ -557,6 +657,9 @@ export class GameSession {
       case 'prep':
         this.show({ kind: 'prep' });
         return true;
+      case 'endcamp':
+        this.finishCamp();
+        return true;
       case 'save':
         this.autosave();
         return false;
@@ -593,6 +696,7 @@ export class GameSession {
     const setup = loadBattle(id, this.lib, this.state.roster, this.state.veterans, {
       difficulty,
       ngPlus,
+      bonds: activeBonds(this.lib, this.bondScores()),
     });
     this.battleCounter += 1;
     this.show({
@@ -651,9 +755,9 @@ export class GameSession {
       stores: s.stores,
       veterans: s.veterans,
       completedBattles: s.completedBattles,
-      stage: s.stage,
+      stage: this.camp ? this.camp.stage : s.stage,
       chapter: s.chapter,
-      lastStep: this.lastStep,
+      lastStep: this.camp ? this.camp.lastStep : this.lastStep,
       battle,
       savedAt: Date.now(),
       playMs: this.playMsBefore + (Date.now() - this.startedAt),
@@ -661,6 +765,8 @@ export class GameSession {
       ngPlus: s.ngPlus,
       ending: s.ending,
       ...(Object.keys(s.kit).length ? { kit: s.kit } : {}),
+      ...(s.parts ? { parts: s.parts } : {}),
+      ...(s.campDone.length ? { campDone: s.campDone } : {}),
     };
     const ok = writeSave(slot, save);
     if (ok && slot === 'auto') this.dirty = false;

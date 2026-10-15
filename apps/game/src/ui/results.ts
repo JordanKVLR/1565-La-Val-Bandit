@@ -8,6 +8,8 @@ export function resultLineText(line: ResultLine): string {
       return t('results.scudi', { n: line.amount });
     case 'salvage':
       return t('results.salvaged', { name: line.frame });
+    case 'parts':
+      return t('results.parts', { n: line.amount });
     case 'pilot': {
       const { name, level, xp, xpPerLevel: max } = line;
       return line.levels > 0

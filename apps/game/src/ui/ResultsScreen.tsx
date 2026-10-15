@@ -13,6 +13,7 @@ import { PilotAttributes, PilotSkills } from './PilotAttributes';
 const LINE_ICON: Record<ResultLine['kind'], IconName> = {
   scudi: 'plus',
   salvage: 'cross',
+  parts: 'diamond',
   pilot: 'chevronRight',
 };
 

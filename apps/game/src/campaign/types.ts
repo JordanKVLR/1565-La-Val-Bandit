@@ -55,4 +55,8 @@ export interface CampaignSave {
    * items wait in the stores and are fitted again when the pilot rejoins.
    */
   readonly kit?: Readonly<Record<string, Loadout>>;
+  /** Salvaged parts, spent on Workshop recipes. */
+  readonly parts?: number;
+  /** Camp talks already heard (ids from data/camp.json). */
+  readonly campDone?: readonly string[];
 }
