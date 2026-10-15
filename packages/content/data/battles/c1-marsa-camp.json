@@ -105,5 +105,19 @@
       }
     }
   ],
-  "salvage": ["yeniceri", "sipahi", "humbaraci"]
+  "salvage": ["yeniceri", "sipahi", "humbaraci"],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 4,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
 }

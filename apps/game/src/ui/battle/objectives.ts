@@ -1,4 +1,4 @@
-import type { BattleState } from '@m1565/core';
+import type { BattleState, BonusGoal } from '@m1565/core';
 import { findUnit } from '@m1565/core';
 import { t } from '../../i18n';
 
@@ -24,6 +24,30 @@ export function describeObjectives(state: BattleState): { win: string; lose: str
     ...state.defeat.map((d) => t('objective.unitFalls', { name: name(d.unitId) })),
   ].join(t('objective.or'));
   return { win, lose };
+}
+
+/** The text of one optional goal, e.g. "Win within 8 rounds". */
+export function goalText(goal: BonusGoal, nameOf: (id: string) => string): string {
+  switch (goal.type) {
+    case 'rounds':
+      return t('objective.bonus.rounds', { n: goal.max });
+    case 'noLosses':
+      return t('objective.bonus.noLosses');
+    case 'keepAlive':
+      return t('objective.bonus.keepAlive', { name: nameOf(goal.unitId) });
+  }
+}
+
+/** Optional goals for the HUD: each with its reward, e.g. "Win within 8 rounds · +120 scudi, +2 parts". */
+export function describeBonus(state: BattleState): string[] {
+  const name = (id: string) => findUnit(state, id)?.name ?? id;
+  return (state.bonus ?? []).map((g) =>
+    t('objective.bonus.line', {
+      goal: goalText(g, name),
+      scudi: g.scudi,
+      parts: g.parts,
+    }),
+  );
 }
 
 /** The tile readout: height, cover and terrain, e.g. "1H 10% Field". */

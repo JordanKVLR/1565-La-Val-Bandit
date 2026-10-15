@@ -57,6 +57,8 @@ describe('difficulty in a playthrough', () => {
       const purse =
         b.rewardVictory +
         b.rewardNoLosses +
+        // The optional goals are all met by a flawless win.
+        (setup.bonus ?? []).reduce((n, g) => n + g.scudi, 0) +
         setup.units
           .filter((u) => u.side === 'enemy')
           .reduce((n, u) => n + b.rewardPerEnemy + b.rewardPerEnemyLevel * u.level, 0);

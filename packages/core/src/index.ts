@@ -11,6 +11,7 @@ export * from './grid';
 export * from './pathfinding';
 export * from './rng';
 export * from './save';
+export * from './script';
 export * from './skills';
 export * from './state';
 export * from './terrain';

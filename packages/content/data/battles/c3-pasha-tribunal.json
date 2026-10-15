@@ -183,5 +183,18 @@
         "agl": 5
       }
     }
+  ],
+  "bonus": [
+    {
+      "type": "noLosses",
+      "scudi": 220,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "deniz",
+      "scudi": 170,
+      "parts": 1
+    }
   ]
 }

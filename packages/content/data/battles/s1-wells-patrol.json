@@ -1,0 +1,96 @@
+{
+  "id": "s1-wells-patrol",
+  "name": "Patrol at the Wells",
+  "map": "b2-marsa-wells",
+  "seed": 900,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [0, 9],
+      [3, 9],
+      [6, 9],
+      [8, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 2,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "levend-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [0, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 5
+      }
+    },
+    {
+      "id": "levend-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "levend",
+      "weapon": "boat-hook",
+      "at": [6, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
+      }
+    },
+    {
+      "id": "sipahi-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 2,
+      "frame": "sipahi",
+      "weapon": "sipahi-lance",
+      "at": [11, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Sipahi",
+      "stats": {
+        "pow": 6,
+        "dex": 5,
+        "agl": 6
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 5,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

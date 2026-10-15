@@ -173,5 +173,18 @@
         "agl": 7
       }
     }
+  ],
+  "bonus": [
+    {
+      "type": "noLosses",
+      "scudi": 200,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 155,
+      "parts": 1
+    }
   ]
 }

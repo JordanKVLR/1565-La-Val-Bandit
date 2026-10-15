@@ -63,6 +63,8 @@ export interface BattleRenderer {
   screenFacings?(): ScreenCorners;
   /** Pans just enough to keep a tile on screen (the keyboard/gamepad cursor). */
   reveal?(c: Coord): void;
+  /** The ground changed (a scripted event): draw the terrain again from the new map. */
+  refreshTerrain?(map: BattleState['map']): void;
 }
 
 export interface CloseUpSide {
@@ -824,6 +826,9 @@ export class BattleController {
     }
     for (const ev of result.events) await this.play(ev, before, result.events);
     this.patch({ state: result.state });
+    // The ground may have changed under a scripted event.
+    if (result.events.some((e) => e.type === 'scriptEvent' && e.terrain.length))
+      this.renderer?.refreshTerrain?.(result.state.map);
     this.syncUnits();
     // Experience earned in the exchange is shown until the player taps it away.
     const gains = xpGains(before, result.state, result.events);
@@ -902,6 +907,11 @@ export class BattleController {
       }
       case 'roundStarted':
         this.pushLog(t('log.round', { n: ev.round }));
+        break;
+      case 'scriptEvent':
+        for (const m of ev.messages)
+          this.notify(m.speaker ? t('log.said', { name: m.speaker, text: m.text }) : m.text);
+        if (ev.reinforced.length) this.pushLog(t('log.reinforced', { n: ev.reinforced.length }));
         break;
       default:
         break;

@@ -155,5 +155,72 @@
         "agl": 8
       }
     }
+  ],
+  "script": [
+    {
+      "id": "horse-sally",
+      "when": {
+        "type": "round",
+        "round": 4
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "The Mdina horse rides out! Make way for the cavalry!",
+          "speaker": "anastagi"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "horse-1",
+              "name": "Mdina Horse",
+              "stats": {
+                "pow": 8,
+                "dex": 7,
+                "agl": 9
+              },
+              "side": "player",
+              "controller": "ai",
+              "level": 4,
+              "frame": "kaptan",
+              "weapon": "pike",
+              "at": [4, 0],
+              "facing": "south"
+            },
+            {
+              "id": "horse-2",
+              "name": "Mdina Horse",
+              "stats": {
+                "pow": 8,
+                "dex": 7,
+                "agl": 9
+              },
+              "side": "player",
+              "controller": "ai",
+              "level": 4,
+              "frame": "kaptan",
+              "weapon": "pike",
+              "at": [6, 0],
+              "facing": "south"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 9,
+      "scudi": 200,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 155,
+      "parts": 1
+    }
   ]
 }

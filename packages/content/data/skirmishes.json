@@ -1,0 +1,74 @@
+[
+  {
+    "id": "s1-wells-patrol",
+    "title": "Patrol at the Wells",
+    "blurb": "A corsair patrol is sniffing round the wells again. Send them home.",
+    "after": "b2-marsa-wells"
+  },
+  {
+    "id": "s2-powder-cart",
+    "title": "The Powder Cart",
+    "blurb": "A powder cart is creeping up the Sciberras road under a small escort. Burn it, and its quartermaster.",
+    "after": "b3-sciberras"
+  },
+  {
+    "id": "s3-night-picket",
+    "title": "The Night Picket",
+    "blurb": "A line of Turkish pickets has crept down to the shore at Marsaxlokk. Clear them out before dawn.",
+    "after": "b4-night-crossing"
+  },
+  {
+    "id": "s4-gun-spikers",
+    "title": "Spiking the Guns",
+    "blurb": "Turgut's new battery at Tigné is lightly held tonight. Spike the guns and bring the captain down.",
+    "after": "b5-tigne"
+  },
+  {
+    "id": "s5-kalkara-smugglers",
+    "title": "Smugglers at Kalkara",
+    "blurb": "Scala's smugglers are using the old chapel as a depot. Burn it out.",
+    "after": "b6-kalkara-chapel"
+  },
+  {
+    "id": "s6-palisade-swimmers",
+    "title": "The Palisade Swimmers",
+    "blurb": "More Turkish swimmers are cutting at the stakes. Drive them off before the guard changes.",
+    "after": "a2-senglea-palisade",
+    "route": "cross"
+  },
+  {
+    "id": "s7-sapper-nest",
+    "title": "The Sapper Nest",
+    "blurb": "Turkish sappers are digging at the foot of the Post of Castile. Fill in their trench.",
+    "after": "a4-siege-tower",
+    "route": "cross"
+  },
+  {
+    "id": "s8-foragers",
+    "title": "The Foragers",
+    "blurb": "A foraging party is stripping the last barley fields of the valley. Send them back empty-handed.",
+    "after": "i6-zebbug-wells",
+    "route": "island"
+  },
+  {
+    "id": "s9-beach-pickets",
+    "title": "Beach Pickets",
+    "blurb": "Turkish pickets watch the cliffs above Ġnejna. Take them down quietly.",
+    "after": "i8-gnejna-bay",
+    "route": "island"
+  },
+  {
+    "id": "s10-galley-guard",
+    "title": "The Galley Guard",
+    "blurb": "Scala's hirelings are guarding the beached boats. Their mercenary pay does not stretch to dying.",
+    "after": "c6-boat-road",
+    "route": "crescent"
+  },
+  {
+    "id": "s11-trench-sentries",
+    "title": "The Trench Sentries",
+    "blurb": "Scala's captain leaves a thin line of sentries in the Castile trenches. Cut it.",
+    "after": "c8-castile-trenches",
+    "route": "crescent"
+  }
+]

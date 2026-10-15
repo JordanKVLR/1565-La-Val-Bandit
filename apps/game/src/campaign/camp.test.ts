@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { GameSession } from './GameSession';
 import { craft, craftBlocked } from './inventory';
 import type { WorkshopHoldings } from './inventory';
-import { installFakePlatform, playUntil } from './testkit';
+import { installFakePlatform, lostState, playUntil, wonState } from './testkit';
 
 const lib = loadLibrary();
 
@@ -143,5 +143,52 @@ describe('a campaign with camp talks and parts', () => {
         expect.objectContaining({ a: 'ninu', b: 'kateri' }),
       );
     }
+  });
+});
+
+describe('skirmishes in a campaign', () => {
+  it('are offered at camp once their battle is won, and only on their route', () => {
+    const s = prepAfter('b2-marsa-wells');
+    expect(s.skirmishes().map((k) => k.id)).toEqual(['s1-wells-patrol']);
+    expect(s.skirmishes().every((k) => !k.route)).toBe(true);
+  });
+
+  it('fighting one returns to camp, pays its rewards and removes it from the list', () => {
+    const s = prepAfter('b2-marsa-wells');
+    const scudi = s.state.scudi;
+    s.startSkirmish('s1-wells-patrol');
+    const screen = s.state.screen;
+    expect(screen.kind).toBe('battle');
+    if (screen.kind !== 'battle') return;
+    expect(screen.setup.units.filter((u) => u.side === 'player').map((u) => u.id)).toEqual(
+      s.state.roster.map((r) => r.characterId).slice(0, 5),
+    );
+    s.finishBattle('victory', wonState(screen.setup));
+    expect(s.state.screen.kind).toBe('results');
+    expect(s.state.scudi).toBeGreaterThan(scudi);
+    s.closeResults();
+    expect(s.state.screen.kind).toBe('prep');
+    expect(s.skirmishes().map((k) => k.id)).not.toContain('s1-wells-patrol');
+    // The story is where it was: leaving preparation carries on to the real next battle.
+    s.closePrep();
+    expect(s.state.screen.kind).toBe('battle');
+  });
+
+  it('losing a skirmish costs nothing and returns to camp', () => {
+    const s = prepAfter('b2-marsa-wells');
+    const roster = s.state.roster;
+    s.startSkirmish('s1-wells-patrol');
+    const screen = s.state.screen;
+    if (screen.kind !== 'battle') throw new Error('no battle');
+    s.finishBattle('defeat', lostState(screen.setup, { level: 0, xp: 0 }));
+    expect(s.state.screen.kind).toBe('prep');
+    expect(s.state.roster).toEqual(roster);
+    expect(s.skirmishes().map((k) => k.id)).toContain('s1-wells-patrol');
+  });
+
+  it('cannot start one that is not on offer', () => {
+    const s = prepAfter('b2-marsa-wells');
+    s.startSkirmish('s7-sapper-nest');
+    expect(s.state.screen.kind).toBe('prep');
   });
 });

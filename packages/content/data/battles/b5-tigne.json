@@ -137,5 +137,57 @@
         "agl": 4
       }
     }
+  ],
+  "script": [
+    {
+      "id": "order-sally",
+      "when": {
+        "type": "round",
+        "round": 6
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "More frames out of Birgu! The Order has sent its sortie!",
+          "speaker": "yusuf"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "raider-4",
+              "side": "enemy",
+              "controller": "ai",
+              "level": 1,
+              "frame": "haddiem",
+              "weapon": "pike",
+              "at": [11, 9],
+              "facing": "north",
+              "ai": "aggressive",
+              "name": "Militia Raider",
+              "stats": {
+                "pow": 5,
+                "dex": 5,
+                "agl": 5
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 9,
+      "scudi": 180,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "yusuf",
+      "scudi": 140,
+      "parts": 1
+    }
   ]
 }

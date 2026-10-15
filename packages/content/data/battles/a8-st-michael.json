@@ -205,5 +205,57 @@
         "agl": 5
       }
     }
+  ],
+  "script": [
+    {
+      "id": "last-throw",
+      "when": {
+        "type": "round",
+        "round": 4
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "The Pasha is throwing in his last reserves!",
+          "speaker": "balbi"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "sipahi-2",
+              "side": "enemy",
+              "controller": "ai",
+              "level": 10,
+              "frame": "sipahi",
+              "weapon": "sipahi-lance",
+              "at": [0, 1],
+              "facing": "south",
+              "ai": "aggressive",
+              "name": "Sipahi",
+              "stats": {
+                "pow": 11,
+                "dex": 11,
+                "agl": 8
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 11,
+      "scudi": 240,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 185,
+      "parts": 1
+    }
   ]
 }

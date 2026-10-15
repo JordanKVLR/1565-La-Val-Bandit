@@ -14,6 +14,7 @@ const LINE_ICON: Record<ResultLine['kind'], IconName> = {
   scudi: 'plus',
   salvage: 'cross',
   parts: 'diamond',
+  goal: 'star',
   pilot: 'chevronRight',
 };
 

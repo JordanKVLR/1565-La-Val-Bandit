@@ -158,5 +158,19 @@
         "agl": 6
       }
     }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 4,
+      "scudi": 200,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "yusuf",
+      "scudi": 155,
+      "parts": 1
+    }
   ]
 }

@@ -1,0 +1,96 @@
+{
+  "id": "s5-kalkara-smugglers",
+  "name": "Smugglers at Kalkara",
+  "map": "b6-kalkara-chapel",
+  "seed": 904,
+  "victory": [
+    {
+      "type": "rout"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [0, 9],
+      [3, 9],
+      [6, 9],
+      [8, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 4,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "smuggler-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [4, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
+      }
+    },
+    {
+      "id": "smuggler-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [8, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 5,
+        "dex": 5,
+        "agl": 6
+      }
+    },
+    {
+      "id": "smuggler-c",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 3,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [11, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 6,
+        "dex": 6,
+        "agl": 4
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 6,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

@@ -122,6 +122,10 @@ describe('story script', () => {
         .filter((l) => l.startsWith('>>> battle'))
         .map((l) => l.split(/\s+/)[2]),
     );
-    expect(Object.keys(battleSources).filter((id) => !used.has(id))).toEqual([]);
+    // Skirmishes are offered at camp, not by the story.
+    const skirmishes = new Set(lib.skirmishes.map((s) => s.id));
+    expect(Object.keys(battleSources).filter((id) => !used.has(id) && !skirmishes.has(id))).toEqual(
+      [],
+    );
   });
 });

@@ -128,5 +128,19 @@
       }
     }
   ],
-  "salvage": ["artigjan"]
+  "salvage": ["artigjan"],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 7,
+      "scudi": 180,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 140,
+      "parts": 1
+    }
+  ]
 }

@@ -175,5 +175,56 @@
         "agl": 5
       }
     }
+  ],
+  "script": [
+    {
+      "id": "spanish-ashore",
+      "when": {
+        "type": "round",
+        "round": 3
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "The Spanish are ashore! Tercios on the beach!",
+          "speaker": "rozi"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "tercio-2",
+              "side": "player",
+              "controller": "human",
+              "level": 8,
+              "frame": "bastiun",
+              "weapon": "mace-shield",
+              "at": [9, 6],
+              "facing": "west",
+              "name": "Tercio Sergeant",
+              "stats": {
+                "pow": 8,
+                "dex": 7,
+                "agl": 4
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 8,
+      "scudi": 200,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 155,
+      "parts": 1
+    }
   ]
 }

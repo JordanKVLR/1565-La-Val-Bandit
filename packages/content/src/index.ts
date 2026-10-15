@@ -2,6 +2,8 @@ import type {
   Attack,
   BalanceConfig,
   Bond,
+  ScriptAction,
+  ScriptedEvent,
   Difficulty,
   PilotStats,
   BattleMap,
@@ -34,6 +36,7 @@ import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
 import gearData from '../data/gear.json';
 import recipeData from '../data/recipes.json';
+import skirmishData from '../data/skirmishes.json';
 import shopData from '../data/shop.json';
 import skillData from '../data/skills.json';
 import terrainData from '../data/terrain.json';
@@ -47,6 +50,7 @@ import {
   BondsSchema,
   CampSceneSchema,
   RecipeSchema,
+  SkirmishSchema,
   CastSchema,
   ShopItemSchema,
   SkillBookSchema,
@@ -58,7 +62,14 @@ import {
   WeaponSchema,
 } from './schemas';
 import { derivedStats, statsAtLevel } from './progression';
-import type { AttackData, BattleSource, Character, MapSource, SkillData } from './schemas';
+import type {
+  AttackData,
+  BattleSource,
+  BattleUnit,
+  Character,
+  MapSource,
+  SkillData,
+} from './schemas';
 
 export * from './achievements';
 export * from './codex';
@@ -183,6 +194,7 @@ export function loadLibrary() {
     shop: ShopItemSchema.array().parse(shopData),
     recipes: RecipeSchema.array().parse(recipeData),
     camp: CampSceneSchema.array().parse(campData),
+    skirmishes: SkirmishSchema.array().parse(skirmishData),
     bondTable: BondsSchema.parse(bondData),
     armourers: ArmourersSchema.parse(armourerData),
     attacks: AttackSchema.array().parse(attackData),
@@ -320,7 +332,7 @@ export function buildBattle(
   if (!mapSource) throw new Error(`${where}: unknown map "${source.map}"`);
   const map = loadMap(mapSource, lib.terrains);
   const occupied = new Set<string>();
-  const units: UnitSpec[] = source.units.map((u0) => {
+  const makeUnit = (u0: BattleUnit, initial: boolean): UnitSpec => {
     const r = u0.side === 'player' && u0.character ? saved.get(u0.character) : undefined;
     // An ally who fought for the player before joining keeps what they earned (unless the
     // story brings them in stronger than that).
@@ -354,9 +366,11 @@ export function buildBattle(
       ...(u.character ? characterSkills(lib, u.character) : []),
       ...genericSkills(lib, u.skills ?? [], where),
     ];
-    const key = `${at.x},${at.y}`;
-    if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
-    occupied.add(key);
+    if (initial) {
+      const key = `${at.x},${at.y}`;
+      if (occupied.has(key)) throw new Error(`${where}: two units start on ${key}`);
+      occupied.add(key);
+    }
     // Without a saved roster entry, a named character arrives at the level the battle expects.
     const stats = resolveStats(u.stats, character, u.level, frame.class, u.side, lib);
     return {
@@ -381,7 +395,29 @@ export function buildBattle(
       at,
       facing: u.facing,
     };
+  };
+  // A skirmish's squad is the company as it stands (or the stand-ins when there is no roster).
+  const members = source.squad
+    ? (roster.length ? roster.map((r) => r.characterId) : source.squad.fallback).slice(
+        0,
+        source.squad.tiles.length,
+      )
+    : [];
+  const squad: BattleUnit[] = members.map((cid, i) => {
+    const c = need(lib.characters, cid, 'character', where);
+    return {
+      id: cid,
+      character: cid,
+      side: 'player',
+      controller: 'human',
+      level: source.squad!.level,
+      frame: c.frame,
+      weapon: c.weapon,
+      at: source.squad!.tiles[i]!,
+      facing: source.squad!.facing,
+    };
   });
+  const units: UnitSpec[] = [...squad, ...source.units].map((u0) => makeUnit(u0, true));
   const ids = new Set(units.map((u) => u.id));
   for (const v of source.victory) {
     if (v.type === 'escape') {
@@ -398,6 +434,35 @@ export function buildBattle(
   for (const d of source.defeat) {
     if (!ids.has(d.unitId)) throw new Error(`${where}: unknown protected unit "${d.unitId}"`);
   }
+  // Scripted events: reinforcements are built like the starting units, messages name their
+  // speaker from the cast, and every reference is checked now rather than mid-battle.
+  const script: ScriptedEvent[] = source.script.map((s) => {
+    if (s.when.type === 'defeated' && !ids.has(s.when.unitId))
+      throw new Error(`${where}: script ${s.id} waits for unknown unit "${s.when.unitId}"`);
+    const actions: ScriptAction[] = s.actions.map((a) => {
+      if (a.type === 'message') {
+        const speaker = a.speaker
+          ? need(lib.cast, a.speaker, 'cast member', where).name
+          : undefined;
+        return { type: 'message', text: a.text, ...(speaker ? { speaker } : {}) };
+      }
+      if (a.type === 'terrain') {
+        need(lib.terrains, a.terrain, 'terrain', where);
+        return { type: 'terrain', terrain: a.terrain, tiles: a.tiles.map(([x, y]) => ({ x, y })) };
+      }
+      const arrivals = a.units.map((u) => {
+        if (ids.has(u.id)) throw new Error(`${where}: script ${s.id} reuses unit id "${u.id}"`);
+        ids.add(u.id);
+        return makeUnit(u, false);
+      });
+      return { type: 'reinforce', units: arrivals };
+    });
+    return { id: s.id, when: s.when, actions };
+  });
+  for (const g of source.bonus) {
+    if (g.type === 'keepAlive' && !ids.has(g.unitId))
+      throw new Error(`${where}: optional goal protects unknown unit "${g.unitId}"`);
+  }
   return {
     map,
     terrains: lib.terrains,
@@ -407,6 +472,8 @@ export function buildBattle(
       v.type === 'escape' ? { ...v, tiles: v.tiles.map(([x, y]) => ({ x, y })) } : v,
     ),
     defeat: source.defeat,
+    ...(script.length ? { script } : {}),
+    ...(source.bonus.length ? { bonus: source.bonus } : {}),
     ...(options.bonds?.length ? { bonds: options.bonds } : {}),
     seed: source.seed,
   };

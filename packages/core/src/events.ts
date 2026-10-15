@@ -82,5 +82,13 @@ export type BattleEvent =
       readonly value: number;
     }
   | { readonly type: 'unitDefeated'; readonly unitId: string }
+  /** A scripted event fired: what arrived, what changed and what was said. */
+  | {
+      readonly type: 'scriptEvent';
+      readonly id: string;
+      readonly messages: readonly { readonly text: string; readonly speaker?: string }[];
+      readonly reinforced: readonly string[];
+      readonly terrain: readonly { readonly tiles: readonly Coord[]; readonly terrain: string }[];
+    }
   | { readonly type: 'turnEnded'; readonly unitId: string; readonly rested: boolean }
   | { readonly type: 'battleEnded'; readonly outcome: Exclude<Outcome, 'ongoing'> };

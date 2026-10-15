@@ -206,5 +206,79 @@
         "agl": 8
       }
     }
+  ],
+  "script": [
+    {
+      "id": "the-grand-master",
+      "when": {
+        "type": "round",
+        "round": 4
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "Hold the breach! Every pike to the front!",
+          "speaker": "valette"
+        },
+        {
+          "type": "reinforce",
+          "units": [
+            {
+              "id": "jan-6",
+              "side": "enemy",
+              "controller": "ai",
+              "level": 7,
+              "frame": "yeniceri",
+              "weapon": "kilij",
+              "at": [5, 3],
+              "facing": "south",
+              "ai": "aggressive",
+              "name": "Yeniçeri",
+              "stats": {
+                "pow": 12,
+                "dex": 11,
+                "agl": 6
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wall-gives-way",
+      "when": {
+        "type": "round",
+        "round": 5
+      },
+      "actions": [
+        {
+          "type": "message",
+          "text": "The wall is coming down! A second breach!",
+          "speaker": "balbi"
+        },
+        {
+          "type": "terrain",
+          "terrain": "rubble",
+          "tiles": [
+            [3, 4],
+            [8, 4]
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 11,
+      "scudi": 240,
+      "parts": 2
+    },
+    {
+      "type": "keepAlive",
+      "unitId": "kateri",
+      "scudi": 185,
+      "parts": 1
+    }
   ]
 }

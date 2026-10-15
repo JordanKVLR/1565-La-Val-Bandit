@@ -14,6 +14,38 @@ export type VictoryCondition =
   /** Win when the named unit, still standing, reaches any of these tiles. */
   | { readonly type: 'escape'; readonly unitId: string; readonly tiles: readonly Coord[] };
 
+/** When a scripted event fires. */
+export type ScriptTrigger =
+  /** At the start of this round (round 1 fires as the battle begins). */
+  | { readonly type: 'round'; readonly round: number }
+  /** As soon as this unit falls. */
+  | { readonly type: 'defeated'; readonly unitId: string };
+
+export type ScriptAction =
+  /** Units arrive, each on its tile or the nearest free walkable one. */
+  | { readonly type: 'reinforce'; readonly units: readonly UnitSpec[] }
+  /** The ground changes (a palisade burns, a gate gives way). */
+  | { readonly type: 'terrain'; readonly tiles: readonly Coord[]; readonly terrain: string }
+  /** A line shown to the player (and the battle log). */
+  | { readonly type: 'message'; readonly text: string; readonly speaker?: string };
+
+/** Something the battle does by itself at a set moment. Each fires once. */
+export interface ScriptedEvent {
+  readonly id: string;
+  readonly when: ScriptTrigger;
+  readonly actions: readonly ScriptAction[];
+}
+
+/**
+ * An optional goal for extra reward, judged when the battle is won. The reward is scudi and
+ * parts, paid once per goal.
+ */
+export type BonusGoal = (
+  | { readonly type: 'rounds'; readonly max: number }
+  | { readonly type: 'noLosses' }
+  | { readonly type: 'keepAlive'; readonly unitId: string }
+) & { readonly scudi: number; readonly parts: number };
+
 /** Losing every player unit always loses; these add extra ways to lose. */
 export type DefeatCondition = { readonly type: 'protect'; readonly unitId: string };
 
@@ -44,6 +76,10 @@ export interface BattleState {
   defeat: DefeatCondition[];
   /** Bonds between named allies (absent in older saves, meaning none). */
   bonds?: Bond[];
+  /** Scripted events that have not fired yet (absent in older saves, meaning none). */
+  script?: ScriptedEvent[];
+  /** Optional goals for extra reward (absent in older saves, meaning none). */
+  bonus?: BonusGoal[];
   outcome: Outcome;
 }
 
@@ -55,6 +91,8 @@ export interface BattleSetup {
   readonly victory: readonly VictoryCondition[];
   readonly defeat?: readonly DefeatCondition[];
   readonly bonds?: readonly Bond[];
+  readonly script?: readonly ScriptedEvent[];
+  readonly bonus?: readonly BonusGoal[];
   readonly seed: number;
 }
 

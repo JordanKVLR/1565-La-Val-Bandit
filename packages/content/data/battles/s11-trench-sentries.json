@@ -1,0 +1,97 @@
+{
+  "id": "s11-trench-sentries",
+  "name": "The Trench Sentries",
+  "map": "c8-castile-trenches",
+  "seed": 910,
+  "victory": [
+    {
+      "type": "defeatLeader",
+      "unitId": "trench-captain"
+    }
+  ],
+  "defeat": [
+    {
+      "type": "protect",
+      "unitId": "ninu"
+    }
+  ],
+  "squad": {
+    "tiles": [
+      [0, 9],
+      [3, 9],
+      [6, 9],
+      [8, 9],
+      [11, 9]
+    ],
+    "facing": "north",
+    "level": 7,
+    "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
+  },
+  "units": [
+    {
+      "id": "trench-captain",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 7,
+      "frame": "yeniceri",
+      "weapon": "kilij",
+      "at": [2, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 12,
+        "dex": 10,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sentry-a",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "yeniceri",
+      "weapon": "tufek",
+      "at": [8, 0],
+      "facing": "south",
+      "ai": "defensive",
+      "name": "Yeniçeri",
+      "stats": {
+        "pow": 11,
+        "dex": 11,
+        "agl": 5
+      }
+    },
+    {
+      "id": "sentry-b",
+      "side": "enemy",
+      "controller": "ai",
+      "level": 6,
+      "frame": "levend",
+      "weapon": "cutlass",
+      "at": [9, 0],
+      "facing": "south",
+      "ai": "aggressive",
+      "name": "Levend",
+      "stats": {
+        "pow": 11,
+        "dex": 9,
+        "agl": 7
+      }
+    }
+  ],
+  "salvage": [],
+  "bonus": [
+    {
+      "type": "rounds",
+      "max": 7,
+      "scudi": 160,
+      "parts": 2
+    },
+    {
+      "type": "noLosses",
+      "scudi": 125,
+      "parts": 1
+    }
+  ]
+}

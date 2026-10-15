@@ -4,11 +4,13 @@ import { activeSkills, initiativeBonus, restMult } from './skills';
 import type { BattleState } from './state';
 import { requireUnit } from './state';
 import type { UnitState } from './units';
+import { runScript } from './script';
 import { evaluateOutcome } from './victory';
 
 /** Rolls initiative (AGI + d6, ties by id) for every living unit and starts the round. */
 export function startRound(state: BattleState, events: BattleEvent[]): void {
   state.round += 1;
+  runScript(state, events, { type: 'round', round: state.round });
   const outcome = evaluateOutcome(state);
   if (outcome !== 'ongoing') {
     finish(state, outcome, events);

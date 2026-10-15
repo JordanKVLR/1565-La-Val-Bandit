@@ -30,6 +30,8 @@ export function createBattle(setup: BattleSetup): { state: BattleState; events: 
     victory: [...setup.victory],
     defeat: [...(setup.defeat ?? [])],
     ...(setup.bonds?.length ? { bonds: [...setup.bonds] } : {}),
+    ...(setup.script?.length ? { script: [...setup.script] } : {}),
+    ...(setup.bonus?.length ? { bonus: [...setup.bonus] } : {}),
     outcome: 'ongoing',
   };
   const events: BattleEvent[] = [];
