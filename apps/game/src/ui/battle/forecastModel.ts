@@ -1,5 +1,14 @@
-import type { AttackForecast, BattleState, Reaction, ReactionChoice, UnitState } from '@m1565/core';
+import type {
+  AttackForecast,
+  BattleState,
+  FacingZone,
+  HitParts,
+  Reaction,
+  ReactionChoice,
+  UnitState,
+} from '@m1565/core';
 import { assistFor, attackFpCost } from '@m1565/core';
+import { t } from '../../i18n';
 
 /** The defender's strike back, as `forecastAttack` gives it. */
 type Retaliation = NonNullable<AttackForecast['retaliation']>;
@@ -96,4 +105,28 @@ export function forecastModel({
     defenderMayFall: toDefender > 0 && defenderHpAfter === 0,
     attackerMayFall: toAttacker > 0 && attackerHpAfter === 0,
   };
+}
+
+/** "+10" or "−20": percentage points with a real minus sign, never colour alone. */
+const signed = (n: number) => (n > 0 ? `+${n}` : `−${Math.abs(n)}`);
+
+/**
+ * Every term that moves a hit chance, as chips (only the ones that apply, in the order they are
+ * added up). `noDodge` is the bonus a blow gets when its target is not dodging (+15).
+ */
+export function hitChips(parts: HitParts, zone: FacingZone, noDodge: number): string[] {
+  const n = (v: number) => ({ n: signed(v) });
+  return [
+    parts.technique ? t('overlay.mod.technique', n(parts.technique)) : null,
+    parts.stats ? t('overlay.mod.stats', n(parts.stats)) : null,
+    zone === 'side' && parts.flank ? t('overlay.mod.side', n(parts.flank)) : null,
+    zone === 'rear' && parts.flank ? t('overlay.mod.rear', n(parts.flank)) : null,
+    parts.height > 0 ? t('overlay.mod.high', n(parts.height)) : null,
+    parts.height < 0 ? t('overlay.mod.low', n(parts.height)) : null,
+    parts.assist ? t('overlay.mod.assist', n(parts.assist)) : null,
+    parts.terrain ? t('overlay.mod.terrain', n(parts.terrain)) : null,
+    parts.tired ? t('overlay.mod.tired', n(parts.tired)) : null,
+    parts.skills ? t('overlay.mod.skills', n(parts.skills)) : null,
+    noDodge ? t('overlay.mod.noDodge', n(noDodge)) : null,
+  ].filter((c): c is string => c !== null);
 }

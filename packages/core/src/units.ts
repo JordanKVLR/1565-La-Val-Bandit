@@ -124,7 +124,7 @@ export interface UnitState extends MutableStats {
   /** Every pilot skill, locked or not; active ones are those at or below `level`. */
   skills: Skill[];
   level: number;
-  /** XP towards the next level (0 to balance.xpPerLevel - 1). */
+  /** XP towards the next level (0 up to `xpToNextLevel(level)` − 1). */
   xp: number;
   /** Points earned from level-ups that the player has not yet spent. */
   statPoints: number;

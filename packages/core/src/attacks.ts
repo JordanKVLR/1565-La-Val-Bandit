@@ -1,3 +1,4 @@
+import type { BalanceConfig } from './balance';
 import { DEFAULT_BALANCE, techniqueCost } from './balance';
 import type { PilotStats, Weapon } from './units';
 
@@ -192,4 +193,30 @@ export function meetsRequirements(stats: PilotStats, attack: Attack): boolean {
 /** True when a pilot of this level and these stats (gear included) may use the technique. */
 export function isAttackUnlocked(level: number, stats: PilotStats, attack: Attack): boolean {
   return level >= (attack.level ?? 1) && meetsRequirements(stats, attack);
+}
+
+/**
+ * What a technique is worth, in starter attacks: its expected damage per use against a reference
+ * target (a mid-campaign pilot's raw damage against DEF 8, 65% base hit) plus the damage-equivalent
+ * of the fatigue it inflicts and of being uncounterable, divided by the same for a plain
+ * power-1.0 strike. It is the standard the technique list is tested against: a technique opened
+ * at a higher level must be worth more (see `techniqueValueTarget`).
+ */
+export function techniqueValue(attack: Attack, b: BalanceConfig = DEFAULT_BALANCE): number {
+  const expected = (power: number, hits: number, accuracy: number, pierce: number) => {
+    const hit = Math.min(b.hitMax, Math.max(b.hitMin, b.baseHit + accuracy)) / 100;
+    const blocked = b.techRefDef * b.defDamagePerPoint * (1 - pierce);
+    return hits * hit * Math.max(1, (b.techRefRaw * power - blocked) * b.damageScale);
+  };
+  const hits = attack.hits ?? 1;
+  const value =
+    expected(attack.power, hits, attack.accuracy, attack.pierce ?? 0) +
+    b.techValueFatigue * (attack.fatigue ?? 0) * hits +
+    (attack.noCounter ? b.techValueNoCounter : 0);
+  return value / expected(1, 1, 0, 0);
+}
+
+/** The value a technique unlocked at `level` should have (in starter attacks). */
+export function techniqueValueTarget(level: number, b: BalanceConfig = DEFAULT_BALANCE): number {
+  return b.techValueBase + b.techValuePerLevel * (level - 3);
 }

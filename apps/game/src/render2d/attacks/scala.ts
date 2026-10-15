@@ -2,6 +2,7 @@
  * Scala armatura machines: brass, steam, pistons, pressure, cannon fire.
  * Six attack scripts; each has its own mechanism and signature burst.
  */
+import { withVariants } from './variants';
 import type { Key, Move } from '../../render/duelMoves';
 import type { AttackScript, AttackScripts, FxContext, V2 } from '../contract';
 import { eng, face, hitPoint, outcomeOf } from './styleDefaults';
@@ -828,7 +829,7 @@ const broadside: AttackScript = {
   },
 };
 
-export const SCALA_SCRIPTS: AttackScripts = {
+const SCALA_BASE: AttackScripts = {
   'scala-piston-strike': pistonStrike,
   'scala-steam-hammer': steamHammer,
   'scala-overpressure': overpressure,
@@ -836,3 +837,11 @@ export const SCALA_SCRIPTS: AttackScripts = {
   'scala-siege-bolt': siegeBolt,
   'scala-broadside': broadside,
 };
+
+/** The newer techniques borrow a related script, in their own accent colour. */
+export const SCALA_SCRIPTS: AttackScripts = withVariants(SCALA_BASE, {
+  'scala-valve-release': ['scala-steam-hammer', '#f0f4f8'],
+  'scala-governor-slam': ['scala-piston-strike', '#ffd080'],
+  'scala-rivet-shot': ['scala-siege-bolt', '#e0e8f0'],
+  'scala-chain-shot': ['scala-grapeshot', '#c0c8d0'],
+});

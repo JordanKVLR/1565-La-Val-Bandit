@@ -5,6 +5,7 @@ import {
   availableReactions,
   canAct,
   facingToward,
+  facingZone,
   NO_REACTION,
   forecastAttack,
   reactionFpCost,
@@ -12,8 +13,8 @@ import {
   usableAttacks,
 } from './combat';
 import type { Command } from './commands';
-import type { Coord } from './grid';
-import { manhattan } from './grid';
+import type { Coord, Facing } from './grid';
+import { DIRECTIONS, manhattan } from './grid';
 import { reachableTiles } from './pathfinding';
 import type { BattleState } from './state';
 import { livingUnits, requireUnit } from './state';
@@ -171,15 +172,49 @@ export function planAiTurn(state: BattleState, unitId: string): Command[] {
     });
   }
   const standAt = best.to ?? unit.pos;
-  const nearest = [...enemies].sort(
-    (a, b) => manhattan(standAt, a.pos) - manhattan(standAt, b.pos),
-  )[0];
   commands.push({
     type: 'endTurn',
     unitId,
-    ...(nearest ? { facing: facingToward(standAt, nearest.pos, unit.facing) } : {}),
+    facing: bestFacing(state, unit, standAt, enemies),
   });
   return commands;
+}
+
+/** How much a blow from each side hurts, for choosing a facing (rear hits are the worst). */
+const EXPOSURE = { front: 0, side: 1, rear: 3 } as const;
+
+/**
+ * The facing that leaves a unit least exposed. A unit keeps the facing it ends its turn with
+ * until its next turn (being struck does not turn it), so it faces the way that puts the fewest
+ * of the enemies that could reach it on its flank or rear, nearer enemies weighing more.
+ * Ties go to facing the nearest enemy.
+ */
+export function bestFacing(
+  state: BattleState,
+  unit: UnitState,
+  standAt: Coord,
+  enemies: readonly UnitState[],
+): Facing {
+  const nearest = [...enemies].sort(
+    (a, b) => manhattan(standAt, a.pos) - manhattan(standAt, b.pos),
+  )[0];
+  const fallback = nearest ? facingToward(standAt, nearest.pos, unit.facing) : unit.facing;
+  // Only enemies that can plausibly strike this unit next round count.
+  const threats = enemies.filter(
+    (e) => manhattan(standAt, e.pos) <= e.mov + (e.weapon.maxRange ?? 1) + 1,
+  );
+  if (threats.length === 0) return fallback;
+  const cost = (f: Facing) =>
+    threats.reduce(
+      (sum, e) =>
+        sum + EXPOSURE[facingZone(standAt, f, e.pos)] / (1 + manhattan(standAt, e.pos) / 4),
+      0,
+    );
+  let best = fallback;
+  for (const f of Object.keys(DIRECTIONS) as Facing[]) {
+    if (cost(f) < cost(best) - 1e-9) best = f;
+  }
+  return best;
 }
 
 /**

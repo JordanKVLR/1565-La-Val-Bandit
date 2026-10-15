@@ -1,5 +1,11 @@
 import type { BattleSetup, BattleState, Difficulty, Facing, StatName } from '@m1565/core';
-import { DEFAULT_DIFFICULTY, deserializeBattle, difficultyMods, scaleScudi } from '@m1565/core';
+import {
+  DEFAULT_DIFFICULTY,
+  deserializeBattle,
+  difficultyMods,
+  scaleScudi,
+  xpToNextLevel,
+} from '@m1565/core';
 import type { Library, ShopItem } from '@m1565/content';
 import { battleSalvage, isBattleId, loadBattle } from '@m1565/content';
 import storyJson from '@m1565/content/story/main.ink';
@@ -391,10 +397,15 @@ export class GameSession {
       this.show({ kind: 'end' });
       return;
     }
-    const per = this.lib.balance.xpPerLevel;
+    const cost = (level: number) => xpToNextLevel(level, this.lib.balance);
     const roster = [
-      { ...newRosterEntry(this.lib, 'ninu'), level: 3, xp: Math.round(per * 0.4), statPoints: 2 },
-      { ...newRosterEntry(this.lib, 'kateri'), level: 2, xp: Math.round(per * 0.75) },
+      {
+        ...newRosterEntry(this.lib, 'ninu'),
+        level: 3,
+        xp: Math.round(cost(3) * 0.4),
+        statPoints: 2,
+      },
+      { ...newRosterEntry(this.lib, 'kateri'), level: 2, xp: Math.round(cost(2) * 0.75) },
     ];
     this.patch({ roster, scudi: 640 });
     const name = (id: string) => this.lib.characters.get(id)?.name ?? id;
@@ -410,7 +421,7 @@ export class GameSession {
           levels: i === 0 ? 1 : 0,
           level: r.level,
           xp: r.xp,
-          xpPerLevel: per,
+          xpPerLevel: cost(r.level),
         })),
       ],
     });

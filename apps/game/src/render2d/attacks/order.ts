@@ -2,6 +2,7 @@
  * Knights of St John: red, white and gold, Maltese crosses, chivalric heroism.
  * Ten attack scripts; local helpers are shared but each attack has its own shapes and timing.
  */
+import { withVariants } from './variants';
 import type { Key, Move } from '../../render/duelMoves';
 import type { AttackScript, AttackScripts, FxContext, V2 } from '../contract';
 import { eng, face, hitPoint, outcomeOf } from './styleDefaults';
@@ -1241,7 +1242,7 @@ const knightsCharge: AttackScript = {
   },
 };
 
-export const ORDER_SCRIPTS: AttackScripts = {
+const ORDER_BASE: AttackScripts = {
   'order-cross-cut': crossCut,
   'order-pilgrim-thrust': pilgrimThrust,
   'order-shieldbreaker': shieldbreaker,
@@ -1253,3 +1254,13 @@ export const ORDER_SCRIPTS: AttackScripts = {
   'order-hedge-of-pikes': hedgeOfPikes,
   'order-knights-charge': knightsCharge,
 };
+
+/** The newer techniques borrow a related script, in their own accent colour. */
+export const ORDER_SCRIPTS: AttackScripts = withVariants(ORDER_BASE, {
+  'order-stoccata-lunga': ['order-pilgrim-thrust', '#cfe3ff'],
+  'order-rim-strike': ['order-shield-bash', '#e8d9a8'],
+  'order-helm-splitter': ['order-bell-ringer', '#d97a3a'],
+  'order-knell-of-saint-john': ['order-bell-ringer', '#f3d27a'],
+  'order-halberd-hook': ['order-hedge-of-pikes', '#9ad0ff'],
+  'order-charge-of-the-langues': ['order-knights-charge', '#ffe08a'],
+});

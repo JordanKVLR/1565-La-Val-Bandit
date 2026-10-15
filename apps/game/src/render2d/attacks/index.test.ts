@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { AttackStyle } from '@m1565/core';
 import { ATTACK_SCRIPTS, scriptFor } from './index';
@@ -33,5 +35,20 @@ describe('scriptFor', () => {
     expect(sc.impactFx).toBe(own.impactFx);
     expect(sc.palette).toBe(own.palette);
     expect(sc.windup ?? own.windup).toBeTruthy();
+  });
+});
+
+describe('every technique has a duel script', () => {
+  it('covers all of attacks.json, including the techniques that borrow another script', () => {
+    const ids = (
+      JSON.parse(
+        readFileSync(
+          resolve(__dirname, '../../../../../packages/content/data/attacks.json'),
+          'utf8',
+        ),
+      ) as { id: string }[]
+    ).map((a) => a.id);
+    expect(ids.length).toBeGreaterThanOrEqual(71);
+    expect(ids.filter((id) => !ATTACK_SCRIPTS[id])).toEqual([]);
   });
 });

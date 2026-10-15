@@ -1,4 +1,5 @@
 import type { BattleState, StatName } from '@m1565/core';
+import { xpToNextLevel } from '@m1565/core';
 import type { CharacterProgress, Library, RosterEntry } from '@m1565/content';
 
 /**
@@ -74,7 +75,7 @@ export function applyBattleResults(
       levels: Math.max(0, unit.level - entry.level),
       level: unit.level,
       xp: unit.xp,
-      xpPerLevel: state.balance.xpPerLevel,
+      xpPerLevel: xpToNextLevel(unit.level, state.balance),
     });
     return {
       ...entry,

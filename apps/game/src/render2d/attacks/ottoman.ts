@@ -5,6 +5,7 @@
  * (crescents, eight-point stars, tughra-style flourishes, horses, flames) is an original vector
  * shape drawn here. Hooks are stateless; one-shots use `fx.once`, delays use `fx.later`.
  */
+import { withVariants } from './variants';
 import type { Move } from '../../render/duelMoves';
 import type { AttackScript, AttackScripts, FxContext, Pose, V2 } from '../contract';
 import { rgba } from '../fx';
@@ -2174,7 +2175,7 @@ const burningPitch: AttackScript = {
   },
 };
 
-export const OTTOMAN_SCRIPTS: AttackScripts = {
+const OTTOMAN_BASE: AttackScripts = {
   'ottoman-crescent-slash': crescentSlash,
   'ottoman-janissary-oath': janissaryOath,
   'ottoman-twin-moons': twinMoons,
@@ -2189,3 +2190,14 @@ export const OTTOMAN_SCRIPTS: AttackScripts = {
   'ottoman-smoke-and-iron': smokeAndIron,
   'ottoman-burning-pitch': burningPitch,
 };
+
+/** The newer techniques borrow a related script, in their own accent colour. */
+export const OTTOMAN_SCRIPTS: AttackScripts = withVariants(OTTOMAN_BASE, {
+  'ottoman-drawing-cut': ['ottoman-crescent-slash', '#ffe9a8'],
+  'ottoman-tufek-salvo': ['ottoman-steady-volley', '#ffb35a'],
+  'ottoman-fire-line-of-the-orta': ['ottoman-rolling-fire', '#ff7a4a'],
+  'ottoman-hooked-spear-pull': ['ottoman-lance-feint', '#a8e0ff'],
+  'ottoman-akinji-sweep': ['ottoman-sipahi-charge', '#f0b0ff'],
+  'ottoman-humbara-cluster': ['ottoman-fire-pot', '#ffc04a'],
+  'ottoman-tophane-barrage': ['ottoman-burning-pitch', '#ff5a3a'],
+});

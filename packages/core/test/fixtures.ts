@@ -88,6 +88,9 @@ export const TEST_BALANCE = {
   xpHitBase: 30,
   xpDamageShare: 100,
   xpDefeat: 150,
+  // Flat 500 XP a level and no global rate, so XP tests are easy to check by hand.
+  xpScale: 1,
+  xpLevelCostGrowth: 0,
 };
 
 export function setup(over: Partial<BattleSetup> & Pick<BattleSetup, 'units'>): BattleSetup {

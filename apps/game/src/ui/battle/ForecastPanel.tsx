@@ -6,7 +6,7 @@ import type { IconName } from '../design';
 import { Button, Chip, Divider, Icon, Meter, SideMark } from '../design';
 import { attackTags } from './attackText';
 import type { ForecastSide } from './forecastModel';
-import { forecastModel } from './forecastModel';
+import { forecastModel, hitChips } from './forecastModel';
 import { reasonText } from './reasons';
 import { ScrollArea } from './ScrollArea';
 import { Portrait } from './Portrait';
@@ -169,16 +169,27 @@ export function ForecastPanel({
   const choice = choices?.find((c) => c.reaction === reaction);
   const m = forecastModel({ state, attacker, defender, forecast: f, reaction, back, choice });
 
+  // Every term of each hit chance is listed, so a gap between the two sides is never a mystery
+  // (stats, flank, ground, height, allies, fatigue, skills). A blow that is not being dodged gets
+  // the not-dodging bonus; Defend and Counter are certain, so they list none.
+  const noDodge = state.balance.counterHitBonus;
   const attackChips = [
-    f.zone === 'front' ? null : t(`overlay.mod.${f.zone}`),
-    f.heightDiff > 0 ? t('overlay.mod.high', { n: f.heightDiff }) : null,
-    f.heightDiff < 0 ? t('overlay.mod.low', { n: -f.heightDiff }) : null,
-    m.attacker.assist > 0 ? t('overlay.mod.assist', { n: m.attacker.assist }) : null,
+    ...hitChips(
+      f.hitParts,
+      f.zone,
+      reaction === 'defend' || reaction === 'counter' || reaction === 'avoid' ? 0 : noDodge,
+    ),
     // Several strikes already show beside the damage.
     ...attackTags(f.attack).slice(f.hits > 1 ? 1 : 0),
-  ].filter((c): c is string => c !== null);
+    // What the blow is worth in XP when you strike (the level gap, in words and a number).
+    ...(attacker.side === 'player' && f.xpGap > 1
+      ? [t('overlay.xp.tougher', { n: f.xpGap })]
+      : attacker.side === 'player' && f.xpGap < 1
+        ? [t('overlay.xp.weaker', { n: f.xpGap })]
+        : []),
+  ];
   const defenderChips =
-    m.defender.assist > 0 ? [t('overlay.mod.assist', { n: m.defender.assist })] : [];
+    reaction === 'attackBack' && back ? hitChips(back.hitParts, back.zone, noDodge) : [];
   const attackNote =
     reaction === 'counter' && f.counter
       ? t('forecast.counterDamage', {

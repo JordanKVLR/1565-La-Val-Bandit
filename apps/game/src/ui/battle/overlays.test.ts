@@ -4,7 +4,7 @@ import type { Reaction, UnitState } from '@m1565/core';
 import { createBattle, forecastAttack, reactionChoices } from '@m1565/core';
 import { loadBattle, loadLibrary } from '@m1565/content';
 import { describe, expect, it } from 'vitest';
-import { forecastModel } from './forecastModel';
+import { forecastModel, hitChips } from './forecastModel';
 import { signedPct } from './TechniqueCard';
 
 describe('battle overlay styles', () => {
@@ -96,5 +96,54 @@ describe('technique numbers', () => {
     expect(signedPct(10)).toBe('+10%');
     expect(signedPct(-25)).toBe('−25%');
     expect(signedPct(0)).toBe('±0%');
+  });
+});
+
+describe('hit chips', () => {
+  const parts = {
+    technique: -20,
+    stats: 4,
+    flank: 10,
+    height: -5,
+    assist: 0,
+    terrain: -5,
+    tired: -10,
+    skills: 0,
+  };
+
+  it('list every term that applies, signed with a real minus, and none that is zero', () => {
+    expect(hitChips(parts, 'side', 15)).toEqual([
+      'Technique −20%',
+      'DEX vs AGL +4%',
+      'Side attack +10%',
+      'Low ground −5%',
+      'Ground −5%',
+      'Tired −10%',
+      'Not dodging +15%',
+    ]);
+  });
+
+  it('omits the flank chip from the front, and the not-dodging chip when the target dodges', () => {
+    const chips = hitChips({ ...parts, flank: 0, height: 5 }, 'front', 0);
+    expect(chips).toContain('High ground +5%');
+    expect(chips.join()).not.toMatch(/attack|dodging/i);
+  });
+
+  it('explains the gap between a blow and its strike back from the same numbers', () => {
+    // A side attack by a sharper unit against a duller one: the attacker lists the flank and the
+    // stat edge, the strike back lists neither, so the 25-point gap is never a hidden penalty.
+    const attacker = hitChips(
+      { ...parts, technique: -20, stats: 4, flank: 10, height: 0 },
+      'side',
+      15,
+    );
+    const back = hitChips(
+      { ...parts, technique: -20, stats: -4, flank: 0, height: 0 },
+      'front',
+      15,
+    );
+    expect(attacker).toContain('Side attack +10%');
+    expect(back.join()).not.toContain('Side attack');
+    expect(back).toContain('DEX vs AGL −4%');
   });
 });

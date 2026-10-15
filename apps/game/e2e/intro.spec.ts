@@ -52,12 +52,17 @@ test('Settings on the title screen replays the cinematic and returns to the titl
   await expect(page.getByRole('heading', { name: /Armatura/ })).toBeVisible();
 });
 
-test('a video that cannot load never holds the player back', async ({ page }) => {
-  await page.route('**/cinematic/**', (route) => route.abort());
-  await page.goto('./');
-  await page.getByRole('button', { name: 'New Game' }).click();
-  await page.getByRole('button', { name: /^Knight/ }).click();
-  await expect(page.getByTestId('chapter-card')).toContainText('Prologue', { timeout: 15000 });
+test.describe('without a video', () => {
+  // The PWA's service worker would answer the request itself, past this test's network rule.
+  test.use({ serviceWorkers: 'block' });
+
+  test('a video that cannot load never holds the player back', async ({ page }) => {
+    await page.route('**/cinematic/**', (route) => route.abort());
+    await page.goto('./');
+    await page.getByRole('button', { name: 'New Game' }).click();
+    await page.getByRole('button', { name: /^Knight/ }).click();
+    await expect(page.getByTestId('chapter-card')).toContainText('Prologue', { timeout: 20000 });
+  });
 });
 
 test('the cinematic still plays once the offline service worker controls the page', async ({

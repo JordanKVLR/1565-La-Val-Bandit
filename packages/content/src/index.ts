@@ -19,7 +19,7 @@ import {
   getTile,
   scaleEnemyLevel,
   scaleEnemyStats,
-  techniqueCost,
+  techniqueStats,
   validateMap,
 } from '@m1565/core';
 import armourerData from '../data/armourers.json';
@@ -51,7 +51,7 @@ import {
   WeaponSchema,
 } from './schemas';
 import { derivedStats, statsAtLevel } from './progression';
-import type { BattleSource, Character, MapSource, SkillData } from './schemas';
+import type { AttackData, BattleSource, Character, MapSource, SkillData } from './schemas';
 
 export * from './achievements';
 export * from './codex';
@@ -220,19 +220,20 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
         a.weaponTypes.includes(weapon.type) &&
         (a.frameClasses.length === 0 || a.frameClasses.includes(frame.class)),
     )
-    .map(
-      ({ faction: _f, weaponTypes: _w, frameClasses: _c, accuracyBonus, apBonus, ...attack }) => {
-        // Stronger techniques cost more AP and FP and are less accurate (one shared formula);
-        // ranged ones pay extra FP. A few careful techniques add accuracy for extra AP.
-        const cost = techniqueCost(attack.power, attack.hits ?? 1, lib.balance, attack.style);
-        return {
-          ...attack,
-          ...cost,
-          accuracy: cost.accuracy + (accuracyBonus ?? 0),
-          apCost: cost.apCost + (apBonus ?? 0),
-        } as Attack;
-      },
-    );
+    .map((a) => resolveTechnique(a, lib.balance));
+}
+
+/**
+ * A technique from attacks.json as the engine sees it: AP, FP and accuracy come from the shared
+ * formula (`techniqueStats`: stronger costs more, a higher unlock level costs less and aims
+ * better); `accuracyBonus` adds the technique's own precision on top.
+ */
+export function resolveTechnique(
+  { faction: _f, weaponTypes: _w, frameClasses: _c, accuracyBonus, ...attack }: AttackData,
+  balance: BalanceConfig,
+): Attack {
+  const cost = techniqueStats(attack.power, attack.hits ?? 1, attack.level, balance, attack.style);
+  return { ...attack, ...cost, accuracy: cost.accuracy + (accuracyBonus ?? 0) } as Attack;
 }
 
 /** Every skill a named character has or will gain, each with its unlock level. */

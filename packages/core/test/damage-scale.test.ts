@@ -10,6 +10,7 @@ import {
   requireUnit,
   strikeNumbers,
   xpFor,
+  xpGapFactor,
 } from '../src';
 import { makeMap, setup, unit } from './fixtures';
 
@@ -92,23 +93,24 @@ describe('damageScale', () => {
 describe('shipped XP rates', () => {
   it('pay about a level for killing a foe in ~5 front hits (was about two)', () => {
     const { state, a, t } = matchup(DEFAULT_BALANCE, 'north');
-    const ratio = 1 + (t.level - a.level) * DEFAULT_BALANCE.xpLevelFactor;
+    const ratio = xpGapFactor(t.level - a.level, DEFAULT_BALANCE) * DEFAULT_BALANCE.xpScale;
     const hitShare = Math.round(t.maxHp / 5);
     const perHit = xpFor(state, a, t, hitShare, 'front', false);
     const kill = xpFor(state, a, t, hitShare, 'front', true);
     // Bounds: one landed blow is a small fraction of a level; a full kill (5 hits + defeat) is
     // between half and one and a half levels (before the level-gap factor `ratio`).
     expect(perHit).toBeLessThan((DEFAULT_BALANCE.xpPerLevel / 8) * ratio);
-    expect(kill - perHit).toBe(Math.round(DEFAULT_BALANCE.xpDefeat * ratio));
+    // The defeat bonus is rounded together with the hit, so allow a point of rounding.
+    expect(Math.abs(kill - perHit - DEFAULT_BALANCE.xpDefeat * ratio)).toBeLessThanOrEqual(1);
     const wholeKill = perHit * 4 + kill;
     expect(wholeKill).toBeGreaterThanOrEqual(DEFAULT_BALANCE.xpPerLevel * 0.5 * ratio);
     expect(wholeKill).toBeLessThanOrEqual(DEFAULT_BALANCE.xpPerLevel * 1.5 * ratio);
   });
 
-  it('are about half of the pre-halving rates (75 / 200 / 400)', () => {
-    expect(DEFAULT_BALANCE.xpHitBase).toBeLessThanOrEqual(75 / 2);
-    expect(DEFAULT_BALANCE.xpDamageShare).toBeLessThanOrEqual(200 / 2);
-    expect(DEFAULT_BALANCE.xpDefeat).toBeLessThanOrEqual(400 / 2);
-    expect(DEFAULT_BALANCE.xpHitBase).toBeGreaterThanOrEqual(75 / 3);
+  it('base rates are half of the pre-halving ones (75 / 200 / 400), then xpScale adds 25%', () => {
+    expect(DEFAULT_BALANCE.xpHitBase).toBe(75 / 2.5);
+    expect(DEFAULT_BALANCE.xpDamageShare).toBe(200 / 2);
+    expect(DEFAULT_BALANCE.xpDefeat).toBe(400 / 2);
+    expect(DEFAULT_BALANCE.xpScale).toBe(1.25);
   });
 });

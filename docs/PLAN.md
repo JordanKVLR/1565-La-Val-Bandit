@@ -123,7 +123,11 @@ with the reason. **Direction matters:** from the front, all are offered. From th
 Avoid and Attack back. From the **rear** a unit can only Avoid. Techniques that block counters also
 block Attack back and Counter. There is no "do nothing" option: a defender that can react must pick one of the real reactions (the
 AI too). Only a Spent unit (FP 100) cannot react, and the blow then lands un-reacted (+15% to be hit).
-Attackers turn to face their target, and a defender that survives turns to face its attacker.
+Attackers turn to face their target; a defender is **never** turned by a blow, so it keeps the facing
+it chose at the end of its own turn (a flank stays a flank). Both sides' FP for an exchange is paid
+after it, so the Tired penalty is judged on the fatigue each side came in with, as the forecast shows.
+The forecast lists every term of each hit chance as chips (technique, DEX vs AGL, flank, height,
+allies, ground, fatigue, skills).
 
 **Hit chance** = clamp(5, 95):
 `65 + technique accuracy + DEX×2 − target AGL×2 + heightDiff×5 + facingBonus + assist − terrain.avoid − fatiguePenalties` (+15 when the target attacks back or is too Spent to react)
@@ -184,20 +188,25 @@ skippable on tap.
 
 - **XP during battle** (classic rules): XP comes **only from landing a blow**. A hit earns
   30 + 100 × (damage ÷ target max HP), so more damage earns slightly more, and a defeating blow
-  adds 200. Head-on hits earn ×1, side ×0.8, rear ×0.5 (the defeat bonus isn't reduced). XP scales with the level gap:
-  ×(1 + 0.2 × (target level − attacker level)), limited to ×0.1–×3. Reactions that don't land
-  a blow earn nothing. Only the player's side earns XP.
-  The rates were halved (75 / 200 / 400 before) because kills now take more hits (ADR 0014, 0015):
-  a front-line pilot gains about one level per early battle, fewer later as the level gap shrinks.
-- **Levels:** 500 XP per level; leftover XP carries over. Each level-up happens the moment it's
+  adds 200. Head-on hits earn ×1, side ×0.8, rear ×0.5 (the defeat bonus isn't reduced). Everything is
+  then ×1.25 (`xpScale`), and scaled by the level gap (gap = target level − attacker level):
+  above 0, ×(1 + 0.30·gap + 0.05·gap²) up to ×4; below 0, ×0.72^|gap| down to ×0.05. So a foe
+  3 levels up pays ×2.35 and one 3 levels down only ×0.37. Reactions that don't land a blow earn
+  nothing. Only the player's side earns XP. The forecast shows a "Tougher foe: XP ×1.8" or
+  "Weaker foe: XP ×0.5" chip. The base rates were halved (75 / 200 / 400 before) because kills now
+  take more hits (ADR 0014, 0015); ADR 0016 then added the 25%, the steeper gap and the level cost.
+- **Levels:** 500 XP for level 1 → 2, then 6% more for each level after (530, 560, … 770 at level 10,
+  890 at level 14), so high levels come slower; leftover XP carries over. Each level-up happens the moment it's
   earned, mid-battle, and gives +2 max HP and **3 attribute points the player assigns** (AI
   allies spend theirs on their lowest attribute). Unspent points can be spent later.
 - **Techniques:** each frame faction (Order, militia, Ottoman, corsair, Scala) has its own list of
-  attacks (`packages/content/data/attacks.json`, 46 in total). What a pilot can learn depends on
+  attacks (`packages/content/data/attacks.json`, 71 in total, 4 to 6 per faction and weapon pool). What a pilot can learn depends on
   the weapon type and frame weight class; when they can use it depends on a **pilot level** (`level` in `attacks.json`, 3 to 14) and on
   stat requirements: both must be met (ADR 0015). Nobody has more than the two starters at levels 1-2;
-  entry techniques open at levels 3-4, mid ones at 6-9, advanced ones at 10-14 (curve in
-  `docs/ATTACKS.md`). Techniques held back only by level are listed locked with "Unlocks at level N";
+  entry techniques open at levels 3-4, mid ones at 5-10, master ones at 13-14 (curve in
+  `docs/ATTACKS.md`). **A technique opened at a higher level is always worth more** (ADR 0017): at
+  level L it is worth 1.10 + 0.09 × (L − 3) plain strikes (about 1.1× at level 3, 2× at level 13), and
+  stronger techniques also get cheaper and more accurate for their power as they rank up. Techniques held back only by level are listed locked with "Unlocks at level N";
   the level-up panel and log announce "New technique" when a level or a stat unlocks one.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.

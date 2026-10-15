@@ -172,7 +172,7 @@ export const AttackSchema = z
       'volley',
       'throw',
     ]),
-    /** Per-strike power; AP, FP and accuracy follow from it (see techniqueCost). */
+    /** Per-strike power; AP, FP and accuracy follow from it and the level (see techniqueStats). */
     power: z.number().positive(),
     minRange: z.number().int().min(1).optional(),
     maxRange: z.number().int().min(1).optional(),
@@ -181,9 +181,8 @@ export const AttackSchema = z
     fatigue: z.number().int().min(0).optional(),
     apDamage: z.number().int().min(0).optional(),
     noCounter: z.boolean().optional(),
-    /** Added to the formula's accuracy and AP (a slow, careful technique). */
+    /** Added to the formula's accuracy: the technique's own precision. */
     accuracyBonus: z.number().int().optional(),
-    apBonus: z.number().int().min(0).optional(),
     requires: statReq,
     /** Pilot level at which the technique opens (stat requirements must also be met). */
     level: z.number().int().min(1).max(30).default(1),

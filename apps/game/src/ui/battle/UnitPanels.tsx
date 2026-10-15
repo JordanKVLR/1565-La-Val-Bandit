@@ -1,5 +1,5 @@
 import type { BattleState, UnitState } from '@m1565/core';
-import { attackFpCost, attackRange, unlockedAttacks } from '@m1565/core';
+import { attackFpCost, attackRange, unlockedAttacks, xpToNextLevel } from '@m1565/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { t } from '../../i18n';
 import { createUnitViewer } from '../../render2d/stageFactory';
@@ -150,15 +150,13 @@ export function UnitDetails({
   onSpend?: () => void;
 }) {
   const [page, setPage] = useState<Page>('stats');
-  // Enemies' techniques stay a mystery; your own are listed.
-  const techniques = unit.side === 'player' ? unlockedAttacks(unit) : [];
+  // Any unit's techniques can be read at any time, enemies' included, so a fight can be planned.
+  const techniques = unlockedAttacks(unit);
   // Techniques only the pilot's level holds back are listed too, locked, in the order they open.
-  const upcoming =
-    unit.side === 'player'
-      ? unit.attacks
-          .filter((a) => (a.level ?? 1) > unit.level)
-          .sort((a, b) => (a.level ?? 1) - (b.level ?? 1))
-      : [];
+  // (Enemies show these as well: knowing what an enemy will learn is part of planning.)
+  const upcoming = unit.attacks
+    .filter((a) => (a.level ?? 1) > unit.level)
+    .sort((a, b) => (a.level ?? 1) - (b.level ?? 1));
   const reach = attackRange(unit.attacks[0]!, unit.weapon);
   const tabs: TabItem<Page>[] = [
     { id: 'stats', label: t('unit.tab.stats') },
@@ -233,7 +231,7 @@ export function UnitDetails({
                 kind="xp"
                 thin
                 value={unit.xp}
-                max={state.balance.xpPerLevel}
+                max={xpToNextLevel(unit.level, state.balance)}
                 class="bhud-xp"
               />
             )}
@@ -242,7 +240,9 @@ export function UnitDetails({
               <Stat label={t('unit.currentLevel')} value={unit.level} />
               <Stat
                 label={t('unit.expToNext')}
-                value={unit.side === 'player' ? state.balance.xpPerLevel - unit.xp : '—'}
+                value={
+                  unit.side === 'player' ? xpToNextLevel(unit.level, state.balance) - unit.xp : '—'
+                }
               />
               <Stat label={t('unit.move')} value={unit.mov} />
               <Stat label={t('unit.range')} value={rangeText(reach.min, reach.max)} />
@@ -279,39 +279,31 @@ export function UnitDetails({
       )}
       {page === 'techniques' && (
         <TabPanel id="techniques" idPrefix={idPrefix} class="ud-techniques">
-          {unit.side === 'player' ? (
-            <div class="tech-list">
-              {techniques.map((a) => (
-                <TechniqueCard
-                  key={a.id}
-                  attack={a}
-                  weapon={unit.weapon}
-                  fpCost={attackFpCost(state, unit, a)}
-                />
-              ))}
-              {upcoming.map((a) => (
-                <TechniqueCard
-                  key={a.id}
-                  attack={a}
-                  weapon={unit.weapon}
-                  fpCost={attackFpCost(state, unit, a)}
-                  unlockLevel={a.level ?? 1}
-                />
-              ))}
-            </div>
-          ) : (
-            <p class="bhud-muted">{t('unit.enemyTechniques')}</p>
-          )}
+          <div class="tech-list" data-testid="unit-techniques">
+            {techniques.map((a) => (
+              <TechniqueCard
+                key={a.id}
+                attack={a}
+                weapon={unit.weapon}
+                fpCost={attackFpCost(state, unit, a)}
+              />
+            ))}
+            {upcoming.map((a) => (
+              <TechniqueCard
+                key={a.id}
+                attack={a}
+                weapon={unit.weapon}
+                fpCost={attackFpCost(state, unit, a)}
+                unlockLevel={a.level ?? 1}
+              />
+            ))}
+          </div>
         </TabPanel>
       )}
       {page === 'skills' && (
         <TabPanel id="skills" idPrefix={idPrefix} class="ud-skills" testId="unit-skills">
-          {/* Your own pilots show what is still to come; enemies only what they have now. */}
-          <SkillList
-            skills={unit.skills ?? []}
-            level={unit.level}
-            hideLocked={unit.side !== 'player'}
-          />
+          {/* Skills still to come show their padlock and level, for enemies as for your own pilots. */}
+          <SkillList skills={unit.skills ?? []} level={unit.level} />
         </TabPanel>
       )}
     </Sheet>
