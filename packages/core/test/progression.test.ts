@@ -263,6 +263,14 @@ describe('save compatibility', () => {
     expect(() => deserializeBattle(JSON.stringify(old))).toThrow(OutdatedSaveError);
   });
 
+  it('refuses a version 8 save, whose balance table lacks the new XP keys (NaN XP)', () => {
+    const oldBalance: Record<string, unknown> = { ...duel().balance };
+    delete oldBalance.xpScale;
+    delete oldBalance.xpLevelCostGrowth;
+    const old = { ...duel(), balance: oldBalance, saveVersion: 8 };
+    expect(() => deserializeBattle(JSON.stringify(old))).toThrow(OutdatedSaveError);
+  });
+
   it('round-trips a current save', () => {
     const s = duel();
     expect(deserializeBattle(JSON.stringify(s))).toEqual(JSON.parse(JSON.stringify(s)));

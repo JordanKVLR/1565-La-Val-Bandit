@@ -86,13 +86,10 @@ describe('inventory', () => {
     const base = start().roster[0]!;
     const before = summarize(lib, base);
     const after = summarize(lib, { ...base, weapon: 'bastard-sword', charm: 'charm-def-1' });
-    const wep =
-      lib.weapons.get('bastard-sword')!.bonus.wep! - lib.weapons.get('arming-sword')!.bonus.wep!;
-    expect(after.stats.wep - before.stats.wep).toBe(wep);
+    const power = lib.weapons.get('bastard-sword')!.power;
+    expect(power).toBeGreaterThan(lib.weapons.get('arming-sword')!.power);
     expect(after.damage).toBe(
-      Math.round(
-        (after.stats.pow + after.stats.wep) * lib.balance.damagePerPoint * lib.balance.damageScale,
-      ),
+      Math.round((after.stats.pow + power) * lib.balance.damagePerPoint * lib.balance.damageScale),
     );
     expect(after.damage).toBeGreaterThan(before.damage);
     expect(after.block).toBeGreaterThan(before.block);

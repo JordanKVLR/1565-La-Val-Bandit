@@ -193,13 +193,13 @@ export const en = {
   'stat.dex': 'DEX',
   'stat.agl': 'AGL',
   'stat.def': 'DEF',
-  'stat.wep': 'WEP',
+  'stat.int': 'INT',
   'stat.bas.help': 'Base: +4 max HP per point',
   'stat.pow.help': 'Power: damage of every attack',
   'stat.dex.help': 'Dexterity: accuracy',
   'stat.agl.help': 'Agility: evasion and turn order',
   'stat.def.help': 'Defence: blocks 1.5 damage per point',
-  'stat.wep.help': 'Weapon skill: weapon damage',
+  'stat.int.help': 'Intelligence: Counter odds and force',
   'stat.hp': 'HP',
   'stat.ap': 'AP',
   'stat.fp': 'FP',
@@ -321,7 +321,7 @@ export const en = {
   // ── Combat forecast and reactions ───────────────────────────────────────────────────
   'forecast.label': 'Combat forecast',
   'forecast.reactions': 'Reactions',
-  'forecast.counterDamage': '{damage} dmg, or {reflect} back to you',
+  'forecast.counterDamage': '{damage} dmg (+25%) if it fails, or {reflect} back to you',
   'forecast.strikesBack': 'strikes back for {damage}',
   'forecast.reflects': 'reflects {n} on success',
   'forecast.halves': 'halves the blow',
@@ -346,7 +346,7 @@ export const en = {
   'reason.unanswerable': "{attack} can't be answered",
   'reason.attackerOutOfReach': 'Attacker out of reach',
   'reason.tooTiredToStrikeBack': 'Too tired to strike back',
-  'reason.frontOnly': 'Only against attacks from the front',
+  'reason.rearNoCounter': "Can't Counter a blow from behind",
 
   // ── Duel close-up, experience, level up ─────────────────────────────────────────────
   'closeUp.label': 'Duel',
@@ -502,7 +502,7 @@ export const en = {
     "Each named pilot has three skills of their own, gained at levels 1, 5 and 10: small passive edges such as better aim from high ground, less damage while defending, cheaper reactions or healing a little each turn. They work on their own and are already counted in the forecast. Open a unit's Info and tap Skills to read them; skills still to come show a padlock and the level they unlock at.",
   'help.rules.attributes': 'Attributes',
   'help.rules.attributesText':
-    '<b>BAS</b> +4 max HP per point · <b>POW</b> and <b>WEP</b> damage · <b>DEX</b> +2% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> −1.5 damage taken per point. Armaturas, weapons, charms and amulets add to them (max 32).',
+    "<b>BAS</b> +4 max HP per point · <b>POW</b> damage (plus the weapon's own power) · <b>INT</b> Counter odds and force · <b>DEX</b> +2% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> −1.5 damage taken per point. Armaturas, weapons, charms and amulets add to them (max 32).",
   'help.rules.ap': 'AP (blue)',
   'help.rules.apText':
     "Action points. Every turn starts with a full 100. Moving and attacking spend AP; reacting never does. Your card shows the cost of a move or technique before you commit. AP you don't spend is not wasted: it rests you (see FP).",
@@ -511,7 +511,7 @@ export const en = {
     "Fatigue. Your own attacks add their technique's FP (Slash and Thrust: 5). Reacting is what tires you most. At the end of your turn every 3 AP left unspent removes 2 FP, so a turn spent waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a turn.",
   'help.rules.reactions': 'Reactions',
   'help.rules.reactionsText':
-    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. From the front only, <b>Counter</b> (FP +20) is a gamble: if it works the blow is repelled onto the attacker at 1.25×; if it fails you take 1.25×. Higher DEX + AGL than the attacker improves the odds. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
+    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. <b>Counter</b> (the attacker's technique FP + 20) is a gamble: if it works the blow is repelled onto the attacker, harder the higher your INT; if it fails you take 1.25×. INT and higher DEX + AGL than the attacker improve the odds; a blow from the side lowers them. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
   'help.rules.position': 'Position',
   'help.rules.positionText':
     'Hits from the side (+10%) and rear (+25%, ×1.25 damage) are deadlier, so face the enemy at the end of your turn. A unit only turns on its own turn, never when it is struck, so the way you leave it facing is a real choice. Higher ground adds accuracy and damage. Each ally next to your target adds +5% (up to +15%).',

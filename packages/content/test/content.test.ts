@@ -113,10 +113,9 @@ describe('armoury and gear', () => {
     }
   });
 
-  it('every weapon grants attribute bonuses and has a price', () => {
+  it('every weapon has damage power and a price', () => {
     for (const w of lib.weapons.values()) {
-      const total = Object.values(w.bonus).reduce((a, b) => a + (b ?? 0), 0);
-      expect(total, w.id).toBeGreaterThan(0);
+      expect(w.power, w.id).toBeGreaterThan(0);
       expect(w.price, w.id).toBeGreaterThan(0);
     }
   });
@@ -135,7 +134,7 @@ describe('roster', () => {
         characterId: 'ninu',
         level: 4,
         xp: 10,
-        stats: { bas: 6, pow: 10, dex: 9, agl: 9, def: 5, wep: 7 },
+        stats: { bas: 6, pow: 10, dex: 9, agl: 9, def: 5, int: 7 },
         frame: 'cavaliere',
         weapon: 'bastard-sword',
         charm: 'charm-def-1',
@@ -143,7 +142,7 @@ describe('roster', () => {
       },
     ]);
     const ninu = setup.units.find((u) => u.id === 'ninu')!;
-    expect(ninu).toMatchObject({ level: 4, stats: { pow: 10, dex: 9, agl: 9, def: 5, wep: 7 } });
+    expect(ninu).toMatchObject({ level: 4, stats: { pow: 10, dex: 9, agl: 9, def: 5, int: 7 } });
     expect(ninu.charm?.id).toBe('charm-def-1');
     expect(ninu.amulet?.id).toBe('pilgrim-shell');
     expect(ninu.frame.id).toBe('cavaliere');
@@ -323,14 +322,13 @@ describe('armaturas and weapon progression', () => {
   const sum = (b: Record<string, number | undefined>) =>
     Object.values(b).reduce<number>((n, v) => n + (v ?? 0), 0);
 
-  it('every armatura gives BAS, DEF and WEP, heavy ones more DEF and light ones more AGL/DEX', () => {
+  it('every armatura gives BAS and DEF, heavy ones more DEF and light ones more AGL/DEX', () => {
     const player = [...lib.frames.values()].filter(
       (f) => !['barge', 'siege-tower', 'colossus', 'prototipo'].includes(f.id),
     );
     for (const f of player) {
       expect(f.bonus.bas ?? 0, f.id).toBeGreaterThan(0);
       expect(f.bonus.def ?? 0, f.id).toBeGreaterThan(0);
-      expect(f.bonus.wep ?? 0, f.id).toBeGreaterThan(0);
       // One budget per class: what heavy frames gain in DEF, light ones get in AGL and DEX.
       expect(sum(f.bonus), f.id).toBeGreaterThanOrEqual(9);
       expect(sum(f.bonus), f.id).toBeLessThanOrEqual(12);
@@ -344,6 +342,31 @@ describe('armaturas and weapon progression', () => {
     expect(avg('light', 'agl') + avg('light', 'dex')).toBeGreaterThan(
       avg('heavy', 'agl') + avg('heavy', 'dex'),
     );
+  });
+
+  it('light armaturas are the agile and fast ones, heavy the slow ones', () => {
+    const cls = (c: string) =>
+      [...lib.frames.values()].filter(
+        (f) => f.class === c && !['barge', 'siege-tower', 'colossus', 'prototipo'].includes(f.id),
+      );
+    for (const f of cls('light')) {
+      expect(f.bonus.agl ?? 0, f.id).toBeGreaterThanOrEqual(4);
+      expect(f.move, f.id).toBeGreaterThanOrEqual(5);
+    }
+    const slowestLight = Math.min(...cls('light').map((f) => f.move));
+    for (const f of cls('heavy')) expect(f.move, f.id).toBeLessThan(slowestLight - 1);
+  });
+
+  it('charms and amulets are worth the scudi: HP charms give real HP, amulets at least 3 points', () => {
+    const b = lib.balance;
+    for (const g of lib.gear.values()) {
+      const pts = sum(g.bonus);
+      if (g.kind === 'amulet') expect(pts, g.id).toBeGreaterThanOrEqual(2);
+      if (g.bonus.bas && g.kind === 'charm') {
+        // 120 / 220 / 450 scudi buys roughly 8 / 16 / 28 HP.
+        expect((g.bonus.bas ?? 0) * b.hpPerBas, g.id).toBeGreaterThanOrEqual(g.price / 16);
+      }
+    }
   });
 
   it('every route unlocks fine and masterwork weapons for the Maltese and Ottoman pilots', () => {

@@ -9,16 +9,14 @@ import {
   conditionMet,
   counterChance,
   createBattle,
-  deserializeBattle,
   findAttack,
   forecastAttack,
   reactionChoices,
   requireUnit,
-  SAVE_VERSION,
   skillsUnlockedAt,
   xpFor,
 } from '../src';
-import { GUN, makeMap, setup, unit } from './fixtures';
+import { makeMap, setup, unit } from './fixtures';
 
 type Over = Partial<Omit<UnitSpec, 'stats'>> & { stats?: Partial<PilotStats> };
 
@@ -375,21 +373,5 @@ describe('level-up unlocks', () => {
     const up = events.find((e) => e.type === 'levelUp');
     expect(up).toBeDefined();
     expect(up).not.toHaveProperty('newSkills');
-  });
-});
-
-describe('skills and saves', () => {
-  it('a version 7 battle save loads with no skills', () => {
-    const { state } = duel({ a: { weapon: GUN } });
-    const old = {
-      ...state,
-      saveVersion: 7,
-      units: state.units.map(({ skills: _s, ...u }) => u),
-    };
-    const loaded = deserializeBattle(JSON.stringify(old));
-    expect(loaded.saveVersion).toBe(SAVE_VERSION);
-    expect(loaded.units.every((u) => Array.isArray(u.skills) && u.skills.length === 0)).toBe(true);
-    const bare = deserializeBattle(JSON.stringify({ saveVersion: 7 }));
-    expect(bare.units).toEqual([]);
   });
 });

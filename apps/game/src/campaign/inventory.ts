@@ -255,7 +255,7 @@ export function summarize(lib: Library, entry: RosterEntry): LoadoutSummary {
     stats,
     hp: maxHpFor(entry.level, stats.bas, frame?.hp ?? 0, b),
     move: frame?.move ?? 0,
-    damage: Math.round((stats.pow + stats.wep) * b.damagePerPoint * b.damageScale),
+    damage: Math.round((stats.pow + (weapon?.power ?? 0)) * b.damagePerPoint * b.damageScale),
     accuracy: stats.dex * b.dexHitFactor,
     block: Math.round(stats.def * b.defDamagePerPoint * b.damageScale * 10) / 10,
     reach: weapon ? `${t(`weaponType.${weapon.type}`)} ${range}` : '',

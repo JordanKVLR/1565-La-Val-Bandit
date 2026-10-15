@@ -232,7 +232,10 @@ function resolveAttack(
   // partway through, a hidden penalty the forecast never mentioned.
   const attackFp = attackFpCost(state, attacker, attack);
   const backAttack = attackBackWith(state, target, attacker.pos, backAttackId);
-  const reactionFp = reactionFpCost(state, target, reaction, attacker.pos, backAttack.id);
+  const reactionFp = reactionFpCost(state, target, reaction, attacker.pos, backAttack.id, {
+    attacker,
+    attack,
+  });
   attacker.facing = facingToward(attacker.pos, target.pos, attacker.facing);
 
   const pending: BattleEvent[] = [];
@@ -247,7 +250,7 @@ function resolveAttack(
     state.rng = rng;
     counter = { success, chance };
     if (success) {
-      // The blow is turned aside and driven back into the attacker at 1.25×.
+      // The blow is turned aside and driven back into the attacker, harder the sharper the defender's INT.
       const n = strikeNumbers(state, attacker, target, attacker.pos, attack);
       const incoming = damageFor(state, n, target, NO_REACTION) * (attack.hits ?? 1);
       strikes.push({
@@ -265,7 +268,7 @@ function resolveAttack(
         state,
         target,
         attacker,
-        reflectDamage(state, incoming),
+        reflectDamage(state, incoming, target),
         n.zone,
         pending,
       );

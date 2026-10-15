@@ -44,10 +44,10 @@ const id = z.string().regex(/^[a-z0-9-]+$/);
 const coord = z.tuple([z.number().int().min(0), z.number().int().min(0)]);
 const facing = z.enum(['north', 'east', 'south', 'west']);
 const stat = z.number().int().min(0).max(32);
-/** BAS max HP · POW damage · DEX accuracy · AGL evasion · DEF damage blocked · WEP weapon damage. */
-const stats = z.object({ bas: stat, pow: stat, dex: stat, agl: stat, def: stat, wep: stat });
-/** Generic battle units give POW/DEX/AGL; BAS, DEF and WEP are derived from level and frame. */
-const partialStats = stats.partial({ bas: true, def: true, wep: true });
+/** BAS max HP · POW damage · DEX accuracy · AGL evasion · DEF damage blocked · INT Counter chance and force. */
+const stats = z.object({ bas: stat, pow: stat, dex: stat, agl: stat, def: stat, int: stat });
+/** Generic battle units give POW/DEX/AGL; BAS, DEF and INT are derived from level and frame. */
+const partialStats = stats.partial({ bas: true, def: true, int: true });
 /** Attribute bonuses from gear. Most are positive; heavy frames may slow (negative AGL). */
 const bonus = z
   .object({
@@ -56,7 +56,7 @@ const bonus = z
     dex: z.number().int(),
     agl: z.number().int(),
     def: z.number().int(),
-    wep: z.number().int(),
+    int: z.number().int(),
   })
   .partial()
   .strict();
@@ -69,6 +69,8 @@ export const WeaponSchema = z
     id,
     name: z.string().min(1),
     type: z.enum(WEAPON_TYPES),
+    /** The weapon's own damage, added to the wielder's POW. */
+    power: z.number().int().min(0),
     /** Added to the wielder's attributes. */
     bonus,
     /** AP of the weapon's main ranged attack (Fire, Throw). */
@@ -124,7 +126,7 @@ export const GearSchema = z.object({
 });
 
 const rate = z.number().int().min(0).max(100);
-const growth = z.object({ bas: rate, pow: rate, dex: rate, agl: rate, def: rate, wep: rate });
+const growth = z.object({ bas: rate, pow: rate, dex: rate, agl: rate, def: rate, int: rate });
 const allegiance = z.enum(['malta', 'ottoman']);
 export const CharacterSchema = z.object({
   id,
@@ -150,7 +152,7 @@ export const BalanceSchema = z
   .strict();
 
 const req = z.number().int().min(0).optional();
-const statReq = z.object({ bas: req, pow: req, dex: req, agl: req, def: req, wep: req }).strict();
+const statReq = z.object({ bas: req, pow: req, dex: req, agl: req, def: req, int: req }).strict();
 
 /** A faction technique, unlocked by weapon type, frame class and the pilot's stats. */
 export const AttackSchema = z

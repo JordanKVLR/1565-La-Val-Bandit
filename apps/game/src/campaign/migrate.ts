@@ -13,12 +13,14 @@ type Raw = Record<string, unknown>;
  * could use; version 2 has the six classic attributes and real items. Pilots keep their
  * equipment, and each owned design becomes one spare item in the stores. Version 3 adds the
  * difficulty (older saves play on Knight, the balance they were made with), the New Game+
- * cycle and the ending reached.
+ * cycle and the ending reached. Version 4 replaced the WEP attribute with INT (a pilot's old
+ * WEP carries over as INT, and weapons now carry their own damage).
  */
 export function migrateCampaign(lib: Library, raw: Raw): CampaignSave | null {
   let save = raw;
   if (save.version === 1) save = v1to2(lib, save);
   if (save.version === 2) save = v2to3(save);
+  if (save.version === 3) save = v3to4(save);
   if (save.version !== CAMPAIGN_SAVE_VERSION) return null;
   // Guard against hand-edited or damaged fields rather than refusing the save.
   return {
@@ -52,6 +54,14 @@ function v2to3(raw: Raw): Raw {
   };
 }
 
+function v3to4(raw: Raw): Raw {
+  const roster = ((raw.roster as Raw[] | undefined) ?? []).map((r) => {
+    const { wep, ...stats } = (r.stats ?? {}) as Record<string, number>;
+    return { ...r, stats: { ...stats, int: stats.int ?? wep ?? 5 } };
+  });
+  return { ...raw, version: 4, roster };
+}
+
 /** Old builds could pile points into one stat; the classic scale stops at the cap. */
 function capStats(stats: PilotStats, max: number): PilotStats {
   const out = { ...stats };
@@ -78,7 +88,7 @@ function v1to2(lib: Library, raw: Raw): Raw {
           dex: skl,
           agl: s.agi ?? base?.agl ?? 6,
           def: s.def ?? base?.def ?? 3,
-          wep: Math.max(3, Math.round((str + skl) / 2) - 1),
+          int: Math.max(3, Math.round((str + skl) / 2) - 1),
         },
         lib.balance.statMax,
       ),

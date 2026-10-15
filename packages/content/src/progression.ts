@@ -10,7 +10,7 @@ export function growthAt(level: number, rate: number): number {
   return Math.floor((level * rate) / 100) - Math.floor(((level - 1) * rate) / 100);
 }
 
-const KEYS = ['bas', 'pow', 'dex', 'agl', 'def', 'wep'] as const;
+const KEYS = ['bas', 'pow', 'dex', 'agl', 'def', 'int'] as const;
 
 /**
  * Typical stats for a character who has reached `level`: base stats plus the stat points from
@@ -39,7 +39,7 @@ export function statsAtLevel(
 }
 
 /**
- * BAS/DEF/WEP for generic units that only list POW/DEX/AGL: they grow with level, and heavier
+ * BAS/DEF/INT for generic units that only list POW/DEX/AGL: they grow with level, and heavier
  * frames are sturdier. Enemies are kept lighter than allied militia, so fights are won by tactics
  * rather than attrition (tuned with the balance simulation).
  */
@@ -47,12 +47,12 @@ export function derivedStats(
   level: number,
   frameClass: 'light' | 'medium' | 'heavy',
   side: 'player' | 'enemy' = 'enemy',
-): Pick<Stats, 'bas' | 'def' | 'wep'> {
+): Pick<Stats, 'bas' | 'def' | 'int'> {
   const heft = frameClass === 'heavy' ? 2 : frameClass === 'medium' ? 1 : 0;
   const mine = side === 'player';
   return {
     bas: (mine ? 4 : 3) + Math.round(level * 0.5) + heft,
     def: mine ? 2 + Math.round(level * 0.5) + heft * 2 : 1 + Math.round(level * 0.3) + heft,
-    wep: 4 + Math.round(level * 0.5),
+    int: 4 + Math.round(level * 0.5),
   };
 }

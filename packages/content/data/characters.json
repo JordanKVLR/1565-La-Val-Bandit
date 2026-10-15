@@ -8,7 +8,7 @@
       "dex": 5,
       "agl": 6,
       "def": 4,
-      "wep": 5
+      "int": 5
     },
     "growth": {
       "bas": 50,
@@ -16,7 +16,7 @@
       "dex": 55,
       "agl": 55,
       "def": 40,
-      "wep": 58
+      "int": 58
     },
     "frame": "haddiem",
     "weapon": "arming-sword",
@@ -32,7 +32,7 @@
       "dex": 8,
       "agl": 6,
       "def": 3,
-      "wep": 6
+      "int": 6
     },
     "growth": {
       "bas": 35,
@@ -40,7 +40,7 @@
       "dex": 70,
       "agl": 50,
       "def": 30,
-      "wep": 53
+      "int": 53
     },
     "frame": "moschetta",
     "weapon": "arquebus",
@@ -55,7 +55,7 @@
       "dex": 8,
       "agl": 5,
       "def": 6,
-      "wep": 7
+      "int": 7
     },
     "growth": {
       "bas": 45,
@@ -63,7 +63,7 @@
       "dex": 50,
       "agl": 35,
       "def": 55,
-      "wep": 53
+      "int": 53
     },
     "frame": "cavaliere",
     "weapon": "bastard-sword",
@@ -78,7 +78,7 @@
       "dex": 5,
       "agl": 5,
       "def": 5,
-      "wep": 5
+      "int": 5
     },
     "growth": {
       "bas": 60,
@@ -86,7 +86,7 @@
       "dex": 40,
       "agl": 45,
       "def": 50,
-      "wep": 48
+      "int": 48
     },
     "frame": "haddiem",
     "weapon": "pike",
@@ -101,7 +101,7 @@
       "dex": 7,
       "agl": 6,
       "def": 3,
-      "wep": 5
+      "int": 5
     },
     "growth": {
       "bas": 35,
@@ -109,7 +109,7 @@
       "dex": 65,
       "agl": 50,
       "def": 30,
-      "wep": 50
+      "int": 50
     },
     "frame": "moschetta",
     "weapon": "arquebus",
@@ -124,7 +124,7 @@
       "dex": 9,
       "agl": 5,
       "def": 4,
-      "wep": 6
+      "int": 6
     },
     "growth": {
       "bas": 35,
@@ -132,7 +132,7 @@
       "dex": 65,
       "agl": 40,
       "def": 35,
-      "wep": 53
+      "int": 53
     },
     "frame": "moschetta",
     "weapon": "arquebus",
@@ -147,7 +147,7 @@
       "dex": 7,
       "agl": 8,
       "def": 5,
-      "wep": 7
+      "int": 7
     },
     "growth": {
       "bas": 50,
@@ -155,7 +155,7 @@
       "dex": 50,
       "agl": 55,
       "def": 45,
-      "wep": 53
+      "int": 53
     },
     "frame": "kaptan",
     "weapon": "pike",
@@ -170,7 +170,7 @@
       "dex": 7,
       "agl": 8,
       "def": 3,
-      "wep": 6
+      "int": 6
     },
     "growth": {
       "bas": 40,
@@ -178,7 +178,7 @@
       "dex": 55,
       "agl": 65,
       "def": 30,
-      "wep": 50
+      "int": 50
     },
     "frame": "levend",
     "weapon": "kilij",
@@ -193,7 +193,7 @@
       "dex": 7,
       "agl": 6,
       "def": 5,
-      "wep": 7
+      "int": 7
     },
     "growth": {
       "bas": 55,
@@ -201,7 +201,7 @@
       "dex": 50,
       "agl": 45,
       "def": 45,
-      "wep": 53
+      "int": 53
     },
     "frame": "reis",
     "weapon": "cutlass",
@@ -216,7 +216,7 @@
       "dex": 9,
       "agl": 7,
       "def": 3,
-      "wep": 6
+      "int": 6
     },
     "growth": {
       "bas": 35,
@@ -224,7 +224,7 @@
       "dex": 65,
       "agl": 55,
       "def": 30,
-      "wep": 50
+      "int": 50
     },
     "frame": "humbaraci",
     "weapon": "grenado",

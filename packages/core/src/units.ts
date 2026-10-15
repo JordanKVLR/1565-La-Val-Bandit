@@ -16,7 +16,7 @@ export type FrameClass = 'light' | 'medium' | 'heavy';
 /**
  * The pilot's attributes, as in the classic tactical-RPG framework (each up to 32):
  * BAS max HP · POW damage of every attack · DEX accuracy · AGL evasion and turn order ·
- * DEF damage blocked · WEP weapon damage.
+ * DEF damage blocked · INT Counter chance and force.
  */
 export interface PilotStats {
   readonly bas: number;
@@ -24,11 +24,11 @@ export interface PilotStats {
   readonly dex: number;
   readonly agl: number;
   readonly def: number;
-  readonly wep: number;
+  readonly int: number;
 }
 
 export type StatName = keyof PilotStats;
-export const STAT_NAMES: readonly StatName[] = ['bas', 'pow', 'dex', 'agl', 'def', 'wep'];
+export const STAT_NAMES: readonly StatName[] = ['bas', 'pow', 'dex', 'agl', 'def', 'int'];
 
 /** Attribute bonuses granted by a piece of gear (armatura, weapon, charm or amulet). */
 export type StatBonus = Partial<PilotStats>;
@@ -37,7 +37,9 @@ export interface Weapon {
   readonly id: string;
   readonly name: string;
   readonly type: WeaponType;
-  /** Added to the wielder's attributes (WEP for most; some add DEX, AGL, POW or DEF). */
+  /** The weapon's own damage, added to the wielder's POW before multipliers. */
+  readonly power: number;
+  /** Added to the wielder's attributes (some weapons add DEX, AGL, DEF or INT). */
   readonly bonus: StatBonus;
   /** AP of the weapon's main ranged attack (Fire, Throw); melee starters have fixed costs. */
   readonly apCost: number;
@@ -197,7 +199,7 @@ export function createUnit(spec: UnitSpec, balance: BalanceConfig): UnitState {
 
 /** Every bonus added together, per attribute (may be negative). */
 export function sumBonuses(bonuses: readonly (StatBonus | undefined)[]): PilotStats {
-  const out = { bas: 0, pow: 0, dex: 0, agl: 0, def: 0, wep: 0 };
+  const out = { bas: 0, pow: 0, dex: 0, agl: 0, def: 0, int: 0 };
   for (const b of bonuses) for (const k of STAT_NAMES) out[k] += b?.[k] ?? 0;
   return out;
 }
@@ -209,7 +211,7 @@ export function pilotStats(u: Pick<UnitState, 'pilot'>): PilotStats {
 
 /** The unit's attributes with all gear: what combat and technique requirements use. */
 export function unitStats(u: PilotStats): PilotStats {
-  return { bas: u.bas, pow: u.pow, dex: u.dex, agl: u.agl, def: u.def, wep: u.wep };
+  return { bas: u.bas, pow: u.pow, dex: u.dex, agl: u.agl, def: u.def, int: u.int };
 }
 
 export function isHostile(a: Pick<UnitState, 'side'>, b: Pick<UnitState, 'side'>): boolean {
