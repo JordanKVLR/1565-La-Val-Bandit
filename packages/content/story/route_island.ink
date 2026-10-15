@@ -212,6 +212,10 @@ PAWLU: You could have gone to the Grand Master. Or to her. You could have been s
 NINU: I am something grander than a farmer. I'm a Maltese farmer who beat an empire.
 PAWLU: Ha! Your mother would have liked that answer.
 NINU: Tell me about her, Pa. Everything. We have all winter.
+PAWLU: Her name is Leyla. She was a granddaughter of Prince Cem's line, a slave in Turgut Reis's household, and she was kinder to the men at the oars than anyone on that ship. When you were born she broke the medallion in two, gave me half and you with it, and made me swear to take you somewhere nobody would ever look for a prince.
+PAWLU: So I brought you to Żejtun. Nobody has ever looked for a prince in Żejtun.
+NINU: And my father? My other father?
+PAWLU: That one you can ask yourself, at Birgu, if you want to. I think he would like to be asked.
 {aff_kateri >= 2:
     KATERI: And once you've told him everything, he's coming to Mdina to help me rebuild my father's workshop. He owes me about forty knee springs.
     NINU: Forty-one.

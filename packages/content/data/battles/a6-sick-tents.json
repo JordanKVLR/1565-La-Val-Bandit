@@ -5,10 +5,6 @@
   "seed": 16,
   "victory": [
     {
-      "type": "survive",
-      "rounds": 5
-    },
-    {
       "type": "rout"
     }
   ],
@@ -88,7 +84,7 @@
       "id": "anastagi",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 6,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [0, 4],
@@ -145,23 +141,6 @@
       "weapon": "arming-sword",
       "at": [2, 8],
       "facing": "east",
-      "ai": "aggressive",
-      "name": "Mdina Rider",
-      "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
-      }
-    },
-    {
-      "id": "rider-4",
-      "side": "enemy",
-      "controller": "ai",
-      "level": 5,
-      "frame": "haddiem",
-      "weapon": "pike",
-      "at": [4, 9],
-      "facing": "north",
       "ai": "aggressive",
       "name": "Mdina Rider",
       "stats": {

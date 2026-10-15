@@ -5,10 +5,6 @@
   "seed": 2,
   "victory": [
     {
-      "type": "survive",
-      "rounds": 4
-    },
-    {
       "type": "rout"
     }
   ],
@@ -105,23 +101,6 @@
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [11, 4],
-      "facing": "west",
-      "ai": "aggressive",
-      "name": "Sipahi",
-      "stats": {
-        "pow": 6,
-        "dex": 5,
-        "agl": 6
-      }
-    },
-    {
-      "id": "sipahi-2",
-      "side": "enemy",
-      "controller": "ai",
-      "level": 1,
-      "frame": "sipahi",
-      "weapon": "sipahi-lance",
-      "at": [11, 7],
       "facing": "west",
       "ai": "aggressive",
       "name": "Sipahi",

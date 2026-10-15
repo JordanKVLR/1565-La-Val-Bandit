@@ -7,10 +7,6 @@
     {
       "type": "defeatLeader",
       "unitId": "deniz"
-    },
-    {
-      "type": "survive",
-      "rounds": 5
     }
   ],
   "defeat": [

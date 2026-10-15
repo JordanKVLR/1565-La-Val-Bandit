@@ -7,6 +7,9 @@
     {
       "type": "survive",
       "rounds": 5
+    },
+    {
+      "type": "rout"
     }
   ],
   "defeat": [
