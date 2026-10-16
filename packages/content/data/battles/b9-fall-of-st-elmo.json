@@ -25,7 +25,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 12,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [7, 3],
@@ -36,7 +36,7 @@
       "id": "luis",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 12,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [8, 4],
@@ -47,7 +47,7 @@
       "id": "balbi",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 11,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 5],
@@ -58,7 +58,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 10,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [11, 2],
@@ -66,16 +66,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 5
+        "pow": 14,
+        "dex": 13,
+        "agl": 6
       }
     },
     {
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 10,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [11, 4],
@@ -83,16 +83,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 5
+        "pow": 14,
+        "dex": 13,
+        "agl": 6
       }
     },
     {
       "id": "jan-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 10,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [11, 6],
@@ -100,16 +100,16 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 10,
-        "dex": 10,
-        "agl": 4
+        "pow": 13,
+        "dex": 13,
+        "agl": 5
       }
     },
     {
       "id": "jan-4",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 10,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [10, 1],
@@ -117,16 +117,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 5
+        "pow": 14,
+        "dex": 13,
+        "agl": 6
       }
     },
     {
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 9,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [5, 0],
@@ -134,16 +134,16 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 7
+        "pow": 13,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "levend-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 9,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [5, 9],
@@ -151,9 +151,9 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 7
+        "pow": 13,
+        "dex": 12,
+        "agl": 8
       }
     }
   ],

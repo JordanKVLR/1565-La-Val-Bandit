@@ -20,7 +20,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 19,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 8],
@@ -31,7 +31,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 18,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [4, 8],
@@ -42,7 +42,7 @@
       "id": "balbi",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 18,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 8],
@@ -53,7 +53,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 17,
       "frame": "lanza",
       "weapon": "pike",
       "at": [3, 7],
@@ -64,7 +64,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 17,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 7],
@@ -75,7 +75,7 @@
       "id": "tower",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 18,
       "frame": "siege-tower",
       "weapon": "tower-guns",
       "at": [5, 3],
@@ -83,9 +83,9 @@
       "ai": "hold",
       "name": "Scala's Siege Tower",
       "stats": {
-        "pow": 10,
-        "dex": 11,
-        "agl": 0
+        "pow": 14,
+        "dex": 16,
+        "agl": 1
       },
       "skills": ["hardened-veteran"]
     },
@@ -93,7 +93,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 18,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [3, 2],
@@ -101,9 +101,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 12,
-        "dex": 12,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       },
       "skills": ["marksman"]
     },
@@ -111,7 +111,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 18,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [8, 2],
@@ -119,16 +119,16 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 12,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       }
     },
     {
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 18,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [2, 4],
@@ -136,9 +136,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 8
+        "pow": 16,
+        "dex": 16,
+        "agl": 9
       },
       "skills": ["zealot"]
     },
@@ -146,7 +146,7 @@
       "id": "lev-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 18,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [9, 4],
@@ -154,16 +154,16 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 8
+        "pow": 16,
+        "dex": 16,
+        "agl": 9
       }
     },
     {
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 18,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 1],
@@ -171,9 +171,9 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 16,
+        "dex": 16,
+        "agl": 6
       }
     }
   ],

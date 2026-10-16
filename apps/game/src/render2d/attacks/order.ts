@@ -1263,4 +1263,13 @@ export const ORDER_SCRIPTS: AttackScripts = withVariants(ORDER_BASE, {
   'order-knell-of-saint-john': ['order-bell-ringer', '#f3d27a'],
   'order-halberd-hook': ['order-hedge-of-pikes', '#9ad0ff'],
   'order-charge-of-the-langues': ['order-knights-charge', '#ffe08a'],
+  'order-bastion-riposte': ['order-pilgrim-thrust', '#cfe3ff'],
+  'order-sword-of-saint-michael': ['order-last-rampart', '#f3d27a'],
+  'order-dawn-of-the-grand-master': ['order-eight-point', '#ffe08a'],
+  'order-cathedral-bell': ['order-shield-bash', '#cfe3ff'],
+  'order-gate-breaker': ['order-shieldbreaker', '#f3d27a'],
+  'order-judgement-of-the-langues': ['order-shield-bash', '#ffe08a'],
+  'order-pike-wall-of-aragon': ['order-hedge-of-pikes', '#cfe3ff'],
+  'order-lancers-reckoning': ['order-knights-charge', '#f3d27a'],
+  'order-valettes-sortie': ['order-knights-charge', '#ffe08a'],
 });

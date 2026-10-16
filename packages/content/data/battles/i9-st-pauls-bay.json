@@ -20,7 +20,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 12,
+      "level": 23,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 8],
@@ -31,7 +31,7 @@
       "id": "anastagi",
       "side": "player",
       "controller": "human",
-      "level": 12,
+      "level": 23,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [6, 8],
@@ -42,7 +42,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 22,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 9],
@@ -53,7 +53,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 21,
       "frame": "lanza",
       "weapon": "pike",
       "at": [4, 8],
@@ -64,7 +64,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 21,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 9],
@@ -75,23 +75,23 @@
       "id": "tercio",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 22,
       "frame": "bastiun",
       "weapon": "mace-shield",
       "at": [7, 8],
       "facing": "north",
       "name": "Tercio Sergeant",
       "stats": {
-        "pow": 10,
-        "dex": 8,
-        "agl": 4
+        "pow": 16,
+        "dex": 14,
+        "agl": 5
       }
     },
     {
       "id": "scala",
       "side": "enemy",
       "controller": "ai",
-      "level": 13,
+      "level": 24,
       "frame": "colossus",
       "weapon": "colossus-cannon",
       "at": [4, 3],
@@ -99,11 +99,11 @@
       "ai": "defensive",
       "name": "Scala",
       "stats": {
-        "pow": 16,
-        "dex": 13,
-        "agl": 5,
-        "def": 14,
-        "bas": 15
+        "pow": 22,
+        "dex": 18,
+        "agl": 6,
+        "def": 17,
+        "bas": 20
       },
       "portrait": "scala",
       "skills": ["hardened-veteran"]
@@ -112,7 +112,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 23,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [2, 4],
@@ -120,16 +120,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 15,
-        "dex": 11,
-        "agl": 5
+        "pow": 20,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "proto-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 23,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [9, 4],
@@ -137,16 +137,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 15,
-        "dex": 11,
-        "agl": 5
+        "pow": 20,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "reis",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 22,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [7, 4],
@@ -154,9 +154,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 15,
-        "dex": 11,
-        "agl": 8
+        "pow": 20,
+        "dex": 16,
+        "agl": 9
       },
       "skills": ["standard-bearer"]
     },
@@ -164,7 +164,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 22,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [3, 2],
@@ -172,9 +172,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 14,
-        "dex": 12,
-        "agl": 6
+        "pow": 20,
+        "dex": 18,
+        "agl": 7
       },
       "skills": ["marksman"]
     },
@@ -182,7 +182,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 22,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [8, 2],
@@ -190,9 +190,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 14,
-        "dex": 12,
-        "agl": 6
+        "pow": 20,
+        "dex": 18,
+        "agl": 7
       }
     }
   ],

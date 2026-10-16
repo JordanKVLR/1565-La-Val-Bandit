@@ -32,7 +32,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 17,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 7],
@@ -43,7 +43,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 16,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [5, 9],
@@ -54,7 +54,7 @@
       "id": "balbi",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 16,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 8],
@@ -65,7 +65,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 15,
       "frame": "lanza",
       "weapon": "pike",
       "at": [6, 7],
@@ -76,7 +76,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 15,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 8],
@@ -87,7 +87,7 @@
       "id": "sapper",
       "side": "enemy",
       "controller": "ai",
-      "level": 10,
+      "level": 17,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [10, 1],
@@ -95,16 +95,16 @@
       "ai": "defensive",
       "name": "Master Sapper",
       "stats": {
-        "pow": 12,
-        "dex": 12,
-        "agl": 5
+        "pow": 16,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 16,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [0, 0],
@@ -112,16 +112,16 @@
       "ai": "hold",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 12,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       }
     },
     {
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 16,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [11, 0],
@@ -129,16 +129,16 @@
       "ai": "hold",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 12,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       }
     },
     {
       "id": "dig-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 16,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [0, 5],
@@ -146,16 +146,16 @@
       "ai": "aggressive",
       "name": "Lağımcı",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 7
+        "pow": 14,
+        "dex": 14,
+        "agl": 8
       }
     },
     {
       "id": "dig-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 16,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [11, 4],
@@ -163,16 +163,16 @@
       "ai": "aggressive",
       "name": "Lağımcı",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 7
+        "pow": 14,
+        "dex": 14,
+        "agl": 8
       }
     },
     {
       "id": "dig-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 16,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [11, 6],
@@ -180,16 +180,16 @@
       "ai": "aggressive",
       "name": "Lağımcı",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 7
+        "pow": 14,
+        "dex": 14,
+        "agl": 8
       }
     },
     {
       "id": "jan-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 16,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [8, 2],
@@ -197,9 +197,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 6
+        "pow": 16,
+        "dex": 14,
+        "agl": 7
       }
     }
   ],

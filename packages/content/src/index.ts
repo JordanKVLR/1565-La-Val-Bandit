@@ -30,6 +30,7 @@ import attackData from '../data/attacks.json';
 import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
 import bondData from '../data/bonds.json';
+import campaignData from '../data/campaign.json';
 import campData from '../data/camp.json';
 import classData from '../data/classes.json';
 import castData from '../data/cast.json';
@@ -49,6 +50,7 @@ import {
   BarksSchema,
   BattleSourceSchema,
   BondsSchema,
+  CampaignOrderSchema,
   CampSceneSchema,
   ClassSchema,
   RecipeSchema,
@@ -196,6 +198,7 @@ export function loadLibrary() {
     shop: ShopItemSchema.array().parse(shopData),
     recipes: RecipeSchema.array().parse(recipeData),
     camp: CampSceneSchema.array().parse(campData),
+    order: CampaignOrderSchema.parse(campaignData),
     classes: byId(ClassSchema.array().parse(classData), 'class'),
     skirmishes: SkirmishSchema.array().parse(skirmishData),
     bondTable: BondsSchema.parse(bondData),

@@ -19,7 +19,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 5,
       "frame": "levend",
       "weapon": "kilij",
       "at": [4, 5],
@@ -30,7 +30,7 @@
       "id": "yusuf",
       "side": "player",
       "controller": "human",
-      "level": 2,
+      "level": 6,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [3, 4],
@@ -41,15 +41,15 @@
       "id": "corsair-1",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 5,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [5, 3],
       "facing": "east",
       "name": "Corsair Hamid",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 7,
+        "dex": 7,
         "agl": 6
       }
     },
@@ -57,15 +57,15 @@
       "id": "corsair-2",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 5,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 6],
       "facing": "south",
       "name": "Gunner Ilyas",
       "stats": {
-        "pow": 5,
-        "dex": 7,
+        "pow": 7,
+        "dex": 9,
         "agl": 4
       }
     },
@@ -73,7 +73,7 @@
       "id": "raider-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 5,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [10, 9],
@@ -81,8 +81,8 @@
       "ai": "aggressive",
       "name": "Militia Raider",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 7,
+        "dex": 7,
         "agl": 5
       }
     },
@@ -90,7 +90,7 @@
       "id": "raider-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 5,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [11, 8],
@@ -98,8 +98,8 @@
       "ai": "aggressive",
       "name": "Militia Raider",
       "stats": {
-        "pow": 6,
-        "dex": 5,
+        "pow": 8,
+        "dex": 7,
         "agl": 5
       }
     },
@@ -107,7 +107,7 @@
       "id": "raider-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 5,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [9, 7],
@@ -115,8 +115,8 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 4,
-        "dex": 7,
+        "pow": 6,
+        "dex": 9,
         "agl": 5
       },
       "skills": ["marksman"]
@@ -125,7 +125,7 @@
       "id": "knight-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 5,
       "frame": "cavaliere",
       "weapon": "arming-sword",
       "at": [10, 8],
@@ -133,8 +133,8 @@
       "ai": "aggressive",
       "name": "Knight of Provence",
       "stats": {
-        "pow": 7,
-        "dex": 6,
+        "pow": 9,
+        "dex": 8,
         "agl": 4
       }
     }
@@ -159,7 +159,7 @@
               "id": "raider-4",
               "side": "enemy",
               "controller": "ai",
-              "level": 1,
+              "level": 5,
               "frame": "haddiem",
               "weapon": "pike",
               "at": [11, 9],
@@ -167,8 +167,8 @@
               "ai": "aggressive",
               "name": "Militia Raider",
               "stats": {
-                "pow": 5,
-                "dex": 5,
+                "pow": 7,
+                "dex": 7,
                 "agl": 5
               }
             }

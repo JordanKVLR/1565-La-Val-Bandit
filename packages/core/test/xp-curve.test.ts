@@ -85,12 +85,36 @@ describe('XP in a fight', () => {
     return state;
   };
 
-  it('pays 25% more than before at equal levels (xpScale)', () => {
+  it('applies the global rate (xpScale) on top of the base rates', () => {
     const s = fight(5, 5);
     const a = requireUnit(s, 'a');
     const t = requireUnit(s, 't');
     const flat = xpFor({ ...s, balance: { ...s.balance, xpScale: 1 } }, a, t, 20, 'front', false);
-    expect(xpFor(s, a, t, 20, 'front', false)).toBe(Math.round(flat * 1.25));
+    expect(
+      Math.abs(xpFor(s, a, t, 20, 'front', false) - flat * s.balance.xpScale),
+    ).toBeLessThanOrEqual(1);
+  });
+
+  it('pays more at higher levels, in step with what a level costs, so a battle is worth the same share of a level', () => {
+    const grow = { xpLevelCostGrowth: 0.06 };
+    const earn = (level: number) => {
+      const s = fight(level, level);
+      const b = { ...s.balance, ...grow };
+      return xpFor(
+        { ...s, balance: b },
+        requireUnit(s, 'a'),
+        requireUnit(s, 't'),
+        20,
+        'front',
+        false,
+      );
+    };
+    const low = earn(1);
+    const high = earn(21);
+    // Level 21 costs 2.2× what level 1 does. A blow pays nearly that much more (a high-level
+    // target has more HP, so the same damage is a smaller share of it).
+    expect(high / low).toBeGreaterThan(1.6);
+    expect(high / low).toBeLessThan(2.4);
   });
 
   it('pays more against a higher-level foe and less against a lower-level one', () => {

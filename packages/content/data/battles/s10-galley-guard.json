@@ -23,7 +23,7 @@
       [8, 9]
     ],
     "facing": "north",
-    "level": 6,
+    "level": 13,
     "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
   },
   "units": [
@@ -31,7 +31,7 @@
       "id": "guard-c",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [2, 0],
@@ -39,16 +39,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 16,
+        "dex": 14,
+        "agl": 6
       }
     },
     {
       "id": "guard-d",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [6, 0],
@@ -56,16 +56,16 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 5
+        "pow": 15,
+        "dex": 15,
+        "agl": 6
       }
     },
     {
       "id": "guard-e",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 13,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [10, 0],
@@ -73,9 +73,9 @@
       "ai": "aggressive",
       "name": "Algerian Reis",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 6
+        "pow": 16,
+        "dex": 14,
+        "agl": 7
       }
     }
   ],

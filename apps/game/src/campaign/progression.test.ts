@@ -43,7 +43,7 @@ describe('skillsLearned', () => {
   const levels = (lib.skillSets.get('ninu') ?? []).map((s) => s.level);
 
   it("lists the unlock levels a pilot's level-up crossed, not the starting skill", () => {
-    expect(levels).toEqual([1, 5, 10]);
+    expect(levels).toEqual([1, 5, 10, 15, 20, 25]);
     const at = (level: number) => [{ characterId: 'ninu', level }];
     expect(skillsLearned(lib, at(1), at(4))).toEqual([]);
     expect(skillsLearned(lib, at(4), at(5))).toEqual([5]);

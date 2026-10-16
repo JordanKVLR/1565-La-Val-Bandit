@@ -23,7 +23,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 16,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [4, 5],
@@ -34,7 +34,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 15,
       "frame": "levend",
       "weapon": "kilij",
       "at": [5, 5],
@@ -45,7 +45,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 15,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 5],
@@ -56,7 +56,7 @@
       "id": "yusuf",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 16,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [6, 5],
@@ -67,7 +67,7 @@
       "id": "leyla",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 14,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [7, 5],
@@ -78,7 +78,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 14,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [2, 1],
@@ -86,16 +86,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 10,
-        "dex": 8,
-        "agl": 5
+        "pow": 14,
+        "dex": 12,
+        "agl": 6
       }
     },
     {
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 14,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [6, 1],
@@ -103,9 +103,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 13,
+        "dex": 12,
+        "agl": 8
       },
       "skills": ["zealot"]
     },
@@ -113,7 +113,7 @@
       "id": "lev-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 14,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [7, 2],
@@ -121,16 +121,16 @@
       "ai": "aggressive",
       "name": "Scala's Sailor",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 13,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "gun-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 14,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 2],
@@ -138,9 +138,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 8,
-        "dex": 9,
-        "agl": 5
+        "pow": 12,
+        "dex": 13,
+        "agl": 6
       },
       "skills": ["marksman"]
     }

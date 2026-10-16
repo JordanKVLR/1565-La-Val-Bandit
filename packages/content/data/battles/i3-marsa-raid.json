@@ -20,7 +20,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 17,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [4, 9],
@@ -31,7 +31,7 @@
       "id": "anastagi",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 17,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [5, 8],
@@ -42,7 +42,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 16,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 8],
@@ -53,7 +53,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 15,
       "frame": "lanza",
       "weapon": "pike",
       "at": [6, 9],
@@ -64,7 +64,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 15,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 8],
@@ -75,7 +75,7 @@
       "id": "aga",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 17,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [4, 2],
@@ -83,9 +83,9 @@
       "ai": "hold",
       "name": "Camp Aga",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 5
+        "pow": 16,
+        "dex": 15,
+        "agl": 6
       },
       "skills": ["hardened-veteran"]
     },
@@ -93,7 +93,7 @@
       "id": "guard-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 16,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 2],
@@ -101,9 +101,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 5
+        "pow": 15,
+        "dex": 15,
+        "agl": 6
       },
       "skills": ["marksman"]
     },
@@ -111,7 +111,7 @@
       "id": "guard-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 16,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [6, 1],
@@ -119,9 +119,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 7
+        "pow": 15,
+        "dex": 14,
+        "agl": 8
       },
       "skills": ["zealot"]
     },
@@ -129,7 +129,7 @@
       "id": "guard-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 16,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [8, 4],
@@ -137,9 +137,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 16,
+        "dex": 14,
+        "agl": 6
       },
       "skills": ["standard-bearer"]
     },
@@ -147,7 +147,7 @@
       "id": "guard-4",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 16,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [5, 5],
@@ -155,16 +155,16 @@
       "ai": "aggressive",
       "name": "Camp Guard",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 7
+        "pow": 15,
+        "dex": 14,
+        "agl": 8
       }
     },
     {
       "id": "guard-5",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 16,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [9, 6],
@@ -172,9 +172,9 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "pow": 10,
-        "dex": 11,
-        "agl": 5
+        "pow": 14,
+        "dex": 15,
+        "agl": 6
       }
     }
   ],

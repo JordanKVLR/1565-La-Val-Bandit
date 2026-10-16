@@ -20,7 +20,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 4,
+      "level": 6,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [5, 8],
@@ -31,7 +31,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 4,
+      "level": 6,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [4, 9],
@@ -42,7 +42,7 @@
       "id": "deniz",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 6,
       "frame": "levend",
       "weapon": "kilij",
       "at": [4, 3],
@@ -54,7 +54,7 @@
       "id": "levend-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 5,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [7, 4],
@@ -62,8 +62,8 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 4,
-        "dex": 4,
+        "pow": 5,
+        "dex": 5,
         "agl": 6
       },
       "skills": ["zealot"]
@@ -72,7 +72,7 @@
       "id": "levend-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 5,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [8, 5],
@@ -80,8 +80,8 @@
       "ai": "defensive",
       "name": "Scala's Hireling",
       "stats": {
-        "pow": 4,
-        "dex": 4,
+        "pow": 5,
+        "dex": 5,
         "agl": 6
       }
     },
@@ -89,7 +89,7 @@
       "id": "scala",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 8,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [5, 2],
@@ -97,8 +97,8 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "pow": 6,
-        "dex": 6,
+        "pow": 7,
+        "dex": 7,
         "agl": 4
       },
       "portrait": "scala"

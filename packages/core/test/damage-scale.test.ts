@@ -107,10 +107,11 @@ describe('shipped XP rates', () => {
     expect(wholeKill).toBeLessThanOrEqual(DEFAULT_BALANCE.xpPerLevel * 1.5 * ratio);
   });
 
-  it('base rates are half of the pre-halving ones (75 / 200 / 400), then xpScale adds 25%', () => {
+  it('base rates are half of the pre-halving ones (75 / 200 / 400); xpScale then sets the pace', () => {
     expect(DEFAULT_BALANCE.xpHitBase).toBe(75 / 2.5);
     expect(DEFAULT_BALANCE.xpDamageShare).toBe(200 / 2);
     expect(DEFAULT_BALANCE.xpDefeat).toBe(400 / 2);
-    expect(DEFAULT_BALANCE.xpScale).toBe(1.25);
+    // 2.2×: about 1–1.5 levels a battle, so the company nears Lv 25 by the finale.
+    expect(DEFAULT_BALANCE.xpScale).toBe(2.2);
   });
 });

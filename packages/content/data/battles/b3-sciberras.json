@@ -20,7 +20,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 3,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [5, 8],
@@ -31,7 +31,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 3,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [4, 9],
@@ -42,7 +42,7 @@
       "id": "luis",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 3,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [6, 8],
@@ -53,7 +53,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 3,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [3, 8],
@@ -64,7 +64,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 1,
+      "level": 3,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 9],
@@ -75,7 +75,7 @@
       "id": "topcu",
       "side": "enemy",
       "controller": "ai",
-      "level": 2,
+      "level": 4,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 3],
@@ -83,8 +83,8 @@
       "ai": "hold",
       "name": "Topçu Aga",
       "stats": {
-        "pow": 6,
-        "dex": 7,
+        "pow": 7,
+        "dex": 8,
         "agl": 4
       }
     },
@@ -92,7 +92,7 @@
       "id": "yeniceri-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 3,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [4, 2],
@@ -100,8 +100,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 6,
+        "pow": 7,
+        "dex": 7,
         "agl": 4
       }
     },
@@ -109,7 +109,7 @@
       "id": "yeniceri-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 3,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [8, 2],
@@ -117,8 +117,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 6,
+        "pow": 7,
+        "dex": 7,
         "agl": 4
       }
     },
@@ -126,7 +126,7 @@
       "id": "levend-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 3,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [2, 4],
@@ -134,8 +134,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 6,
+        "dex": 6,
         "agl": 6
       }
     },
@@ -143,7 +143,7 @@
       "id": "levend-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 1,
+      "level": 3,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [10, 4],
@@ -151,8 +151,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 6,
+        "dex": 6,
         "agl": 6
       }
     }

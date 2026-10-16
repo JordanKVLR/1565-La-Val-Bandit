@@ -23,7 +23,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 20,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [9, 4],
@@ -34,7 +34,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 19,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 5],
@@ -45,7 +45,7 @@
       "id": "anastagi",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 20,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [6, 3],
@@ -56,7 +56,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 18,
       "frame": "lanza",
       "weapon": "pike",
       "at": [7, 6],
@@ -67,7 +67,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 18,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 3],
@@ -78,23 +78,23 @@
       "id": "tercio",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 18,
       "frame": "bastiun",
       "weapon": "mace-shield",
       "at": [7, 4],
       "facing": "west",
       "name": "Tercio Sergeant",
       "stats": {
-        "pow": 8,
-        "dex": 7,
-        "agl": 4
+        "pow": 13,
+        "dex": 12,
+        "agl": 5
       }
     },
     {
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 10,
+      "level": 20,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [1, 4],
@@ -102,16 +102,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 13,
-        "dex": 11,
-        "agl": 5
+        "pow": 18,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 19,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 2],
@@ -119,9 +119,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 12,
-        "dex": 12,
-        "agl": 6
+        "pow": 17,
+        "dex": 17,
+        "agl": 7
       },
       "skills": ["marksman"]
     },
@@ -129,7 +129,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 19,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [1, 6],
@@ -137,9 +137,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 13,
-        "dex": 11,
-        "agl": 6
+        "pow": 18,
+        "dex": 16,
+        "agl": 7
       },
       "skills": ["standard-bearer"]
     },
@@ -147,7 +147,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 19,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [0, 0],
@@ -155,9 +155,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 8
+        "pow": 17,
+        "dex": 15,
+        "agl": 9
       },
       "skills": ["zealot"]
     },
@@ -165,7 +165,7 @@
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 19,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [2, 8],
@@ -173,9 +173,9 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 16,
+        "dex": 17,
+        "agl": 6
       }
     }
   ],
@@ -199,16 +199,16 @@
               "id": "tercio-2",
               "side": "player",
               "controller": "human",
-              "level": 8,
+              "level": 18,
               "frame": "bastiun",
               "weapon": "mace-shield",
               "at": [9, 6],
               "facing": "west",
               "name": "Tercio Sergeant",
               "stats": {
-                "pow": 8,
-                "dex": 7,
-                "agl": 4
+                "pow": 13,
+                "dex": 12,
+                "agl": 5
               }
             }
           ]

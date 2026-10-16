@@ -23,7 +23,7 @@
       [10, 8]
     ],
     "facing": "north",
-    "level": 6,
+    "level": 13,
     "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
   },
   "units": [
@@ -31,7 +31,7 @@
       "id": "swimmer-a",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 13,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [1, 1],
@@ -39,16 +39,16 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 11,
-        "dex": 9,
-        "agl": 7
+        "pow": 15,
+        "dex": 13,
+        "agl": 8
       }
     },
     {
       "id": "swimmer-b",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 13,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [5, 1],
@@ -56,16 +56,16 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 11,
-        "dex": 9,
-        "agl": 7
+        "pow": 15,
+        "dex": 13,
+        "agl": 8
       }
     },
     {
       "id": "swimmer-c",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [10, 1],
@@ -73,9 +73,9 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 16,
+        "dex": 14,
+        "agl": 6
       }
     }
   ],
