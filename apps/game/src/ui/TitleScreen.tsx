@@ -17,6 +17,10 @@ import { SettingsPanel } from './SettingsPanel';
 interface Props {
   lib: Library;
   onNew: (difficulty: Difficulty) => void;
+  /** Today's challenge. */
+  onChallenge: () => void;
+  /** One line about today's challenge and the best result so far. */
+  challengeNote: string;
   onLoad: (slot: SlotId) => void;
   /** Starts New Game+ from a save that reached an ending. */
   onNewGamePlus: (slot: SlotId) => void;
@@ -46,7 +50,15 @@ type Panel = 'none' | 'load' | 'settings' | 'new' | 'ngplus' | 'codex';
  * The title: the name in inscriptional capitals on the left, one gold main action (Continue, or
  * New Game on a fresh install) and a quiet list of the rest on the right.
  */
-export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }: Props) {
+export function TitleScreen({
+  lib,
+  onNew,
+  onLoad,
+  onNewGamePlus,
+  onWatchIntro,
+  onChallenge,
+  challengeNote,
+}: Props) {
   const [panel, setPanel] = useState<Panel>('none');
   const saves = useMemo(() => readAll(lib), [lib]);
   const auto = saves.auto;
@@ -130,6 +142,15 @@ export function TitleScreen({ lib, onNew, onLoad, onNewGamePlus, onWatchIntro }:
               block
               label={t('codex.title')}
               onClick={() => setPanel('codex')}
+            />
+            <Button
+              variant="ghost"
+              size="lg"
+              block
+              label={t('challenge.title')}
+              detail={challengeNote}
+              testId="daily-challenge"
+              onClick={onChallenge}
             />
           </div>
         </nav>

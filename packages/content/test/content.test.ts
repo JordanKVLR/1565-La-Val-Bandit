@@ -412,8 +412,9 @@ describe('pilot skills', () => {
         seen.add(s.id);
       }
     }
+    // Named pilots' skills plus the enemy roles (standard-bearer, veteran, marksman, zealot).
     expect(lib.skills.size).toBeGreaterThanOrEqual(20);
-    expect(lib.skills.size).toBeLessThanOrEqual(30);
+    expect(lib.skills.size).toBeLessThanOrEqual(40);
   });
 
   it('only assigns skills to real characters, with short plain descriptions', () => {

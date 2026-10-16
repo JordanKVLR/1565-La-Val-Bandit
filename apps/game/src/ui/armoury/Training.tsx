@@ -1,10 +1,12 @@
 import type { StatName } from '@m1565/core';
+import { useState } from 'preact/hooks';
 import type { Library, RosterEntry } from '@m1565/content';
 import { t } from '../../i18n';
 import { Button, Chip, Sheet } from '../design';
 import { PilotAttributes, PilotSkills } from '../PilotAttributes';
 import { nameOf } from './model';
 import { PilotFace } from './PilotFace';
+import { bonusText } from '../battle/statInfo';
 
 /**
  * Spending stat points between battles, on a sheet: the pilot (with arrows to the next one),
@@ -17,6 +19,7 @@ export function TrainingSheet({
   pilotId,
   onPilot,
   onRaise,
+  onPromote,
   onClose,
   onBattle,
 }: {
@@ -25,6 +28,7 @@ export function TrainingSheet({
   pilotId: string;
   onPilot: (id: string) => void;
   onRaise: (id: string, stat: StatName) => void;
+  onPromote: (id: string, classId: string) => void;
   onClose: () => void;
   /** Set when opened from To battle: offers to leave the points for later. */
   onBattle: (() => void) | null;
@@ -108,7 +112,90 @@ export function TrainingSheet({
           />
         </div>
         <PilotSkills lib={lib} entry={entry} />
+        <PromotionPanel
+          key={entry.characterId}
+          lib={lib}
+          entry={entry}
+          name={name}
+          onPromote={(classId) => onPromote(entry.characterId, classId)}
+        />
       </div>
     </Sheet>
+  );
+}
+
+/**
+ * Promotion at the promotion level: pick one of the classes, once. Each shows its stat package
+ * and skill; choosing asks to confirm, because the choice is final.
+ */
+function PromotionPanel({
+  lib,
+  entry,
+  name,
+  onPromote,
+}: {
+  lib: Library;
+  entry: RosterEntry;
+  name: string;
+  onPromote: (classId: string) => void;
+}) {
+  const [pick, setPick] = useState<string | null>(null);
+  const need = lib.balance.promotionLevel;
+  const chosen = entry.class ? lib.classes.get(entry.class) : undefined;
+  if (chosen) {
+    return (
+      <section class="tr-promo" data-testid="promotion">
+        <h3 class="tr-promo__h">{t('promotion.title')}</h3>
+        <p class="tr-promo__done">
+          <Chip tone="gold" icon="star" label={t('promotion.class', { name: chosen.name })} />
+          <span>
+            {chosen.skill.name}: {chosen.skill.description}
+          </span>
+        </p>
+      </section>
+    );
+  }
+  if (entry.level < need) {
+    return (
+      <section class="tr-promo" data-testid="promotion">
+        <h3 class="tr-promo__h">{t('promotion.title')}</h3>
+        <p class="tr-promo__hint">{t('promotion.hint', { n: need })}</p>
+      </section>
+    );
+  }
+  const picked = pick ? lib.classes.get(pick) : undefined;
+  return (
+    <section class="tr-promo" data-testid="promotion">
+      <h3 class="tr-promo__h">{t('promotion.title')}</h3>
+      <p class="tr-promo__hint">{t('promotion.ready', { name })}</p>
+      <ul class="tr-promo__list">
+        {[...lib.classes.values()].map((c) => (
+          <li key={c.id} class="tr-class" data-testid={`class-${c.id}`}>
+            <div class="tr-class__text">
+              <b>{c.name}</b>
+              <small>{c.description}</small>
+              <small>
+                {bonusText(c.bonus as Partial<Record<StatName, number>>)}
+                {t('common.sep')}
+                {c.skill.name}: {c.skill.description}
+              </small>
+            </div>
+            <Button label={t('promotion.choose')} onClick={() => setPick(c.id)} />
+          </li>
+        ))}
+      </ul>
+      {picked && (
+        <div class="tr-promo__confirm" role="alertdialog" aria-label={t('promotion.title')}>
+          <span>{t('promotion.confirm', { name, class: picked.name })}</span>
+          <Button variant="ghost" label={t('promotion.cancel')} onClick={() => setPick(null)} />
+          <Button
+            variant="primary"
+            label={t('promotion.promote')}
+            testId="confirm-promotion"
+            onClick={() => onPromote(picked.id)}
+          />
+        </div>
+      )}
+    </section>
   );
 }

@@ -73,12 +73,13 @@
       "at": [10, 4],
       "facing": "west",
       "ai": "aggressive",
-      "name": "Scala's Factor",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 10,
         "dex": 9,
         "agl": 7
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "hire-1",
@@ -90,12 +91,13 @@
       "at": [1, 2],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Hired Blade",
+      "name": "Zealot",
       "stats": {
         "pow": 8,
         "dex": 7,
         "agl": 6
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "hire-gun",
@@ -107,12 +109,13 @@
       "at": [8, 1],
       "facing": "south",
       "ai": "defensive",
-      "name": "Hired Gunner",
+      "name": "Marksman",
       "stats": {
         "pow": 7,
         "dex": 8,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "proto-1",

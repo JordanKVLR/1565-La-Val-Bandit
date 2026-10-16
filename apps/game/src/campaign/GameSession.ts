@@ -40,6 +40,7 @@ import type { ResultLine } from './progression';
 import {
   applyBattleResults,
   newRosterEntry,
+  promote,
   raiseRosterStat,
   skillsLearned,
   withProgress,
@@ -352,6 +353,12 @@ export class GameSession {
     this.patch({
       roster: raiseRosterStat(this.state.roster, characterId, stat, this.lib.balance.statMax),
     });
+    this.autosave();
+  }
+
+  /** Promotes a pilot to a class (at the promotion level); the choice is final. */
+  promoteTo(characterId: string, classId: string): void {
+    this.patch({ roster: promote(this.lib, this.state.roster, characterId, classId) });
     this.autosave();
   }
 
@@ -723,9 +730,11 @@ export class GameSession {
       case 'end': {
         // Every ending counts on every cycle and difficulty; reaching one offers New Game+.
         const route = String(this.runner.getVar('route'));
+        const variant = String(this.runner.getVar('ending_variant') ?? '');
         reportAchievementEvent({
           type: 'ending',
           route,
+          ...(variant ? { variant } : {}),
           difficulty: this.state.difficulty,
           ngPlus: this.state.ngPlus,
         });

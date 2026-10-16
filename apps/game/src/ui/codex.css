@@ -136,6 +136,9 @@
 .cx-badge--fiction {
   border: var(--ds-border) dashed var(--ds-text-3);
 }
+.cx-badge--chronicle {
+  border: var(--ds-border) dotted var(--ds-text-3);
+}
 .cx-icon {
   flex: none;
 }

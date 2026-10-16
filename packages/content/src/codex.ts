@@ -4,10 +4,12 @@ import codexData from '../data/codex.json';
 /**
  * Historical notes: short entries on the real people, places and events of 1565, and on what
  * the game invents. Every entry says plainly which it is (see PLAN §3.1, sensitivity note).
+ * Chronicle pages are Balbi's diary: invented words around real events, one page unlocked by
+ * each major battle (the real Francisco Balbi di Correggio kept such a diary).
  */
 
-export const CODEX_KINDS = ['historical', 'fiction'] as const;
-export const CODEX_CATEGORIES = ['event', 'people', 'place', 'warfare', 'story'] as const;
+export const CODEX_KINDS = ['historical', 'fiction', 'chronicle'] as const;
+export const CODEX_CATEGORIES = ['event', 'people', 'place', 'warfare', 'story', 'diary'] as const;
 
 export const CodexEntrySchema = z
   .object({

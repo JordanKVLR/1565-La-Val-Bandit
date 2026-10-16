@@ -90,13 +90,14 @@
       "at": [0, 4],
       "facing": "east",
       "ai": "aggressive",
-      "name": "Anastagi",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 10,
         "dex": 9,
         "agl": 7
       },
-      "portrait": "anastagi"
+      "portrait": "anastagi",
+      "skills": ["standard-bearer"]
     },
     {
       "id": "rider-1",
@@ -159,12 +160,13 @@
       "at": [1, 0],
       "facing": "east",
       "ai": "defensive",
-      "name": "Militia Gunner",
+      "name": "Marksman",
       "stats": {
         "pow": 8,
         "dex": 10,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     }
   ],
   "bonus": [

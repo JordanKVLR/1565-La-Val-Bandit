@@ -256,6 +256,27 @@ export const SkillBookSchema = z
   .strict();
 export type SkillBook = z.infer<typeof SkillBookSchema>;
 
+/** A promotion class: chosen once at the promotion level, for a lasting stat package and a skill. */
+export const ClassSchema = z
+  .object({
+    id,
+    name: z.string().min(1),
+    description: z.string().min(1),
+    bonus: z
+      .object({
+        bas: stat.optional(),
+        pow: stat.optional(),
+        dex: stat.optional(),
+        agl: stat.optional(),
+        def: stat.optional(),
+        int: stat.optional(),
+      })
+      .strict(),
+    skill: SkillSchema,
+  })
+  .strict();
+export type PilotClass = z.infer<typeof ClassSchema>;
+
 /** A unit is either a named character (stats from characters.json) or an inline generic. */
 export const BattleUnitSchema = z
   .object({

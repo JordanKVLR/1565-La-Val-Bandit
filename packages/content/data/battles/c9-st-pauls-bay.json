@@ -99,7 +99,8 @@
         "dex": 13,
         "agl": 6
       },
-      "portrait": "janissary"
+      "portrait": "janissary",
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "guard-1",
@@ -111,12 +112,13 @@
       "at": [5, 9],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Pasha's Guard",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 12,
         "dex": 11,
         "agl": 6
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "guard-2",
@@ -128,12 +130,13 @@
       "at": [9, 4],
       "facing": "south",
       "ai": "defensive",
-      "name": "Pasha's Guard",
+      "name": "Marksman",
       "stats": {
         "pow": 11,
         "dex": 11,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "guard-3",
@@ -162,12 +165,13 @@
       "at": [8, 8],
       "facing": "north",
       "ai": "aggressive",
-      "name": "Sipahi",
+      "name": "Zealot",
       "stats": {
         "pow": 12,
         "dex": 10,
         "agl": 8
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "humb-1",

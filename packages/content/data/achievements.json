@@ -5,7 +5,10 @@
     "description": "Win the battle on the shore of Marsaxlokk.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["b1-marsaxlokk"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b1-marsaxlokk"]
+    }
   },
   {
     "id": "ACH_NIGHT_CROSSING",
@@ -13,7 +16,10 @@
     "description": "Hold the quay of St Elmo after the night crossing.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["b4-night-crossing"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b4-night-crossing"]
+    }
   },
   {
     "id": "ACH_OTHER_SHORE",
@@ -21,7 +27,10 @@
     "description": "Win the battle for the guns of Tigné.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["b5-tigne"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b5-tigne"]
+    }
   },
   {
     "id": "ACH_KALKARA",
@@ -29,7 +38,10 @@
     "description": "Win the battle at the chapel of Kalkara.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["b6-kalkara-chapel"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b6-kalkara-chapel"]
+    }
   },
   {
     "id": "ACH_ADMIRALS_BATTERY",
@@ -37,7 +49,10 @@
     "description": "Win the battle at the Admiral's Battery.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["b8-turgut-battery"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b8-turgut-battery"]
+    }
   },
   {
     "id": "ACH_ST_ELMO",
@@ -45,7 +60,10 @@
     "description": "Win through the fall of St Elmo.",
     "hidden": false,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["b9-fall-of-st-elmo"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["b9-fall-of-st-elmo"]
+    }
   },
   {
     "id": "ACH_CROSS_RELIEF",
@@ -53,7 +71,10 @@
     "description": "Bring the relief through on the road of the Cross.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["a1-piccolo-soccorso"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["a1-piccolo-soccorso"]
+    }
   },
   {
     "id": "ACH_CROSS_BREACH",
@@ -61,7 +82,10 @@
     "description": "Hold the breach of Castile on the road of the Cross.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["a3-castile-breach"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["a3-castile-breach"]
+    }
   },
   {
     "id": "ACH_CROSS_LAST_ASSAULT",
@@ -69,7 +93,10 @@
     "description": "Break the last assault on the road of the Cross.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["a8-st-michael"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["a8-st-michael"]
+    }
   },
   {
     "id": "ACH_CROSS_FINALE",
@@ -77,7 +104,10 @@
     "description": "Win the final battle on the road of the Cross.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["a9-marsa-lines"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["a9-marsa-lines"]
+    }
   },
   {
     "id": "ACH_ISLAND_ROAD",
@@ -85,7 +115,10 @@
     "description": "Win the first battle on the road of the Island.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["i1-road-to-mdina"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["i1-road-to-mdina"]
+    }
   },
   {
     "id": "ACH_ISLAND_WALLS",
@@ -93,7 +126,10 @@
     "description": "Hold the walls of Mdina on the road of the Island.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["i2-mdina-walls"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["i2-mdina-walls"]
+    }
   },
   {
     "id": "ACH_ISLAND_LANDING",
@@ -101,7 +137,10 @@
     "description": "Win the battle at Mellieħa Bay on the road of the Island.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["i4-mellieha-landing"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["i4-mellieha-landing"]
+    }
   },
   {
     "id": "ACH_ISLAND_FINALE",
@@ -109,7 +148,10 @@
     "description": "Win the final battle on the road of the Island.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["i9-st-pauls-bay"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["i9-st-pauls-bay"]
+    }
   },
   {
     "id": "ACH_CRESCENT_CAMP",
@@ -117,7 +159,10 @@
     "description": "Win the first battle on the road of the Crescent.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "battles": ["c1-marsa-camp"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["c1-marsa-camp"]
+    }
   },
   {
     "id": "ACH_CRESCENT_ESCAPE",
@@ -125,7 +170,10 @@
     "description": "Escape the Pasha's camp on the road of the Crescent.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["c3-pasha-tribunal"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["c3-pasha-tribunal"]
+    }
   },
   {
     "id": "ACH_CRESCENT_MEDALLION",
@@ -133,7 +181,10 @@
     "description": "Win the battle of the broken medallion on the road of the Crescent.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["c5-broken-medallion"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["c5-broken-medallion"]
+    }
   },
   {
     "id": "ACH_CRESCENT_FINALE",
@@ -141,7 +192,10 @@
     "description": "Win the final battle on the road of the Crescent.",
     "hidden": true,
     "grade": "silver",
-    "trigger": { "type": "battleWon", "battles": ["c9-st-pauls-bay"] }
+    "trigger": {
+      "type": "battleWon",
+      "battles": ["c9-st-pauls-bay"]
+    }
   },
   {
     "id": "ACH_ENDING_CROSS",
@@ -149,7 +203,10 @@
     "description": "Reach the ending of the Cross.",
     "hidden": true,
     "grade": "gold",
-    "trigger": { "type": "ending", "route": "cross" }
+    "trigger": {
+      "type": "ending",
+      "route": "cross"
+    }
   },
   {
     "id": "ACH_ENDING_ISLAND",
@@ -157,7 +214,10 @@
     "description": "Reach the ending of the Island.",
     "hidden": true,
     "grade": "gold",
-    "trigger": { "type": "ending", "route": "island" }
+    "trigger": {
+      "type": "ending",
+      "route": "island"
+    }
   },
   {
     "id": "ACH_ENDING_CRESCENT",
@@ -165,7 +225,22 @@
     "description": "Reach the ending of the Crescent.",
     "hidden": true,
     "grade": "gold",
-    "trigger": { "type": "ending", "route": "crescent" }
+    "trigger": {
+      "type": "ending",
+      "route": "crescent"
+    }
+  },
+  {
+    "id": "ACH_ENDING_TRUCE",
+    "name": "A Truce on the Shore",
+    "description": "Carry the half-coin across the water under a flag of truce.",
+    "hidden": true,
+    "grade": "gold",
+    "trigger": {
+      "type": "ending",
+      "route": "cross",
+      "variant": "truce"
+    }
   },
   {
     "id": "ACH_ALL_ENDINGS",
@@ -173,7 +248,9 @@
     "description": "Reach all three endings.",
     "hidden": false,
     "grade": "gold",
-    "trigger": { "type": "allEndings" }
+    "trigger": {
+      "type": "allEndings"
+    }
   },
   {
     "id": "ACH_NEW_GAME_PLUS",
@@ -181,7 +258,9 @@
     "description": "Start New Game+ with a company that reached an ending.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "newGamePlus" }
+    "trigger": {
+      "type": "newGamePlus"
+    }
   },
   {
     "id": "ACH_NG_PLUS_ENDING",
@@ -189,7 +268,10 @@
     "description": "Reach any ending in New Game+.",
     "hidden": false,
     "grade": "gold",
-    "trigger": { "type": "ending", "minNgPlus": 1 }
+    "trigger": {
+      "type": "ending",
+      "minNgPlus": 1
+    }
   },
   {
     "id": "ACH_GM_ST_ELMO",
@@ -209,7 +291,10 @@
     "description": "Reach any ending on Grand Master.",
     "hidden": false,
     "grade": "gold",
-    "trigger": { "type": "ending", "difficulty": "grandMaster" }
+    "trigger": {
+      "type": "ending",
+      "difficulty": "grandMaster"
+    }
   },
   {
     "id": "ACH_FIRST_SKILL",
@@ -217,7 +302,10 @@
     "description": "A pilot learns their second skill.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "skillUnlocked", "minLevel": 5 }
+    "trigger": {
+      "type": "skillUnlocked",
+      "minLevel": 5
+    }
   },
   {
     "id": "ACH_THIRD_SKILL",
@@ -225,7 +313,10 @@
     "description": "A pilot learns their third skill.",
     "hidden": false,
     "grade": "silver",
-    "trigger": { "type": "skillUnlocked", "minLevel": 10 }
+    "trigger": {
+      "type": "skillUnlocked",
+      "minLevel": 10
+    }
   },
   {
     "id": "ACH_FIRST_PURCHASE",
@@ -233,7 +324,9 @@
     "description": "Buy anything at the Armoury.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "itemBought" }
+    "trigger": {
+      "type": "itemBought"
+    }
   },
   {
     "id": "ACH_MASTERWORK",
@@ -241,7 +334,10 @@
     "description": "Fit a pilot with a masterwork weapon.",
     "hidden": false,
     "grade": "silver",
-    "trigger": { "type": "gearFitted", "tier": "masterwork" }
+    "trigger": {
+      "type": "gearFitted",
+      "tier": "masterwork"
+    }
   },
   {
     "id": "ACH_FULL_KIT",
@@ -249,7 +345,10 @@
     "description": "Fit a pilot with both a charm and an amulet.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "gearFitted", "fullKit": true }
+    "trigger": {
+      "type": "gearFitted",
+      "fullKit": true
+    }
   },
   {
     "id": "ACH_TREASURY",
@@ -257,7 +356,10 @@
     "description": "Hold 5,000 scudi at once.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "scudiHeld", "amount": 5000 }
+    "trigger": {
+      "type": "scudiHeld",
+      "amount": 5000
+    }
   },
   {
     "id": "ACH_NO_LOSSES",
@@ -265,7 +367,10 @@
     "description": "Win a battle without losing a single pilot.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "battleWon", "noLosses": true }
+    "trigger": {
+      "type": "battleWon",
+      "noLosses": true
+    }
   },
   {
     "id": "ACH_FINALE_NO_LOSSES",
@@ -303,7 +408,9 @@
     "description": "Open the historical notes and read an entry.",
     "hidden": false,
     "grade": "bronze",
-    "trigger": { "type": "codexRead" }
+    "trigger": {
+      "type": "codexRead"
+    }
   },
   {
     "id": "ACH_CODEX_ALL",
@@ -311,7 +418,10 @@
     "description": "Read every entry in the historical notes.",
     "hidden": false,
     "grade": "silver",
-    "trigger": { "type": "codexRead", "all": true }
+    "trigger": {
+      "type": "codexRead",
+      "all": true
+    }
   },
   {
     "id": "ACH_PLATINUM",
@@ -319,6 +429,8 @@
     "description": "Earn every other trophy.",
     "hidden": false,
     "grade": "platinum",
-    "trigger": { "type": "platinum" }
+    "trigger": {
+      "type": "platinum"
+    }
   }
 ]

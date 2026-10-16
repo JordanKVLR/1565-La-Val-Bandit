@@ -68,7 +68,8 @@
         "pow": 10,
         "dex": 8,
         "agl": 6
-      }
+      },
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "guard-1",
@@ -80,12 +81,13 @@
       "at": [8, 2],
       "facing": "west",
       "ai": "aggressive",
-      "name": "Hired Guard",
+      "name": "Zealot",
       "stats": {
         "pow": 8,
         "dex": 7,
         "agl": 7
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "guard-3",
@@ -97,12 +99,13 @@
       "at": [7, 6],
       "facing": "west",
       "ai": "defensive",
-      "name": "Hired Gunner",
+      "name": "Marksman",
       "stats": {
         "pow": 7,
         "dex": 9,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     }
   ],
   "salvage": ["yeniceri", "sipahi", "humbaraci"],

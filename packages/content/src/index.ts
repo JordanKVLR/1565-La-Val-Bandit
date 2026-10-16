@@ -31,6 +31,7 @@ import balanceData from '../data/balance.json';
 import barkData from '../data/barks.json';
 import bondData from '../data/bonds.json';
 import campData from '../data/camp.json';
+import classData from '../data/classes.json';
 import castData from '../data/cast.json';
 import characterData from '../data/characters.json';
 import frameData from '../data/frames.json';
@@ -49,6 +50,7 @@ import {
   BattleSourceSchema,
   BondsSchema,
   CampSceneSchema,
+  ClassSchema,
   RecipeSchema,
   SkirmishSchema,
   CastSchema,
@@ -194,6 +196,7 @@ export function loadLibrary() {
     shop: ShopItemSchema.array().parse(shopData),
     recipes: RecipeSchema.array().parse(recipeData),
     camp: CampSceneSchema.array().parse(campData),
+    classes: byId(ClassSchema.array().parse(classData), 'class'),
     skirmishes: SkirmishSchema.array().parse(skirmishData),
     bondTable: BondsSchema.parse(bondData),
     armourers: ArmourersSchema.parse(armourerData),
@@ -224,6 +227,8 @@ export interface RosterEntry {
   readonly amulet?: string | null;
   /** Unspent stat points from level-ups. */
   readonly statPoints?: number;
+  /** Promotion class (ids from classes.json), chosen at the promotion level. */
+  readonly class?: string;
 }
 
 /**
@@ -365,6 +370,9 @@ export function buildBattle(
     const skills = [
       ...(u.character ? characterSkills(lib, u.character) : []),
       ...genericSkills(lib, u.skills ?? [], where),
+      ...(r?.class && lib.classes.has(r.class)
+        ? [toSkill(lib.classes.get(r.class)!.skill, 1)]
+        : []),
     ];
     if (initial) {
       const key = `${at.x},${at.y}`;

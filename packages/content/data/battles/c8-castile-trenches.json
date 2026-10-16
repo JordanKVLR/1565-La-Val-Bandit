@@ -106,7 +106,8 @@
         "pow": 11,
         "dex": 12,
         "agl": 0
-      }
+      },
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "proto-1",
@@ -152,12 +153,13 @@
       "at": [3, 1],
       "facing": "south",
       "ai": "defensive",
-      "name": "Genoese Mercenary",
+      "name": "Marksman",
       "stats": {
         "pow": 10,
         "dex": 11,
         "agl": 6
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "merc-2",

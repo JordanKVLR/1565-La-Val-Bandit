@@ -1,4 +1,5 @@
 import type { BattleSetup, BattleState, Difficulty } from '@m1565/core';
+import type { Library } from '@m1565/content';
 import { isBattleId, loadBattle, loadLibrary } from '@m1565/content';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { GameSession } from '../campaign/GameSession';
@@ -6,6 +7,8 @@ import { migrateCampaign } from '../campaign/migrate';
 import { canStartNewGamePlus, newGamePlus } from '../campaign/newGamePlus';
 import { syncAchievements } from '../platform/achievements';
 import { music, pauseAudio, resumeAudio, sfx, unlockAudio } from '../platform/audio';
+import type { Challenge } from '../platform/challenge';
+import { bestFor, challengeFor, dayNumber, record, scoreOf } from '../platform/challenge';
 import { enterFullscreenIfWanted, initFullscreen } from '../platform/fullscreen';
 import { installLifecycle } from '../platform/lifecycle';
 import type { SlotId } from '../platform/storage';
@@ -29,6 +32,15 @@ import { TitleScreen } from './TitleScreen';
 /** Battles against a named commander get the heavier theme. */
 function battleMood(setup: BattleSetup): 'battle' | 'boss' {
   return setup.victory.some((v) => v.type === 'defeatLeader') ? 'boss' : 'battle';
+}
+
+/** The title's line about today's challenge and the best result on this device. */
+function challengeNote(lib: Library, _runs: number): string {
+  const c = challengeFor(lib, dayNumber());
+  const best = bestFor(c.day);
+  return best
+    ? t('challenge.best', { name: c.skirmish.title, ...best })
+    : t('challenge.today', { name: c.skirmish.title });
 }
 
 /** `?battle=<id>` jumps straight into a battle with default pilots (for testing and design). */
@@ -124,6 +136,9 @@ export function App() {
     return demo;
   });
   const [debugBattle, setDebugBattle] = useState(debugBattleId);
+  // Today's challenge, once started from the title (a bumped counter refreshes its note).
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [challengeRuns, setChallengeRuns] = useState(0);
   // The opening cinematic plays before every new game, and on request from Settings.
   const [intro, setIntro] = useState<'new' | 'watch' | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>('knight');
@@ -173,8 +188,8 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (!session && !debugBattle && !intro) music('title');
-  }, [session, debugBattle, intro]);
+    if (!session && !debugBattle && !intro && !challenge) music('title');
+  }, [session, debugBattle, intro, challenge]);
 
   const debugSetup = useMemo(
     () => (debugBattle ? loadBattle(debugBattle, lib) : null),
@@ -187,7 +202,21 @@ export function App() {
 
   return (
     <>
-      {debugSetup ? (
+      {challenge ? (
+        <BattleScreen
+          key={`challenge-${challenge.day}`}
+          setup={challenge.setup}
+          lib={lib}
+          title={`${t('challenge.title')} · ${challenge.skirmish.title}`}
+          onExit={(outcome, state: BattleState) => {
+            if (outcome === 'victory') record(challenge.day, scoreOf(state));
+            setChallenge(null);
+            setChallengeRuns((n) => n + 1);
+          }}
+          onRetry={() => setChallenge(challengeFor(lib, challenge.day))}
+          retryNote={t('battle.retryLosesXp')}
+        />
+      ) : debugSetup ? (
         <BattleScreen
           setup={debugSetup}
           lib={lib}
@@ -218,6 +247,8 @@ export function App() {
               setSession(new GameSession(lib, undefined, newGamePlus(lib, save)));
           }}
           onWatchIntro={() => setIntro('watch')}
+          onChallenge={() => setChallenge(challengeFor(lib, dayNumber()))}
+          challengeNote={challengeNote(lib, challengeRuns)}
           onLoad={(slot: SlotId) => {
             const loaded = GameSession.load(lib, slot);
             if (loaded) setSession(loaded);

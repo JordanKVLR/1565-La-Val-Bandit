@@ -33,3 +33,13 @@ test('web app manifest is landscape and installable', async ({ request }) => {
   expect(manifest.orientation).toBe('landscape');
   expect(manifest.icons.length).toBeGreaterThan(0);
 });
+
+test('the daily challenge starts a battle from the title and leaves it again', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto('./');
+  await expect(page.getByTestId('daily-challenge')).toBeVisible();
+  await page.getByTestId('daily-challenge').click();
+  await expect(page.getByTestId('turn-banner')).toBeVisible({ timeout: 15000 });
+  expect(errors).toEqual([]);
+});

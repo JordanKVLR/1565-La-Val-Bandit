@@ -60,12 +60,13 @@
       "at": [7, 4],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Scala's Hireling",
+      "name": "Zealot",
       "stats": {
         "pow": 4,
         "dex": 4,
         "agl": 6
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "levend-2",

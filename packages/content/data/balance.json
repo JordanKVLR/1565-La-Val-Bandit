@@ -86,6 +86,7 @@
   "rewardPerEnemyLevel": 20,
   "rewardNoLosses": 150,
   "partsPerEnemy": 1,
+  "promotionLevel": 10,
   "partsVictory": 1,
   "armouryConfirmFraction": 0.5,
   "squireEnemyLevel": -1,
