@@ -805,6 +805,12 @@ export const CORSAIR_SCRIPTS: AttackScripts = withVariants(CORSAIR_BASE, {
   'corsair-boat-hook-jab': ['corsair-grapple', '#b8f0ea'],
   'corsair-harpoon-thrust': ['corsair-keelhaul', '#9fe0ff'],
   'corsair-drowning-hook': ['corsair-grapple', '#6fb0d8'],
+  'corsair-boarding-frenzy': ['corsair-deck-dance', '#7fd0c4'],
+  'corsair-sea-wolfs-rush': ['corsair-barbary-reaper', '#9ad0ff'],
+  'corsair-scourge-of-the-barbary-coast': ['corsair-deck-dance', '#e8c27a'],
+  'corsair-gaff-and-chain': ['corsair-grapple', '#7fd0c4'],
+  'corsair-harpooners-heave': ['corsair-grapple', '#9ad0ff'],
+  'corsair-leviathan-hook': ['corsair-keelhaul', '#e8c27a'],
 });
 
 /** Adds a haul-back lean after the impact (the target is dragged in). */

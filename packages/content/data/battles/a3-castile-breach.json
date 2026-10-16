@@ -19,7 +19,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 15,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 6],
@@ -30,7 +30,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 14,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 7],
@@ -41,7 +41,7 @@
       "id": "balbi",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 14,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 7],
@@ -52,7 +52,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 13,
       "frame": "lanza",
       "weapon": "pike",
       "at": [6, 5],
@@ -63,7 +63,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 13,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [2, 6],
@@ -74,16 +74,16 @@
       "id": "valette",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 16,
       "frame": "kaptan",
       "weapon": "bastard-sword",
       "at": [7, 6],
       "facing": "north",
       "name": "La Valette",
       "stats": {
-        "pow": 9,
-        "dex": 10,
-        "agl": 6
+        "pow": 12,
+        "dex": 13,
+        "agl": 7
       },
       "portrait": "valette"
     },
@@ -91,7 +91,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [2, 0],
@@ -99,9 +99,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 6
+        "pow": 15,
+        "dex": 14,
+        "agl": 7
       },
       "skills": ["standard-bearer"]
     },
@@ -109,7 +109,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [5, 1],
@@ -117,16 +117,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 6
+        "pow": 15,
+        "dex": 14,
+        "agl": 7
       }
     },
     {
       "id": "jan-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [8, 0],
@@ -134,16 +134,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 6
+        "pow": 15,
+        "dex": 14,
+        "agl": 7
       }
     },
     {
       "id": "jan-4",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [3, 2],
@@ -151,9 +151,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 14,
+        "dex": 15,
+        "agl": 6
       },
       "skills": ["marksman"]
     },
@@ -161,7 +161,7 @@
       "id": "jan-5",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [9, 2],
@@ -169,16 +169,16 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 14,
+        "dex": 15,
+        "agl": 6
       }
     },
     {
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 2],
@@ -186,16 +186,16 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "pow": 10,
-        "dex": 12,
-        "agl": 5
+        "pow": 13,
+        "dex": 15,
+        "agl": 6
       }
     },
     {
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 13,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [10, 1],
@@ -203,9 +203,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 8
+        "pow": 14,
+        "dex": 13,
+        "agl": 9
       },
       "skills": ["zealot"]
     }
@@ -215,7 +215,7 @@
       "id": "the-grand-master",
       "when": {
         "type": "round",
-        "round": 4
+        "round": 6
       },
       "actions": [
         {
@@ -230,7 +230,7 @@
               "id": "jan-6",
               "side": "enemy",
               "controller": "ai",
-              "level": 7,
+              "level": 13,
               "frame": "yeniceri",
               "weapon": "kilij",
               "at": [5, 3],
@@ -238,9 +238,9 @@
               "ai": "aggressive",
               "name": "Yeniçeri",
               "stats": {
-                "pow": 12,
-                "dex": 11,
-                "agl": 6
+                "pow": 15,
+                "dex": 14,
+                "agl": 7
               }
             }
           ]

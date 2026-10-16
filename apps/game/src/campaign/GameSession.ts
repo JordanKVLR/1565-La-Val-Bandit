@@ -20,6 +20,9 @@ import {
   availableCamp,
   battleSalvage,
   campVars,
+  enemyAverageLevel,
+  nextBattleId,
+  raisedTo,
   isBattleId,
   loadBattle,
 } from '@m1565/content';
@@ -53,7 +56,7 @@ import type {
   RosterEntry,
   StageState,
 } from './types';
-import { CAMPAIGN_SAVE_VERSION } from './types';
+import { CAMPAIGN_SAVE_VERSION, LEVEL_CURVE } from './types';
 
 export type Screen =
   | { readonly kind: 'title' }
@@ -98,6 +101,9 @@ export interface SessionView {
   /** Camp talks heard so far. */
   readonly campDone: readonly string[];
 }
+
+/** How far behind the next battle's enemies an older save's pilots may be after loading. */
+const CATCH_UP_GAP = 3;
 
 const FACINGS: readonly Facing[] = ['north', 'east', 'south', 'west'];
 const EMPTY_STAGE: StageState = { map: null, actors: {} };
@@ -152,6 +158,9 @@ export class GameSession {
       parts: save?.parts ?? 0,
       campDone: save?.campDone ?? [],
     });
+    // An older save is caught up to the retuned curve: nobody is left more than a few levels behind
+    // the enemies they are about to face.
+    if (save && (save.curve ?? 0) < LEVEL_CURVE) this.catchUp();
     const cycle = save ? 0 : (start?.ngPlus ?? 0);
     if (cycle > 0) reportAchievementEvent({ type: 'newGamePlus', cycle });
     if (save) {
@@ -614,6 +623,23 @@ export class GameSession {
     this.autosave();
   }
 
+  /**
+   * Brings every pilot up to within `catchUpGap` levels of the next battle's enemies (never
+   * lowering anyone). Used once for saves made before the level curve was retuned.
+   */
+  private catchUp(): void {
+    const next = nextBattleId(
+      this.lib,
+      String(this.runner.getVar('route') ?? ''),
+      this.state.completedBattles,
+    );
+    if (!next) return;
+    const floor =
+      enemyAverageLevel(this.lib, next, this.state.difficulty, this.state.ngPlus) - CATCH_UP_GAP;
+    if (floor <= 1) return;
+    this.patch({ roster: this.state.roster.map((r) => raisedTo(this.lib, r, floor)) });
+  }
+
   /** Whether a camp talk is being played. */
   get inCamp(): boolean {
     return this.camp !== null;
@@ -665,13 +691,34 @@ export class GameSession {
       }
       case 'join': {
         const [id, frame, weapon] = args;
-        if (!id || this.state.roster.some((r) => r.characterId === id)) return false;
+        if (!id) return false;
+        // Whoever joins (or rejoins after sitting out) arrives at the level of the enemies they
+        // are about to face, not at level 1.
+        const next = nextBattleId(
+          this.lib,
+          String(this.runner.getVar('route') ?? ''),
+          this.state.completedBattles,
+        );
+        const arrive = next
+          ? enemyAverageLevel(this.lib, next, this.state.difficulty, this.state.ngPlus)
+          : 1;
+        const here = this.state.roster.find((r) => r.characterId === id);
+        if (here) {
+          if (here.level < arrive)
+            this.patch({
+              roster: this.state.roster.map((r) =>
+                r.characterId === id ? raisedTo(this.lib, r, arrive) : r,
+              ),
+            });
+          return false;
+        }
         // New pilots arrive with their own armatura and weapon fitted, and keep any level and
         // XP they earned fighting alongside the company before joining (or in an earlier
         // playthrough, for New Game+).
-        const entry = withProgress(
-          newRosterEntry(this.lib, id, frame, weapon),
-          this.state.veterans[id],
+        const entry = raisedTo(
+          this.lib,
+          withProgress(newRosterEntry(this.lib, id, frame, weapon), this.state.veterans[id]),
+          arrive,
         );
         const veterans = { ...this.state.veterans };
         delete veterans[id];
@@ -833,6 +880,7 @@ export class GameSession {
       ...(Object.keys(s.kit).length ? { kit: s.kit } : {}),
       ...(s.parts ? { parts: s.parts } : {}),
       ...(s.campDone.length ? { campDone: s.campDone } : {}),
+      curve: LEVEL_CURVE,
     };
     const ok = writeSave(slot, save);
     if (ok && slot === 'auto') this.dirty = false;

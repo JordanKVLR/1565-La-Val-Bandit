@@ -844,4 +844,10 @@ export const SCALA_SCRIPTS: AttackScripts = withVariants(SCALA_BASE, {
   'scala-governor-slam': ['scala-piston-strike', '#ffd080'],
   'scala-rivet-shot': ['scala-siege-bolt', '#e0e8f0'],
   'scala-chain-shot': ['scala-grapeshot', '#c0c8d0'],
+  'scala-piston-cascade': ['scala-overpressure', '#f0a35e'],
+  'scala-boiler-burst': ['scala-overpressure', '#bcd6e6'],
+  'scala-the-engineers-masterpiece': ['scala-steam-hammer', '#ffd27a'],
+  'scala-pressure-round': ['scala-siege-bolt', '#f0a35e'],
+  'scala-hail-of-rivets': ['scala-broadside', '#bcd6e6'],
+  'scala-thunder-engine': ['scala-broadside', '#ffd27a'],
 });

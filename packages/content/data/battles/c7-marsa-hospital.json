@@ -27,7 +27,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 19,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [6, 6],
@@ -38,7 +38,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 18,
       "frame": "levend",
       "weapon": "kilij",
       "at": [7, 6],
@@ -49,7 +49,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 18,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 4],
@@ -60,7 +60,7 @@
       "id": "yusuf",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 19,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [4, 4],
@@ -71,7 +71,7 @@
       "id": "leyla",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 17,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [8, 4],
@@ -82,7 +82,7 @@
       "id": "rider-capt",
       "side": "enemy",
       "controller": "ai",
-      "level": 7,
+      "level": 17,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [0, 4],
@@ -90,16 +90,16 @@
       "ai": "aggressive",
       "name": "Mdina Knight",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 7
+        "pow": 16,
+        "dex": 15,
+        "agl": 8
       }
     },
     {
       "id": "rider-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 16,
       "frame": "lanza",
       "weapon": "pike",
       "at": [1, 1],
@@ -107,16 +107,16 @@
       "ai": "aggressive",
       "name": "Mdina Rider",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 6
+        "pow": 15,
+        "dex": 14,
+        "agl": 7
       }
     },
     {
       "id": "rider-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 16,
       "frame": "lanza",
       "weapon": "pike",
       "at": [1, 7],
@@ -124,16 +124,16 @@
       "ai": "aggressive",
       "name": "Mdina Rider",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 6
+        "pow": 15,
+        "dex": 14,
+        "agl": 7
       }
     },
     {
       "id": "rider-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 16,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [0, 2],
@@ -141,16 +141,16 @@
       "ai": "aggressive",
       "name": "Mdina Rider",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 7
+        "pow": 15,
+        "dex": 14,
+        "agl": 8
       }
     },
     {
       "id": "rider-gun",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 16,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [0, 9],
@@ -158,9 +158,9 @@
       "ai": "defensive",
       "name": "Mdina Arquebusier",
       "stats": {
-        "pow": 9,
-        "dex": 10,
-        "agl": 6
+        "pow": 14,
+        "dex": 15,
+        "agl": 7
       }
     }
   ],

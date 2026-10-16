@@ -222,7 +222,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   xpFront: 1,
   xpSide: 0.8,
   xpRear: 0.5,
-  xpScale: 1.25,
+  xpScale: 2.2,
   xpPerLevel: 500,
   xpLevelCostGrowth: 0.06,
   xpGapBonus: 0.3,

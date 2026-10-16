@@ -23,7 +23,7 @@
       [11, 9]
     ],
     "facing": "north",
-    "level": 4,
+    "level": 6,
     "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
   },
   "units": [
@@ -31,7 +31,7 @@
       "id": "smuggler-a",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 6,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [4, 0],
@@ -39,8 +39,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 6,
+        "dex": 6,
         "agl": 6
       }
     },
@@ -48,7 +48,7 @@
       "id": "smuggler-b",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 6,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [8, 0],
@@ -56,8 +56,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 6,
+        "dex": 6,
         "agl": 6
       }
     },
@@ -65,7 +65,7 @@
       "id": "smuggler-c",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 6,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [11, 0],
@@ -73,8 +73,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 6,
+        "pow": 8,
+        "dex": 8,
         "agl": 4
       }
     }

@@ -32,7 +32,7 @@
       "id": "quartermaster",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 4,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [0, 0],
@@ -41,7 +41,7 @@
       "name": "Topçu Aga",
       "stats": {
         "pow": 6,
-        "dex": 7,
+        "dex": 8,
         "agl": 4
       }
     },
@@ -49,7 +49,7 @@
       "id": "guard-a",
       "side": "enemy",
       "controller": "ai",
-      "level": 2,
+      "level": 3,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [6, 0],
@@ -66,7 +66,7 @@
       "id": "guard-b",
       "side": "enemy",
       "controller": "ai",
-      "level": 2,
+      "level": 3,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [11, 0],

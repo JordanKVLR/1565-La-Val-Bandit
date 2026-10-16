@@ -23,7 +23,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 16,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [5, 4],
@@ -34,7 +34,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 14,
       "frame": "levend",
       "weapon": "kilij",
       "at": [6, 4],
@@ -45,7 +45,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 15,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [5, 5],
@@ -56,7 +56,7 @@
       "id": "leyla",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 14,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 5],
@@ -67,7 +67,7 @@
       "id": "hire-capt",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 14,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [10, 4],
@@ -75,9 +75,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 7
+        "pow": 14,
+        "dex": 13,
+        "agl": 8
       },
       "skills": ["standard-bearer"]
     },
@@ -85,7 +85,7 @@
       "id": "hire-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 12,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [1, 2],
@@ -93,9 +93,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 8,
-        "dex": 7,
-        "agl": 6
+        "pow": 12,
+        "dex": 11,
+        "agl": 7
       },
       "skills": ["zealot"]
     },
@@ -103,7 +103,7 @@
       "id": "hire-gun",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 12,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 1],
@@ -111,9 +111,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 7,
-        "dex": 8,
-        "agl": 5
+        "pow": 11,
+        "dex": 12,
+        "agl": 6
       },
       "skills": ["marksman"]
     },
@@ -121,7 +121,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 4,
+      "level": 12,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [1, 4],
@@ -129,9 +129,9 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 9,
-        "dex": 7,
-        "agl": 4
+        "pow": 13,
+        "dex": 11,
+        "agl": 5
       }
     }
   ],

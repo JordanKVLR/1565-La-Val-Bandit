@@ -23,7 +23,7 @@
       [11, 9]
     ],
     "facing": "north",
-    "level": 4,
+    "level": 5,
     "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
   },
   "units": [
@@ -31,7 +31,7 @@
       "id": "picket-a",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 5,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [5, 1],
@@ -39,8 +39,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 6,
+        "dex": 6,
         "agl": 6
       }
     },
@@ -48,7 +48,7 @@
       "id": "picket-b",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 5,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [6, 1],
@@ -56,8 +56,8 @@
       "ai": "aggressive",
       "name": "Levend",
       "stats": {
-        "pow": 5,
-        "dex": 5,
+        "pow": 6,
+        "dex": 6,
         "agl": 6
       }
     },
@@ -65,7 +65,7 @@
       "id": "picket-c",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 5,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [7, 1],
@@ -73,8 +73,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 6,
+        "pow": 7,
+        "dex": 7,
         "agl": 4
       }
     },
@@ -82,7 +82,7 @@
       "id": "picket-d",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 5,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [6, 2],
@@ -90,8 +90,8 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 6,
+        "pow": 7,
+        "dex": 7,
         "agl": 4
       }
     }

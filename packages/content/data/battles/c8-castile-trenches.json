@@ -24,7 +24,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 21,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 8],
@@ -35,7 +35,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 20,
       "frame": "levend",
       "weapon": "kilij",
       "at": [4, 8],
@@ -46,7 +46,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 20,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [6, 9],
@@ -57,7 +57,7 @@
       "id": "leyla",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 19,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [3, 9],
@@ -68,7 +68,7 @@
       "id": "yusuf",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 21,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [7, 8],
@@ -79,23 +79,23 @@
       "id": "sapper",
       "side": "player",
       "controller": "human",
-      "level": 8,
+      "level": 19,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [6, 4],
       "facing": "north",
       "name": "Sapper Officer",
       "stats": {
-        "pow": 10,
-        "dex": 10,
-        "agl": 5
+        "pow": 16,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "tower",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 20,
       "frame": "siege-tower",
       "weapon": "tower-guns",
       "at": [5, 3],
@@ -103,9 +103,9 @@
       "ai": "hold",
       "name": "Scala's Tower",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 0
+        "pow": 16,
+        "dex": 18,
+        "agl": 1
       },
       "skills": ["hardened-veteran"]
     },
@@ -113,7 +113,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 20,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [2, 2],
@@ -121,16 +121,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 18,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "proto-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 9,
+      "level": 20,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [9, 2],
@@ -138,16 +138,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 18,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "merc-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 19,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 1],
@@ -155,9 +155,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 10,
-        "dex": 11,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       },
       "skills": ["marksman"]
     },
@@ -165,7 +165,7 @@
       "id": "merc-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 19,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [8, 1],
@@ -173,16 +173,16 @@
       "ai": "defensive",
       "name": "Genoese Mercenary",
       "stats": {
-        "pow": 10,
-        "dex": 11,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       }
     },
     {
       "id": "merc-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 8,
+      "level": 19,
       "frame": "lanza",
       "weapon": "pike",
       "at": [7, 3],
@@ -190,9 +190,9 @@
       "ai": "aggressive",
       "name": "Genoese Mercenary",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 6
+        "pow": 16,
+        "dex": 16,
+        "agl": 7
       }
     }
   ],

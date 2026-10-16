@@ -23,7 +23,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 14,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [2, 8],
@@ -34,7 +34,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 14,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 9],
@@ -45,7 +45,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 13,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [3, 8],
@@ -56,7 +56,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 13,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [3, 3],
@@ -67,16 +67,16 @@
       "id": "warden",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 13,
       "frame": "artigjan",
       "weapon": "boat-hook",
       "at": [1, 4],
       "facing": "east",
       "name": "Well-keeper Ċensu",
       "stats": {
-        "pow": 6,
-        "dex": 6,
-        "agl": 6
+        "pow": 10,
+        "dex": 10,
+        "agl": 7
       },
       "portrait": "villager"
     },
@@ -84,7 +84,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 13,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [11, 3],
@@ -92,16 +92,16 @@
       "ai": "aggressive",
       "name": "Forager Sipahi",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 12,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "lev-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 12,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [11, 5],
@@ -109,16 +109,16 @@
       "ai": "aggressive",
       "name": "Levend Forager",
       "stats": {
-        "pow": 8,
-        "dex": 8,
-        "agl": 7
+        "pow": 12,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 12,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [9, 1],
@@ -126,16 +126,16 @@
       "ai": "aggressive",
       "name": "Levend Forager",
       "stats": {
-        "pow": 8,
-        "dex": 8,
-        "agl": 7
+        "pow": 12,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "lev-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 12,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [9, 7],
@@ -143,16 +143,16 @@
       "ai": "aggressive",
       "name": "Levend Forager",
       "stats": {
-        "pow": 8,
-        "dex": 8,
-        "agl": 7
+        "pow": 12,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 13,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [10, 4],
@@ -160,9 +160,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 8,
-        "dex": 10,
-        "agl": 5
+        "pow": 12,
+        "dex": 14,
+        "agl": 6
       }
     }
   ],

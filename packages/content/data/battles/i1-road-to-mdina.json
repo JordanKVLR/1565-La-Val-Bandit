@@ -25,7 +25,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 7,
+      "level": 12,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [10, 8],
@@ -36,7 +36,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 11,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [11, 9],
@@ -47,7 +47,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 10,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [9, 9],
@@ -58,7 +58,7 @@
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 11,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [6, 4],
@@ -66,16 +66,16 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 12,
+        "dex": 10,
+        "agl": 8
       }
     },
     {
       "id": "sipahi-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 11,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [4, 2],
@@ -83,16 +83,16 @@
       "ai": "aggressive",
       "name": "Sipahi",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 12,
+        "dex": 10,
+        "agl": 8
       }
     },
     {
       "id": "lev-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 11,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [2, 4],
@@ -100,16 +100,16 @@
       "ai": "defensive",
       "name": "Levend",
       "stats": {
-        "pow": 8,
-        "dex": 9,
-        "agl": 7
+        "pow": 10,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 11,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [7, 1],
@@ -117,9 +117,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 8,
-        "dex": 10,
-        "agl": 5
+        "pow": 10,
+        "dex": 12,
+        "agl": 6
       }
     }
   ],

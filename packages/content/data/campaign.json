@@ -1,0 +1,49 @@
+{
+  "prologue": [
+    "b1-marsaxlokk",
+    "b2-marsa-wells",
+    "b3-sciberras",
+    "b4-night-crossing",
+    "b5-tigne",
+    "b6-kalkara-chapel",
+    "b7-st-elmo-ravelin",
+    "b8-turgut-battery",
+    "b9-fall-of-st-elmo"
+  ],
+  "routes": {
+    "cross": [
+      "a1-piccolo-soccorso",
+      "a2-senglea-palisade",
+      "a3-castile-breach",
+      "a6-sick-tents",
+      "a7-countermine",
+      "a4-siege-tower",
+      "a8-st-michael",
+      "a5-scala-engine",
+      "a9-marsa-lines"
+    ],
+    "island": [
+      "i1-road-to-mdina",
+      "i6-zebbug-wells",
+      "i2-mdina-walls",
+      "i3-marsa-raid",
+      "i7-marsa-hospital",
+      "i8-gnejna-bay",
+      "i4-mellieha-landing",
+      "i5-naxxar-ridge",
+      "i9-st-pauls-bay"
+    ],
+    "crescent": [
+      "c1-marsa-camp",
+      "c6-boat-road",
+      "c2-marsamxett-galleys",
+      "c7-marsa-hospital",
+      "c3-pasha-tribunal",
+      "c8-castile-trenches",
+      "c4-corradino-heights",
+      "c5-broken-medallion",
+      "c9-st-pauls-bay"
+    ]
+  },
+  "interludes": ["b5-tigne", "b8-turgut-battery", "a6-sick-tents", "i7-marsa-hospital"]
+}

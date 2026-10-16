@@ -19,7 +19,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 10,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [4, 4],
@@ -30,7 +30,7 @@
       "id": "luis",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 10,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 3],
@@ -41,7 +41,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 4,
+      "level": 9,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [6, 5],
@@ -52,7 +52,7 @@
       "id": "balbi",
       "side": "player",
       "controller": "human",
-      "level": 4,
+      "level": 9,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 4],
@@ -63,7 +63,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 4,
+      "level": 9,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [3, 5],
@@ -74,7 +74,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [1, 0],
@@ -82,9 +82,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 6,
-        "dex": 5,
-        "agl": 5
+        "pow": 8,
+        "dex": 8,
+        "agl": 6
       },
       "skills": ["standard-bearer"]
     },
@@ -92,7 +92,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [4, 0],
@@ -100,16 +100,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 5,
-        "agl": 5
+        "pow": 8,
+        "dex": 8,
+        "agl": 6
       }
     },
     {
       "id": "jan-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [7, 0],
@@ -117,8 +117,8 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 5,
-        "dex": 6,
+        "pow": 8,
+        "dex": 8,
         "agl": 4
       },
       "skills": ["marksman"]
@@ -127,7 +127,7 @@
       "id": "jan-4",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 8,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [10, 0],
@@ -135,16 +135,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 6,
-        "dex": 5,
-        "agl": 5
+        "pow": 8,
+        "dex": 8,
+        "agl": 6
       }
     },
     {
       "id": "iayalar-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 2,
+      "level": 7,
       "frame": "levend",
       "weapon": "cutlass",
       "at": [3, 2],
@@ -152,8 +152,8 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 6,
-        "dex": 4,
+        "pow": 8,
+        "dex": 6,
         "agl": 6
       },
       "skills": ["zealot"]
@@ -162,7 +162,7 @@
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 3,
+      "level": 8,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [8, 2],
@@ -170,8 +170,8 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "pow": 4,
-        "dex": 6,
+        "pow": 6,
+        "dex": 8,
         "agl": 4
       }
     }
@@ -197,7 +197,7 @@
               "id": "jan-5",
               "side": "enemy",
               "controller": "ai",
-              "level": 3,
+              "level": 8,
               "frame": "yeniceri",
               "weapon": "kilij",
               "at": [2, 0],
@@ -205,16 +205,16 @@
               "ai": "aggressive",
               "name": "Yeniçeri",
               "stats": {
-                "pow": 6,
-                "dex": 5,
-                "agl": 5
+                "pow": 8,
+                "dex": 8,
+                "agl": 6
               }
             },
             {
               "id": "jan-6",
               "side": "enemy",
               "controller": "ai",
-              "level": 3,
+              "level": 8,
               "frame": "yeniceri",
               "weapon": "tufek",
               "at": [9, 0],
@@ -222,8 +222,8 @@
               "ai": "defensive",
               "name": "Yeniçeri",
               "stats": {
-                "pow": 5,
-                "dex": 6,
+                "pow": 8,
+                "dex": 8,
                 "agl": 4
               }
             }

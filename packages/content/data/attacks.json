@@ -1172,5 +1172,748 @@
     },
     "level": 14,
     "description": "Every gun on a heavy machine fires at once in a single roar. Strikes twice for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target. Only heavy frames carry its weight."
+  },
+  {
+    "id": "order-bastion-riposte",
+    "name": "Bastion Riposte",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.5,
+    "pierce": 0.4,
+    "requires": {
+      "dex": 17,
+      "agl": 11
+    },
+    "level": 17,
+    "description": "A parry on the bastion wall that becomes a thrust before the foe has finished his stroke. Hits very hard and pierces about half of the target's DEF."
+  },
+  {
+    "id": "order-sword-of-saint-michael",
+    "name": "Sword of Saint Michael",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.85,
+    "requires": {
+      "pow": 20,
+      "dex": 15,
+      "bas": 9
+    },
+    "level": 21,
+    "description": "The archangel's blade as the Order's smiths imagine it, brought down in a single stroke of terrible weight. Hits very hard."
+  },
+  {
+    "id": "order-dawn-of-the-grand-master",
+    "name": "Dawn of the Grand Master",
+    "faction": "order",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.8,
+    "hits": 2,
+    "pierce": 0.5,
+    "fatigue": 10,
+    "accuracyBonus": 10,
+    "requires": {
+      "pow": 22,
+      "dex": 19,
+      "agl": 13
+    },
+    "level": 25,
+    "description": "The two cuts La Valette taught every knight on the walls: one to open the guard, one to end the fight. Strikes twice for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target."
+  },
+  {
+    "id": "order-cathedral-bell",
+    "name": "Cathedral Bell",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.6,
+    "fatigue": 10,
+    "requires": {
+      "pow": 19,
+      "bas": 9
+    },
+    "level": 17,
+    "description": "A mace stroke that rings through the whole frame like the great bell of the Conventual Church. Hits very hard and tires the target."
+  },
+  {
+    "id": "order-gate-breaker",
+    "name": "Gate-Breaker",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.65,
+    "pierce": 0.4,
+    "requires": {
+      "pow": 21,
+      "dex": 14,
+      "def": 8
+    },
+    "level": 21,
+    "description": "A flanged blow aimed at the weakest hinge, as fit for a postern door as for a pilot's plating. Hits very hard and pierces about half of the target's DEF."
+  },
+  {
+    "id": "order-judgement-of-the-langues",
+    "name": "Judgement of the Langues",
+    "faction": "order",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.75,
+    "fatigue": 20,
+    "noCounter": true,
+    "requires": {
+      "pow": 23,
+      "bas": 12,
+      "def": 9
+    },
+    "level": 25,
+    "description": "Every Langue of the Order in one swing: a blow that cannot be answered and leaves the foe reeling. Hits very hard, badly tires the target and cannot be countered."
+  },
+  {
+    "id": "order-pike-wall-of-aragon",
+    "name": "Pike Wall of Aragon",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.55,
+    "fatigue": 10,
+    "noCounter": true,
+    "requires": {
+      "pow": 18,
+      "dex": 14
+    },
+    "level": 17,
+    "description": "A hedge of Aragonese pike points that holds a whole street against a charge. Hits very hard, tires the target, cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "order-lancers-reckoning",
+    "name": "Lancer's Reckoning",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["medium"],
+    "style": "charge",
+    "power": 1.7,
+    "pierce": 0.3,
+    "requires": {
+      "pow": 20,
+      "agl": 13,
+      "bas": 10
+    },
+    "level": 21,
+    "description": "The charge of a heavy knight at full tilt, aimed at the gap between helm and gorget. Hits very hard and pierces part of the target's DEF. Only medium frames carry its weight."
+  },
+  {
+    "id": "order-valettes-sortie",
+    "name": "Valette's Sortie",
+    "faction": "order",
+    "weaponTypes": ["polearm"],
+    "frameClasses": ["medium"],
+    "style": "charge",
+    "power": 1.75,
+    "pierce": 0.2,
+    "fatigue": 15,
+    "requires": {
+      "pow": 22,
+      "agl": 15,
+      "bas": 12
+    },
+    "level": 25,
+    "description": "The sortie that saved Birgu: a charge that bursts out of the gate when the enemy thinks the walls are his. Hits very hard, pierces part of the target's DEF and tires the target. Only medium frames carry its weight."
+  },
+  {
+    "id": "militia-carob-sickle",
+    "name": "Carob Sickle",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "sweep",
+    "power": 1.6,
+    "fatigue": 10,
+    "requires": {
+      "pow": 18,
+      "agl": 14
+    },
+    "level": 17,
+    "description": "A farmer's sickle stroke taken to the knees, learned bringing in the carobs of the Żejtun hills. Hits very hard and tires the target."
+  },
+  {
+    "id": "militia-old-stones-strike",
+    "name": "Strike of the Old Stones",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.85,
+    "requires": {
+      "pow": 21,
+      "agl": 14,
+      "def": 7
+    },
+    "level": 21,
+    "description": "The weight of the temple builders in a single chop: heavy, plain and hard to turn. Hits very hard."
+  },
+  {
+    "id": "militia-defender-of-the-island",
+    "name": "Defender of the Island",
+    "faction": "militia",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.95,
+    "fatigue": 5,
+    "requires": {
+      "pow": 23,
+      "agl": 16,
+      "bas": 11
+    },
+    "level": 25,
+    "description": "Three generations of sieges in one blow: everything Malta's soldiers have learned about not giving way. Hits very hard and tires the target."
+  },
+  {
+    "id": "militia-ladder-pusher",
+    "name": "Ladder-Pusher",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.5,
+    "fatigue": 15,
+    "noCounter": true,
+    "requires": {
+      "pow": 17,
+      "agl": 14
+    },
+    "level": 17,
+    "description": "A long pole set against the top of a scaling ladder and heaved: the oldest defence in the world. Hits very hard, tires the target, cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "militia-watchfire-thrust",
+    "name": "Watchfire Thrust",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.7,
+    "pierce": 0.3,
+    "requires": {
+      "pow": 20,
+      "dex": 15,
+      "agl": 13
+    },
+    "level": 21,
+    "description": "A thrust delivered as the beacon on the tower is lit, with the whole village behind it. Hits very hard, pierces part of the target's DEF and reaches two tiles."
+  },
+  {
+    "id": "militia-gate-of-birgu",
+    "name": "Gate of Birgu",
+    "faction": "militia",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.75,
+    "pierce": 0.1,
+    "fatigue": 15,
+    "noCounter": true,
+    "requires": {
+      "pow": 22,
+      "agl": 15,
+      "bas": 12
+    },
+    "level": 25,
+    "description": "A spear wall that shuts the street like the great gate of Birgu: reaching, relentless, nearly uncounterable. Hits very hard, pierces part of the target's DEF, tires the target, cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "militia-parapet-shot",
+    "name": "Parapet Shot",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.5,
+    "pierce": 0.4,
+    "requires": {
+      "dex": 18,
+      "bas": 9
+    },
+    "level": 17,
+    "description": "The arquebus laid in a crenel and the shot taken on a held breath: steady, accurate and hard to counter. Hits very hard and pierces about half of the target's DEF."
+  },
+  {
+    "id": "militia-bastion-volley",
+    "name": "Bastion Volley",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.8,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 10,
+    "requires": {
+      "dex": 19,
+      "agl": 13
+    },
+    "level": 21,
+    "description": "Two shots from a loaded pair, fired from the same loophole before the smoke clears. Strikes twice for lighter damage each, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "militia-dead-aim-of-malta",
+    "name": "Dead Aim of Malta",
+    "faction": "militia",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.4,
+    "pierce": 0.7,
+    "accuracyBonus": 22,
+    "requires": {
+      "dex": 22,
+      "bas": 10,
+      "agl": 14
+    },
+    "level": 25,
+    "description": "The shot every Maltese gunner means to make once in his life: unhurried, exact and through the gap in the plate. Hits very hard, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-sabre-of-the-divan",
+    "name": "Sabre of the Divan",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 1.5,
+    "pierce": 0.4,
+    "requires": {
+      "dex": 17,
+      "agl": 12
+    },
+    "level": 17,
+    "description": "A pulling stroke taught in the Sultan's own school, so smooth it seems to take no effort. Hits very hard and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-whirlwind-of-the-corps",
+    "name": "Whirlwind of the Corps",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "sweep",
+    "power": 0.9,
+    "hits": 2,
+    "pierce": 0.4,
+    "accuracyBonus": 8,
+    "requires": {
+      "pow": 19,
+      "agl": 16
+    },
+    "level": 21,
+    "description": "The janissary spin: two sweeping cuts before the enemy has found his feet. Strikes twice for lighter damage each, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-blade-of-the-padishah",
+    "name": "Blade of the Padishah",
+    "faction": "ottoman",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.7,
+    "hits": 3,
+    "pierce": 0.4,
+    "accuracyBonus": 12,
+    "requires": {
+      "pow": 22,
+      "dex": 19,
+      "agl": 14
+    },
+    "level": 25,
+    "description": "The stroke reserved for the Sultan's guard: three cuts in the time of one. Strikes three times for lighter damage each, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-orta-platoon-fire",
+    "name": "Orta Platoon Fire",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.75,
+    "hits": 2,
+    "pierce": 0.5,
+    "accuracyBonus": 8,
+    "requires": {
+      "dex": 17,
+      "agl": 12
+    },
+    "level": 17,
+    "description": "A platoon's volley in rolling ranks, each man firing as the one before reloads. Strikes twice for lighter damage each, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-veteran-of-rhodes",
+    "name": "Veteran of Rhodes",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.3,
+    "pierce": 0.6,
+    "accuracyBonus": 16,
+    "requires": {
+      "dex": 20,
+      "bas": 10
+    },
+    "level": 21,
+    "description": "A shot made by a man who has taken a fortress before, and means to again. Hits hard, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "ottoman-thunder-of-the-corps",
+    "name": "Thunder of the Corps",
+    "faction": "ottoman",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.65,
+    "hits": 3,
+    "pierce": 0.4,
+    "fatigue": 10,
+    "accuracyBonus": 10,
+    "requires": {
+      "dex": 22,
+      "agl": 14,
+      "bas": 10
+    },
+    "level": 25,
+    "description": "The whole corps fires at once: three shots, and the din alone is enough to unnerve the target. Strikes three times for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target."
+  },
+  {
+    "id": "ottoman-akinji-lance",
+    "name": "Akinji Lance",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "charge",
+    "power": 1.5,
+    "fatigue": 15,
+    "requires": {
+      "pow": 18,
+      "agl": 15
+    },
+    "level": 17,
+    "description": "A raider's lance couched low and driven home at a gallop across rough ground. Hits very hard and tires the target."
+  },
+  {
+    "id": "ottoman-hooked-lance-haul",
+    "name": "Hooked Lance Haul",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.55,
+    "fatigue": 25,
+    "noCounter": true,
+    "requires": {
+      "pow": 19,
+      "agl": 16
+    },
+    "level": 21,
+    "description": "A barbed lance-head that drags a pilot off his feet and leaves him sprawling. Hits very hard, badly tires the target, cannot be countered and reaches two tiles."
+  },
+  {
+    "id": "ottoman-wrath-of-the-sipahi",
+    "name": "Wrath of the Sipahi",
+    "faction": "ottoman",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "charge",
+    "power": 1.6,
+    "pierce": 0.3,
+    "fatigue": 20,
+    "requires": {
+      "pow": 23,
+      "agl": 18,
+      "bas": 10
+    },
+    "level": 25,
+    "description": "The charge of the Sultan's household cavalry, which has never been stopped on an open field. Hits very hard, pierces part of the target's DEF and badly tires the target."
+  },
+  {
+    "id": "ottoman-naphtha-flask",
+    "name": "Naphtha Flask",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 1.35,
+    "fatigue": 30,
+    "requires": {
+      "dex": 15,
+      "pow": 13
+    },
+    "level": 17,
+    "description": "A clay flask of burning naphtha that coats the target's armour and the pilot inside it. Hits hard and badly tires the target."
+  },
+  {
+    "id": "ottoman-hail-of-greek-fire",
+    "name": "Hail of Greek Fire",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 0.75,
+    "hits": 2,
+    "pierce": 0.5,
+    "fatigue": 15,
+    "requires": {
+      "dex": 17,
+      "agl": 13
+    },
+    "level": 21,
+    "description": "A fistful of fire-pots thrown on a flat arc: two blasts that find the seams of the armour. Strikes twice for lighter damage each, pierces about half of the target's DEF and tires the target."
+  },
+  {
+    "id": "ottoman-fire-of-the-tophane",
+    "name": "Fire of the Tophane",
+    "faction": "ottoman",
+    "weaponTypes": ["explosive"],
+    "frameClasses": [],
+    "style": "throw",
+    "power": 0.65,
+    "hits": 3,
+    "pierce": 0.4,
+    "fatigue": 15,
+    "requires": {
+      "dex": 20,
+      "pow": 14,
+      "bas": 11
+    },
+    "level": 25,
+    "description": "The arsenal's finest work, loosed all at once: three blasts that bite through plate and wear the pilot out. Strikes three times for lighter damage each, pierces about half of the target's DEF and tires the target."
+  },
+  {
+    "id": "corsair-boarding-frenzy",
+    "name": "Boarding Frenzy",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.8,
+    "hits": 2,
+    "pierce": 0.4,
+    "accuracyBonus": 8,
+    "requires": {
+      "agl": 16,
+      "dex": 14
+    },
+    "level": 17,
+    "description": "The first minutes on an enemy deck, when every cut lands at once. Strikes twice for lighter damage each, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "corsair-sea-wolfs-rush",
+    "name": "Sea-Wolf's Rush",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "charge",
+    "power": 1.6,
+    "pierce": 0.3,
+    "fatigue": 10,
+    "requires": {
+      "pow": 18,
+      "agl": 18
+    },
+    "level": 21,
+    "description": "A pounce from the rail that carries the whole body into the blade. Hits very hard, pierces part of the target's DEF and tires the target."
+  },
+  {
+    "id": "corsair-scourge-of-the-barbary-coast",
+    "name": "Scourge of the Barbary Coast",
+    "faction": "corsair",
+    "weaponTypes": ["blade"],
+    "frameClasses": [],
+    "style": "slash",
+    "power": 0.75,
+    "hits": 3,
+    "pierce": 0.4,
+    "accuracyBonus": 10,
+    "requires": {
+      "pow": 21,
+      "agl": 20,
+      "dex": 16
+    },
+    "level": 25,
+    "description": "The name the coast gives to the captain who leaves no deck standing: three cuts and a kick for the stragglers. Strikes three times for lighter damage each, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "corsair-gaff-and-chain",
+    "name": "Gaff and Chain",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "power": 1.5,
+    "fatigue": 15,
+    "noCounter": true,
+    "requires": {
+      "pow": 17,
+      "agl": 15
+    },
+    "level": 17,
+    "description": "A gaff with a chain on the shaft that wraps the target's limbs and wears him down. Hits very hard, tires the target and cannot be countered."
+  },
+  {
+    "id": "corsair-harpooners-heave",
+    "name": "Harpooner's Heave",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "thrust",
+    "minRange": 1,
+    "maxRange": 2,
+    "power": 1.6,
+    "pierce": 0.5,
+    "requires": {
+      "pow": 19,
+      "dex": 16
+    },
+    "level": 21,
+    "description": "A whaler's heave that drives the harpoon in to the shaft. Hits very hard, pierces about half of the target's DEF and reaches two tiles."
+  },
+  {
+    "id": "corsair-leviathan-hook",
+    "name": "Leviathan Hook",
+    "faction": "corsair",
+    "weaponTypes": ["polearm"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.65,
+    "fatigue": 30,
+    "noCounter": true,
+    "requires": {
+      "pow": 22,
+      "agl": 17,
+      "bas": 11
+    },
+    "level": 25,
+    "description": "A hook that has landed a hundred wrecks and dragged every one of them down. Hits very hard, badly tires the target and cannot be countered."
+  },
+  {
+    "id": "scala-piston-cascade",
+    "name": "Piston Cascade",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.5,
+    "fatigue": 15,
+    "requires": {
+      "pow": 18,
+      "bas": 9
+    },
+    "level": 17,
+    "description": "Three pistons fired in a row, each a little harder than the last. Hits very hard and tires the target."
+  },
+  {
+    "id": "scala-boiler-burst",
+    "name": "Boiler Burst",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "bash",
+    "power": 1.65,
+    "pierce": 0.4,
+    "requires": {
+      "pow": 21,
+      "bas": 11
+    },
+    "level": 21,
+    "description": "A held boiler released through the arm all at once: a blow that no armour was designed for. Hits very hard and pierces about half of the target's DEF."
+  },
+  {
+    "id": "scala-the-engineers-masterpiece",
+    "name": "The Engineer's Masterpiece",
+    "faction": "scala",
+    "weaponTypes": ["blunt"],
+    "frameClasses": [],
+    "style": "overhead",
+    "power": 1.75,
+    "fatigue": 25,
+    "requires": {
+      "pow": 23,
+      "bas": 12,
+      "int": 10
+    },
+    "level": 25,
+    "description": "The one machine Scala never sold: a blow built over a year, delivered in a moment. Hits very hard and badly tires the target."
+  },
+  {
+    "id": "scala-pressure-round",
+    "name": "Pressure Round",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "shot",
+    "power": 1.2,
+    "pierce": 0.5,
+    "accuracyBonus": 14,
+    "requires": {
+      "dex": 16,
+      "bas": 9
+    },
+    "level": 17,
+    "description": "A round fired on a spring of steam: accurate beyond the range of the eye. Hits hard, is very accurate and pierces about half of the target's DEF."
+  },
+  {
+    "id": "scala-hail-of-rivets",
+    "name": "Hail of Rivets",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.75,
+    "hits": 2,
+    "pierce": 0.5,
+    "fatigue": 10,
+    "accuracyBonus": 10,
+    "requires": {
+      "dex": 18,
+      "agl": 12
+    },
+    "level": 21,
+    "description": "A rack of rivet guns discharged together: two bursts that find every gap. Strikes twice for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target."
+  },
+  {
+    "id": "scala-thunder-engine",
+    "name": "Thunder Engine",
+    "faction": "scala",
+    "weaponTypes": ["firearm"],
+    "frameClasses": [],
+    "style": "volley",
+    "power": 0.6,
+    "hits": 3,
+    "pierce": 0.5,
+    "fatigue": 10,
+    "accuracyBonus": 10,
+    "requires": {
+      "dex": 21,
+      "bas": 12,
+      "int": 10
+    },
+    "level": 25,
+    "description": "A whole engine worked into a gun: three shots in a breath, each tearing the plate a little more. Strikes three times for lighter damage each, is very accurate, pierces about half of the target's DEF and tires the target."
   }
 ]

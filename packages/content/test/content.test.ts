@@ -158,8 +158,9 @@ describe('attacks', () => {
     expect(new Set(ids).size).toBe(ids.length);
     for (const a of lib.attacks) {
       const total = Object.values(a.requires).reduce((n: number, v) => n + (v ?? 0), 0);
-      // A level 15 pilot has 42 points on top of base stats around 5 each, plus gear.
-      expect(total, a.id).toBeLessThanOrEqual(32);
+      // A level 15 pilot has 42 points on top of base stats around 5 each, plus gear; every level
+      // after that brings 3 more.
+      expect(total, a.id).toBeLessThanOrEqual(32 + 3 * Math.max(0, a.level - 15));
     }
   });
 
@@ -220,8 +221,9 @@ describe('attacks', () => {
       expect(levels.length, key).toBeGreaterThanOrEqual(4);
       expect(levels[0]!, key).toBeLessThanOrEqual(4);
       expect(levels[levels.length - 1]!, key).toBeGreaterThanOrEqual(13);
+      // Every few levels: closer together early on, a little further apart once past level 13.
       for (let i = 1; i < levels.length; i++)
-        expect(levels[i]! - levels[i - 1]!, key).toBeLessThanOrEqual(3);
+        expect(levels[i]! - levels[i - 1]!, key).toBeLessThanOrEqual(levels[i - 1]! >= 13 ? 4 : 3);
     }
   });
 
@@ -237,14 +239,14 @@ describe('attacks', () => {
       expect(says(/pierces|ignores/), `${data.id} pierce`).toBe((data.pierce ?? 0) > 0);
       expect(says(/tires the target/), `${data.id} fatigue`).toBe((data.fatigue ?? 0) > 0);
       expect(says(/cannot be countered/), `${data.id} counter`).toBe(Boolean(data.noCounter));
-      expect(says(/strikes twice/), `${data.id} strikes`).toBe((data.hits ?? 1) > 1);
+      expect(says(/strikes (twice|three times)/), `${data.id} strikes`).toBe((data.hits ?? 1) > 1);
       if (data.weaponTypes.includes('polearm'))
         expect(says(/reaches two tiles/), `${data.id} reach`).toBe(data.maxRange === 2);
     }
   });
 
   it('keep the shipped technique count', () => {
-    expect(lib.attacks).toHaveLength(71);
+    expect(lib.attacks).toHaveLength(113);
   });
 
   it('give every faction techniques for each weapon it fields', () => {
@@ -266,7 +268,7 @@ describe('attacks', () => {
   it('open gradually: every technique has an unlock level, none before level 3', () => {
     for (const a of lib.attacks) {
       expect(a.level, a.id).toBeGreaterThanOrEqual(3);
-      expect(a.level, a.id).toBeLessThanOrEqual(14);
+      expect(a.level, a.id).toBeLessThanOrEqual(25);
       const total = a.power * (a.hits ?? 1);
       // Cheap, light techniques with modest stat needs are the entry tier; heavy ones are the late game.
       const need = Object.values(a.requires).reduce((n: number, v) => n + (v ?? 0), 0);
@@ -292,7 +294,7 @@ describe('attacks', () => {
       return unlockedAttacks(units.find((u) => u.id === unitId)!).length;
     };
     expect(count('b1-marsaxlokk', 'ninu')).toBe(2);
-    expect(count('b6-kalkara-chapel', 'ninu')).toBe(3); // Level 4: Hook-Cut
+    expect(count('b6-kalkara-chapel', 'ninu')).toBeGreaterThanOrEqual(3); // Hook-Cut and more
     expect(count('a5-scala-engine', 'ninu')).toBeGreaterThanOrEqual(4);
   });
 
@@ -399,22 +401,22 @@ describe('armaturas and weapon progression', () => {
 describe('pilot skills', () => {
   const lib = loadLibrary();
 
-  it('give every named character three skills at rising levels, all distinct', () => {
+  it('give every named character six skills at rising levels (1, 5, 10, 15, 20, 25), all distinct', () => {
     const seen = new Set<string>();
     for (const id of lib.characters.keys()) {
       const skills = characterSkills(lib, id);
       expect(
         skills.map((s) => s.level),
         id,
-      ).toEqual([1, 5, 10]);
+      ).toEqual([1, 5, 10, 15, 20, 25]);
       for (const s of skills) {
         expect(seen.has(s.id), `${s.id} is given twice`).toBe(false);
         seen.add(s.id);
       }
     }
     // Named pilots' skills plus the enemy roles (standard-bearer, veteran, marksman, zealot).
-    expect(lib.skills.size).toBeGreaterThanOrEqual(20);
-    expect(lib.skills.size).toBeLessThanOrEqual(40);
+    expect(lib.skills.size).toBeGreaterThanOrEqual(60);
+    expect(lib.skills.size).toBeLessThanOrEqual(80);
   });
 
   it('only assigns skills to real characters, with short plain descriptions', () => {

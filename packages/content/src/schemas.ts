@@ -376,6 +376,16 @@ export const SkirmishSchema = z.object({
 });
 export type Skirmish = z.infer<typeof SkirmishSchema>;
 
+/** The order the story's battles come in (data/campaign.json), for looking ahead. */
+export const CampaignOrderSchema = z.object({
+  /** The battles every route plays first. */
+  prologue: z.array(id).min(1),
+  routes: z.record(id, z.array(id).min(1)),
+  /** Battles fought on the other side of the siege, without the company. */
+  interludes: z.array(id),
+});
+export type CampaignOrder = z.infer<typeof CampaignOrderSchema>;
+
 const barkLines = z.array(z.string().min(1)).min(1);
 export const BarkSetSchema = z.object({
   attack: barkLines,

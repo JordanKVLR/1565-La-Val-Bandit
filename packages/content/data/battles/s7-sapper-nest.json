@@ -23,7 +23,7 @@
       [11, 9]
     ],
     "facing": "north",
-    "level": 7,
+    "level": 18,
     "fallback": ["ninu", "kateri", "ganni", "rozi", "luis"]
   },
   "units": [
@@ -31,7 +31,7 @@
       "id": "sapper-a",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 18,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [0, 0],
@@ -39,16 +39,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 18,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "sapper-b",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 18,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [6, 0],
@@ -56,16 +56,16 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 5
+        "pow": 17,
+        "dex": 17,
+        "agl": 6
       }
     },
     {
       "id": "sapper-c",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 18,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [11, 0],
@@ -73,9 +73,9 @@
       "ai": "aggressive",
       "name": "Algerian Reis",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 6
+        "pow": 18,
+        "dex": 16,
+        "agl": 7
       }
     }
   ],

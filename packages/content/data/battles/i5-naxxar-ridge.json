@@ -20,7 +20,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 21,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 8],
@@ -31,7 +31,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 20,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [4, 9],
@@ -42,7 +42,7 @@
       "id": "anastagi",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 21,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [6, 8],
@@ -53,7 +53,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 19,
       "frame": "lanza",
       "weapon": "pike",
       "at": [3, 8],
@@ -64,7 +64,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 19,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 9],
@@ -75,7 +75,7 @@
       "id": "scala",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 22,
       "frame": "colossus",
       "weapon": "colossus-cannon",
       "at": [5, 1],
@@ -83,11 +83,11 @@
       "ai": "hold",
       "name": "Scala",
       "stats": {
-        "pow": 13,
-        "dex": 13,
-        "agl": 5,
-        "def": 11,
-        "bas": 12
+        "pow": 18,
+        "dex": 18,
+        "agl": 6,
+        "def": 14,
+        "bas": 17
       },
       "portrait": "scala",
       "skills": ["hardened-veteran"]
@@ -96,7 +96,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 21,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [3, 2],
@@ -104,16 +104,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 5
+        "pow": 17,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "proto-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 21,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [8, 2],
@@ -121,16 +121,16 @@
       "ai": "aggressive",
       "name": "Prototipo",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 5
+        "pow": 17,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 21,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [2, 3],
@@ -138,9 +138,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 13,
-        "dex": 12,
-        "agl": 6
+        "pow": 18,
+        "dex": 17,
+        "agl": 7
       },
       "skills": ["marksman"]
     },
@@ -148,7 +148,7 @@
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 21,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [9, 3],
@@ -156,9 +156,9 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 13,
-        "dex": 12,
-        "agl": 6
+        "pow": 18,
+        "dex": 17,
+        "agl": 7
       }
     }
   ],

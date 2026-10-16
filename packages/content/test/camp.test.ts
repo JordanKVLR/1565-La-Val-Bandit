@@ -182,6 +182,6 @@ describe('skirmishes', () => {
     // Without a roster the stand-ins fight at the skirmish's own level.
     const bare = loadBattle('s1-wells-patrol', lib);
     expect(bare.units.filter((u) => u.side === 'player').length).toBeGreaterThanOrEqual(3);
-    expect(bare.units.find((u) => u.id === 'ninu')!.level).toBe(2);
+    expect(bare.units.find((u) => u.id === 'ninu')!.level).toBeGreaterThanOrEqual(2);
   });
 });

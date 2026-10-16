@@ -19,7 +19,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 15,
       "frame": "levend",
       "weapon": "kilij",
       "at": [7, 5],
@@ -30,7 +30,7 @@
       "id": "yusuf",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 16,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [7, 3],
@@ -41,7 +41,7 @@
       "id": "leyla",
       "side": "player",
       "controller": "human",
-      "level": 6,
+      "level": 16,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [9, 5],
@@ -52,39 +52,39 @@
       "id": "corsair-1",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 15,
       "frame": "levend",
       "weapon": "boat-hook",
       "at": [7, 7],
       "facing": "west",
       "name": "Corsair Hamid",
       "stats": {
-        "pow": 8,
-        "dex": 7,
-        "agl": 7
+        "pow": 13,
+        "dex": 12,
+        "agl": 8
       }
     },
     {
       "id": "gunner-1",
       "side": "player",
       "controller": "human",
-      "level": 5,
+      "level": 15,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [10, 3],
       "facing": "west",
       "name": "Gunner Ilyas",
       "stats": {
-        "pow": 7,
-        "dex": 9,
-        "agl": 5
+        "pow": 12,
+        "dex": 14,
+        "agl": 6
       }
     },
     {
       "id": "anastagi",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 16,
       "frame": "kaptan",
       "weapon": "pike",
       "at": [0, 4],
@@ -92,9 +92,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 10,
-        "dex": 9,
-        "agl": 7
+        "pow": 15,
+        "dex": 14,
+        "agl": 8
       },
       "portrait": "anastagi",
       "skills": ["standard-bearer"]
@@ -103,7 +103,7 @@
       "id": "rider-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 6,
+      "level": 16,
       "frame": "cavaliere",
       "weapon": "arming-sword",
       "at": [1, 2],
@@ -111,16 +111,16 @@
       "ai": "aggressive",
       "name": "Knight of Mdina",
       "stats": {
-        "pow": 10,
-        "dex": 8,
-        "agl": 6
+        "pow": 15,
+        "dex": 13,
+        "agl": 7
       }
     },
     {
       "id": "rider-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 15,
       "frame": "haddiem",
       "weapon": "pike",
       "at": [0, 6],
@@ -128,16 +128,16 @@
       "ai": "aggressive",
       "name": "Mdina Rider",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 14,
+        "dex": 13,
+        "agl": 8
       }
     },
     {
       "id": "rider-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 15,
       "frame": "haddiem",
       "weapon": "arming-sword",
       "at": [2, 8],
@@ -145,16 +145,16 @@
       "ai": "aggressive",
       "name": "Mdina Rider",
       "stats": {
-        "pow": 9,
-        "dex": 8,
-        "agl": 7
+        "pow": 14,
+        "dex": 13,
+        "agl": 8
       }
     },
     {
       "id": "gunner-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 5,
+      "level": 15,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [1, 0],
@@ -162,9 +162,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 8,
-        "dex": 10,
-        "agl": 5
+        "pow": 13,
+        "dex": 15,
+        "agl": 6
       },
       "skills": ["marksman"]
     }

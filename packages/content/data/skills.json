@@ -323,6 +323,286 @@
         "percent": 15,
         "when": "selfWounded"
       }
+    },
+    {
+      "id": "read-the-water",
+      "name": "Reads the Water",
+      "description": "Years at the nets taught him to feel a turn coming: +5 initiative each round.",
+      "effect": {
+        "type": "initiative",
+        "amount": 5
+      }
+    },
+    {
+      "id": "net-haulers-back",
+      "name": "Net-Hauler's Back",
+      "description": "A fisherman's shoulders behind every blow: +10% damage.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 10
+      }
+    },
+    {
+      "id": "heir-of-two-halves",
+      "name": "Heir of Two Halves",
+      "description": "Carries two bloods and bends to neither: takes 10% less damage.",
+      "effect": {
+        "type": "damageReduction",
+        "percent": 10
+      }
+    },
+    {
+      "id": "steady-hands",
+      "name": "Steady Hands",
+      "description": "A mechanic's hands do not shake: +6% hit chance.",
+      "effect": {
+        "type": "hitBonus",
+        "amount": 6
+      }
+    },
+    {
+      "id": "field-repairs",
+      "name": "Field Repairs",
+      "description": "Patches the frame between blows: recovers 6 HP at the start of each turn.",
+      "effect": {
+        "type": "regen",
+        "hp": 6
+      }
+    },
+    {
+      "id": "masterwork-tuning",
+      "name": "Masterwork Tuning",
+      "description": "Every linkage tuned to the hair: techniques cost 10 less FP.",
+      "effect": {
+        "type": "attackFpDiscount",
+        "amount": 10
+      }
+    },
+    {
+      "id": "commanders-bearing",
+      "name": "Commander's Bearing",
+      "description": "A veteran's presence steadies the line: adjacent allies get +6% hit chance.",
+      "effect": {
+        "type": "aura",
+        "amount": 6
+      }
+    },
+    {
+      "id": "iron-faith",
+      "name": "Iron Faith",
+      "description": "Thirty years of the Order's discipline: takes 12% less damage.",
+      "effect": {
+        "type": "damageReduction",
+        "percent": 12
+      }
+    },
+    {
+      "id": "last-of-the-langue",
+      "name": "Last of the Langue",
+      "description": "The Aragon riposte at its keenest: +14% Counter success chance.",
+      "effect": {
+        "type": "counterBonus",
+        "amount": 14
+      }
+    },
+    {
+      "id": "hard-to-shift",
+      "name": "Hard to Shift",
+      "description": "A farmhand does not give ground: Defend lets through 12% less.",
+      "effect": {
+        "type": "defendBonus",
+        "percent": 12
+      }
+    },
+    {
+      "id": "swimmers-lungs",
+      "name": "Swimmer's Lungs",
+      "description": "Wind that outlasts the others: rests 40% better.",
+      "effect": {
+        "type": "restBonus",
+        "percent": 40
+      }
+    },
+    {
+      "id": "palisade-guard",
+      "name": "Palisade Guard",
+      "description": "Fought in the water at Senglea: takes 12% less damage in melee.",
+      "effect": {
+        "type": "damageReduction",
+        "percent": 12,
+        "when": "melee"
+      }
+    },
+    {
+      "id": "steady-breath",
+      "name": "Steady Breath",
+      "description": "Fires on the end of the breath: +8% hit chance at range.",
+      "effect": {
+        "type": "hitBonus",
+        "amount": 8,
+        "when": "ranged"
+      }
+    },
+    {
+      "id": "wall-cover",
+      "name": "Wall Cover",
+      "description": "Knows every parapet in Mdina: +10% to dodge ranged blows.",
+      "effect": {
+        "type": "evadeBonus",
+        "amount": 10,
+        "when": "ranged"
+      }
+    },
+    {
+      "id": "marksman-of-malta",
+      "name": "Marksman of Malta",
+      "description": "The island's best shot: +15% damage at range.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 15,
+        "when": "ranged"
+      }
+    },
+    {
+      "id": "eyewitness",
+      "name": "Eyewitness",
+      "description": "Writes down everything he sees, and learns from it: +20% XP.",
+      "effect": {
+        "type": "xpBonus",
+        "percent": 20
+      }
+    },
+    {
+      "id": "powder-discipline",
+      "name": "Powder Discipline",
+      "description": "Never wastes a charge: techniques cost 8 less FP.",
+      "effect": {
+        "type": "attackFpDiscount",
+        "amount": 8
+      }
+    },
+    {
+      "id": "writes-the-ending",
+      "name": "Writes the Ending",
+      "description": "Knows how a fight ends: +15% damage against wounded foes.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 15,
+        "when": "foeWounded"
+      }
+    },
+    {
+      "id": "cavalry-wheel",
+      "name": "Cavalry Wheel",
+      "description": "A horseman turns before the others have moved: +6 initiative.",
+      "effect": {
+        "type": "initiative",
+        "amount": 6
+      }
+    },
+    {
+      "id": "rally-the-horse",
+      "name": "Rally the Horse",
+      "description": "His voice carries over the field: adjacent allies get +8% hit chance.",
+      "effect": {
+        "type": "aura",
+        "amount": 8
+      }
+    },
+    {
+      "id": "lance-of-mdina",
+      "name": "Lance of Mdina",
+      "description": "The charge that broke the camp at the Marsa: +20% damage from higher ground.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 20,
+        "when": "higher"
+      }
+    },
+    {
+      "id": "charted-waters",
+      "name": "Charted Waters",
+      "description": "Knows where the enemy cannot see him: +10% to dodge blows from the side or rear.",
+      "effect": {
+        "type": "evadeBonus",
+        "amount": 10,
+        "when": "flank"
+      }
+    },
+    {
+      "id": "swift-boarding",
+      "name": "Swift Boarding",
+      "description": "A navigator's timing: +8% hit chance.",
+      "effect": {
+        "type": "hitBonus",
+        "amount": 8
+      }
+    },
+    {
+      "id": "navigators-reckoning",
+      "name": "Navigator's Reckoning",
+      "description": "Plots the angle before he strikes: +12% damage from the side or rear.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 12,
+        "when": "flank"
+      }
+    },
+    {
+      "id": "old-wolf",
+      "name": "Old Wolf",
+      "description": "Forty years of boarding actions: takes 10% less damage in melee.",
+      "effect": {
+        "type": "damageReduction",
+        "percent": 10,
+        "when": "melee"
+      }
+    },
+    {
+      "id": "galley-discipline",
+      "name": "Galley Discipline",
+      "description": "Rows his men as one: adjacent allies get +7% hit chance.",
+      "effect": {
+        "type": "aura",
+        "amount": 7
+      }
+    },
+    {
+      "id": "captain-of-the-fleet",
+      "name": "Captain of the Fleet",
+      "description": "A reis who has never lost a ship: +12% damage.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 12
+      }
+    },
+    {
+      "id": "serene-patience",
+      "name": "Serene Patience",
+      "description": "Calm in any storm: recovers 5 HP at the start of each turn.",
+      "effect": {
+        "type": "regen",
+        "hp": 5
+      }
+    },
+    {
+      "id": "practised-evasion",
+      "name": "Practised Evasion",
+      "description": "Twenty years in a corsair's household: Avoid costs 10 less FP.",
+      "effect": {
+        "type": "reactionFpDiscount",
+        "reaction": "avoid",
+        "amount": 10
+      }
+    },
+    {
+      "id": "blood-of-cem",
+      "name": "Blood of Cem",
+      "description": "A line that has been hunted for generations: +10% to dodge every blow.",
+      "effect": {
+        "type": "evadeBonus",
+        "amount": 10
+      }
     }
   ],
   "characters": {
@@ -338,6 +618,18 @@
       {
         "skill": "stubborn-heart",
         "level": 10
+      },
+      {
+        "skill": "read-the-water",
+        "level": 15
+      },
+      {
+        "skill": "net-haulers-back",
+        "level": 20
+      },
+      {
+        "skill": "heir-of-two-halves",
+        "level": 25
       }
     ],
     "kateri": [
@@ -352,6 +644,18 @@
       {
         "skill": "riveted-plates",
         "level": 10
+      },
+      {
+        "skill": "steady-hands",
+        "level": 15
+      },
+      {
+        "skill": "field-repairs",
+        "level": 20
+      },
+      {
+        "skill": "masterwork-tuning",
+        "level": 25
       }
     ],
     "luis": [
@@ -366,6 +670,18 @@
       {
         "skill": "aragon-riposte",
         "level": 10
+      },
+      {
+        "skill": "commanders-bearing",
+        "level": 15
+      },
+      {
+        "skill": "iron-faith",
+        "level": 20
+      },
+      {
+        "skill": "last-of-the-langue",
+        "level": 25
       }
     ],
     "ganni": [
@@ -380,6 +696,18 @@
       {
         "skill": "horse-stopper",
         "level": 10
+      },
+      {
+        "skill": "hard-to-shift",
+        "level": 15
+      },
+      {
+        "skill": "swimmers-lungs",
+        "level": 20
+      },
+      {
+        "skill": "palisade-guard",
+        "level": 25
       }
     ],
     "rozi": [
@@ -394,6 +722,18 @@
       {
         "skill": "loophole-cover",
         "level": 10
+      },
+      {
+        "skill": "steady-breath",
+        "level": 15
+      },
+      {
+        "skill": "wall-cover",
+        "level": 20
+      },
+      {
+        "skill": "marksman-of-malta",
+        "level": 25
       }
     ],
     "balbi": [
@@ -408,6 +748,18 @@
       {
         "skill": "marked-in-the-margins",
         "level": 10
+      },
+      {
+        "skill": "eyewitness",
+        "level": 15
+      },
+      {
+        "skill": "powder-discipline",
+        "level": 20
+      },
+      {
+        "skill": "writes-the-ending",
+        "level": 25
       }
     ],
     "anastagi": [
@@ -422,6 +774,18 @@
       {
         "skill": "downhill-charge",
         "level": 10
+      },
+      {
+        "skill": "cavalry-wheel",
+        "level": 15
+      },
+      {
+        "skill": "rally-the-horse",
+        "level": 20
+      },
+      {
+        "skill": "lance-of-mdina",
+        "level": 25
       }
     ],
     "deniz": [
@@ -436,6 +800,18 @@
       {
         "skill": "boarding-hook",
         "level": 10
+      },
+      {
+        "skill": "charted-waters",
+        "level": 15
+      },
+      {
+        "skill": "swift-boarding",
+        "level": 20
+      },
+      {
+        "skill": "navigators-reckoning",
+        "level": 25
       }
     ],
     "yusuf": [
@@ -450,6 +826,18 @@
       {
         "skill": "blood-in-the-water",
         "level": 10
+      },
+      {
+        "skill": "old-wolf",
+        "level": 15
+      },
+      {
+        "skill": "galley-discipline",
+        "level": 20
+      },
+      {
+        "skill": "captain-of-the-fleet",
+        "level": 25
       }
     ],
     "leyla": [
@@ -464,6 +852,18 @@
       {
         "skill": "fire-among-them",
         "level": 10
+      },
+      {
+        "skill": "serene-patience",
+        "level": 15
+      },
+      {
+        "skill": "practised-evasion",
+        "level": 20
+      },
+      {
+        "skill": "blood-of-cem",
+        "level": 25
       }
     ]
   }

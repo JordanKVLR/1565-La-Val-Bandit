@@ -32,7 +32,7 @@
       "id": "leyla",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 22,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [2, 4],
@@ -43,7 +43,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 12,
+      "level": 24,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [3, 3],
@@ -54,7 +54,7 @@
       "id": "deniz",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 23,
       "frame": "levend",
       "weapon": "kilij",
       "at": [4, 4],
@@ -65,7 +65,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 23,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [2, 5],
@@ -76,7 +76,7 @@
       "id": "yusuf",
       "side": "player",
       "controller": "human",
-      "level": 12,
+      "level": 24,
       "frame": "reis",
       "weapon": "cutlass",
       "at": [4, 5],
@@ -87,7 +87,7 @@
       "id": "husrev",
       "side": "enemy",
       "controller": "ai",
-      "level": 14,
+      "level": 26,
       "frame": "yeniceri",
       "weapon": "damascene-kilij",
       "at": [8, 2],
@@ -95,9 +95,9 @@
       "ai": "hold",
       "name": "Hüsrev Aga",
       "stats": {
-        "pow": 15,
-        "dex": 13,
-        "agl": 6
+        "pow": 21,
+        "dex": 19,
+        "agl": 7
       },
       "portrait": "janissary",
       "skills": ["hardened-veteran"]
@@ -106,7 +106,7 @@
       "id": "guard-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 24,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [5, 9],
@@ -114,9 +114,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 12,
-        "dex": 11,
-        "agl": 6
+        "pow": 18,
+        "dex": 17,
+        "agl": 7
       },
       "skills": ["standard-bearer"]
     },
@@ -124,7 +124,7 @@
       "id": "guard-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 24,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [9, 4],
@@ -132,9 +132,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 5
+        "pow": 17,
+        "dex": 17,
+        "agl": 6
       },
       "skills": ["marksman"]
     },
@@ -142,7 +142,7 @@
       "id": "guard-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 24,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [3, 9],
@@ -150,16 +150,16 @@
       "ai": "defensive",
       "name": "Pasha's Guard",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 5
+        "pow": 17,
+        "dex": 17,
+        "agl": 6
       }
     },
     {
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 24,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [8, 8],
@@ -167,9 +167,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 8
+        "pow": 18,
+        "dex": 16,
+        "agl": 9
       },
       "skills": ["zealot"]
     },
@@ -177,7 +177,7 @@
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 24,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 1],
@@ -185,9 +185,9 @@
       "ai": "defensive",
       "name": "Pasha's Bombardier",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 5
+        "pow": 17,
+        "dex": 17,
+        "agl": 6
       }
     }
   ],

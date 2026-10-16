@@ -26,6 +26,9 @@ export interface ChapterInfo {
 
 export const CAMPAIGN_SAVE_VERSION = 4;
 
+/** The current level curve (see `CampaignSave.curve`). */
+export const LEVEL_CURVE = 2;
+
 export interface CampaignSave {
   readonly version: number;
   /** inkjs story state JSON. */
@@ -59,4 +62,9 @@ export interface CampaignSave {
   readonly parts?: number;
   /** Camp talks already heard (ids from data/camp.json). */
   readonly campDone?: readonly string[];
+  /**
+   * The level curve this save was played on. Battles were retuned to reach about Lv 25; saves from
+   * before (no value) are caught up when loaded, so the company is not left far behind.
+   */
+  readonly curve?: number;
 }

@@ -19,7 +19,7 @@
       "id": "ninu",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 19,
       "frame": "cavaliere",
       "weapon": "bastard-sword",
       "at": [5, 5],
@@ -30,7 +30,7 @@
       "id": "kateri",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 18,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [4, 7],
@@ -41,7 +41,7 @@
       "id": "balbi",
       "side": "player",
       "controller": "human",
-      "level": 10,
+      "level": 18,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [7, 7],
@@ -52,7 +52,7 @@
       "id": "ganni",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 17,
       "frame": "lanza",
       "weapon": "pike",
       "at": [3, 5],
@@ -63,7 +63,7 @@
       "id": "rozi",
       "side": "player",
       "controller": "human",
-      "level": 9,
+      "level": 17,
       "frame": "moschetta",
       "weapon": "arquebus",
       "at": [6, 7],
@@ -74,23 +74,23 @@
       "id": "knight",
       "side": "player",
       "controller": "human",
-      "level": 11,
+      "level": 19,
       "frame": "bastiun",
       "weapon": "mace-shield",
       "at": [8, 5],
       "facing": "north",
       "name": "Knight of Senglea",
       "stats": {
-        "pow": 11,
-        "dex": 10,
-        "agl": 5
+        "pow": 15,
+        "dex": 14,
+        "agl": 6
       }
     },
     {
       "id": "aga",
       "side": "enemy",
       "controller": "ai",
-      "level": 12,
+      "level": 20,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [6, 1],
@@ -98,9 +98,9 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 13,
-        "dex": 12,
-        "agl": 7
+        "pow": 17,
+        "dex": 16,
+        "agl": 8
       },
       "skills": ["standard-bearer"]
     },
@@ -108,7 +108,7 @@
       "id": "jan-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 19,
       "frame": "yeniceri",
       "weapon": "kilij",
       "at": [1, 1],
@@ -116,16 +116,16 @@
       "ai": "aggressive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 6
+        "pow": 15,
+        "dex": 15,
+        "agl": 7
       }
     },
     {
       "id": "jan-2",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 19,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [3, 0],
@@ -133,9 +133,9 @@
       "ai": "defensive",
       "name": "Marksman",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 15,
+        "dex": 16,
+        "agl": 6
       },
       "skills": ["marksman"]
     },
@@ -143,7 +143,7 @@
       "id": "jan-3",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 19,
       "frame": "yeniceri",
       "weapon": "tufek",
       "at": [8, 0],
@@ -151,16 +151,16 @@
       "ai": "defensive",
       "name": "Yeniçeri",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 15,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "humb-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 19,
       "frame": "humbaraci",
       "weapon": "grenado",
       "at": [6, 2],
@@ -168,16 +168,16 @@
       "ai": "defensive",
       "name": "Humbaracı",
       "stats": {
-        "pow": 11,
-        "dex": 12,
-        "agl": 5
+        "pow": 15,
+        "dex": 16,
+        "agl": 6
       }
     },
     {
       "id": "sipahi-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 19,
       "frame": "sipahi",
       "weapon": "sipahi-lance",
       "at": [0, 2],
@@ -185,9 +185,9 @@
       "ai": "aggressive",
       "name": "Zealot",
       "stats": {
-        "pow": 11,
-        "dex": 11,
-        "agl": 8
+        "pow": 15,
+        "dex": 15,
+        "agl": 9
       },
       "skills": ["zealot"]
     },
@@ -195,7 +195,7 @@
       "id": "proto-1",
       "side": "enemy",
       "controller": "ai",
-      "level": 11,
+      "level": 19,
       "frame": "prototipo",
       "weapon": "ram-arm",
       "at": [10, 1],
@@ -203,9 +203,9 @@
       "ai": "aggressive",
       "name": "The Pasha's Prototipo",
       "stats": {
-        "pow": 12,
-        "dex": 10,
-        "agl": 5
+        "pow": 16,
+        "dex": 14,
+        "agl": 6
       }
     }
   ],
@@ -229,7 +229,7 @@
               "id": "sipahi-2",
               "side": "enemy",
               "controller": "ai",
-              "level": 10,
+              "level": 18,
               "frame": "sipahi",
               "weapon": "sipahi-lance",
               "at": [0, 1],
@@ -237,9 +237,9 @@
               "ai": "aggressive",
               "name": "Sipahi",
               "stats": {
-                "pow": 11,
-                "dex": 11,
-                "agl": 8
+                "pow": 15,
+                "dex": 15,
+                "agl": 9
               }
             }
           ]

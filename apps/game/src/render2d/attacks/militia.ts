@@ -1268,4 +1268,13 @@ export const MILITIA_SCRIPTS: AttackScripts = withVariants(MILITIA_BASE, {
   'militia-gaff-hook': ['militia-watchtower-sweep', '#8fd0c8'],
   'militia-wallbreaker': ['militia-brace-and-drive', '#e0c27a'],
   'militia-braced-shot': ['militia-aimed-shot', '#ffd36b'],
+  'militia-carob-sickle': ['militia-harvest-swing', '#e8d9a8'],
+  'militia-old-stones-strike': ['militia-carob-split', '#d9a066'],
+  'militia-defender-of-the-island': ['militia-zejtun-feint', '#f2e6b8'],
+  'militia-ladder-pusher': ['militia-brace-and-drive', '#e8d9a8'],
+  'militia-watchfire-thrust': ['militia-brace-and-drive', '#d9a066'],
+  'militia-gate-of-birgu': ['militia-brace-and-drive', '#f2e6b8'],
+  'militia-parapet-shot': ['militia-sharpshooter', '#e8d9a8'],
+  'militia-bastion-volley': ['militia-crossfire', '#d9a066'],
+  'militia-dead-aim-of-malta': ['militia-sharpshooter', '#f2e6b8'],
 });

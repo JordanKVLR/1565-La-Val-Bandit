@@ -520,9 +520,12 @@ export function xpFor(
   const direction = zone === 'front' ? b.xpFront : zone === 'side' ? b.xpSide : b.xpRear;
   const share = Math.min(1, damage / Math.max(1, target.maxHp));
   const hit = (b.xpHitBase + b.xpDamageShare * share) * direction;
+  // Levels cost more as a pilot rises (xpLevelCostGrowth), so blows pay more too: a battle is worth
+  // about the same share of a level at Lv 3 as at Lv 23.
+  const rise = 1 + b.xpLevelCostGrowth * (attacker.level - 1);
   return Math.max(
     1,
-    Math.round((hit + (defeated ? b.xpDefeat : 0)) * level * b.xpScale * xpMult(attacker)),
+    Math.round((hit + (defeated ? b.xpDefeat : 0)) * level * rise * b.xpScale * xpMult(attacker)),
   );
 }
 
