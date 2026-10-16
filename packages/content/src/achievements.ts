@@ -34,6 +34,8 @@ export const AchievementTriggerSchema = z.discriminatedUnion('type', [
     .object({
       type: z.literal('ending'),
       route: z.string().optional(),
+      /** A variant of the route's ending (e.g. "truce"). */
+      variant: z.string().optional(),
       difficulty: difficulty.optional(),
       minNgPlus: z.number().int().min(1).optional(),
     })
@@ -108,6 +110,8 @@ export type AchievementEvent =
   | {
       readonly type: 'ending';
       readonly route: string;
+      /** The ending's variant, when it has one ("truce"). */
+      readonly variant?: string;
       readonly difficulty: Difficulty;
       readonly ngPlus: number;
     }
@@ -151,6 +155,7 @@ export function triggerMatches(trigger: AchievementTrigger, event: AchievementEv
       return (
         event.type === 'ending' &&
         (!trigger.route || trigger.route === event.route) &&
+        (!trigger.variant || trigger.variant === event.variant) &&
         (!trigger.difficulty || trigger.difficulty === event.difficulty) &&
         (trigger.minNgPlus === undefined || event.ngPlus >= trigger.minNgPlus)
       );
@@ -192,7 +197,9 @@ export function achievementsForEvent(
 /** A route's plain ending entry: earned by its ending on any difficulty and cycle. */
 function isPlainEnding(a: Achievement): boolean {
   const t = a.trigger;
-  return t.type === 'ending' && !!t.route && !t.difficulty && t.minNgPlus === undefined;
+  return (
+    t.type === 'ending' && !!t.route && !t.variant && !t.difficulty && t.minNgPlus === undefined
+  );
 }
 
 /**

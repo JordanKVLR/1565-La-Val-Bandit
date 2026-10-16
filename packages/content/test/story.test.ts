@@ -129,3 +129,31 @@ describe('story script', () => {
     );
   });
 });
+
+describe('the truce ending', () => {
+  /** Jumps straight to the ending with the given affinities and reads it out. */
+  function ending(valette: number, deniz: number): { reached: boolean; variant: string } {
+    const s = new Story(story as ConstructorParameters<typeof Story>[0]);
+    s.variablesState.$('route', 'cross');
+    s.variablesState.$('aff_valette', valette);
+    s.variablesState.$('aff_deniz', deniz);
+    s.ChoosePathString('route_cross.after_lines');
+    let reached = false;
+    for (let guard = 0; guard < 500; guard++) {
+      while (s.canContinue) {
+        const line = (s.Continue() ?? '').trim();
+        if (line === '>>> end') reached = true;
+      }
+      if (!s.currentChoices.length) break;
+      s.ChooseChoiceIndex(0);
+    }
+    return { reached, variant: String(s.variablesState.$('ending_variant')) };
+  }
+
+  it('is earned by the Grand Master’s trust and a corsair let go, and only then', () => {
+    expect(ending(3, 1)).toEqual({ reached: true, variant: 'truce' });
+    expect(ending(4, 2)).toEqual({ reached: true, variant: 'truce' });
+    expect(ending(2, 1)).toEqual({ reached: true, variant: '' });
+    expect(ending(4, 0)).toEqual({ reached: true, variant: '' });
+  });
+});

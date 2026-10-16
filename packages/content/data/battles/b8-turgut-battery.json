@@ -134,12 +134,13 @@
       "at": [9, 8],
       "facing": "north",
       "ai": "defensive",
-      "name": "Militia Gunner",
+      "name": "Marksman",
       "stats": {
         "pow": 8,
         "dex": 10,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     }
   ],
   "bonus": [

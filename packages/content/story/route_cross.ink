@@ -227,7 +227,57 @@ She tips the first crate into the fire. The drawings curl, blacken and lift away
 NINU: You'll answer to the Grand Master, Signore. And then I hope you live a long time, in a small cell, with no paper.
 SCALA: You have his stubbornness. And hers. What a pretender you would have made.
 NINU: I'd rather be a fisherman.
+{ aff_valette >= 3 && aff_deniz > 0:
+    -> ending_truce
+}
 -> ending_cross
+
+= ending_truce
+>>> chapter "Epilogue" "A Truce on the Shore · 9 September 1565"
+>>> stage p2-st-angelo
+>>> actor valette 4 2 south
+>>> actor ninu 4 4 north
+>>> actor balbi 3 4 east
+The Turkish fleet is still in the roads, taking on the last of its wounded. Ninu stands on the parapet of St Angelo with half a bronze coin in his fist.
+NINU: Eminence. There is a galley out there with a woman aboard who holds the other half of this. I want to carry it to her myself.
+LA VALETTE: Under a flag of truce, to the fleet that burned St Elmo.
+NINU: Under a flag of truce, to one woman and the corsair who will be rowing her.
+The Grand Master looks at the coin for a long time.
+LA VALETTE: When I was your age, in the galleys of the Turk, a woman of the household brought water to the benches when the overseer was not looking. I never learned her name. I have wondered for twenty-five years whether I would have taken the same chance.
+LA VALETTE: Usanza de guerra. The custom of war. Go. Take Balbi. Someone should write down what a truce looks like.
+>>> stage p3-camp
+>>> actor leyla 3 3 south
+>>> actor deniz 3 4 north
+>>> actor ninu 4 3 west
+>>> actor balbi 3 5 north
+A longboat with a white shirt on an oar grounds on the shingle at the Marsa. A young navigator in a Levend coat is already on the beach, one hand on his kilij, the other held open.
+DENIZ: Farmer. You let me go once. I did not think I would see you again without a blade between us.
+NINU: Nor did I. I brought something instead.
+Leyla Hatun comes down the shingle slowly, with her veil back. She stops an arm's length away. She opens her hand, and in it lies half of a bronze medallion, worn smooth by twenty-three years of her thumb.
+LEYLA: You have his eyes. God forgive me, I never thought I would see them again.
+Ninu holds out his half. The broken edges meet with a small, exact sound.
+DENIZ: Mother. Who is this?
+LEYLA: Your brother.
+Deniz says nothing for a long moment. Then he laughs, once, helplessly, and wipes his face with his sleeve.
+DENIZ: Of course he is. I thought the jaw was a coincidence.
+* [Offer the whole medallion to her]
+    NINU: Keep it. Both halves. It was always hers.
+    LEYLA: No. A thing like this belongs to nobody. Keep your half, my son, and I will keep mine. One for the island, one for the sea.
+* [Ask her to come ashore]
+    NINU: There is a place for you at Żejtun, and for him too.
+    LEYLA: There is a fleet to go home with, and a husband's captain who has asked me to stay aboard. Perhaps in a few years. Perhaps in a better world.
+- BALBI: I have written this page twice and burned it twice. Some days history is too small a thing to hold what happens on a beach.
+The longboat pulls out into the roads. At the stern a young navigator lifts a hand, and on the quay of St Angelo a fisherman lifts his in answer, and does not put it down until the sails are gone.
+>>> stage p2-st-angelo
+>>> actor ninu 4 4 north
+>>> actor pawlu 3 4 east
+PAWLU: Well? Did she look well?
+NINU: She looked like someone who has kept a promise for a very long time.
+PAWLU: Then I was right to keep mine. Come home, boy. The nets are in a state.
+~ ending_variant = "truce"
+>>> chapter "Ending: A Truce on the Shore" "Thank you for playing"
+>>> end
+-> END
 
 = ending_cross
 >>> chapter "Epilogue" "The Cross · 8 September 1565"

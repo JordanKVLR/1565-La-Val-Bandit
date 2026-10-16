@@ -80,12 +80,13 @@
       "at": [1, 8],
       "facing": "north",
       "ai": "aggressive",
-      "name": "Yeniçeri",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 12,
         "dex": 10,
         "agl": 5
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "jan-2",
@@ -114,12 +115,13 @@
       "at": [7, 9],
       "facing": "north",
       "ai": "defensive",
-      "name": "Yeniçeri",
+      "name": "Marksman",
       "stats": {
         "pow": 11,
         "dex": 11,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "humb-1",
@@ -148,12 +150,13 @@
       "at": [0, 7],
       "facing": "north",
       "ai": "aggressive",
-      "name": "Sipahi",
+      "name": "Zealot",
       "stats": {
         "pow": 11,
         "dex": 9,
         "agl": 8
-      }
+      },
+      "skills": ["zealot"]
     }
   ],
   "script": [

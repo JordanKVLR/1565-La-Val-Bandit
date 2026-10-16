@@ -40,6 +40,7 @@ function sampleEvent(t: AchievementTrigger): AchievementEvent | null {
       return {
         type: 'ending',
         route: t.route ?? 'cross',
+        ...(t.variant ? { variant: t.variant } : {}),
         difficulty: t.difficulty ?? 'knight',
         ngPlus: t.minNgPlus ?? 0,
       };
@@ -170,6 +171,10 @@ describe('matching events', () => {
   it('an ending earns its route, and New Game+ or Grand Master endings earn more', () => {
     const e = { type: 'ending', route: 'island', difficulty: 'knight', ngPlus: 0 } as const;
     expect(ids(e)).toEqual(['ACH_ENDING_ISLAND']);
+    // The truce is a variant of the Cross ending: it earns both, and never counts as a fourth route.
+    expect(
+      ids({ type: 'ending', route: 'cross', variant: 'truce', difficulty: 'knight', ngPlus: 0 }),
+    ).toEqual(['ACH_ENDING_CROSS', 'ACH_ENDING_TRUCE']);
     expect(ids({ ...e, ngPlus: 2, difficulty: 'grandMaster' }).sort()).toEqual(
       ['ACH_ENDING_ISLAND', 'ACH_GM_ENDING', 'ACH_NG_PLUS_ENDING'].sort(),
     );

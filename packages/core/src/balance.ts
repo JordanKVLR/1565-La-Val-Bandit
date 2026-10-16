@@ -104,6 +104,8 @@ export interface BalanceConfig {
   readonly rewardNoLosses: number;
   /** Salvaged parts (for Workshop crafting): per enemy beaten, and for the victory. */
   readonly partsPerEnemy: number;
+  /** Pilot level at which a class can be chosen. */
+  readonly promotionLevel: number;
   readonly partsVictory: number;
   /** The Armoury asks for a second tap before spending more than this share of the purse. */
   readonly armouryConfirmFraction: number;
@@ -244,6 +246,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   rewardPerEnemyLevel: 20,
   rewardNoLosses: 150,
   partsPerEnemy: 1,
+  promotionLevel: 10,
   partsVictory: 1,
   armouryConfirmFraction: 0.5,
   techFpMin: 5,

@@ -101,12 +101,13 @@
       "at": [6, 1],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Scala's Sailor",
+      "name": "Zealot",
       "stats": {
         "pow": 9,
         "dex": 8,
         "agl": 7
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "lev-2",
@@ -135,12 +136,13 @@
       "at": [3, 2],
       "facing": "south",
       "ai": "defensive",
-      "name": "Scala's Gunner",
+      "name": "Marksman",
       "stats": {
         "pow": 8,
         "dex": 9,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     }
   ],
   "bonus": [

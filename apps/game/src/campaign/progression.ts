@@ -110,6 +110,39 @@ export function withProgress(entry: RosterEntry, progress?: CharacterProgress): 
     : entry;
 }
 
+/** Why a pilot can't take this class, or undefined if they can. */
+export function promotionBlocked(
+  lib: Library,
+  entry: RosterEntry,
+  classId: string,
+): 'level' | 'chosen' | 'unknown' | undefined {
+  if (!lib.classes.has(classId)) return 'unknown';
+  if (entry.class) return 'chosen';
+  return entry.level >= lib.balance.promotionLevel ? undefined : 'level';
+}
+
+/**
+ * Promotes a pilot: the class's stat package is added (capped at the stat maximum) and its skill
+ * joins theirs in battle. Done once; the choice is for good.
+ */
+export function promote(
+  lib: Library,
+  roster: readonly RosterEntry[],
+  characterId: string,
+  classId: string,
+): RosterEntry[] {
+  const entry = roster.find((r) => r.characterId === characterId);
+  if (!entry) throw new Error(`Unknown pilot "${characterId}"`);
+  const blocked = promotionBlocked(lib, entry, classId);
+  if (blocked) throw new Error(`Can't promote ${characterId}: ${blocked}`);
+  const bonus = lib.classes.get(classId)!.bonus as Partial<Record<StatName, number>>;
+  const max = lib.balance.statMax;
+  const stats = { ...entry.stats };
+  for (const k of Object.keys(bonus) as StatName[])
+    stats[k] = Math.min(max, stats[k] + (bonus[k] ?? 0));
+  return roster.map((r) => (r.characterId === characterId ? { ...r, stats, class: classId } : r));
+}
+
 /** Spends one of a pilot's unspent points outside battle (results and preparation screens). */
 export function raiseRosterStat(
   roster: readonly RosterEntry[],

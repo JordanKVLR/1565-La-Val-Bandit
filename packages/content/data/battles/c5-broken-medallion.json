@@ -91,7 +91,8 @@
         "dex": 13,
         "agl": 5
       },
-      "portrait": "scala"
+      "portrait": "scala",
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "proto-1",
@@ -137,12 +138,13 @@
       "at": [3, 6],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Scala's Hireling",
+      "name": "Zealot",
       "stats": {
         "pow": 13,
         "dex": 11,
         "agl": 8
-      }
+      },
+      "skills": ["zealot"]
     }
   ],
   "bonus": [

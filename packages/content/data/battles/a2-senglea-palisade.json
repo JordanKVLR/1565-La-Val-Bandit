@@ -80,12 +80,13 @@
       "at": [1, 1],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Levend",
+      "name": "Zealot",
       "stats": {
         "pow": 11,
         "dex": 9,
         "agl": 7
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "lev-2",
@@ -114,12 +115,13 @@
       "at": [5, 1],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Yeniçeri",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 12,
         "dex": 10,
         "agl": 5
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "jan-2",
@@ -131,12 +133,13 @@
       "at": [6, 2],
       "facing": "south",
       "ai": "defensive",
-      "name": "Yeniçeri",
+      "name": "Marksman",
       "stats": {
         "pow": 11,
         "dex": 11,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "reis-1",

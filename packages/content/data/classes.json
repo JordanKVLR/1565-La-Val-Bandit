@@ -1,0 +1,75 @@
+[
+  {
+    "id": "bulwark",
+    "name": "Bulwark",
+    "description": "Holds the line for the others. Sturdier and harder to hurt.",
+    "bonus": {
+      "bas": 3,
+      "def": 3
+    },
+    "skill": {
+      "id": "class-bulwark",
+      "name": "Unmoving",
+      "description": "Takes 8% less damage from every blow.",
+      "effect": {
+        "type": "damageReduction",
+        "percent": 8
+      }
+    }
+  },
+  {
+    "id": "vanguard",
+    "name": "Vanguard",
+    "description": "Leads the charge. Hits harder and has the wind for it.",
+    "bonus": {
+      "pow": 4,
+      "bas": 2
+    },
+    "skill": {
+      "id": "class-vanguard",
+      "name": "Spearhead",
+      "description": "+8% damage on every strike.",
+      "effect": {
+        "type": "damageBonus",
+        "percent": 8
+      }
+    }
+  },
+  {
+    "id": "duelist",
+    "name": "Duelist",
+    "description": "Quick and exact. Better at turning a blow back on the one who threw it.",
+    "bonus": {
+      "dex": 3,
+      "agl": 3
+    },
+    "skill": {
+      "id": "class-duelist",
+      "name": "Riposte",
+      "description": "+15% Counter success chance.",
+      "effect": {
+        "type": "counterBonus",
+        "amount": 15
+      }
+    }
+  },
+  {
+    "id": "tactician",
+    "name": "Tactician",
+    "description": "Reads the field. Steadies the aim of every ally standing beside them.",
+    "bonus": {
+      "int": 3,
+      "dex": 2,
+      "def": 1
+    },
+    "skill": {
+      "id": "class-tactician",
+      "name": "Field Command",
+      "description": "Adjacent allies get +5% hit chance.",
+      "effect": {
+        "type": "aura",
+        "amount": 5
+      }
+    }
+  }
+]

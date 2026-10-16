@@ -10,7 +10,7 @@ import './codex.css';
 
 type Filter = 'all' | CodexEntry['kind'];
 
-const FILTERS: readonly Filter[] = ['all', 'historical', 'fiction'];
+const FILTERS: readonly Filter[] = ['all', 'historical', 'fiction', 'chronicle'];
 
 const filterLabel = (f: Filter) => (f === 'all' ? t('codex.filter.all') : t(`codex.kind.${f}`));
 
@@ -29,6 +29,7 @@ function KindIcon({ kind }: { kind: CodexEntry['kind'] | 'locked' }) {
     historical: 'M3 4h14v2H3zM5 7h2v8H5zM9 7h2v8H9zM13 7h2v8h-2zM2 16h16v2H2zM10 1l8 2.5H2z',
     fiction:
       'M17 2c-5 1-9 5-11 11l-2 5 1.5.5 1.4-3.6C11 14 15 10 17 2zM8.3 12.2c1.6-3 3.8-5.6 6.4-7.3-2 2.4-3.8 5-5 7.9z',
+    chronicle: 'M4 2h9l3 3v13H4zm2 2v12h8V6h-2V4zm1 4h5v1H7zm0 3h5v1H7zm0 3h3v1H7z',
     locked: 'M6 8V6a4 4 0 0 1 8 0v2h1.5v10h-11V8zm2 0h4V6a2 2 0 0 0-4 0zm1 4v3h2v-3z',
   } as const;
   return (
@@ -108,6 +109,7 @@ export function CodexScreen({
           {tParts('codex.intro', {
             historical: <KindBadge kind="historical" />,
             fiction: <KindBadge kind="fiction" />,
+            chronicle: <KindBadge kind="chronicle" />,
           })}
         </p>
       </div>

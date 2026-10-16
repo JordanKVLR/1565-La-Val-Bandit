@@ -96,12 +96,13 @@
       "at": [6, 1],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Ağa of the Yeniçeri",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 13,
         "dex": 12,
         "agl": 7
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "jan-1",
@@ -130,12 +131,13 @@
       "at": [3, 0],
       "facing": "south",
       "ai": "defensive",
-      "name": "Yeniçeri",
+      "name": "Marksman",
       "stats": {
         "pow": 11,
         "dex": 12,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "jan-3",
@@ -181,12 +183,13 @@
       "at": [0, 2],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Sipahi",
+      "name": "Zealot",
       "stats": {
         "pow": 11,
         "dex": 11,
         "agl": 8
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "proto-1",

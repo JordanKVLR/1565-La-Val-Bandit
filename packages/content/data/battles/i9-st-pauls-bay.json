@@ -105,7 +105,8 @@
         "def": 14,
         "bas": 15
       },
-      "portrait": "scala"
+      "portrait": "scala",
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "proto-1",
@@ -151,12 +152,13 @@
       "at": [7, 4],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Rearguard Reis",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 15,
         "dex": 11,
         "agl": 8
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "jan-1",
@@ -168,12 +170,13 @@
       "at": [3, 2],
       "facing": "south",
       "ai": "defensive",
-      "name": "Yeniçeri",
+      "name": "Marksman",
       "stats": {
         "pow": 14,
         "dex": 12,
         "agl": 6
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "jan-2",

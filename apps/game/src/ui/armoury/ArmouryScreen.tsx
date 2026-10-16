@@ -654,6 +654,7 @@ export function ArmouryScreen({ session, lib }: { session: GameSession; lib: Lib
           pilotId={pilot.characterId}
           onPilot={(id) => pickPilot(id)}
           onRaise={(id, stat) => session.raiseStat(id, stat)}
+          onPromote={(id, classId) => session.promoteTo(id, classId)}
           onClose={() => setTraining(null)}
           onBattle={training === 'battle' ? () => session.closePrep() : null}
         />

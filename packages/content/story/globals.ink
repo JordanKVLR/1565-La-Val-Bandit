@@ -8,6 +8,8 @@ VAR obeyed_orders = 0
 VAR showed_medallion = false
 VAR route = ""
 VAR last_battle = ""
+// Set by an ending that is a variant of its route (e.g. "truce"); reported with the ending.
+VAR ending_variant = ""
 // Bonds beyond Ninu's four main affinities; each camp talk raises one.
 VAR bond_ninu_ganni = 0
 VAR bond_ninu_rozi = 0

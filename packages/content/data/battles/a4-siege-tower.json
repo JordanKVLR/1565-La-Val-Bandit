@@ -86,7 +86,8 @@
         "pow": 10,
         "dex": 11,
         "agl": 0
-      }
+      },
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "jan-1",
@@ -98,12 +99,13 @@
       "at": [3, 2],
       "facing": "south",
       "ai": "defensive",
-      "name": "Yeniçeri",
+      "name": "Marksman",
       "stats": {
         "pow": 12,
         "dex": 12,
         "agl": 6
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "jan-2",
@@ -132,12 +134,13 @@
       "at": [2, 4],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Levend",
+      "name": "Zealot",
       "stats": {
         "pow": 12,
         "dex": 11,
         "agl": 8
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "lev-2",

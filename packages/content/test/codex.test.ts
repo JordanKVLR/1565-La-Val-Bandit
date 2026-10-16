@@ -6,7 +6,7 @@ describe('historical notes (codex)', () => {
 
   it('has a readable number of entries, each labelled historical or fiction', () => {
     expect(codex.length).toBeGreaterThanOrEqual(15);
-    expect(codex.length).toBeLessThanOrEqual(30);
+    expect(codex.length).toBeLessThanOrEqual(60);
     expect(codex.filter((e) => e.kind === 'historical').length).toBeGreaterThanOrEqual(12);
     expect(codex.filter((e) => e.kind === 'fiction').length).toBeGreaterThanOrEqual(4);
   });
@@ -35,7 +35,10 @@ describe('historical notes (codex)', () => {
       expect(kind(id), id).toBe('fiction');
     }
     // Story entries are always fiction; fiction is never filed as a real event or person.
-    for (const e of codex) expect(e.category === 'story', e.id).toBe(e.kind === 'fiction');
+    for (const e of codex.filter((x) => x.kind !== 'chronicle'))
+      expect(e.category === 'story', e.id).toBe(e.kind === 'fiction');
+    // Balbi's diary is its own shelf.
+    for (const e of codex) expect(e.category === 'diary', e.id).toBe(e.kind === 'chronicle');
   });
 
   it('only unlocks entries after battles that exist', () => {

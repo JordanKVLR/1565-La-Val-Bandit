@@ -196,5 +196,140 @@
     "category": "story",
     "unlockAfter": "b5-tigne",
     "text": "Scala, the Genoese inventor who builds the Armature and sells them to both sides, is invented, as are his prototype machines and his schemes.\n\nGenoa itself was real and powerful in 1565: its bankers financed the Spanish crown, and its admiral Gian Andrea Doria commanded galleys for Spain. Scala belongs to no real family or firm."
+  },
+  {
+    "id": "diary-marsaxlokk",
+    "title": "Eighteenth of May",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Sails off Delimara; landings at Marsaxlokk, 18–20 May",
+    "text": "I kept a diary through that summer, because the Order's chroniclers were all inside walls and someone had to write down what the soldiers saw. The first entry is short. The Turkish fleet was sighted on the eighteenth of May, and within two days they were ashore in the bay of Marsaxlokk, on the south-east of the island.\n\nI wrote: 'Nobody was surprised. Everyone was frightened. These are different things.'",
+    "unlockAfter": "b1-marsaxlokk"
+  },
+  {
+    "id": "diary-wells",
+    "title": "The Wells",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Valette's scorched-earth orders, May 1565",
+    "text": "The Grand Master had ordered the countryside stripped before the Turks came: crops cut green, cattle driven into Birgu, wells fouled with herbs and carrion. It was cruel to the farmers and it was right. An army of thirty thousand needs water more than it needs guns.\n\nI wrote: 'A well is a more honest weapon than a cannon. It does not boast; it only refuses.'",
+    "unlockAfter": "b2-marsa-wells"
+  },
+  {
+    "id": "diary-sciberras",
+    "title": "The Hill Across the Water",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Guns on Mount Sciberras, late May",
+    "text": "The Turks hauled their great guns up Mount Sciberras, the tongue of rock between the two harbours, and from it they looked straight down into the little fort of St Elmo. We had known they would. The Order's engineers had argued for years about whether the hill should be fortified, and the money had always gone elsewhere.\n\nI wrote: 'Every siege begins with a decision somebody put off.'",
+    "unlockAfter": "b3-sciberras"
+  },
+  {
+    "id": "diary-crossing",
+    "title": "Boats in the Dark",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Nightly reinforcement of St Elmo, June",
+    "text": "For as long as St Elmo held, it held because of the boats. Every night men rowed across the Grand Harbour with powder, water and fresh soldiers, and rowed back with the wounded. The Turkish guns could not see them in the dark, and when the moon was bright they stayed in Birgu.\n\nI wrote: 'The fort was held by those who stayed. The siege was held by those who rowed.'",
+    "unlockAfter": "b4-night-crossing"
+  },
+  {
+    "id": "diary-batteries",
+    "title": "The Guns Across the Harbour",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Ottoman batteries around the Grand Harbour",
+    "text": "As the siege went on, the Turks ringed the Grand Harbour with batteries, on the Sciberras ridge and on the points across the water. Their gun crews were the best in the world and they were paid for every day they kept firing. Ours were few. Ours were angry. In the end, it came to about the same.\n\nI wrote: 'A battery is only patience made of iron.'",
+    "unlockAfter": "b5-tigne"
+  },
+  {
+    "id": "diary-ravelin",
+    "title": "The Ravelin",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Assault on the ravelin of St Elmo, 3 June",
+    "text": "The ravelin was a small triangle of stone in front of the fort, and for days the whole siege turned on it. On the third of June the janissaries took it by storm in the dark. By morning the Order's knights and Spanish soldiers had thrown them out again, and the ditch was full of bodies.\n\nI wrote: 'A man can take a ravelin in a night. Holding it takes the rest of his life, which is usually a quarter of an hour.'",
+    "unlockAfter": "b7-st-elmo-ravelin"
+  },
+  {
+    "id": "diary-dragut",
+    "title": "An Old Man in the Open",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Death of Turgut Reis (Dragut), June 1565",
+    "text": "Turgut Reis, whom we called Dragut, was past seventy and the finest corsair captain of his age. He came to Malta late, and he walked among his batteries as if cannon were rain. On the eighteenth of June a shot from St Elmo struck the ground beside him and a splinter of stone caught him in the head. He lived five days.\n\nI wrote: 'He died on the day the fort fell. God has a bitter sense of order.'",
+    "unlockAfter": "b8-turgut-battery"
+  },
+  {
+    "id": "diary-elmo",
+    "title": "The Twenty-Third of June",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Fall of St Elmo, 23 June 1565",
+    "text": "St Elmo fell on the twenty-third of June, after about a month. Nearly all of its defenders died; a few Maltese swam to safety, and the Turks took some prisoners. Their dead lay in the harbour on wooden crosses, so that Birgu would see them. The Grand Master answered in the manner of that age, and I will not write it here.\n\nI wrote only: 'They said it would last a week. It lasted a month, and the month was the siege.'",
+    "unlockAfter": "b9-fall-of-st-elmo"
+  },
+  {
+    "id": "diary-soccorso",
+    "title": "The Little Relief",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Arrival of the Piccolo Soccorso, 29 June",
+    "text": "On the twenty-ninth of June about seven hundred soldiers and some forty knights, sent by the Viceroy of Sicily, landed on the coast and slipped into Birgu while the Order made a noise elsewhere to draw the Turks' eyes. They were not enough to change the siege, but they changed the mood. Men who had been counting their last days began to count their meals.\n\nI wrote: 'Hope is cheaper than powder and travels farther.'",
+    "unlockAfter": "a1-piccolo-soccorso"
+  },
+  {
+    "id": "diary-palisade",
+    "title": "The Stakes",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Attack on Senglea by boat, 15 July",
+    "text": "On the fifteenth of July the Turks launched boats, carried overland from Marsamxett, against the sea wall of Senglea. The Order had driven a palisade of stakes into the shallows to stop them. The Maltese swimmers went into the water with knives in their teeth and cut at the boats from below, and the Turkish landing broke in the stakes.\n\nI wrote: 'The Maltese are not fighting for a flag. They are fighting for a doorstep.'",
+    "unlockAfter": "a2-senglea-palisade"
+  },
+  {
+    "id": "diary-assault",
+    "title": "The Great Assault",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "General assault on the Post of Castile, 7 August",
+    "text": "On the seventh of August the Pasha threw everything he had at the Post of Castile and the breach beside it. The Grand Master, past seventy, went to the breach on foot in a plain helmet with a pike in his hands, because the soldiers were wavering and he would not ask them to stand where he would not. They stood.\n\nI wrote: 'Courage is catching, like the plague, and more welcome.'",
+    "unlockAfter": "a3-castile-breach"
+  },
+  {
+    "id": "diary-raid",
+    "title": "The Raid on the Camp",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Mdina cavalry raid on the Marsa camp, 7 August",
+    "text": "The Mdina cavalry, under their captain Vincenzo Anastagi, rode out the same day and fell on the Turkish camp at the Marsa, where there were few guards and many sick. They burned tents and killed what they found. The Pasha, told the relief had landed, called his troops back from the breach, and the assault on Castile stopped with the position all but lost.\n\nI wrote: 'A few horsemen and a rumour saved the Post of Castile. Never again tell me a rumour is nothing.'",
+    "unlockAfter": "a6-sick-tents"
+  },
+  {
+    "id": "diary-mine",
+    "title": "The Mine Under Castile",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "The mine of 18 August",
+    "text": "The Turkish sappers dug mines under the walls, and the Order dug against them. On the eighteenth of August a mine exploded under the Post of Castile and the wall came down. The Grand Master took a pike to the breach again and was wounded in the leg, but would not leave.\n\nI wrote: 'The Turk digs for months and fights for minutes. We listen for months and fight for the same. It is an arithmetic of patience.'",
+    "unlockAfter": "a7-countermine"
+  },
+  {
+    "id": "diary-relief",
+    "title": "The Eighth of September",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Departure of the Ottoman army, 8 September 1565",
+    "text": "The relief army from Sicily landed on the seventh of September at Mellieħa, some eight thousand men. The Ottoman army, sick and exhausted, burned its camp and embarked. Then, hearing the relief was smaller than feared, the Pasha put his troops ashore again and marched north. They were beaten near St Paul's Bay and the fleet sailed on the twelfth.\n\nI wrote: 'The Turk came with forty thousand and went with a third. The island was a ruin. The island was ours.'",
+    "unlockAfter": "a9-marsa-lines"
+  },
+  {
+    "id": "diary-boats",
+    "title": "Boats Over the Hill",
+    "kind": "chronicle",
+    "category": "diary",
+    "when": "Ottoman boats hauled overland, July 1565",
+    "text": "To get boats into the Grand Harbour past the guns of St Angelo, the Turks dragged some eighty of them overland across the neck of Mount Sciberras on greased timbers, a thousand men on the ropes. It was one of the great labours of the siege, and it was wasted: a hidden battery at the waterline below St Angelo fired into the boats at point-blank range.\n\nI wrote: 'We learned that the Turk could do anything but do it quietly.'",
+    "unlockAfter": "c6-boat-road"
   }
 ]

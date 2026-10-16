@@ -105,7 +105,8 @@
         "dex": 14,
         "agl": 6
       },
-      "portrait": "scala"
+      "portrait": "scala",
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "lev-1",
@@ -117,12 +118,13 @@
       "at": [5, 1],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Scala's Hireling",
+      "name": "Zealot",
       "stats": {
         "pow": 11,
         "dex": 11,
         "agl": 8
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "proto-1",
@@ -168,12 +170,13 @@
       "at": [2, 5],
       "facing": "south",
       "ai": "defensive",
-      "name": "Rearguard Yeniçeri",
+      "name": "Marksman",
       "stats": {
         "pow": 12,
         "dex": 13,
         "agl": 6
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "jan-2",

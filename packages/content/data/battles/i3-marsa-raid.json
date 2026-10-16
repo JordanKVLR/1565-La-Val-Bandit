@@ -86,7 +86,8 @@
         "pow": 12,
         "dex": 11,
         "agl": 5
-      }
+      },
+      "skills": ["hardened-veteran"]
     },
     {
       "id": "guard-1",
@@ -98,12 +99,13 @@
       "at": [2, 2],
       "facing": "south",
       "ai": "defensive",
-      "name": "Camp Guard",
+      "name": "Marksman",
       "stats": {
         "pow": 11,
         "dex": 11,
         "agl": 5
-      }
+      },
+      "skills": ["marksman"]
     },
     {
       "id": "guard-2",
@@ -115,12 +117,13 @@
       "at": [6, 1],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Camp Guard",
+      "name": "Zealot",
       "stats": {
         "pow": 11,
         "dex": 10,
         "agl": 7
-      }
+      },
+      "skills": ["zealot"]
     },
     {
       "id": "guard-3",
@@ -132,12 +135,13 @@
       "at": [8, 4],
       "facing": "south",
       "ai": "aggressive",
-      "name": "Camp Guard",
+      "name": "Standard-Bearer",
       "stats": {
         "pow": 12,
         "dex": 10,
         "agl": 5
-      }
+      },
+      "skills": ["standard-bearer"]
     },
     {
       "id": "guard-4",
