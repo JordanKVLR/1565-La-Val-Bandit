@@ -179,6 +179,8 @@ export function ForecastPanel({
       f.zone,
       reaction === 'defend' || reaction === 'counter' || reaction === 'avoid' ? 0 : noDodge,
     ),
+    // Defending makes the blow twice as likely to land (the number shown is already doubled).
+    ...(reaction === 'defend' ? [t('overlay.mod.defendDouble')] : []),
     // Several strikes already show beside the damage.
     ...attackTags(f.attack).slice(f.hits > 1 ? 1 : 0),
     // What the blow is worth in XP when you strike (the level gap, in words and a number).
@@ -199,11 +201,13 @@ export function ForecastPanel({
       : undefined;
   const defenderNote =
     reaction === 'attackBack' && back
-      ? t('forecast.strikesBack', { damage: times(back.damage, back.hits) })
+      ? t(f.kind ? 'forecast.strikesBackUnlessDowned' : 'forecast.strikesBack', {
+          damage: times(back.damage, back.hits),
+        })
       : reaction === 'counter' && f.counter
         ? t('forecast.reflects', { n: f.counter.reflect })
         : reaction === 'defend'
-          ? t('forecast.halves')
+          ? t(f.kind === 'knockdown' ? 'forecast.halvesHolds' : 'forecast.halves')
           : reaction === 'avoid'
             ? t('forecast.dodges')
             : t('forecast.takes');

@@ -38,6 +38,12 @@ export function advanceTurn(state: BattleState, events: BattleEvent[]): void {
     if (unit.defeated) continue;
     state.turnIndex = i;
     unit.ap = Math.min(state.balance.apMax, unit.ap + state.balance.apRegen);
+    // A knocked-down unit starts the turn winded; sapping and slowing last through this turn.
+    if (unit.apDebt) {
+      unit.ap = Math.max(0, unit.ap - unit.apDebt);
+      unit.apDebt = 0;
+    }
+    if (unit.weakened || unit.slowedBy) unit.statusTurns = 1;
     state.turn = {
       unitId: unit.id,
       moved: false,
@@ -72,6 +78,12 @@ export function endTurn(state: BattleState, events: BattleEvent[]): void {
     const b = state.balance;
     const recovery = Math.floor((unit.ap / b.apPerFpRecovered) * restMult(unit));
     unit.fp = Math.max(0, unit.fp - recovery);
+  }
+  if (unit.statusTurns) {
+    unit.statusTurns = 0;
+    unit.weakened = false;
+    if (unit.slowedBy) unit.mov += unit.slowedBy;
+    unit.slowedBy = 0;
   }
   events.push({ type: 'turnEnded', unitId: unit.id, rested });
   advanceTurn(state, events);

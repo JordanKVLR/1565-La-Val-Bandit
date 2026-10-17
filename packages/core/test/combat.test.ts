@@ -54,9 +54,9 @@ describe('forecast', () => {
   it('computes golden numbers for a frontal attack on flat ground', () => {
     const { state, a, t } = duel();
     const f = forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust'));
-    // Thrust: hit = 75 + DEX 6×2 − AGL 6×2 = 75; attack back / no reaction +15 → 90; defend and a failed counter always hit
+    // Thrust: hit = 75 + DEX 6×2 − AGL 6×2 = 75; attack back / no reaction +15 → 90; defend doubles the avoid chance (capped at 99) and a failed counter lands at the cap
     expect(f.zone).toBe('front');
-    expect(f.hitChance).toEqual({ defend: 100, avoid: 75, attackBack: 90, counter: 100, none: 90 });
+    expect(f.hitChance).toEqual({ defend: 99, avoid: 75, attackBack: 90, counter: 99, none: 90 });
     // damage = (POW 6 + WEP 9) × 2 = 30 (DEF 0, no armour); Defend halves it to 15;
     // a failed counter takes 30 × 1.25 = 37.5 → 38
     expect(f.damage).toEqual({ defend: 15, avoid: 30, attackBack: 30, counter: 38, none: 30 });

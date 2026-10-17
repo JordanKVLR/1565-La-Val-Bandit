@@ -41,8 +41,18 @@ function Condition({
   preview?: CostPreview | undefined;
   stacked?: boolean;
 }) {
+  const winded = unit.apDebt ?? 0;
   return (
     <div class="bhud-meters">
+      {(unit.weakened || unit.slowedBy || winded > 0) && (
+        <div class="bhud-status" data-testid="unit-status">
+          {winded > 0 && <Chip tone="danger" label={t('unit.status.winded', { n: winded })} />}
+          {unit.weakened && <Chip tone="danger" label={t('unit.status.sapped')} />}
+          {unit.slowedBy ? (
+            <Chip tone="danger" label={t('unit.status.slowed', { n: unit.slowedBy })} />
+          ) : null}
+        </div>
+      )}
       <Meter label={t('stat.hp')} kind="hp" value={unit.hp} max={unit.maxHp} stacked={stacked} />
       <Meter
         label={t('stat.ap')}

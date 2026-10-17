@@ -295,6 +295,10 @@ export const en = {
   'attack.tagFatigue': '+{n} FP to target',
   'attack.tagApDamage': '−{n} AP to target',
   'attack.tagNoCounter': 'no counter',
+  'attack.tag.knockdown': 'knockdown',
+  'attack.tag.collision': 'collision',
+  'attack.tagWeaken': 'saps',
+  'attack.tagSlow': 'slows {n}',
   'attack.requires': '{stat} {need}',
   'attack.requiresShort': '{stat} {need} (have {have})',
   'attackStyle.slash': 'slash',
@@ -312,7 +316,13 @@ export const en = {
   'tech.ignoresHalfDef': "Ignores half of the target's DEF",
   'tech.ignoresSomeDef': "Ignores {n}% of the target's DEF",
   'tech.tires': 'Tires the target: +{n} FP',
-  'tech.shakes': 'Shakes the target: −{n} AP for its next actions',
+  'tech.shakes': 'Shakes the target: −{n} AP from its next turn',
+  'tech.kind.knockdown':
+    'Knockdown: if it lands, the target cannot strike back and starts its next turn short of AP. Defend holds it off; it cannot be countered',
+  'tech.kind.collision':
+    'Collision: topples the target even through Defend, with no strike back and a heavy loss of AP next turn. It cannot be countered',
+  'tech.weaken': 'Saps the target: its blows deal less until its next turn is over',
+  'tech.slow': 'Slows the target by {n} MOV until its next turn is over',
   'tech.noCounter': "Can't be answered with Attack back or Counter",
   'tech.ranged': 'Ranged: reloading and smoke cost extra FP',
   'tech.reach': 'Reaches an enemy two tiles away',
@@ -337,6 +347,8 @@ export const en = {
   'forecast.strikesBack': 'strikes back for {damage}',
   'forecast.reflects': 'reflects {n} on success',
   'forecast.halves': 'halves the blow',
+  'forecast.halvesHolds': 'halves the blow and holds off the knockdown',
+  'forecast.strikesBackUnlessDowned': 'strikes back for {damage}, unless the blow topples it',
   'forecast.dodges': 'tries to dodge',
   'forecast.takes': 'takes the blow',
   'forecast.strikeBackWith': 'Strike back with',
@@ -407,6 +419,7 @@ export const en = {
   'overlay.mod.skills': 'Skills {n}%',
   'overlay.mod.bond': 'Bond {n}%',
   'overlay.mod.noDodge': 'Not dodging {n}%',
+  'overlay.mod.defendDouble': 'Defending: hit chance doubled (max 99%)',
   /** XP preview for the blow: the level-gap multiplier (above 1 for tougher foes). */
   'overlay.xp.tougher': 'Tougher foe: XP ×{n}',
   'overlay.xp.weaker': 'Weaker foe: XP ×{n}',
@@ -467,6 +480,12 @@ export const en = {
   'log.usesXp': '{attacker} uses {attack} on {target}: {damage} damage ({how}), +{xp} XP.',
   'log.avoids': "{target} avoids {attacker}'s {attack}.",
   'log.counterFailed': '{main} The counter failed.',
+  'unit.status.winded': 'Winded: −{n} AP next turn',
+  'unit.status.sapped': 'Sapped: weaker blows',
+  'unit.status.slowed': 'Slowed: −{n} MOV',
+  'log.downed': '{target} is knocked down and will start the next turn short of AP.',
+  'log.sapped': '{target} is sapped: the next blows land lighter.',
+  'log.slowed': '{target} is slowed.',
   'log.strikesBack': '{main} Strikes back: {result}.',
   'log.strikesBackWith': '{main} Strikes back with {technique}: {result}.',
   'log.backDamage': '{n} damage',
@@ -520,7 +539,7 @@ export const en = {
     "Each named pilot has three skills of their own, gained at levels 1, 5 and 10: small passive edges such as better aim from high ground, less damage while defending, cheaper reactions or healing a little each turn. They work on their own and are already counted in the forecast. Open a unit's Info and tap Skills to read them; skills still to come show a padlock and the level they unlock at.",
   'help.rules.attributes': 'Attributes',
   'help.rules.attributesText':
-    "<b>BAS</b> +4 max HP per point · <b>POW</b> damage (plus the weapon's own power) · <b>INT</b> Counter odds and force · <b>DEX</b> +2% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> −1.5 damage taken per point. Armaturas, weapons, charms and amulets add to them (max 32).",
+    "<b>BAS</b> +7 max HP per point · <b>POW</b> damage (plus the weapon's own power) · <b>INT</b> Counter odds and force, and 1.5% less FP gained from your attacks and reactions per point (up to 40%) · <b>DEX</b> +2.4% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> blocks 0.8 raw damage per point. Each is tuned to be worth about the same to raise. Armaturas, weapons, charms and amulets add to them (max 32).",
   'help.rules.ap': 'AP (blue)',
   'help.rules.apText':
     "Action points. Every turn starts with a full 100. Moving and attacking spend AP; reacting never does. Your card shows the cost of a move or technique before you commit. AP you don't spend is not wasted: it rests you (see FP).",
@@ -529,7 +548,7 @@ export const en = {
     "Fatigue. Your own attacks add their technique's FP (Slash and Thrust: 5). Reacting is what tires you most. At the end of your turn every 3 AP left unspent removes 2 FP, so a turn spent waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a turn.",
   'help.rules.reactions': 'Reactions',
   'help.rules.reactionsText':
-    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. <b>Counter</b> (the attacker's technique FP + 20) is a gamble: if it works the blow is repelled onto the attacker, harder the higher your INT; if it fails you take 1.25×. INT and higher DEX + AGL than the attacker improve the odds; a blow from the side lowers them. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
+    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF, but doubles the chance the blow lands (never above 99%), and it holds off a knockdown. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. <b>Counter</b> (the attacker's technique FP + 20) is a gamble: if it works the blow is repelled onto the attacker, harder the higher your INT; if it fails you take 1.1× and are almost sure to be hit. INT and higher DEX + AGL than the attacker improve the odds; knockdowns and collisions cannot be countered; a blow from the side lowers them. A knockdown that lands cancels your strike back and costs you 35 AP next turn unless you Defend; a collision does it through Defend too, so Avoid those. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
   'help.rules.position': 'Position',
   'help.rules.positionText':
     'Hits from the side (+10%) and rear (+25%, ×1.25 damage) are deadlier, so face the enemy at the end of your turn. A unit only turns on its own turn, never when it is struck, so the way you leave it facing is a real choice. Higher ground adds accuracy and damage. Each ally next to your target adds +5% (up to +15%).',

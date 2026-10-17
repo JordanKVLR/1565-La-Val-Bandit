@@ -22,11 +22,13 @@ import { isHostile, unitStats } from './units';
 
 /**
  * How a defender answers an attack:
- * - defend: always hit, half damage (front or side)
+ * - defend: the blow is twice as likely to land (at most 99%) but does half damage, and a knockdown
+ *   cannot topple the defender (front or side)
  * - avoid: roll to dodge completely (any direction; the only choice from the rear)
  * - attackBack: take the hit, then strike back if still standing and in range (front or side)
- * - counter: high risk, high reward, head-on only. A small chance to turn the blow back on the
- *   attacker at 1.25×; on failure the defender takes the blow at 1.25×.
+ * - counter: high risk, high reward, head-on only. A good chance, sharpened by INT, to turn the
+ *   blow back on the attacker at a multiple of its force; on failure the defender takes it at
+ *   `counterFailMult` and is almost sure to be hit. Knockdowns and collisions cannot be countered.
  * - none: NOT a choice. The engine's internal value for a blow nobody reacted to (a strike back,
  *   a reflected counter, or a defender too Spent to react). It is never offered or accepted while
  *   the defender can afford a real reaction.
@@ -216,8 +218,14 @@ export function attackBackWith(
 }
 
 /** FP an attack costs this unit on its own turn (after its skills' discount). */
-export function attackFpCost(_state: BattleState, unit: UnitState, attack: Attack): number {
-  return Math.max(0, attack.fpCost - attackFpDiscount(unit));
+export function attackFpCost(state: BattleState, unit: UnitState, attack: Attack): number {
+  return Math.max(0, intTrim(state, unit, attack.fpCost) - attackFpDiscount(unit));
+}
+
+/** Sharp wits tire a pilot less: each point of INT trims a share off any FP the pilot gains. */
+function intTrim(state: BattleState, unit: UnitState, fp: number): number {
+  const b = state.balance;
+  return Math.round(fp * (1 - Math.min(b.intFpReductionMax, b.intFpReduction * unit.int)));
 }
 
 /**
@@ -233,7 +241,8 @@ export function reactionFpCost(
   incoming?: { readonly attacker: UnitState; readonly attack: Attack },
 ): number {
   const b = state.balance;
-  const less = (cost: number) => Math.max(0, cost - reactionDiscount(defender, reaction));
+  const less = (cost: number) =>
+    Math.max(0, intTrim(state, defender, cost) - reactionDiscount(defender, reaction));
   switch (reaction) {
     case 'defend':
       return less(b.defendFpCost);
@@ -303,7 +312,7 @@ export function reactionChoices(
         ? spent
         : zone === 'rear'
           ? { code: 'rearNoCounter' }
-          : attack?.noCounter
+          : attack?.noCounter || attack?.kind
             ? unanswerable(attack)
             : undefined,
     ),
@@ -457,6 +466,7 @@ export function strikeNumbers(
     heightMult *
     zoneMult *
     skillDamageMult(attacker, ctx) *
+    (attacker.weakened ? b.weakenMult : 1) *
     (1 + bondAtk * b.bondDamage);
   const guard = bondRankAt(state, target) * b.bondGuard;
   return {
@@ -474,8 +484,11 @@ export function strikeNumbers(
 
 export function hitChanceFor(state: BattleState, n: StrikeNumbers, reaction: Reaction): number {
   const b = state.balance;
-  // Defending blocks rather than dodges; a failed Counter leaves the defender wide open.
-  if (reaction === 'defend' || reaction === 'counter') return 100;
+  // A failed Counter leaves the defender wide open.
+  if (reaction === 'counter') return b.defendHitMax;
+  // Defending blocks rather than dodges: the blow is twice as likely to land, though halved.
+  if (reaction === 'defend')
+    return Math.min(b.defendHitMax, 2 * clamp(Math.round(n.baseHit), b.hitMin, b.hitMax));
   const bonus = reaction === 'avoid' ? 0 : b.counterHitBonus;
   return clamp(Math.round(n.baseHit + bonus), b.hitMin, b.hitMax);
 }
@@ -537,6 +550,8 @@ export interface AttackForecast {
   readonly hitParts: HitParts;
   /** The level-gap multiplier on the XP this attack earns (above 1: a tougher foe, below: a weaker one). */
   readonly xpGap: number;
+  /** The attack's kind, so the panel can say a landed blow cancels the strike back. */
+  readonly kind?: 'knockdown' | 'collision';
   readonly heightDiff: number;
   readonly assist: number;
   readonly reactions: readonly Reaction[];
@@ -586,6 +601,7 @@ export function forecastAttack(
     zone: n.zone,
     hitParts: n.hitParts,
     xpGap: Math.round(xpGapFactor(target.level - attacker.level, state.balance) * 100) / 100,
+    ...(attack.kind ? { kind: attack.kind } : {}),
     heightDiff: n.heightDiff,
     assist: n.assist,
     reactions,

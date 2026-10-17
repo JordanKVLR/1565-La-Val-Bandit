@@ -50,8 +50,13 @@ export function chooseReaction(
       const p = f.hitChance[r] / 100;
       const dmg = f.damage[r] * f.hits;
       score = p * dmg + (dmg >= defender.hp ? p * 100 : 0);
+      // Being toppled costs the next turn's AP; only Defend holds off a knockdown.
+      if (f.attack.kind && !(f.attack.kind === 'knockdown' && r === 'defend'))
+        score += p * (f.attack.kind === 'collision' ? 14 : 8);
       if (r === 'attackBack' && f.retaliation && dmg < defender.hp) {
-        score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.8;
+        // A landed knockdown or collision cancels the strike back.
+        const kept = f.attack.kind ? 1 - p : 1;
+        score -= kept * (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.8;
       }
     }
     // Fatigue is the price of reacting: spending the last of it leaves the unit defenceless.
@@ -248,7 +253,12 @@ function scoreAttack(
   let score = p * dmg;
   if (dmg >= target.hp) score += p * 40;
   // Side effects are worth a little; spending extra AP (less left to react with) costs a little.
-  score += p * ((attack.fatigue ?? 0) * 0.15 + (attack.apDamage ?? 0) * 0.15);
+  score += p * ((attack.fatigue ?? 0) * 0.15 + (attack.apDamage ?? 0) * 0.25);
+  score +=
+    p *
+    ((attack.kind === 'collision' ? 14 : attack.kind ? 8 : 0) +
+      (attack.weaken ? 6 : 0) +
+      (attack.slow ?? 0) * 3);
   score -= Math.max(0, attack.apCost - (unit.attacks[0]?.apCost ?? attack.apCost)) * 0.1;
   // Attacking tires the pilot; running out of FP leaves it unable to react.
   const b = state.balance;
@@ -257,7 +267,9 @@ function scoreAttack(
   score -= (fpAfter - unit.fp) * 0.05;
   if (!kills && fpAfter >= b.fpMax) score -= 25;
   else if (!kills && fpAfter + b.defendFpCost >= b.fpMax) score -= 6;
-  if (f.retaliation) score -= (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.7;
+  if (f.retaliation)
+    score -=
+      (attack.kind ? 1 - p : 1) * (f.retaliation.hitChance / 100) * f.retaliation.damage * 0.7;
   if (f.counter) score -= (f.counter.chance / 100) * f.counter.reflect * 0.7;
   // Every other enemy that could reach this tile next turn is a risk, weighed by how hard it hits.
   const danger = enemies

@@ -19,8 +19,8 @@ import {
   activeSkills,
   createBattle,
   DEFAULT_BALANCE,
-  techniqueValue,
-  techniqueValueTarget,
+  starterAttacks,
+  techniqueDamage,
   unlockedAttacks,
 } from '@m1565/core';
 import castData from '../data/cast.json';
@@ -176,42 +176,60 @@ describe('attacks', () => {
       pools.set(key, [...(pools.get(key) ?? []), r]);
     }
 
-  it('are worth what their level promises: the value standard (ADR 0017)', () => {
-    for (const { data, attack } of resolved) {
-      const target = techniqueValueTarget(data.level, lib.balance);
-      const value = techniqueValue(attack, lib.balance);
-      expect(
-        Math.abs(value / target - 1),
-        `${data.id} is worth ${value.toFixed(2)}, target ${target.toFixed(2)}`,
-      ).toBeLessThanOrEqual(lib.balance.techValueTolerance);
-    }
-  });
+  /** The tools a technique offers beyond a plain strike (its role in the pool). */
+  const tools = (a: (typeof resolved)[number]['attack']): string[] => {
+    const out: string[] = [];
+    if ((a.hits ?? 1) > 1) out.push('flurry');
+    if (a.kind) out.push(a.kind);
+    if ((a.pierce ?? 0) >= 0.4 && (a.hits ?? 1) === 1) out.push('pierce');
+    if ((a.fatigue ?? 0) >= 25) out.push('exhaust');
+    if (a.weaken || a.slow) out.push('debuff');
+    if (a.power * (a.hits ?? 1) >= 1.3 && (a.hits ?? 1) === 1 && !a.kind) out.push('heavy');
+    if (a.accuracy >= 12 && (a.hits ?? 1) === 1) out.push('precise');
+    return out;
+  };
 
-  it('only get better with level, within each faction and weapon pool', () => {
-    for (const [key, list] of pools) {
-      const sorted = [...list].sort((a, b) => a.data.level - b.data.level);
-      for (let i = 1; i < sorted.length; i++) {
-        const [lo, hi] = [sorted[i - 1]!, sorted[i]!];
-        expect(
-          techniqueValue(hi.attack, lib.balance),
-          `${key}: ${hi.data.id} (Lv ${hi.data.level}) vs ${lo.data.id} (Lv ${lo.data.level})`,
-        ).toBeGreaterThanOrEqual(techniqueValue(lo.attack, lib.balance) - 0.03);
-        // The POW a player reads must climb too (a flurry's strikes are lighter by design).
-        if (hi.data.level > lo.data.level && (hi.data.hits ?? 1) === 1 && (lo.data.hits ?? 1) === 1)
-          expect(hi.data.power, `${key}: POW of ${hi.data.id}`).toBeGreaterThanOrEqual(
-            lo.data.power,
-          );
+  it('are the expensive way to deal damage: the basic strike stays the best per FP (ADR 0023)', () => {
+    for (const { data, attack } of resolved) {
+      for (const w of data.weaponTypes) {
+        const basic = starterAttacks({ type: w, apCost: 35 } as never)[0]!;
+        const perFp = (a: typeof attack) => techniqueDamage(a, lib.balance) / a.fpCost;
+        expect(perFp(attack), `${data.id} vs the ${w} basic`).toBeLessThan(perFp(basic));
       }
     }
   });
 
-  it('are never worse than a starter strike for the AP they cost', () => {
-    for (const { data, attack } of resolved) {
-      // A starter strike is worth 1.0 for 30 AP.
-      expect(
-        techniqueValue(attack, lib.balance) / (attack.apCost / 30),
-        data.id,
-      ).toBeGreaterThanOrEqual(0.98);
+  it('each bring a tool the basics lack: a flurry, a pierce, a knockdown, a debuff, a heavy blow or a sure shot', () => {
+    for (const { data, attack } of resolved) expect(tools(attack), data.id).not.toEqual([]);
+  });
+
+  it('give every pool at least four different tools, and never the same tool twice running', () => {
+    for (const [key, list] of pools) {
+      const sorted = [...list].sort((a, b) => a.data.level - b.data.level);
+      const all = new Set(sorted.flatMap((r) => tools(r.attack)));
+      expect(all.size, `${key}: ${[...all].join(', ')}`).toBeGreaterThanOrEqual(4);
+      for (let i = 1; i < sorted.length; i++) {
+        const [lo, hi] = [tools(sorted[i - 1]!.attack), tools(sorted[i]!.attack)];
+        if (sorted[i]!.data.frameClasses.length || sorted[i - 1]!.data.frameClasses.length)
+          continue;
+        expect(
+          hi.join(),
+          `${key}: ${sorted[i]!.data.id} repeats ${sorted[i - 1]!.data.id}`,
+        ).not.toBe(lo.join());
+      }
+    }
+  });
+
+  it('are not simply bigger as the levels climb: costs and powers move both ways within a pool', () => {
+    for (const [key, list] of pools) {
+      const sorted = [...list].sort((a, b) => a.data.level - b.data.level);
+      const dips = sorted.filter(
+        (r, i) =>
+          i > 0 &&
+          r.attack.power * (r.attack.hits ?? 1) <
+            sorted[i - 1]!.attack.power * (sorted[i - 1]!.attack.hits ?? 1),
+      );
+      expect(dips.length, key).toBeGreaterThanOrEqual(1);
     }
   });
 
@@ -238,7 +256,14 @@ describe('attacks', () => {
       const says = (re: RegExp) => re.test(d);
       expect(says(/pierces|ignores/), `${data.id} pierce`).toBe((data.pierce ?? 0) > 0);
       expect(says(/tires the target/), `${data.id} fatigue`).toBe((data.fatigue ?? 0) > 0);
-      expect(says(/cannot be countered/), `${data.id} counter`).toBe(Boolean(data.noCounter));
+      expect(says(/knocks the target down/), `${data.id} knockdown`).toBe(
+        data.kind === 'knockdown',
+      );
+      expect(says(/crashes through any guard/), `${data.id} collision`).toBe(
+        data.kind === 'collision',
+      );
+      expect(says(/saps the target/), `${data.id} weaken`).toBe(Boolean(data.weaken));
+      expect(says(/slows the target/), `${data.id} slow`).toBe(Boolean(data.slow));
       expect(says(/strikes (twice|three times)/), `${data.id} strikes`).toBe((data.hits ?? 1) > 1);
       if (data.weaponTypes.includes('polearm'))
         expect(says(/reaches two tiles/), `${data.id} reach`).toBe(data.maxRange === 2);

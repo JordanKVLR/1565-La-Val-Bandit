@@ -247,6 +247,8 @@ function resolveAttack(
   let retaliation: StrikeResult | undefined;
   const followUps: StrikeResult[] = [];
   let counter: { success: boolean; chance: number } | undefined;
+  let downed = false;
+  const statuses: Array<'weaken' | 'slow'> = [];
 
   if (reaction === 'counter') {
     const chance = counterChance(state, target, attacker);
@@ -282,7 +284,33 @@ function resolveAttack(
     for (let i = 0; i < (attack.hits ?? 1) && !target.defeated; i++) {
       strikes.push(strikeOnce(state, attacker, target, attack, reaction, pending));
     }
-    if (reaction === 'attackBack' && !target.defeated && !attacker.defeated) {
+    // A knockdown that lands (Defend holds it off) or a collision (nothing does) topples the defender:
+    // it starts its next turn short of AP and its strike back is cancelled.
+    const landed = strikes.some((s) => s.hit);
+    if (landed && !target.defeated && attack.kind) {
+      downed = attack.kind === 'collision' || reaction !== 'defend';
+      if (downed)
+        target.apDebt =
+          (target.apDebt ?? 0) + (attack.kind === 'collision' ? b.collisionAp : b.knockdownAp);
+    }
+    if (landed && !target.defeated) {
+      if (attack.apDamage)
+        target.apDebt =
+          (target.apDebt ?? 0) + attack.apDamage * strikes.filter((s) => s.hit).length;
+      if (attack.weaken) {
+        target.weakened = true;
+        statuses.push('weaken');
+      }
+      if (attack.slow) {
+        const cut = Math.min(attack.slow, Math.max(0, target.mov - 1));
+        if (cut > 0) {
+          target.mov -= cut;
+          target.slowedBy = (target.slowedBy ?? 0) + cut;
+        }
+        statuses.push('slow');
+      }
+    }
+    if (reaction === 'attackBack' && !downed && !target.defeated && !attacker.defeated) {
       // A strike back is a full technique: every hit and effect applies.
       retaliation = strikeOnce(state, target, attacker, backAttack, NO_REACTION, pending);
       for (let i = 1; i < (backAttack.hits ?? 1) && !attacker.defeated; i++) {
@@ -310,6 +338,8 @@ function resolveAttack(
         }
       : {}),
     ...(counter ? { counter } : {}),
+    ...(downed ? { downed } : {}),
+    ...(statuses.length ? { statuses } : {}),
   });
   // Defeats and level-ups are reported after the exchange they came from.
   events.push(...pending);
@@ -361,7 +391,6 @@ function strikeOnce(
   target.hp = Math.max(0, target.hp - damage);
   if (hit && target.hp > 0) {
     if (attack.fatigue) target.fp = Math.min(b.fpMax, target.fp + attack.fatigue);
-    if (attack.apDamage) target.ap = Math.max(0, target.ap - attack.apDamage);
   }
   const defeated = target.hp === 0;
   if (defeated) {

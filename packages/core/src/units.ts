@@ -138,6 +138,14 @@ export interface UnitState extends MutableStats {
   pos: Coord;
   facing: Facing;
   defeated: boolean;
+  /** AP this unit loses from its next turn (knocked down by a heavy blow). */
+  apDebt?: number;
+  /** Struck by a sapping technique: its blows land lighter until its next turn is over. */
+  weakened?: boolean;
+  /** MOV lost to a slowing technique, given back once the unit's next turn is over. */
+  slowedBy?: number;
+  /** 1 while the unit is playing the turn its debuffs last through. */
+  statusTurns?: number;
 }
 
 /** Pilot attributes plus every gear bonus, capped at the attribute maximum. */

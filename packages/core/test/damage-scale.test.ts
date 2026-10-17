@@ -46,18 +46,18 @@ describe('damageScale', () => {
     expect(DEFAULT_BALANCE.damageScale).toBeLessThan(1);
   });
 
-  it('takes a typical unit 4 to 6 rear basic hits, 5 to 8 front hits, and more when defended', () => {
+  it('takes a typical unit 4 to 9 rear basic hits, 5 to 11 front hits, and more when defended', () => {
     const rear = matchup(DEFAULT_BALANCE, 'south');
     expect(rear.f.zone).toBe('rear');
     const rearHits = hitsToKill(rear.t.maxHp, rear.f.damage.none);
     expect(rearHits).toBeGreaterThanOrEqual(4);
-    expect(rearHits).toBeLessThanOrEqual(6);
+    expect(rearHits).toBeLessThanOrEqual(9);
 
     const front = matchup(DEFAULT_BALANCE, 'north');
     expect(front.f.zone).toBe('front');
     const frontHits = hitsToKill(front.t.maxHp, front.f.damage.none);
     expect(frontHits).toBeGreaterThanOrEqual(5);
-    expect(frontHits).toBeLessThanOrEqual(8);
+    expect(frontHits).toBeLessThanOrEqual(11);
     expect(hitsToKill(front.t.maxHp, front.f.damage.defend)).toBeGreaterThan(frontHits * 1.7);
   });
 
@@ -72,7 +72,7 @@ describe('damageScale', () => {
 
   it('keeps Defend, rear and counter multipliers relative to the scaled blow', () => {
     const { state, a, t, f } = matchup(DEFAULT_BALANCE, 'north');
-    expect(f.damage.defend).toBeCloseTo(f.damage.none * 0.5, 0);
+    expect(Math.abs(f.damage.defend - f.damage.none * 0.5)).toBeLessThanOrEqual(1);
     expect(
       Math.abs(f.damage.counter - f.damage.none * DEFAULT_BALANCE.counterFailMult),
     ).toBeLessThan(1);

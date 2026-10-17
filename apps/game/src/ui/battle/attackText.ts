@@ -13,6 +13,9 @@ export function attackTags(a: Attack): string[] {
   if (a.fatigue) tags.push(t('attack.tagFatigue', { n: a.fatigue }));
   if (a.apDamage) tags.push(t('attack.tagApDamage', { n: a.apDamage }));
   if (a.noCounter) tags.push(t('attack.tagNoCounter'));
+  if (a.kind) tags.push(t(`attack.tag.${a.kind}`));
+  if (a.weaken) tags.push(t('attack.tagWeaken'));
+  if (a.slow) tags.push(t('attack.tagSlow', { n: a.slow }));
   return tags;
 }
 
@@ -32,6 +35,9 @@ export function techniqueEffects(a: Attack): string[] {
   if (a.fatigue) out.push(t('tech.tires', { n: a.fatigue }));
   if (a.apDamage) out.push(t('tech.shakes', { n: a.apDamage }));
   if (a.noCounter) out.push(t('tech.noCounter'));
+  if (a.kind) out.push(t(`tech.kind.${a.kind}`));
+  if (a.weaken) out.push(t('tech.weaken'));
+  if (a.slow) out.push(t('tech.slow', { n: a.slow }));
   if (RANGED_STYLES.has(a.style)) out.push(t('tech.ranged'));
   if ((a.maxRange ?? 1) >= 2 && !RANGED_STYLES.has(a.style)) out.push(t('tech.reach'));
   if (a.power >= 1.3) out.push(t('tech.heavy'));

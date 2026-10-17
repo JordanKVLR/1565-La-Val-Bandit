@@ -1050,8 +1050,22 @@ function replyLines(b: BarkSet, reaction: Reaction, s: StrikeResult): readonly s
   return b.hurt;
 }
 
-/** The battle log line for an exchange of blows. */
+/** The battle log line for an exchange of blows, with any knockdown or debuff it left. */
 export function describeAttack(
+  state: BattleState,
+  ev: Extract<BattleEvent, { type: 'attackResolved' }>,
+): string {
+  const target = ev.strikes[0] ? (findUnit(state, ev.strikes[0].targetId)?.name ?? '') : '';
+  const tail = [
+    ev.downed ? t('log.downed', { target }) : '',
+    ev.statuses?.includes('weaken') ? t('log.sapped', { target }) : '',
+    ev.statuses?.includes('slow') ? t('log.slowed', { target }) : '',
+  ].filter(Boolean);
+  const main = describeBlows(state, ev);
+  return tail.length ? `${main} ${tail.join(' ')}` : main;
+}
+
+function describeBlows(
   state: BattleState,
   ev: Extract<BattleEvent, { type: 'attackResolved' }>,
 ): string {

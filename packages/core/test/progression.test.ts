@@ -250,8 +250,8 @@ describe('attacks', () => {
       reaction: 'defend',
       attackId: 'heavy',
     });
-    // 30 FP to defend plus 20 fatigue from the technique; AP damage 15.
-    expect(requireUnit(state, 'e')).toMatchObject({ fp: 50, ap: 45 });
+    // 30 FP to defend plus 20 fatigue from the technique; 15 AP off its next turn, not this one.
+    expect(requireUnit(state, 'e')).toMatchObject({ fp: 50, ap: 60, apDebt: 15 });
     // Attacking costs the technique's AP from a full 100, and only its own FP.
     expect(requireUnit(state, 'a')).toMatchObject({ ap: 100 - 35, fp: 20 });
   });
@@ -260,6 +260,11 @@ describe('attacks', () => {
 describe('save compatibility', () => {
   it('refuses battle saves from before the six-attribute rules, so the battle restarts', () => {
     const old = { ...duel(), saveVersion: 6 };
+    expect(() => deserializeBattle(JSON.stringify(old))).toThrow(OutdatedSaveError);
+  });
+
+  it('refuses a version 9 save, which predates the Defend cap and knockdown keys', () => {
+    const old = { ...duel(), saveVersion: 9 };
     expect(() => deserializeBattle(JSON.stringify(old))).toThrow(OutdatedSaveError);
   });
 
