@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted. Builds on [ADR 0015](0015-technique-unlock-levels.md).
+Superseded by [ADR 0023](0023-attack-kinds-stat-parity-and-hit-rules.md): the level ladder it
+introduced made every new technique a small upgrade on the last and the basic strikes redundant.
+Builds on [ADR 0015](0015-technique-unlock-levels.md).
 
 ## Context
 

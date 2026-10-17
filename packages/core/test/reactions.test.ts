@@ -13,11 +13,13 @@ import {
   NO_REACTION,
   REACTIONS,
   reactionChoices,
+  reactionFpCost,
   reflectDamage,
+  findAttack,
   requireUnit,
   starterAttacks,
 } from '../src';
-import { FRAME, GUN, makeMap, setup, unit } from './fixtures';
+import { FRAME, GUN, makeMap, setup, TEST_BALANCE, unit } from './fixtures';
 
 /** Attacker at (2,1) strikes a target at (2,2) facing the given way. */
 function duel(
@@ -299,7 +301,7 @@ describe('counter', () => {
   it('a failed Counter is a clean hit that does 25% extra', () => {
     const s = duel('north');
     const f = forecastAttack(s, requireUnit(s, 'a'), requireUnit(s, 't'));
-    expect(f.hitChance.counter).toBe(100);
+    expect(f.hitChance.counter).toBe(99);
     expect(f.damage.counter).toBe(Math.round(f.damage.avoid * s.balance.counterFailMult));
   });
 
@@ -508,5 +510,50 @@ describe('no "do nothing" choice', () => {
       expect(REACTIONS).toContain(chooseReaction(s, 't', 'a'));
     }
     expect(chooseReaction(withFp(100), 't', 'a')).toBe(NO_REACTION);
+  });
+});
+
+describe('Defend and INT (hit cap 99, fatigue trim)', () => {
+  const duelAt = (baseHit: number, intStat = 5) => {
+    const balance = { ...TEST_BALANCE, baseHit, intFpReduction: 0.02 };
+    const { state } = createBattle(
+      setup({
+        balance,
+        map: makeMap(['ppp', 'ppp', 'ppp']),
+        units: [
+          unit({ id: 'a', at: { x: 1, y: 0 } }),
+          unit({
+            id: 't',
+            side: 'enemy',
+            at: { x: 1, y: 1 },
+            facing: 'north',
+            stats: { int: intStat },
+          }),
+        ],
+      }),
+    );
+    const a = requireUnit(state, 'a');
+    const t = requireUnit(state, 't');
+    return { state, f: forecastAttack(state, a, t, a.pos, findAttack(a, 'thrust')), t };
+  };
+
+  it('Defend doubles the avoid chance but never reaches 100', () => {
+    expect(duelAt(30).f.hitChance.avoid).toBe(30);
+    expect(duelAt(30).f.hitChance.defend).toBe(60);
+    expect(duelAt(60).f.hitChance.defend).toBe(99);
+    expect(duelAt(95).f.hitChance.defend).toBe(99);
+  });
+
+  it('a failed Counter lands at the 99 cap too', () => {
+    expect(duelAt(60).f.hitChance.counter).toBe(99);
+  });
+
+  it('each point of INT trims the fatigue a pilot gains from reacting', () => {
+    const low = duelAt(60, 0);
+    const high = duelAt(60, 10);
+    const cost = (x: ReturnType<typeof duelAt>) =>
+      reactionFpCost(x.state, x.t, 'defend', undefined, undefined, undefined);
+    expect(cost(low)).toBe(30);
+    expect(cost(high)).toBe(24); // 30 × (1 − 0.02 × 10)
   });
 });

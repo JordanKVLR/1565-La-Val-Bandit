@@ -28,6 +28,11 @@ export interface BalanceConfig {
   readonly baseHit: number;
   readonly hitMin: number;
   readonly hitMax: number;
+  /** Defend doubles the hit chance (the block cannot be dodged) but never past this. */
+  readonly defendHitMax: number;
+  /** Each point of INT trims this share off every FP a pilot gains from attacks and reactions, up to the max. */
+  readonly intFpReduction: number;
+  readonly intFpReductionMax: number;
   readonly dexHitFactor: number;
   readonly aglEvadeFactor: number;
   /** Raw damage = (POW + weapon power) × this × attack power × situational multipliers. */
@@ -124,17 +129,35 @@ export interface BalanceConfig {
   readonly techRankFpDiscount: number;
   readonly techRankApDiscount: number;
   /**
-   * The value standard (see `techniqueValue`): a technique unlocked at level L is worth
-   * `techValueBase + techValuePerLevel × (L − 3)` starter attacks, within `techValueTolerance`.
-   * `techValueFatigue` is the damage-equivalent of 1 FP of fatigue inflicted, `techValueNoCounter`
-   * that of making a blow uncounterable, and the `techRef…` numbers describe the reference target
-   * (raw damage at power 1, and DEF) the damage is measured against.
+   * The yardstick (see `techniqueValue`): `techValueFatigue` is the damage-equivalent of 1 FP of
+   * fatigue inflicted, `techValueNoCounter` that of making a blow unanswerable, and the
+   * `techRef…` numbers describe the reference target (raw damage at power 1, and DEF) the damage
+   * is measured against.
    */
-  readonly techValueBase: number;
-  readonly techValuePerLevel: number;
-  readonly techValueTolerance: number;
+  /**
+   * What a technique's extras add to its price on top of the power formula: a knockdown or
+   * collision costs AP and FP; piercing costs `techPierceFp` per whole point of DEF ignored,
+   * fatigue inflicted costs `techFatigueFp` FP per FP, sapping and slowing a flat FP, and each
+   * point of accuracy bonus costs `techAccAp` AP and `techAccFp` FP. With no rank discounts, a
+   * later technique is a different tool, not a cheaper copy of an earlier one.
+   */
+  readonly techKnockdownAp: number;
+  readonly techKnockdownFp: number;
+  readonly techCollisionAp: number;
+  readonly techCollisionFp: number;
+  readonly techPierceFp: number;
+  readonly techFatigueFp: number;
+  readonly techWeakenFp: number;
+  readonly techSlowFp: number;
+  readonly techAccAp: number;
+  readonly techAccFp: number;
   readonly techValueFatigue: number;
   readonly techValueNoCounter: number;
+  /** Damage-equivalents (in starter strikes) of a knockdown, a collision, a sapped foe and each MOV of slow. */
+  readonly techValueKnockdown: number;
+  readonly techValueCollision: number;
+  readonly techValueWeaken: number;
+  readonly techValueSlow: number;
   readonly techRefRaw: number;
   readonly techRefDef: number;
   /** Counter: success chance = base + factor × ((DEX + AGL) of defender − of attacker), clamped. */
@@ -157,6 +180,11 @@ export interface BalanceConfig {
   /** On success the attacker takes this multiple of the blow; on failure the defender does. */
   readonly counterReflectMult: number;
   readonly counterFailMult: number;
+  /** AP a knocked-down target starts its next turn without (knockdown / collision). */
+  readonly knockdownAp: number;
+  readonly collisionAp: number;
+  /** Share of its damage a sapped (weakened) unit still deals. */
+  readonly weakenMult: number;
   /**
    * Difficulty (chosen per playthrough, see difficulty.ts). Enemies built from content gain
    * `…EnemyLevel` levels (never below 1) and have every attribute multiplied by `…EnemyStats`;
@@ -198,14 +226,17 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   defendFpCost: 30,
   avoidFpCost: 20,
   counterFpCost: 20,
-  baseHit: 65,
+  baseHit: 55,
   hitMin: 5,
-  hitMax: 95,
-  dexHitFactor: 2,
+  hitMax: 99,
+  defendHitMax: 99,
+  intFpReduction: 0.015,
+  intFpReductionMax: 0.4,
+  dexHitFactor: 2.4,
   aglEvadeFactor: 2,
-  damagePerPoint: 1.6,
-  defDamagePerPoint: 1.5,
-  damageScale: 0.6,
+  damagePerPoint: 1.1,
+  defDamagePerPoint: 0.8,
+  damageScale: 0.7,
   heightHitPerStep: 5,
   heightDamagePerStep: 0.1,
   heightDamageMaxSteps: 3,
@@ -233,7 +264,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   statPointsPerLevel: 3,
   statMax: 32,
   hpPerLevel: 2,
-  hpPerBas: 4,
+  hpPerBas: 7,
   hpBase: 10,
   techApBase: 30,
   techApPerPower: 50,
@@ -253,29 +284,43 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   techAccPerPower: 60,
   techAccMax: 20,
   techniqueAccPerPower: 15,
-  techRankAccBonus: 2,
-  techRankFpDiscount: 0.05,
-  techRankApDiscount: 0.03,
-  techValueBase: 1.1,
-  techValuePerLevel: 0.09,
-  techValueTolerance: 0.12,
+  techRankAccBonus: 0,
+  techRankFpDiscount: 0,
+  techRankApDiscount: 0,
+  techKnockdownAp: 10,
+  techKnockdownFp: 10,
+  techCollisionAp: 15,
+  techCollisionFp: 20,
+  techPierceFp: 20,
+  techFatigueFp: 0.5,
+  techWeakenFp: 10,
+  techSlowFp: 6,
+  techAccAp: 0.5,
+  techAccFp: 0.5,
   techValueFatigue: 0.12,
   techValueNoCounter: 0.4,
+  techValueKnockdown: 0.5,
+  techValueCollision: 0.9,
+  techValueWeaken: 0.3,
+  techValueSlow: 0.2,
   techRefRaw: 30,
   techRefDef: 8,
-  counterBaseChance: 15,
-  counterStatFactor: 1,
-  counterIntFactor: 3,
+  counterBaseChance: 25,
+  counterStatFactor: 1.5,
+  counterIntFactor: 3.5,
   bondRange: 2,
   bondHit: 6,
   bondDamage: 0.06,
   bondGuard: 0.06,
   counterSidePenalty: 15,
-  counterReflectPerInt: 0.05,
+  counterReflectPerInt: 0.06,
   counterMinChance: 5,
-  counterMaxChance: 85,
-  counterReflectMult: 1.25,
-  counterFailMult: 1.25,
+  counterMaxChance: 90,
+  counterReflectMult: 1.5,
+  counterFailMult: 1.1,
+  knockdownAp: 35,
+  collisionAp: 55,
+  weakenMult: 0.7,
   squireEnemyLevel: -1,
   squireEnemyStats: 0.85,
   squireScudi: 1.5,
@@ -335,9 +380,21 @@ export function techniqueRank(level: number): number {
   return Math.floor((Math.max(1, level) - 1) / 2);
 }
 
+/** The parts of a technique that cost extra (see `BalanceConfig.techKnockdownAp`). */
+export interface TechniqueTraits {
+  readonly kind?: 'knockdown' | 'collision' | undefined;
+  readonly pierce?: number | undefined;
+  readonly fatigue?: number | undefined;
+  readonly weaken?: boolean | undefined;
+  readonly slow?: number | undefined;
+  /** The technique's own precision, added to the formula's accuracy by the caller. */
+  readonly accuracyBonus?: number | undefined;
+}
+
 /**
- * AP, FP and accuracy of a faction technique: the shared formula with the smaller accuracy tax
- * and the rank discounts (see `BalanceConfig.techniqueAccPerPower`). Starters use `techniqueCost`.
+ * AP, FP and accuracy of a faction technique: the shared formula with the smaller accuracy tax,
+ * plus a price for every extra it carries (knockdown, piercing, fatigue, debuffs, precision).
+ * The rank discounts are kept in the balance table but ship at zero. Starters use `techniqueCost`.
  */
 export function techniqueStats(
   power: number,
@@ -345,21 +402,36 @@ export function techniqueStats(
   level: number,
   b: BalanceConfig,
   style?: string,
+  traits: TechniqueTraits = {},
 ): { apCost: number; fpCost: number; accuracy: number } {
   const p = power * hits - 1;
   const rank = techniqueRank(level);
   const round5 = (v: number) => Math.round(v / 5) * 5;
   const ranged = style !== undefined && RANGED_STYLES.has(style) ? b.rangedFpSurcharge : 0;
+  const acc = Math.max(0, traits.accuracyBonus ?? 0);
+  const extraAp =
+    (traits.kind === 'collision' ? b.techCollisionAp : traits.kind ? b.techKnockdownAp : 0) +
+    acc * b.techAccAp;
+  const extraFp =
+    (traits.kind === 'collision' ? b.techCollisionFp : traits.kind ? b.techKnockdownFp : 0) +
+    (traits.pierce ?? 0) * b.techPierceFp +
+    (traits.fatigue ?? 0) * b.techFatigueFp +
+    (traits.weaken ? b.techWeakenFp : 0) +
+    (traits.slow ?? 0) * b.techSlowFp +
+    acc * b.techAccFp;
   return {
     apCost: Math.max(
       b.techApMin,
-      round5((b.techApBase + b.techApPerPower * p) * (1 - b.techRankApDiscount * rank)),
+      round5((b.techApBase + b.techApPerPower * p) * (1 - b.techRankApDiscount * rank) + extraAp),
     ),
+    // Extras are priced on top of the clamped base, so a cheap technique cannot carry them free.
     fpCost:
       Math.max(
         b.techFpMin,
         Math.round((b.techFpBase + b.techFpPerPower * p) * (1 - b.techRankFpDiscount * rank)),
-      ) + ranged,
+      ) +
+      Math.round(extraFp) +
+      ranged,
     accuracy:
       Math.min(b.techAccMax, Math.round(-b.techniqueAccPerPower * p) + b.techRankAccBonus * rank) ||
       0,

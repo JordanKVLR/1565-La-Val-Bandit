@@ -56,6 +56,10 @@ export type BattleEvent =
       readonly retaliationFollowUps?: readonly StrikeResult[];
       /** Set when the defender chose Counter: whether it worked, and the odds it had. */
       readonly counter?: { readonly success: boolean; readonly chance: number };
+      /** A knockdown or collision toppled the defender (no strike back; it loses AP next turn). */
+      readonly downed?: boolean;
+      /** Debuffs the technique left on the defender. */
+      readonly statuses?: readonly ('weaken' | 'slow')[];
     }
   | {
       readonly type: 'levelUp';

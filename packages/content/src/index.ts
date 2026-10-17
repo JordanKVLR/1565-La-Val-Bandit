@@ -262,7 +262,14 @@ export function resolveTechnique(
   { faction: _f, weaponTypes: _w, frameClasses: _c, accuracyBonus, ...attack }: AttackData,
   balance: BalanceConfig,
 ): Attack {
-  const cost = techniqueStats(attack.power, attack.hits ?? 1, attack.level, balance, attack.style);
+  const cost = techniqueStats(attack.power, attack.hits ?? 1, attack.level, balance, attack.style, {
+    kind: attack.kind,
+    pierce: attack.pierce,
+    fatigue: attack.fatigue,
+    weaken: attack.weaken,
+    slow: attack.slow,
+    accuracyBonus,
+  });
   return { ...attack, ...cost, accuracy: cost.accuracy + (accuracyBonus ?? 0) } as Attack;
 }
 

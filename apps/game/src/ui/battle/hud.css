@@ -126,6 +126,11 @@
   gap: 3px;
   min-width: 0;
 }
+.bhud-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
 
 /* Portrait with the side's ring and shape mark. */
 .bhud-avatar {

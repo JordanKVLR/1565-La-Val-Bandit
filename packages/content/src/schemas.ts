@@ -183,6 +183,10 @@ export const AttackSchema = z
     fatigue: z.number().int().min(0).optional(),
     apDamage: z.number().int().min(0).optional(),
     noCounter: z.boolean().optional(),
+    /** Knockdown (Defend holds it off) or collision (nothing does): see core's Attack. */
+    kind: z.enum(['knockdown', 'collision']).optional(),
+    weaken: z.boolean().optional(),
+    slow: z.number().int().min(1).max(3).optional(),
     /** Added to the formula's accuracy: the technique's own precision. */
     accuracyBonus: z.number().int().optional(),
     requires: statReq,

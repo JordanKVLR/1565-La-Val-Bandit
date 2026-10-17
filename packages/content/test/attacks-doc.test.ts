@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { techniqueRank, techniqueValue, unlockedAttacks, createBattle } from '@m1565/core';
+import { techniqueValue, unlockedAttacks, createBattle } from '@m1565/core';
 import { format, resolveConfig } from 'prettier';
 import { expect, it } from 'vitest';
 import { loadBattle, loadLibrary, resolveTechnique } from '../src';
@@ -30,12 +30,15 @@ function buildDoc(): string {
       a.pierce ? `ignores ${Math.round(a.pierce * 100)}% DEF` : '',
       a.fatigue ? `+${a.fatigue} FP to target${(a.hits ?? 1) > 1 ? ' per hit' : ''}` : '',
       a.noCounter ? 'cannot be countered' : '',
+      a.kind ? a.kind : '',
+      a.weaken ? 'saps' : '',
+      a.slow ? `slows ${a.slow}` : '',
     ]
       .filter(Boolean)
       .join(', ');
     const range = a.minRange || a.maxRange ? `${a.minRange ?? 1}-${a.maxRange ?? 1}` : 'weapon';
     const hits = a.hits ?? 1;
-    return `| ${i + 1} | ${cap(data.faction)} | ${data.name} | ${data.weaponTypes.join('/')} | ${data.frameClasses.join('/') || 'any'} | ${data.style} | ${a.power.toFixed(2)} | ${hits} | ${a.apCost} | ${a.fpCost} | ${a.accuracy >= 0 ? '+' : ''}${a.accuracy} | ${range} | ${data.level} | ${techniqueRank(data.level)} | ${techniqueValue(a, lib.balance).toFixed(2)}× | ${reqText(data.requires) || '-'} | ${extras || '-'} |`;
+    return `| ${i + 1} | ${cap(data.faction)} | ${data.name} | ${data.weaponTypes.join('/')} | ${data.frameClasses.join('/') || 'any'} | ${data.style} | ${a.power.toFixed(2)} | ${hits} | ${a.apCost} | ${a.fpCost} | ${a.accuracy >= 0 ? '+' : ''}${a.accuracy} | ${range} | ${data.level} | ${techniqueValue(a, lib.balance).toFixed(2)}× | ${reqText(data.requires) || '-'} | ${extras || '-'} |`;
   });
   const first = (battle: string, unit: string) => {
     const { units } = createBattle(loadBattle(battle, lib)).state;
@@ -49,7 +52,7 @@ Generated from \`packages/content/data/attacks.json\` and \`balance.json\` by
 \`packages/content/test/attacks-doc.test.ts\` (run it with \`UPDATE_DOCS=1\` to rewrite this file; the
 test fails when the file is out of date). Every pilot also has the two **starter** attacks for their
 weapon; a faction technique unlocks when the pilot has reached its **Level** and their stats (gear
-included) meet the requirement (ADR 0015). The value standard and cost model are in ADR 0017.
+included) meet the requirement (ADR 0015). The cost model and the attack kinds are in ADR 0023 (ADR 0017's value ladder was replaced by it).
 
 ## Starter attacks (every pilot, no requirement)
 
@@ -68,18 +71,19 @@ included) meet the requirement (ADR 0015). The value standard and cost model are
 
 ## How techniques are costed and judged
 
-- **Cost model:** AP is ${b.techApBase} + ${b.techApPerPower} per point of total power above 1, FP is ${b.techFpBase} + ${b.techFpPerPower} per point (ranged styles pay ${b.rangedFpSurcharge} more), and accuracy falls ${b.techniqueAccPerPower} per point of power. Each **rank** (one per two levels of the unlock level, so level 3 is rank 1 and level 13 rank 6) cuts FP by ${b.techRankFpDiscount * 100}%, AP by ${b.techRankApDiscount * 100}% and adds ${b.techRankAccBonus} accuracy, so a master technique is both stronger and more economical.
-- **Value:** expected damage per use against a reference target (${b.techRefRaw} raw damage, DEF ${b.techRefDef}, ${b.baseHit}% base hit), plus ${b.techValueFatigue} per FP of fatigue inflicted and ${b.techValueNoCounter} for being uncounterable, in units of a plain power-1.0 strike. A technique unlocked at level L must be worth ${b.techValueBase} + ${b.techValuePerLevel} × (L − 3) of those, within ${b.techValueTolerance * 100}%, and within a faction and weapon pool never worth less than an earlier one (tested in \`content.test.ts\`).
-- **Roles:** *Burst* (raw power), *Precision* (accuracy and piercing), *Flurry* (two armour-piercing strikes), *Control* (fatigue, uncounterable) and *Mastery* (the pool's best). Names, lore and requirements are in \`attacks.json\`.
+- **Cost model:** AP is ${b.techApBase} + ${b.techApPerPower} per point of total power above 1 and FP is ${b.techFpBase} + ${b.techFpPerPower} per point (ranged styles pay ${b.rangedFpSurcharge} more); accuracy falls ${b.techniqueAccPerPower} per point of power. Extras are priced on top: a knockdown costs ${b.techKnockdownAp} AP and ${b.techKnockdownFp} FP, a collision ${b.techCollisionAp} AP and ${b.techCollisionFp} FP, piercing ${b.techPierceFp} FP per whole point of DEF ignored, fatigue inflicted ${b.techFatigueFp} FP per FP, a sap ${b.techWeakenFp} FP, each MOV of slow ${b.techSlowFp} FP, and each point of accuracy bonus ${b.techAccAp} AP and ${b.techAccFp} FP. There are no rank discounts: a later technique is a different tool, not a cheaper copy of an earlier one (ADR 0023).
+- **Value (a yardstick, not a ladder):** expected damage per use against a reference target (${b.techRefRaw} raw damage, DEF ${b.techRefDef}, ${b.baseHit}% base hit), plus ${b.techValueFatigue} per FP of fatigue inflicted and the worth of a knockdown (${b.techValueKnockdown}), collision (${b.techValueCollision}), sap (${b.techValueWeaken}) or slow (${b.techValueSlow} per MOV), in units of a plain power-1.0 strike. Tested in \`content.test.ts\`: every technique costs more FP per damage than the weapon's basic strike, offers a tool the basics lack, and no pool repeats a tool twice running.
+- **Attack kinds** (after the classic): a **knockdown** that lands topples the defender unless it chose Defend: its strike back is cancelled and it starts its next turn ${b.knockdownAp} AP short. A **collision** topples through Defend too (${b.collisionAp} AP). Neither can be countered; Avoid is the answer to both. A **sap** leaves the target dealing ${Math.round(b.weakenMult * 100)}% damage, and a **slow** takes MOV off it, until its next turn is over.
+- **Tools:** *Precise* (accuracy), *Flurry* (two or three armour-piercing strikes), *Pierce* (a single armour-piercing blow), *Heavy* (raw power, dear in AP and FP), *Knockdown* and *Collision* (no strike back, AP lost), *Exhaust* (heavy fatigue) and *Sap/Slow* (debuffs). Names, lore and requirements are in \`attacks.json\`.
 
 ## Unlock-level curve
 
-Every technique opens at a set pilot level, so nobody has more than the two starters at levels 1-2 and techniques arrive gradually through the campaign (prologue pilots are level 1-6, the later acts 5-12). Each faction and weapon pool opens its first technique by level 4, a new one at least every 3 levels, and ends with a master technique at level 13 or 14.
+Every technique opens at a set pilot level, so nobody has more than the two starters at levels 1-2 and techniques arrive gradually through the campaign (prologue pilots are level 1-6, the later acts 5-12). Each faction and weapon pool opens its first technique by level 4, a new one at least every 3 levels, and ends with a signature technique at level 13 or later.
 
 ## The ${rows.length} techniques
 
-| #   | Faction | Attack | Weapon | Frame | Style | Power | Hits | AP | FP | Acc | Range | Level | Rank | Value | Needs | Extras |
-| --- | ------- | ------ | ------ | ----- | ----- | ----- | ---- | -- | -- | --- | ----- | ----- | ---- | ----- | ----- | ------ |
+| #   | Faction | Attack | Weapon | Frame | Style | Power | Hits | AP | FP | Acc | Range | Level | Value | Needs | Extras |
+| --- | ------- | ------ | ------ | ----- | ----- | ----- | ---- | -- | -- | --- | ----- | ----- | ----- | ----- | ------ |
 ${table.join('\n')}
 `;
 }

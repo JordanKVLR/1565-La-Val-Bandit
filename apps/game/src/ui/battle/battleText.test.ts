@@ -71,7 +71,7 @@ describe('technique text', () => {
       'Strikes twice, each blow rolled separately',
       "Ignores half of the target's DEF",
       'Tires the target: +10 FP',
-      'Shakes the target: −15 AP for its next actions',
+      'Shakes the target: −15 AP from its next turn',
       "Can't be answered with Attack back or Counter",
       'Reaches an enemy two tiles away',
       'Heavy: a big wind-up, very tiring',

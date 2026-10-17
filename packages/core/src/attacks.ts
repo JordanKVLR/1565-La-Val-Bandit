@@ -30,10 +30,21 @@ export interface Attack {
   readonly pierce?: number;
   /** Fatigue added to the target on each hit. */
   readonly fatigue?: number;
-  /** AP removed from the target on each hit. */
+  /** AP the target loses from its next turn on each hit (it starts that turn winded). */
   readonly apDamage?: number;
-  /** The target cannot choose Counter against this attack. */
+  /** The target can neither Counter nor Attack back against this attack. */
   readonly noCounter?: boolean;
+  /**
+   * Classic attack types. A `knockdown` that lands knocks the target down: its strike back is
+   * cancelled and it starts its next turn short of AP, unless it chose Defend. A `collision`
+   * topples even a defender, and cancels the strike back and drains more AP. Neither can be
+   * countered.
+   */
+  readonly kind?: 'knockdown' | 'collision';
+  /** A hit saps the target: its blows deal less until its next turn is over. */
+  readonly weaken?: boolean;
+  /** A hit slows the target: it loses this many MOV until its next turn is over. */
+  readonly slow?: number;
   readonly requires: Partial<PilotStats>;
   /**
    * Pilot level at which the technique opens up (default 1). A technique is usable only when the
@@ -195,28 +206,48 @@ export function isAttackUnlocked(level: number, stats: PilotStats, attack: Attac
   return level >= (attack.level ?? 1) && meetsRequirements(stats, attack);
 }
 
-/**
- * What a technique is worth, in starter attacks: its expected damage per use against a reference
- * target (a mid-campaign pilot's raw damage against DEF 8, 65% base hit) plus the damage-equivalent
- * of the fatigue it inflicts and of being uncounterable, divided by the same for a plain
- * power-1.0 strike. It is the standard the technique list is tested against: a technique opened
- * at a higher level must be worth more (see `techniqueValueTarget`).
- */
-export function techniqueValue(attack: Attack, b: BalanceConfig = DEFAULT_BALANCE): number {
-  const expected = (power: number, hits: number, accuracy: number, pierce: number) => {
-    const hit = Math.min(b.hitMax, Math.max(b.hitMin, b.baseHit + accuracy)) / 100;
-    const blocked = b.techRefDef * b.defDamagePerPoint * (1 - pierce);
-    return hits * hit * Math.max(1, (b.techRefRaw * power - blocked) * b.damageScale);
-  };
-  const hits = attack.hits ?? 1;
-  const value =
-    expected(attack.power, hits, attack.accuracy, attack.pierce ?? 0) +
-    b.techValueFatigue * (attack.fatigue ?? 0) * hits +
-    (attack.noCounter ? b.techValueNoCounter : 0);
-  return value / expected(1, 1, 0, 0);
+/** Expected damage of one use against the reference target (see `techniqueValue`). */
+export function techniqueDamage(attack: Attack, b: BalanceConfig = DEFAULT_BALANCE): number {
+  const hit = Math.min(b.hitMax, Math.max(b.hitMin, b.baseHit + attack.accuracy)) / 100;
+  const blocked = b.techRefDef * b.defDamagePerPoint * (1 - (attack.pierce ?? 0));
+  return (
+    (attack.hits ?? 1) * hit * Math.max(1, (b.techRefRaw * attack.power - blocked) * b.damageScale)
+  );
 }
 
-/** The value a technique unlocked at `level` should have (in starter attacks). */
-export function techniqueValueTarget(level: number, b: BalanceConfig = DEFAULT_BALANCE): number {
-  return b.techValueBase + b.techValuePerLevel * (level - 3);
+/**
+ * What a technique is worth, in starter attacks: its expected damage per use against a reference
+ * target (a mid-campaign pilot's raw damage against DEF 8) plus the damage-equivalent of the
+ * fatigue it inflicts, of being uncounterable and of its knockdown or debuff, divided by the same
+ * for a plain power-1.0 strike. It is a yardstick for reading the technique list, not a ladder:
+ * techniques differ in the tool they offer, and the basics stay the cheapest way to deal damage.
+ */
+export function techniqueValue(attack: Attack, b: BalanceConfig = DEFAULT_BALANCE): number {
+  const hits = attack.hits ?? 1;
+  const kind =
+    attack.kind === 'collision'
+      ? b.techValueCollision
+      : attack.kind === 'knockdown'
+        ? b.techValueKnockdown
+        : 0;
+  const value =
+    techniqueDamage(attack, b) +
+    b.techValueFatigue * (attack.fatigue ?? 0) * hits +
+    (attack.noCounter ? b.techValueNoCounter : 0) +
+    kind +
+    (attack.weaken ? b.techValueWeaken : 0) +
+    (attack.slow ?? 0) * b.techValueSlow;
+  return value / techniqueDamage(STRIKE, b);
 }
+
+/** A plain power-1.0 strike: the yardstick `techniqueValue` is measured in. */
+const STRIKE: Attack = {
+  id: 'strike',
+  name: 'Strike',
+  style: 'thrust',
+  power: 1,
+  accuracy: 0,
+  apCost: 30,
+  fpCost: 5,
+  requires: {},
+};
