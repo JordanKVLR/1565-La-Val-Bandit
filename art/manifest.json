@@ -1,0 +1,26 @@
+{
+  "portraits": {
+    "ninu": "portraits/ninu.webp",
+    "pawlu": "portraits/pawlu.webp",
+    "kateri": "portraits/kateri.webp",
+    "luis": "portraits/luis.webp",
+    "valette": "portraits/valette.webp",
+    "ganni": "portraits/ganni.webp",
+    "rozi": "portraits/rozi.webp",
+    "deniz": "portraits/deniz.webp",
+    "leyla": "portraits/leyla.webp",
+    "yusuf": "portraits/yusuf.webp",
+    "turgut": "portraits/turgut.webp",
+    "mustafa": "portraits/mustafa.webp",
+    "piali": "portraits/piali.webp",
+    "scala": "portraits/scala.webp",
+    "anastagi": "portraits/anastagi.webp",
+    "villager": "portraits/villager.webp",
+    "villager-man": "portraits/villager-man.webp",
+    "soldier": "portraits/soldier.webp",
+    "janissary": "portraits/janissary.webp",
+    "balbi": "portraits/balbi.webp"
+  },
+  "terrain": {},
+  "terrainSides": {}
+}
