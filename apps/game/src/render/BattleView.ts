@@ -363,6 +363,12 @@ export class BattleView {
     if (x < w * 0.15 || x > w * 0.85 || y < h * 0.2 || y > h * 0.8) void this.focus(c, 180);
   }
 
+  /**
+   * How a unit that drops out of the list leaves: `fall` (battle: it was defeated, so it falls and
+   * fades) or `walkOff` (story stage: the character walks to the nearest map edge and fades).
+   */
+  departure: 'fall' | 'walkOff' = 'fall';
+
   /** Creates, updates or removes unit billboards to match the given list. */
   syncUnits(list: readonly UnitVisual[]): void {
     this.lastList = list;
@@ -375,7 +381,15 @@ export class BattleView {
         this.units.set(u.id, node);
         this.placeNode(node, u.at);
       } else {
-        if (node.at.x !== u.at.x || node.at.y !== u.at.y) this.placeNode(node, u.at);
+        if (node.at.x !== u.at.x || node.at.y !== u.at.y) {
+          // On the story stage a character who changes place walks there; in battle the
+          // controller animates moves itself, so the node just snaps to the final tile.
+          if (this.departure === 'walkOff' && node.fig && !this.disposed) {
+            const from = node.at;
+            node.at = u.at;
+            void this.walkNode(node, stepsBetween(from, u.at), 260, from);
+          } else this.placeNode(node, u.at);
+        }
         if (!sameLook(node.look, u)) {
           if (node.sprite) drawUnit(node.sprite, u);
           node.look = u;
@@ -388,7 +402,8 @@ export class BattleView {
     for (const [id, node] of this.units) {
       if (seen.has(id)) continue;
       this.units.delete(id);
-      if (node.fig && this.mode === '2d' && !this.disposed) {
+      if (this.departure === 'walkOff' && !this.disposed) this.walkOff(node);
+      else if (node.fig && this.mode === '2d' && !this.disposed) {
         // Knocked out: fall and fade, then remove.
         node.fig.ko();
         if (node.sprite) node.sprite.visible = false;
@@ -489,7 +504,50 @@ export class BattleView {
   animateMove(id: string, path: readonly Coord[], msPerTile: number): Promise<void> {
     const node = this.units.get(id);
     if (!node || path.length === 0) return Promise.resolve();
-    const points = [node.at, ...path].map((c) => this.tileTop(c));
+    return this.walkNode(node, path, msPerTile);
+  }
+
+  /**
+   * A story character leaving the scene: it walks in a straight line to the nearest map edge,
+   * then fades out and is removed. Nobody falls over.
+   */
+  private walkOff(node: UnitNode): void {
+    const { x, y } = node.at;
+    const { width, depth } = this.map;
+    const ways = [
+      { d: x, step: { x: -1, y: 0 } },
+      { d: width - 1 - x, step: { x: 1, y: 0 } },
+      { d: y, step: { x: 0, y: -1 } },
+      { d: depth - 1 - y, step: { x: 0, y: 1 } },
+    ].sort((a, b) => a.d - b.d);
+    const { d, step } = ways[0]!;
+    const path: Coord[] = [];
+    for (let i = 1; i <= d; i++) path.push({ x: x + step.x * i, y: y + step.y * i });
+    node.arrow.visible = false;
+    if (node.sprite) node.sprite.visible = false;
+    this.dying.add(node);
+    const fade = () => {
+      const start = performance.now();
+      this.addTween((now) => {
+        const t = Math.min(1, Math.max(0, (now - start) / 350));
+        if (node.fig) node.fig.sprite.material.opacity = 1 - t;
+        if (t < 1) return false;
+        // A rebuild may already have cleared it.
+        if (this.dying.delete(node)) this.removeNode(node, true);
+        return true;
+      });
+    };
+    if (path.length === 0 || !node.fig) fade();
+    else void this.walkNode(node, path, 260).then(fade);
+  }
+
+  private walkNode(
+    node: UnitNode,
+    path: readonly Coord[],
+    msPerTile: number,
+    from: Coord = node.at,
+  ): Promise<void> {
+    const points = [from, ...path].map((c) => this.tileTop(c));
     return new Promise((resolve) => {
       const start = performance.now();
       const total = msPerTile * path.length;
@@ -1054,4 +1112,13 @@ function sameLook(a: UnitLook, b: UnitLook): boolean {
     a.active === b.active &&
     a.enemy === b.enemy
   );
+}
+
+/** Tiles from `a` (excluded) to `b`: along x first, then along y. */
+function stepsBetween(a: Coord, b: Coord): Coord[] {
+  const out: Coord[] = [];
+  let { x, y } = a;
+  while (x !== b.x) out.push({ x: (x += Math.sign(b.x - x)), y });
+  while (y !== b.y) out.push({ x, y: (y += Math.sign(b.y - y)) });
+  return out;
 }

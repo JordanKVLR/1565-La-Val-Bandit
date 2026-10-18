@@ -31,6 +31,8 @@ function Stage({ stage, lib, still }: { stage: StageState; lib: Library; still: 
     const canvas = canvasRef.current;
     if (!canvas || !map) return;
     const view = new BattleView(canvas, map, () => {});
+    // A character leaving the scene walks out; only battles knock units down.
+    view.departure = 'walkOff';
     viewRef.current = view;
     return () => view.dispose();
   }, [map]);
