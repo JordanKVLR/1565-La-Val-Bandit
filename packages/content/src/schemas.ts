@@ -6,6 +6,11 @@ export const TerrainSchema = z.object({
   id: z.string().regex(/^[a-z][a-z0-9-]*$/),
   name: z.string().min(1),
   moveCost: z.number().int().positive(),
+  moveCostByClass: z
+    .object({ light: z.number().int().positive(), heavy: z.number().int().positive() })
+    .partial()
+    .strict()
+    .optional(),
   avoid: z.number().int().min(0).max(100),
   impassable: z.boolean().optional(),
 });

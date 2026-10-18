@@ -133,7 +133,9 @@ export type UnavailableReason =
   /** Every technique that reaches would cost too much FP. */
   | { readonly code: 'tooTiredToStrikeBack' }
   /** Counter cannot be set against a blow from behind. */
-  | { readonly code: 'rearNoCounter' };
+  | { readonly code: 'rearNoCounter' }
+  /** A bullet can't be turned aside: gunfire is never countered. */
+  | { readonly code: 'gunfire' };
 
 /** One entry of the reaction menu: every reaction is listed, with why it can't be used. */
 export interface ReactionChoice {
@@ -314,7 +316,9 @@ export function reactionChoices(
           ? { code: 'rearNoCounter' }
           : attack?.noCounter || attack?.kind
             ? unanswerable(attack)
-            : undefined,
+            : attack && GUNFIRE.has(attack.style)
+              ? { code: 'gunfire' }
+              : undefined,
     ),
   ];
 }
@@ -408,6 +412,9 @@ export function assistFor(
   return { bonus: Math.min(allies.length * b.assistPerAlly, b.assistMax), allies };
 }
 
+/** Shot and volley styles: gunfire, which can never be countered. */
+export const GUNFIRE: ReadonlySet<string> = new Set(['shot', 'volley']);
+
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 
 /** Raw numbers for `attacker` (standing at `from`) hitting `target` with `attack`. */
@@ -484,10 +491,9 @@ export function strikeNumbers(
 
 export function hitChanceFor(state: BattleState, n: StrikeNumbers, reaction: Reaction): number {
   const b = state.balance;
-  // A failed Counter leaves the defender wide open.
-  if (reaction === 'counter') return b.defendHitMax;
-  // Defending blocks rather than dodges: the blow is twice as likely to land, though halved.
-  if (reaction === 'defend')
+  // Defending blocks rather than dodges, and a failed Counter leaves the defender open: either
+  // way the blow is twice as likely to land as against a dodge (never past the cap).
+  if (reaction === 'defend' || reaction === 'counter')
     return Math.min(b.defendHitMax, 2 * clamp(Math.round(n.baseHit), b.hitMin, b.hitMax));
   const bonus = reaction === 'avoid' ? 0 : b.counterHitBonus;
   return clamp(Math.round(n.baseHit + bonus), b.hitMin, b.hitMax);

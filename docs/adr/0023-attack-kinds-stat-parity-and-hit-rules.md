@@ -60,3 +60,21 @@ tool twice running, every pool has at least four tools, and the text matches the
 - The AI scores kinds and debuffs, and Defends knockdowns.
 - Balance is checked by the AI-versus-AI suite only (a2 and a9 are tight, 3/16); a human should do
   better.
+
+## Revision (playtest round 2)
+
+- Counter was overused. A failed Counter now costs 1.5x the blow (was 1.1x) and is hit at double
+  the dodge chance, capped at 99 like Defend, rather than automatically. The reflected damage is
+  unchanged. Gunfire (shot and volley styles) can never be countered; Avoid is always offered.
+- Gunfire hits harder and aims worse by nature: the Fire starter and every shot or volley technique
+  get power x1.25 (`gunPower`), accuracy -25 (`gunAccuracy`) and at least 10% DEF piercing
+  (`gunPierce`), on top of their own numbers. Bombs (Throw and throw techniques) hit x1.5
+  (`bombPower`). Fire and Throw keep their 25 FP.
+- Movement copies the classic AP table (RPGClassics' Vanguard Bandits shrine, terrain page):
+  per tile, normal (medium) frames pay 10 on plain/road, 12 wild, 15 rock/castle, 18 desert, 20
+  snow/cliff; light and heavy frames have their own columns. The first step of a move costs double
+  (`firstStepMult`) and passing through an ally costs 5 (`allyPassAp`). Height adds no AP
+  (`climbApPerStep` 0), as the classic prices hard ground by terrain instead. Our terrains map to
+  those rows: plain/road/flagstone/deck = plain, field/garigue = wild, rubble/breach = rock,
+  rampart = castle, sand = desert, shallows = snow, trench = cliff.
+- Battle saves bump to version 11. b5 (Tigne) enemies drop to level 4 to stay winnable.

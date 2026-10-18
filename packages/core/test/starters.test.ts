@@ -38,7 +38,14 @@ describe('starter attacks', () => {
   it('gunners pay extra FP to fire at range, and club as hard as a slash up close', () => {
     const [fire, stock] = starterAttacks(GUN);
     // Ranged attacks cost 20 FP on top of the formula (5 for power 1).
-    expect(fire).toMatchObject({ name: 'Fire', power: 1, apCost: GUN.apCost, fpCost: 25 });
+    expect(fire).toMatchObject({
+      name: 'Fire',
+      power: 1.25,
+      accuracy: -25,
+      pierce: 0.1,
+      apCost: GUN.apCost,
+      fpCost: 25,
+    });
     expect(fire!.minRange).toBeUndefined(); // uses the gun's own 2–4 range
     const [slash] = starterAttacks(SWORD);
     expect(stock).toMatchObject({ name: 'Stock Strike', power: 0.8, minRange: 1, maxRange: 1 });
@@ -109,5 +116,12 @@ describe('turn economy', () => {
     );
     s = applyCommand(s, { type: 'endTurn', unitId: 'a' }).state;
     expect(requireUnit(s, 'a').fp).toBe(100 - 66);
+  });
+});
+
+describe('gunfire and bombs', () => {
+  it('a bomb hits half again as hard as a plain strike, for the same FP as a shot', () => {
+    const bomb = starterAttacks({ ...GUN, id: 'bomb', type: 'explosive' })[0]!;
+    expect(bomb).toMatchObject({ name: 'Throw', power: 1.5, accuracy: 0, fpCost: 25 });
   });
 });

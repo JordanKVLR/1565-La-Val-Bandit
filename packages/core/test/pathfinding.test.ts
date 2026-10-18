@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { coordKey, createBattle, reachableTiles, requireUnit, stepCost } from '../src';
-import { makeMap, setup, unit } from './fixtures';
+import { FRAME, makeMap, setup, TEST_BALANCE, unit } from './fixtures';
 
 describe('pathfinding', () => {
   it('charges terrain cost per tile and limits by MOV', () => {
@@ -83,5 +83,48 @@ describe('pathfinding', () => {
     );
     // Straight across scrub: 5 + 4 = 9. Road detour is blocked by the enemy at (1,1).
     expect(reachableTiles(state, requireUnit(state, 'a'), 100).get('2,0')?.cost).toBe(9);
+  });
+});
+
+describe('classic movement costs', () => {
+  const terrains = {
+    plain: {
+      id: 'plain',
+      name: 'Plain',
+      moveCost: 10,
+      moveCostByClass: { light: 10, heavy: 12 },
+      avoid: 0,
+    },
+    road: { id: 'road', name: 'Road', moveCost: 10, avoid: 0 },
+    scrub: { id: 'scrub', name: 'Scrub', moveCost: 12, avoid: 0 },
+    sea: { id: 'sea', name: 'Sea', moveCost: 99, avoid: 0, impassable: true },
+  };
+  const play = (frameClass: 'light' | 'medium' | 'heavy', ally = false) => {
+    const { state } = createBattle(
+      setup({
+        terrains,
+        balance: { ...TEST_BALANCE, firstStepMult: 2, allyPassAp: 5, climbApPerStep: 0 },
+        units: [
+          unit({ id: 'a', at: { x: 0, y: 0 }, frame: { ...FRAME, class: frameClass } }),
+          ...(ally ? [unit({ id: 'b', at: { x: 1, y: 0 } })] : []),
+          unit({ id: 'e', side: 'enemy', at: { x: 7, y: 7 } }),
+        ],
+      }),
+    );
+    return reachableTiles(state, requireUnit(state, 'a'), 100);
+  };
+
+  it('charges the first step double, then the ground', () => {
+    expect(play('medium').get('1,0')?.cost).toBe(20);
+    expect(play('medium').get('3,0')?.cost).toBe(40);
+  });
+
+  it('charges heavy frames more on the same ground', () => {
+    expect(play('heavy').get('3,0')?.cost).toBe(48);
+    expect(play('light').get('3,0')?.cost).toBe(40);
+  });
+
+  it('charges 5 AP extra to pass through an ally', () => {
+    expect(play('medium', true).get('2,0')?.cost).toBe(35);
   });
 });

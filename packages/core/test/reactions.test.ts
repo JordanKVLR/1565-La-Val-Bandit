@@ -557,3 +557,45 @@ describe('Defend and INT (hit cap 99, fatigue trim)', () => {
     expect(cost(high)).toBe(24); // 30 × (1 − 0.02 × 10)
   });
 });
+
+describe('Counter risk and gunfire', () => {
+  const duelWith = (baseHit: number, weapon?: typeof GUN) => {
+    const { state } = createBattle(
+      setup({
+        balance: { ...TEST_BALANCE, baseHit, counterFailMult: 1.5 },
+        map: makeMap(['pppp', 'pppp', 'pppp']),
+        units: [
+          unit({ id: 'a', at: { x: 1, y: 0 }, facing: 'south', ...(weapon ? { weapon } : {}) }),
+          unit({
+            id: 't',
+            side: 'enemy',
+            at: { x: 1, y: weapon === GUN ? 2 : 1 },
+            facing: 'north',
+          }),
+        ],
+      }),
+    );
+    return state;
+  };
+
+  it('a failed Counter is hit at double the dodge chance, not automatically, and costs 1.5×', () => {
+    const s = duelWith(30);
+    const a = requireUnit(s, 'a');
+    const f = forecastAttack(s, a, requireUnit(s, 't'), a.pos, findAttack(a, 'thrust'));
+    expect(f.hitChance.avoid).toBe(30);
+    expect(f.hitChance.counter).toBe(60);
+    expect(f.damage.counter).toBe(Math.round(f.damage.avoid * 1.5));
+  });
+
+  it('gunfire can never be countered, but can still be avoided', () => {
+    const s = duelWith(60, GUN);
+    const a = requireUnit(s, 'a');
+    const t = requireUnit(s, 't');
+    const choices = reactionChoices(s, t, a, a.pos, a.attacks[0]);
+    expect(choices.find((c) => c.reaction === 'counter')).toMatchObject({
+      available: false,
+      reason: { code: 'gunfire' },
+    });
+    expect(choices.find((c) => c.reaction === 'avoid')?.available).toBe(true);
+  });
+});

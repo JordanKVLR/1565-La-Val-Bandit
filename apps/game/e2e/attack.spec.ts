@@ -71,6 +71,7 @@ test('attacking goes through the technique menu, plays the duel and awards XP', 
   }
 
   const log = await page.evaluate(() => window.__battle!.ctl.view.get().log.join('\n'));
-  expect(log).toMatch(/uses .+ on /);
+  // The blow may land or be dodged; either way the exchange is logged.
+  expect(log).toMatch(/uses .+ on |avoids .+'s /);
   expect(errors).toEqual([]);
 });

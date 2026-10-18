@@ -2,7 +2,7 @@
   "apMax": 100,
   "apStart": 100,
   "apRegen": 100,
-  "climbApPerStep": 6,
+  "climbApPerStep": 0,
   "maxClimb": 2,
   "fpMax": 100,
   "apPerFpRecovered": 1.5,
@@ -76,7 +76,7 @@
   "counterMinChance": 5,
   "counterMaxChance": 90,
   "counterReflectMult": 1.5,
-  "counterFailMult": 1.1,
+  "counterFailMult": 1.5,
   "rangedFpSurcharge": 20,
   "rewardVictory": 300,
   "rewardPerEnemy": 90,
@@ -119,5 +119,11 @@
   "techValueKnockdown": 0.5,
   "techValueCollision": 0.9,
   "techValueWeaken": 0.3,
-  "techValueSlow": 0.2
+  "techValueSlow": 0.2,
+  "firstStepMult": 2,
+  "allyPassAp": 5,
+  "gunPower": 1.25,
+  "gunAccuracy": -25,
+  "gunPierce": 0.1,
+  "bombPower": 1.5
 }

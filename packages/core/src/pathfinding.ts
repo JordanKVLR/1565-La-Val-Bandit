@@ -4,6 +4,7 @@ import type { BattleState } from './state';
 import { heightAt, terrainAt, unitAt } from './state';
 import type { UnitState } from './units';
 import { isHostile } from './units';
+import { moveCostFor } from './terrain';
 
 export interface Reach {
   /** Total AP to get here. */
@@ -14,19 +15,28 @@ export interface Reach {
 
 export const coordKey = (c: Coord): string => `${c.x},${c.y}`;
 
-/** AP to step from one tile to a neighbour, or null if the step is impossible. */
-export function stepCost(state: BattleState, from: Coord, to: Coord): number | null {
+/**
+ * AP to step from one tile to a neighbour (for a frame of this class), or null if the step is
+ * impossible. The first step of a move and passing through allies cost extra: see reachableTiles.
+ */
+export function stepCost(
+  state: BattleState,
+  from: Coord,
+  to: Coord,
+  frameClass: 'light' | 'medium' | 'heavy' = 'medium',
+): number | null {
   if (!inBounds(state.map, to)) return null;
   const terrain = terrainAt(state, to);
   if (!terrain || terrain.impassable) return null;
   const climb = heightAt(state, to) - heightAt(state, from);
   if (Math.abs(climb) > state.balance.maxClimb) return null;
-  return terrain.moveCost + Math.max(0, climb) * state.balance.climbApPerStep;
+  return moveCostFor(terrain, frameClass) + Math.max(0, climb) * state.balance.climbApPerStep;
 }
 
 /**
  * Every tile the unit can end its move on, with the cheapest path. Enemies block movement;
- * allies can be passed through but not stopped on. Limited by both AP and the frame's MOV.
+ * allies can be passed through (for `allyPassAp` extra) but not stopped on. As in the classic, the
+ * first step costs `firstStepMult` times its ground. Limited by both AP and the frame's MOV.
  * Search state is (tile, steps) so a cheap-but-long path never hides a short one.
  */
 export function reachableTiles(
@@ -56,10 +66,15 @@ export function reachableTiles(
 
     for (const d of Object.values(DIRECTIONS)) {
       const next = { x: node.at.x + d.x, y: node.at.y + d.y };
-      const cost = stepCost(state, node.at, next);
-      if (cost === null || node.cost + cost > apBudget) continue;
+      const ground = stepCost(state, node.at, next, unit.frameClass);
+      if (ground === null) continue;
       const blocker = unitAt(state, next);
       if (blocker && isHostile(blocker, unit)) continue;
+      const b = state.balance;
+      const cost =
+        ground * (node.path.length === 0 ? b.firstStepMult : 1) +
+        (blocker && blocker.id !== unit.id ? b.allyPassAp : 0);
+      if (node.cost + cost > apBudget) continue;
       const steps = node.path.length + 1;
       const sk = `${next.x},${next.y},${steps}`;
       const total = node.cost + cost;

@@ -439,13 +439,12 @@
     "frameClasses": [],
     "style": "shot",
     "power": 1.0,
-    "pierce": 0.2,
     "accuracyBonus": 12,
     "requires": {
       "dex": 9
     },
     "level": 4,
-    "description": "A slow, careful shot, matchlock braced and breath held until the moment is right. Is accurate and pierces part of the target's DEF."
+    "description": "A slow, careful shot, matchlock braced and breath held until the moment is right. Is accurate."
   },
   {
     "id": "militia-double-charge",

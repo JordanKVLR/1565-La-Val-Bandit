@@ -10,6 +10,19 @@ export interface BalanceConfig {
   readonly climbApPerStep: number;
   /** Largest height difference a unit can step up or down in one tile. */
   readonly maxClimb: number;
+  /** The first step of a move costs this many times its ground (the classic rule). */
+  readonly firstStepMult: number;
+  /** Extra AP to pass through a tile an ally stands on. */
+  readonly allyPassAp: number;
+  /**
+   * Gunfire hits harder than a blade (power ×`gunPower`), is harder to aim (`gunAccuracy`) and
+   * always pierces `gunPierce` of DEF; bombs hit ×`bombPower`. Applied to the starters and to every
+   * shot, volley or throw technique on top of its own numbers. Gunfire cannot be countered.
+   */
+  readonly gunPower: number;
+  readonly gunAccuracy: number;
+  readonly gunPierce: number;
+  readonly bombPower: number;
   readonly fpMax: number;
   /**
    * AP left unspent at the end of a turn is traded for rest: every this-many AP remove 1 FP
@@ -217,8 +230,14 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   apMax: 100,
   apStart: 100,
   apRegen: 100,
-  climbApPerStep: 6,
+  climbApPerStep: 0,
   maxClimb: 2,
+  firstStepMult: 2,
+  allyPassAp: 5,
+  gunPower: 1.25,
+  gunAccuracy: -25,
+  gunPierce: 0.1,
+  bombPower: 1.5,
   fpMax: 100,
   apPerFpRecovered: 1.5,
   fpTired: 50,
@@ -317,7 +336,7 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   counterMinChance: 5,
   counterMaxChance: 90,
   counterReflectMult: 1.5,
-  counterFailMult: 1.1,
+  counterFailMult: 1.5,
   knockdownAp: 35,
   collisionAp: 55,
   weakenMult: 0.7,

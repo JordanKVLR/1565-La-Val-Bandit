@@ -86,6 +86,10 @@ export const TEST_BALANCE = {
   ...DEFAULT_BALANCE,
   baseHit: 75,
   hitMax: 95,
+  // Flat per-tile movement with a climb price, so path tests read simply; the VB rules have their own tests.
+  firstStepMult: 1,
+  allyPassAp: 0,
+  climbApPerStep: 6,
   dexHitFactor: 2,
   damagePerPoint: 2,
   defDamagePerPoint: 1.5,

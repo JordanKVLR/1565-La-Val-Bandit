@@ -371,6 +371,7 @@ export const en = {
   'reason.attackerOutOfReach': 'Attacker out of reach',
   'reason.tooTiredToStrikeBack': 'Too tired to strike back',
   'reason.rearNoCounter': "Can't Counter a blow from behind",
+  'reason.gunfire': 'Gunfire can never be countered',
 
   // ── Duel close-up, experience, level up ─────────────────────────────────────────────
   'closeUp.label': 'Duel',
@@ -542,13 +543,13 @@ export const en = {
     "<b>BAS</b> +7 max HP per point · <b>POW</b> damage (plus the weapon's own power) · <b>INT</b> Counter odds and force, and 1.5% less FP gained from your attacks and reactions per point (up to 40%) · <b>DEX</b> +2.4% accuracy · <b>AGL</b> −2% to be hit, earlier turns · <b>DEF</b> blocks 0.8 raw damage per point. Each is tuned to be worth about the same to raise. Armaturas, weapons, charms and amulets add to them (max 32).",
   'help.rules.ap': 'AP (blue)',
   'help.rules.apText':
-    "Action points. Every turn starts with a full 100. Moving and attacking spend AP; reacting never does. Your card shows the cost of a move or technique before you commit. AP you don't spend is not wasted: it rests you (see FP).",
+    "Action points. Every turn starts with a full 100. Moving and attacking spend AP; reacting never does. A step costs 10 AP on open ground for most frames (more on sand, rubble, shallows and trenches, and heavy frames pay more), the first step of a move costs double, and passing through an ally costs 5 more. Your card shows the cost of a move or technique before you commit. AP you don't spend is not wasted: it rests you (see FP).",
   'help.rules.fp': 'FP (yellow)',
   'help.rules.fpText':
     "Fatigue. Your own attacks add their technique's FP (Slash and Thrust: 5). Reacting is what tires you most. At the end of your turn every 3 AP left unspent removes 2 FP, so a turn spent waiting clears 66. At 50 you fight worse; at 100 you faint and must rest a turn.",
   'help.rules.reactions': 'Reactions',
   'help.rules.reactionsText':
-    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF, but doubles the chance the blow lands (never above 99%), and it holds off a knockdown. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. <b>Counter</b> (the attacker's technique FP + 20) is a gamble: if it works the blow is repelled onto the attacker, harder the higher your INT; if it fails you take 1.1× and are almost sure to be hit. INT and higher DEX + AGL than the attacker improve the odds; knockdowns and collisions cannot be countered; a blow from the side lowers them. A knockdown that lands cancels your strike back and costs you 35 AP next turn unless you Defend; a collision does it through Defend too, so Avoid those. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
+    "When attacked you always choose. <b>Defend</b> (FP +30) halves whatever gets past your DEF, but doubles the chance the blow lands (never above 99%), and it holds off a knockdown. <b>Avoid</b> (FP +20) may dodge it. <b>Attack back</b> takes the hit, then strikes back with a technique you choose if you survive; it costs that technique's AP and FP, all as FP (Slash: 25), and only techniques that reach and keep you at or under 100 FP are offered. <b>Counter</b> (the attacker's technique FP + 20) is a gamble: if it works the blow is repelled onto the attacker, harder the higher your INT; if it fails you take 1.5× and the blow is twice as likely to land, as with Defend. INT and higher DEX + AGL than the attacker improve the odds; knockdowns, collisions and gunfire cannot be countered; a blow from the side lowers them. A knockdown that lands cancels your strike back and costs you 35 AP next turn unless you Defend; a collision does it through Defend too, so Avoid those. From behind you can only Avoid. You must pick one of them; only a unit too spent to react takes the blow as it comes.",
   'help.rules.position': 'Position',
   'help.rules.positionText':
     'Hits from the side (+10%) and rear (+25%, ×1.25 damage) are deadlier, so face the enemy at the end of your turn. A unit only turns on its own turn, never when it is struck, so the way you leave it facing is a real choice. Higher ground adds accuracy and damage. Each ally next to your target adds +5% (up to +15%).',
