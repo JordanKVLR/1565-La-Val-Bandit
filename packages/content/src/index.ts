@@ -270,7 +270,19 @@ export function resolveTechnique(
     slow: attack.slow,
     accuracyBonus,
   });
-  return { ...attack, ...cost, accuracy: cost.accuracy + (accuracyBonus ?? 0) } as Attack;
+  // Gunfire hits harder, aims worse and always bites through a little plate; bombs hit harder
+  // still. The technique is costed on its own numbers; the weapon's nature comes on top.
+  const gun = attack.style === 'shot' || attack.style === 'volley';
+  const bomb = attack.style === 'throw';
+  return {
+    ...attack,
+    ...cost,
+    power:
+      Math.round(attack.power * (gun ? balance.gunPower : bomb ? balance.bombPower : 1) * 100) /
+      100,
+    accuracy: cost.accuracy + (accuracyBonus ?? 0) + (gun ? balance.gunAccuracy : 0),
+    ...(gun ? { pierce: Math.max(attack.pierce ?? 0, balance.gunPierce) } : {}),
+  } as Attack;
 }
 
 /** Every skill a named character has or will gain, each with its unlock level. */

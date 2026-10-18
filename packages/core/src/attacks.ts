@@ -138,10 +138,13 @@ function starters(weapon: Weapon): Starter[] {
           id: BASIC_ATTACK_ID,
           name: 'Fire',
           style: 'shot',
-          power: 1,
+          power: DEFAULT_BALANCE.gunPower,
+          accuracy: DEFAULT_BALANCE.gunAccuracy,
+          pierce: DEFAULT_BALANCE.gunPierce,
           apCost: weapon.apCost,
+          fpCost: DEFAULT_BALANCE.techFpBase + DEFAULT_BALANCE.rangedFpSurcharge,
           description:
-            'Aim and fire at range. Reloading and the smoke make every shot tiring (extra FP).',
+            'Aim and fire at range. A ball hits harder than a blade and goes a little through plate, but is hard to aim, can never be countered, and reloading in the smoke is tiring (extra FP).',
         },
         // Swung like a club, the butt hits about as hard as a sword's slash.
         {
@@ -160,9 +163,12 @@ function starters(weapon: Weapon): Starter[] {
           id: BASIC_ATTACK_ID,
           name: 'Throw',
           style: 'throw',
-          power: 1,
+          power: DEFAULT_BALANCE.bombPower,
+          accuracy: 0,
           apCost: weapon.apCost,
-          description: 'Light the fuse and lob a grenade over the line. Tiring (extra FP).',
+          fpCost: DEFAULT_BALANCE.techFpBase + DEFAULT_BALANCE.rangedFpSurcharge,
+          description:
+            'Light the fuse and lob a grenade over the line. Bombs are rare, so each one hits far harder than a blade. Tiring (extra FP).',
         },
         {
           id: 'shove',

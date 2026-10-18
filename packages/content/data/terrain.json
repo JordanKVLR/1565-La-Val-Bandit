@@ -2,50 +2,82 @@
   {
     "id": "plain",
     "name": "Plain",
-    "moveCost": 8,
-    "avoid": 5
+    "moveCost": 10,
+    "avoid": 5,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 12
+    }
   },
   {
     "id": "road",
     "name": "Road",
-    "moveCost": 6,
-    "avoid": 0
+    "moveCost": 10,
+    "avoid": 0,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 12
+    }
   },
   {
     "id": "field",
     "name": "Field",
-    "moveCost": 10,
-    "avoid": 10
+    "moveCost": 12,
+    "avoid": 10,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 15
+    }
   },
   {
     "id": "scrub",
     "name": "Garigue",
-    "moveCost": 10,
-    "avoid": 15
+    "moveCost": 12,
+    "avoid": 15,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 15
+    }
   },
   {
     "id": "sand",
     "name": "Sand",
-    "moveCost": 12,
-    "avoid": 0
+    "moveCost": 18,
+    "avoid": 0,
+    "moveCostByClass": {
+      "light": 14,
+      "heavy": 20
+    }
   },
   {
     "id": "rubble",
     "name": "Rubble",
-    "moveCost": 16,
-    "avoid": 20
+    "moveCost": 15,
+    "avoid": 20,
+    "moveCostByClass": {
+      "light": 12,
+      "heavy": 15
+    }
   },
   {
     "id": "rampart",
     "name": "Rampart",
-    "moveCost": 8,
-    "avoid": 25
+    "moveCost": 15,
+    "avoid": 25,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 15
+    }
   },
   {
     "id": "shallows",
     "name": "Shallows",
     "moveCost": 20,
-    "avoid": 0
+    "avoid": 0,
+    "moveCostByClass": {
+      "light": 15,
+      "heavy": 20
+    }
   },
   {
     "id": "sea",
@@ -57,8 +89,12 @@
   {
     "id": "floor",
     "name": "Flagstone",
-    "moveCost": 6,
-    "avoid": 0
+    "moveCost": 10,
+    "avoid": 0,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 12
+    }
   },
   {
     "id": "wall",
@@ -70,19 +106,31 @@
   {
     "id": "deck",
     "name": "Deck",
-    "moveCost": 8,
-    "avoid": 5
+    "moveCost": 10,
+    "avoid": 5,
+    "moveCostByClass": {
+      "light": 10,
+      "heavy": 12
+    }
   },
   {
     "id": "trench",
     "name": "Trench",
-    "moveCost": 12,
-    "avoid": 30
+    "moveCost": 20,
+    "avoid": 30,
+    "moveCostByClass": {
+      "light": 18,
+      "heavy": 20
+    }
   },
   {
     "id": "ruin",
     "name": "Breach",
-    "moveCost": 14,
-    "avoid": 20
+    "moveCost": 15,
+    "avoid": 20,
+    "moveCostByClass": {
+      "light": 12,
+      "heavy": 15
+    }
   }
 ]

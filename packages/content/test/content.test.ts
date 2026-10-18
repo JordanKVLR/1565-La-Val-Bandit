@@ -184,8 +184,18 @@ describe('attacks', () => {
     if ((a.pierce ?? 0) >= 0.4 && (a.hits ?? 1) === 1) out.push('pierce');
     if ((a.fatigue ?? 0) >= 25) out.push('exhaust');
     if (a.weaken || a.slow) out.push('debuff');
-    if (a.power * (a.hits ?? 1) >= 1.3 && (a.hits ?? 1) === 1 && !a.kind) out.push('heavy');
-    if (a.accuracy >= 12 && (a.hits ?? 1) === 1) out.push('precise');
+    // Gunfire and bombs hit harder by nature; a heavy blow is judged against the weapon's own base.
+    const base =
+      a.style === 'shot' || a.style === 'volley'
+        ? lib.balance.gunPower
+        : a.style === 'throw'
+          ? lib.balance.bombPower
+          : 1;
+    if ((a.power * (a.hits ?? 1)) / base >= 1.3 && (a.hits ?? 1) === 1 && !a.kind)
+      out.push('heavy');
+    // Gunfire aims worse by nature; a sure shot is judged against that.
+    const gun = a.style === 'shot' || a.style === 'volley' ? lib.balance.gunAccuracy : 0;
+    if (a.accuracy - gun >= 12 && (a.hits ?? 1) === 1) out.push('precise');
     return out;
   };
 
@@ -194,7 +204,10 @@ describe('attacks', () => {
       for (const w of data.weaponTypes) {
         const basic = starterAttacks({ type: w, apCost: 35 } as never)[0]!;
         const perFp = (a: typeof attack) => techniqueDamage(a, lib.balance) / a.fpCost;
-        expect(perFp(attack), `${data.id} vs the ${w} basic`).toBeLessThan(perFp(basic));
+        // A gun's techniques may buy back some of its natural inaccuracy (Fire aims at -25), so a
+        // sure shot can edge past the basic per FP; everything else must cost more per damage.
+        const slack = basic.style === 'shot' && attack.accuracy > basic.accuracy ? 1.2 : 1;
+        expect(perFp(attack), `${data.id} vs the ${w} basic`).toBeLessThan(perFp(basic) * slack);
       }
     }
   });
