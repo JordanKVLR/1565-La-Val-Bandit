@@ -136,7 +136,7 @@ describe('reaction and attack costs', () => {
     const r = fpAfter('attackBack');
     expect(r.ap).toBe(60);
     const slash = t.attacks[0]!;
-    expect(r.fp).toBe(slash.apCost + slash.fpCost); // Slash: 20 AP + 5 FP → 25 FP
+    expect(r.fp).toBe(slash.apCost + slash.fpCost); // Slash: 25 AP + 5 FP → 30 FP
   });
 
   it('attacking on your own turn costs only the technique FP (Slash: 5)', () => {
@@ -184,7 +184,7 @@ describe('choosing the strike back', () => {
 
   it('lists every unlocked technique with its FP cost (AP + FP)', () => {
     expect(options(withTwin()).map((o) => [o.attack.name, o.fpCost, o.available])).toEqual([
-      ['Slash', 25, true],
+      ['Slash', 30, true],
       ['Thrust', 35, true],
       ['Twin Cut', 45, true],
     ]);
@@ -232,7 +232,7 @@ describe('choosing the strike back', () => {
       targetId: 't',
       reaction: 'attackBack',
     });
-    expect(requireUnit(state, 't').fp).toBe(25);
+    expect(requireUnit(state, 't').fp).toBe(30);
     const ev = events.find((e) => e.type === 'attackResolved');
     expect(ev?.type === 'attackResolved' && ev.retaliationName).toBe('Slash');
   });

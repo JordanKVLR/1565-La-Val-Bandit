@@ -255,11 +255,11 @@ export function attackPool(lib: Library, frame: Frame, weapon: Weapon): Attack[]
 
 /**
  * A technique from attacks.json as the engine sees it: AP, FP and accuracy come from the shared
- * formula (`techniqueStats`: stronger costs more, a higher unlock level costs less and aims
- * better); `accuracyBonus` adds the technique's own precision on top.
+ * formula (`techniqueStats`: stronger costs more, in AP or FP by tool, and a higher unlock tier
+ * aims better); `accuracyBonus` adds the technique's own precision on top.
  */
 export function resolveTechnique(
-  { faction: _f, weaponTypes: _w, frameClasses: _c, accuracyBonus, ...attack }: AttackData,
+  { faction: _f, weaponTypes: _w, frameClasses: _c, accuracyBonus, tool, ...attack }: AttackData,
   balance: BalanceConfig,
 ): Attack {
   const cost = techniqueStats(attack.power, attack.hits ?? 1, attack.level, balance, attack.style, {
@@ -269,6 +269,7 @@ export function resolveTechnique(
     weaken: attack.weaken,
     slow: attack.slow,
     accuracyBonus,
+    tool,
   });
   // Gunfire hits harder, aims worse and always bites through a little plate; bombs hit harder
   // still. The technique is costed on its own numbers; the weapon's nature comes on top.

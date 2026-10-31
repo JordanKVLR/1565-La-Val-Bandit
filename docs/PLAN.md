@@ -83,9 +83,12 @@ This section follows the classic Vanguard Bandits framework (see §1: mechanics,
 - Every turn starts with a **full 100 AP**.
 - Moving costs AP per tile by terrain: Road 6 · Plain 8 · Field/Scrub 10 · Sand 12 · Ruin 14 ·
   Rubble 16 · Shallows 20. Climbing costs +6 per height step. MOV caps tiles per turn.
-- Attacks cost AP and FP by power, and stronger attacks are less accurate (one formula for
-  every technique, with p = power × hits − 1): **AP = 30 + 50p** (min 20, rounded to 5),
-  **FP = 5 + 45p** (min 5; +20 for shot, volley and throw techniques), **accuracy = −60p %** (max +20%).
+- Attacks cost AP and FP by power (ADR 0024, with p = power × hits − 1). Starters and _Weight_
+  techniques (heavy, precise, knockdown, collision) pay mostly in AP: **AP = 30 + 15p** (min 25,
+  rounded to 5), **FP = 5 + 20p**. _Spirit_ techniques (flurry, pierce, exhaust, debuff, and all
+  gunfire and bombs) pay mostly in FP: **AP = 25 + 5p**, **FP = 10 + 40p**. Shot, volley and throw
+  add 20 FP; a technique costs 10–80 FP. Starters lose 60p % accuracy (max +20%); techniques
+  instead gain accuracy by unlock tier (+5 from level 7, +10 from 13, +15 from 18).
 - Reactions never cost AP; they cost FP (see below).
 - The unit card previews every cost before you commit: tapping a tile shows the route and the
   AP it will take (tap again to move), and picking a technique shows its AP and FP.
@@ -94,11 +97,11 @@ This section follows the classic Vanguard Bandits framework (see §1: mechanics,
 
 | Weapon    | Attack 1                                 | Attack 2                                            |
 | --------- | ---------------------------------------- | --------------------------------------------------- |
-| Blade     | Slash ×0.8, +12%, 20 AP, 5 FP            | Thrust ×1.0, ±0, 30 AP, 5 FP                        |
+| Blade     | Slash ×0.8, +12%, 25 AP, 5 FP            | Thrust ×1.0, ±0, 30 AP, 5 FP                        |
 | Polearm   | Thrust ×1.0, ±0, 30 AP                   | Long Thrust ×1.0, −20%, 35 AP, reach 1–2            |
-| Blunt     | Bash ×0.8, +12%, 20 AP                   | Smash ×1.0, ±0, 30 AP                               |
-| Firearm   | Fire ×1.0, gun range, weapon's AP, 25 FP | Stock Strike ×0.8, +12%, 20 AP, 5 FP, adjacent only |
-| Explosive | Throw ×1.0, weapon range, 25 FP          | Shove ×0.5, +20%, 20 AP, adjacent only              |
+| Blunt     | Bash ×0.8, +12%, 25 AP                   | Smash ×1.0, ±0, 30 AP                               |
+| Firearm   | Fire ×1.0, gun range, weapon's AP, 25 FP | Stock Strike ×0.8, +12%, 25 AP, 5 FP, adjacent only |
+| Explosive | Throw ×1.0, weapon range, 25 FP          | Shove ×0.5, +20%, 25 AP, adjacent only              |
 
 **Fatigue Points (FP):**
 
@@ -204,9 +207,9 @@ skippable on tap.
   the weapon type and frame weight class; when they can use it depends on a **pilot level** (`level` in `attacks.json`, 3 to 14) and on
   stat requirements: both must be met (ADR 0015). Nobody has more than the two starters at levels 1-2;
   entry techniques open at levels 3-4, mid ones at 5-10, master ones at 13-14 (curve in
-  `docs/ATTACKS.md`). **A technique opened at a higher level is always worth more** (ADR 0017): at
-  level L it is worth 1.10 + 0.09 × (L − 3) plain strikes (about 1.1× at level 3, 2× at level 13), and
-  stronger techniques also get cheaper and more accurate for their power as they rank up. Techniques held back only by level are listed locked with "Unlocks at level N";
+  `docs/ATTACKS.md`). **A technique opened at a higher level hits harder** (ADR 0024): its power ×
+  hits is 1 + 0.09 × level times its tool's share (heavy 1.1 down to debuff 0.8), so about 1.3 at
+  level 3, 2.2 at 13 and 3.25 at 25, and higher tiers aim better. Techniques held back only by level are listed locked with "Unlocks at level N";
   the level-up panel and log announce "New technique" when a level or a stat unlocks one.
   Techniques vary power, accuracy, AP/FP cost and range, and add effects: multiple hits, armour
   pierce, fatigue or AP damage to the target, and blocking counters.

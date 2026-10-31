@@ -147,7 +147,7 @@
       "weapon": "tufek",
       "at": [3, 9],
       "facing": "south",
-      "ai": "defensive",
+      "ai": "hold",
       "name": "Pasha's Guard",
       "stats": {
         "pow": 17,

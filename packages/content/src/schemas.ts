@@ -179,6 +179,20 @@ export const AttackSchema = z
       'volley',
       'throw',
     ]),
+    /**
+     * The technique's role (ADR 0024): it sets the technique's share of the power curve and
+     * whether it pays mostly in AP (heavy, precise, knockdown, collision) or FP (the rest).
+     */
+    tool: z.enum([
+      'heavy',
+      'precise',
+      'flurry',
+      'pierce',
+      'knockdown',
+      'collision',
+      'exhaust',
+      'debuff',
+    ]),
     /** Per-strike power; AP, FP and accuracy follow from it and the level (see techniqueStats). */
     power: z.number().positive(),
     minRange: z.number().int().min(1).optional(),

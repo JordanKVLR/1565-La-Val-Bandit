@@ -108,7 +108,7 @@ describe('the forecast is the real hit chance, with no hidden fatigue penalty', 
   it('the fatigue is still paid once the exchange is over', () => {
     const r = strike(duel('north', 30));
     const a = requireUnit(duel('north', 30), 'a');
-    expect(requireUnit(r.state, 'd').fp).toBe(55);
+    expect(requireUnit(r.state, 'd').fp).toBe(60);
     expect(requireUnit(r.state, 'a').fp).toBe(attackFpCost(r.state, a, a.attacks[0]!));
   });
 

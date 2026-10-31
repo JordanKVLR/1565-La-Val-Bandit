@@ -22,7 +22,7 @@ const summary = (a: Attack) => [a.name, a.power, a.accuracy, a.apCost, a.fpCost]
 describe('starter attacks', () => {
   it('blades get Slash (accurate, light, cheap) and Thrust (plain)', () => {
     expect(starterAttacks(SWORD).map(summary)).toEqual([
-      ['Slash', 0.8, 12, 20, 5],
+      ['Slash', 0.8, 12, 25, 5],
       ['Thrust', 1, 0, 30, 5],
     ]);
   });
@@ -73,15 +73,15 @@ describe('starter attacks', () => {
 
   it('starter costs follow the shared formula: stronger is dearer and less accurate', () => {
     const [slash, thrust] = starterAttacks(SWORD);
-    expect(slash).toMatchObject({ apCost: 20, fpCost: 5, accuracy: 12 });
+    expect(slash).toMatchObject({ apCost: 25, fpCost: 5, accuracy: 12 });
     expect(thrust).toMatchObject({ apCost: 30, fpCost: 5, accuracy: 0 });
-    // FP climbs steeply with power: 5 + 45 per power above 1.
+    // AP 30 + 15 and FP 5 + 20 per power above 1 (ADR 0024); no starter costs under 25 AP.
     expect(techniqueCost(1.4, 1, DEFAULT_BALANCE)).toEqual({
-      apCost: 50,
-      fpCost: 23,
+      apCost: 35,
+      fpCost: 13,
       accuracy: -24,
     });
-    expect(techniqueCost(1.8, 1, DEFAULT_BALANCE).fpCost).toBe(41);
+    expect(techniqueCost(1.8, 1, DEFAULT_BALANCE).fpCost).toBe(21);
     expect(techniqueCost(1, 1, DEFAULT_BALANCE, 'shot').fpCost).toBe(25);
     expect(techniqueCost(0.7, 2, DEFAULT_BALANCE)).toEqual(techniqueCost(1.4, 1, DEFAULT_BALANCE));
   });

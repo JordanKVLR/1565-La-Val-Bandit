@@ -103,8 +103,8 @@ describe('attacks', () => {
     // Slash: (24 + 6) × 0.8 = 24 (DEF 0), halved by Defend to 12
     expect(e.hp).toBe(80 - 12);
     expect(e).toMatchObject({ ap: 100, fp: 30 });
-    // Slash costs 20 AP and only 5 FP; XP 30 + 100 × 12/80 = 45.
-    expect(requireUnit(state, 'a')).toMatchObject({ ap: 80, fp: 5, xp: 45 });
+    // Slash costs 25 AP and only 5 FP; XP 30 + 100 × 12/80 = 45.
+    expect(requireUnit(state, 'a')).toMatchObject({ ap: 75, fp: 5, xp: 45 });
     expect(events[0]).toMatchObject({
       type: 'attackResolved',
       reaction: 'defend',
@@ -121,7 +121,7 @@ describe('attacks', () => {
     });
     const e = requireUnit(state, 'e');
     expect(e.ap).toBe(60);
-    expect(e.fp).toBe(25); // Slash: 20 AP + 5 FP, all paid as FP when striking back
+    expect(e.fp).toBe(30); // Slash: 25 AP + 5 FP, all paid as FP when striking back
     const ev = events[0];
     expect(ev?.type === 'attackResolved' && ev.retaliation?.attackerId).toBe('e');
   });

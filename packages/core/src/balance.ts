@@ -155,6 +155,48 @@ export interface BalanceConfig {
    * later technique is a different tool, not a cheaper copy of an earlier one.
    */
   readonly techKnockdownAp: number;
+  /**
+   * The power curve (ADR 0024): a technique's power × hits should be `techPowerBase` +
+   * `techPowerPerLevel` × its unlock level, times its tool's share (`techTool…`; a deep pierce,
+   * ignoring at least `techDeepPierceAt` of DEF, takes `techToolDeepPierce`). Gunfire and bombs
+   * multiply on top, and no technique passes `techPowerCap` after that. Content tests hold
+   * attacks.json to this within `techPowerTolerance`.
+   */
+  readonly techPowerBase: number;
+  readonly techPowerPerLevel: number;
+  readonly techPowerCap: number;
+  readonly techPowerTolerance: number;
+  readonly techToolHeavy: number;
+  readonly techToolPrecise: number;
+  readonly techToolFlurry: number;
+  readonly techToolPierce: number;
+  readonly techToolDeepPierce: number;
+  readonly techDeepPierceAt: number;
+  readonly techToolKnockdown: number;
+  readonly techToolCollision: number;
+  readonly techToolExhaust: number;
+  readonly techToolDebuff: number;
+  /**
+   * Spirit techniques (flurry, pierce, exhaust, debuff, and every gun or bomb technique) pay mostly in FP: AP is
+   * `techSpiritApBase` + `techSpiritApPerPower` per point of power above 1, FP `techSpiritFpBase`
+   * + `techSpiritFpPerPower`. Weight techniques (heavy, precise, knockdown, collision) use the
+   * shared `techAp…`/`techFp…` formula, which leans on AP. No technique costs more than
+   * `techFpMax` FP.
+   */
+  readonly techSpiritApBase: number;
+  readonly techSpiritApPerPower: number;
+  readonly techSpiritFpBase: number;
+  readonly techSpiritFpPerPower: number;
+  readonly techFpMax: number;
+  /** The least FP a faction technique costs, so none undercuts the starters per point of damage. */
+  readonly techniqueFpMin: number;
+  /** Accuracy by unlock tier: from `techTierMidLevel` +`techTierMidAcc`, and so on upwards. */
+  readonly techTierMidLevel: number;
+  readonly techTierMidAcc: number;
+  readonly techTierAdvancedLevel: number;
+  readonly techTierAdvancedAcc: number;
+  readonly techTierMasterLevel: number;
+  readonly techTierMasterAcc: number;
   readonly techKnockdownFp: number;
   readonly techCollisionAp: number;
   readonly techCollisionFp: number;
@@ -286,10 +328,10 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   hpPerBas: 7,
   hpBase: 10,
   techApBase: 30,
-  techApPerPower: 50,
-  techApMin: 20,
+  techApPerPower: 15,
+  techApMin: 25,
   techFpBase: 5,
-  techFpPerPower: 45,
+  techFpPerPower: 20,
   rangedFpSurcharge: 20,
   rewardVictory: 300,
   rewardPerEnemy: 90,
@@ -302,20 +344,46 @@ export const DEFAULT_BALANCE: BalanceConfig = {
   techFpMin: 5,
   techAccPerPower: 60,
   techAccMax: 20,
-  techniqueAccPerPower: 15,
+  techniqueAccPerPower: 0,
   techRankAccBonus: 0,
   techRankFpDiscount: 0,
   techRankApDiscount: 0,
   techKnockdownAp: 10,
-  techKnockdownFp: 10,
+  techKnockdownFp: 0,
   techCollisionAp: 15,
-  techCollisionFp: 20,
-  techPierceFp: 20,
-  techFatigueFp: 0.5,
-  techWeakenFp: 10,
-  techSlowFp: 6,
-  techAccAp: 0.5,
-  techAccFp: 0.5,
+  techCollisionFp: 0,
+  techPierceFp: 0,
+  techFatigueFp: 0,
+  techWeakenFp: 0,
+  techSlowFp: 0,
+  techAccAp: 0,
+  techAccFp: 0,
+  techPowerBase: 1,
+  techPowerPerLevel: 0.09,
+  techPowerCap: 3.4,
+  techPowerTolerance: 0.05,
+  techToolHeavy: 1.1,
+  techToolPrecise: 0.9,
+  techToolFlurry: 0.9,
+  techToolPierce: 0.9,
+  techToolDeepPierce: 0.85,
+  techDeepPierceAt: 0.6,
+  techToolKnockdown: 0.9,
+  techToolCollision: 0.85,
+  techToolExhaust: 0.8,
+  techToolDebuff: 0.8,
+  techSpiritApBase: 25,
+  techSpiritApPerPower: 5,
+  techSpiritFpBase: 10,
+  techSpiritFpPerPower: 40,
+  techFpMax: 80,
+  techniqueFpMin: 10,
+  techTierMidLevel: 7,
+  techTierMidAcc: 5,
+  techTierAdvancedLevel: 13,
+  techTierAdvancedAcc: 10,
+  techTierMasterLevel: 18,
+  techTierMasterAcc: 15,
   techValueFatigue: 0.12,
   techValueNoCounter: 0.4,
   techValueKnockdown: 0.5,
@@ -399,6 +467,48 @@ export function techniqueRank(level: number): number {
   return Math.floor((Math.max(1, level) - 1) / 2);
 }
 
+/**
+ * A technique's role (ADR 0024). Weight tools pay for power mostly in AP and leave the pilot
+ * standing; Spirit tools pay mostly in FP and leave it tired.
+ */
+export type TechniqueTool =
+  'heavy' | 'precise' | 'flurry' | 'pierce' | 'knockdown' | 'collision' | 'exhaust' | 'debuff';
+
+export const SPIRIT_TOOLS: ReadonlySet<TechniqueTool> = new Set([
+  'flurry',
+  'pierce',
+  'exhaust',
+  'debuff',
+]);
+
+/** The power × hits a technique of this tool and unlock level should have, before gun or bomb. */
+export function techniquePowerTarget(
+  level: number,
+  tool: TechniqueTool,
+  b: BalanceConfig,
+  pierce = 0,
+): number {
+  const share = {
+    heavy: b.techToolHeavy,
+    precise: b.techToolPrecise,
+    flurry: b.techToolFlurry,
+    pierce: pierce >= b.techDeepPierceAt ? b.techToolDeepPierce : b.techToolPierce,
+    knockdown: b.techToolKnockdown,
+    collision: b.techToolCollision,
+    exhaust: b.techToolExhaust,
+    debuff: b.techToolDebuff,
+  }[tool];
+  return (b.techPowerBase + b.techPowerPerLevel * level) * share;
+}
+
+/** Accuracy every technique of this unlock level gets: higher tiers land more often. */
+export function techniqueTierAccuracy(level: number, b: BalanceConfig): number {
+  if (level >= b.techTierMasterLevel) return b.techTierMasterAcc;
+  if (level >= b.techTierAdvancedLevel) return b.techTierAdvancedAcc;
+  if (level >= b.techTierMidLevel) return b.techTierMidAcc;
+  return 0;
+}
+
 /** The parts of a technique that cost extra (see `BalanceConfig.techKnockdownAp`). */
 export interface TechniqueTraits {
   readonly kind?: 'knockdown' | 'collision' | undefined;
@@ -408,12 +518,16 @@ export interface TechniqueTraits {
   readonly slow?: number | undefined;
   /** The technique's own precision, added to the formula's accuracy by the caller. */
   readonly accuracyBonus?: number | undefined;
+  /** Spirit tools use the FP-heavy profile; anything else the AP-heavy shared formula. */
+  readonly tool?: TechniqueTool | undefined;
 }
 
 /**
- * AP, FP and accuracy of a faction technique: the shared formula with the smaller accuracy tax,
- * plus a price for every extra it carries (knockdown, piercing, fatigue, debuffs, precision).
- * The rank discounts are kept in the balance table but ship at zero. Starters use `techniqueCost`.
+ * AP, FP and accuracy of a faction technique (ADR 0024): the Weight or Spirit profile for its
+ * tool, a knockdown or collision surcharge, the accuracy of its unlock tier, and FP capped at
+ * `techFpMax`. The other extras' prices and the rank discounts stay in the balance table at zero,
+ * since a tool's share of the power curve already pays for its effect. Starters use
+ * `techniqueCost`.
  */
 export function techniqueStats(
   power: number,
@@ -428,6 +542,12 @@ export function techniqueStats(
   const round5 = (v: number) => Math.round(v / 5) * 5;
   const ranged = style !== undefined && RANGED_STYLES.has(style) ? b.rangedFpSurcharge : 0;
   const acc = Math.max(0, traits.accuracyBonus ?? 0);
+  // Gunfire and bombs always pay in FP: powder and fuses tire a pilot more than a swing does.
+  const spirit = ranged > 0 || (traits.tool !== undefined && SPIRIT_TOOLS.has(traits.tool));
+  const apBase = spirit ? b.techSpiritApBase : b.techApBase;
+  const apPer = spirit ? b.techSpiritApPerPower : b.techApPerPower;
+  const fpBase = spirit ? b.techSpiritFpBase : b.techFpBase;
+  const fpPer = spirit ? b.techSpiritFpPerPower : b.techFpPerPower;
   const extraAp =
     (traits.kind === 'collision' ? b.techCollisionAp : traits.kind ? b.techKnockdownAp : 0) +
     acc * b.techAccAp;
@@ -441,18 +561,24 @@ export function techniqueStats(
   return {
     apCost: Math.max(
       b.techApMin,
-      round5((b.techApBase + b.techApPerPower * p) * (1 - b.techRankApDiscount * rank) + extraAp),
+      round5((apBase + apPer * p) * (1 - b.techRankApDiscount * rank) + extraAp),
     ),
     // Extras are priced on top of the clamped base, so a cheap technique cannot carry them free.
-    fpCost:
+    fpCost: Math.min(
+      b.techFpMax,
       Math.max(
-        b.techFpMin,
-        Math.round((b.techFpBase + b.techFpPerPower * p) * (1 - b.techRankFpDiscount * rank)),
+        b.techniqueFpMin,
+        Math.round((fpBase + fpPer * p) * (1 - b.techRankFpDiscount * rank)),
       ) +
-      Math.round(extraFp) +
-      ranged,
+        Math.round(extraFp) +
+        ranged,
+    ),
     accuracy:
-      Math.min(b.techAccMax, Math.round(-b.techniqueAccPerPower * p) + b.techRankAccBonus * rank) ||
-      0,
+      Math.min(
+        b.techAccMax,
+        Math.round(-b.techniqueAccPerPower * p) +
+          b.techRankAccBonus * rank +
+          techniqueTierAccuracy(level, b),
+      ) || 0,
   };
 }

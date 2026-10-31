@@ -130,7 +130,7 @@ describe('forecast', () => {
       attackId: 'basic',
       attackName: 'Slash',
       hits: 1,
-      fpCost: 25,
+      fpCost: 30,
       hitChance: 95,
       damage: 24,
     });

@@ -21,6 +21,8 @@ import {
   DEFAULT_BALANCE,
   starterAttacks,
   techniqueDamage,
+  techniquePowerTarget,
+  techniqueTierAccuracy,
   unlockedAttacks,
 } from '@m1565/core';
 import castData from '../data/cast.json';
@@ -176,33 +178,49 @@ describe('attacks', () => {
       pools.set(key, [...(pools.get(key) ?? []), r]);
     }
 
-  /** The tools a technique offers beyond a plain strike (its role in the pool). */
-  const tools = (a: (typeof resolved)[number]['attack']): string[] => {
+  /** Gunfire and bombs hit harder by nature; the curve is judged against the weapon's own base. */
+  const natureOf = (style: string) =>
+    style === 'shot' || style === 'volley'
+      ? lib.balance.gunPower
+      : style === 'throw'
+        ? lib.balance.bombPower
+        : 1;
+
+  /**
+   * The tools a technique offers beyond a plain strike (its role in the pool). A heavy blow is
+   * judged against the power curve for its level, and a sure shot against its tier's accuracy.
+   */
+  const tools = (a: (typeof resolved)[number]['attack'], level: number): string[] => {
     const out: string[] = [];
     if ((a.hits ?? 1) > 1) out.push('flurry');
     if (a.kind) out.push(a.kind);
     if ((a.pierce ?? 0) >= 0.4 && (a.hits ?? 1) === 1) out.push('pierce');
     if ((a.fatigue ?? 0) >= 25) out.push('exhaust');
     if (a.weaken || a.slow) out.push('debuff');
-    // Gunfire and bombs hit harder by nature; a heavy blow is judged against the weapon's own base.
-    const base =
-      a.style === 'shot' || a.style === 'volley'
-        ? lib.balance.gunPower
-        : a.style === 'throw'
-          ? lib.balance.bombPower
-          : 1;
-    if ((a.power * (a.hits ?? 1)) / base >= 1.3 && (a.hits ?? 1) === 1 && !a.kind)
+    const nature = natureOf(a.style);
+    const heavyAt = Math.min(
+      techniquePowerTarget(level, 'heavy', lib.balance) * (1 - lib.balance.techPowerTolerance),
+      lib.balance.techPowerCap / nature,
+    );
+    if ((a.power * (a.hits ?? 1)) / nature >= heavyAt - 1e-9 && (a.hits ?? 1) === 1 && !a.kind)
       out.push('heavy');
-    // Gunfire aims worse by nature; a sure shot is judged against that.
+    // Gunfire aims worse by nature; a sure shot is judged against that and its tier.
     const gun = a.style === 'shot' || a.style === 'volley' ? lib.balance.gunAccuracy : 0;
-    if (a.accuracy - gun >= 12 && (a.hits ?? 1) === 1) out.push('precise');
+    const tier = techniqueTierAccuracy(level, lib.balance);
+    if (a.accuracy - gun - tier >= 12 && (a.hits ?? 1) === 1) out.push('precise');
     return out;
   };
 
-  it('are the expensive way to deal damage: the basic strike stays the best per FP (ADR 0023)', () => {
+  it('are the expensive way to deal damage: the basic strike stays the best per FP (ADR 0023, 0024)', () => {
     for (const { data, attack } of resolved) {
       for (const w of data.weaponTypes) {
-        const basic = starterAttacks({ type: w, apCost: 35 } as never)[0]!;
+        // Higher tiers aim better by design (ADR 0024), so the basic is given the same tier
+        // accuracy: at equal aim, a technique always costs more FP per point of damage.
+        const starter = starterAttacks({ type: w, apCost: 35 } as never)[0]!;
+        const basic = {
+          ...starter,
+          accuracy: starter.accuracy + techniqueTierAccuracy(data.level, lib.balance),
+        };
         const perFp = (a: typeof attack) => techniqueDamage(a, lib.balance) / a.fpCost;
         // A gun's techniques may buy back some of its natural inaccuracy (Fire aims at -25), so a
         // sure shot can edge past the basic per FP; everything else must cost more per damage.
@@ -213,16 +231,39 @@ describe('attacks', () => {
   });
 
   it('each bring a tool the basics lack: a flurry, a pierce, a knockdown, a debuff, a heavy blow or a sure shot', () => {
-    for (const { data, attack } of resolved) expect(tools(attack), data.id).not.toEqual([]);
+    for (const { data, attack } of resolved)
+      expect(tools(attack, data.level), data.id).not.toEqual([]);
+  });
+
+  it('do what their tool says: the tool in attacks.json is one the numbers show (ADR 0024)', () => {
+    for (const { data, attack } of resolved)
+      expect(tools(attack, data.level), data.id).toContain(data.tool);
+  });
+
+  it('follow the power curve: later techniques hit harder, by their tool share (ADR 0024)', () => {
+    const b = lib.balance;
+    for (const { data } of resolved) {
+      const target = Math.min(
+        techniquePowerTarget(data.level, data.tool, b, data.pierce ?? 0),
+        b.techPowerCap / natureOf(data.style),
+      );
+      const total = data.power * (data.hits ?? 1);
+      expect(Math.abs(total / target - 1), `${data.id}: ${total} vs ${target}`).toBeLessThanOrEqual(
+        b.techPowerTolerance,
+      );
+    }
   });
 
   it('give every pool at least four different tools, and never the same tool twice running', () => {
     for (const [key, list] of pools) {
       const sorted = [...list].sort((a, b) => a.data.level - b.data.level);
-      const all = new Set(sorted.flatMap((r) => tools(r.attack)));
+      const all = new Set(sorted.flatMap((r) => tools(r.attack, r.data.level)));
       expect(all.size, `${key}: ${[...all].join(', ')}`).toBeGreaterThanOrEqual(4);
       for (let i = 1; i < sorted.length; i++) {
-        const [lo, hi] = [tools(sorted[i - 1]!.attack), tools(sorted[i]!.attack)];
+        const [lo, hi] = [
+          tools(sorted[i - 1]!.attack, sorted[i - 1]!.data.level),
+          tools(sorted[i]!.attack, sorted[i]!.data.level),
+        ];
         if (sorted[i]!.data.frameClasses.length || sorted[i - 1]!.data.frameClasses.length)
           continue;
         expect(
@@ -233,16 +274,11 @@ describe('attacks', () => {
     }
   });
 
-  it('are not simply bigger as the levels climb: costs and powers move both ways within a pool', () => {
+  it('get stronger as the levels climb: a pool ends far above where it starts (ADR 0024)', () => {
     for (const [key, list] of pools) {
       const sorted = [...list].sort((a, b) => a.data.level - b.data.level);
-      const dips = sorted.filter(
-        (r, i) =>
-          i > 0 &&
-          r.attack.power * (r.attack.hits ?? 1) <
-            sorted[i - 1]!.attack.power * (sorted[i - 1]!.attack.hits ?? 1),
-      );
-      expect(dips.length, key).toBeGreaterThanOrEqual(1);
+      const total = (r: (typeof sorted)[number]) => r.attack.power * (r.attack.hits ?? 1);
+      expect(total(sorted[sorted.length - 1]!), key).toBeGreaterThan(total(sorted[0]!) * 1.5);
     }
   });
 
@@ -311,7 +347,6 @@ describe('attacks', () => {
       // Cheap, light techniques with modest stat needs are the entry tier; heavy ones are the late game.
       const need = Object.values(a.requires).reduce((n: number, v) => n + (v ?? 0), 0);
       if (total <= 1.15 && need <= 10) expect(a.level, a.id).toBeLessThanOrEqual(6);
-      if (total >= 1.55) expect(a.level, a.id).toBeGreaterThanOrEqual(10);
     }
     expect(lib.attacks.filter((a) => a.level <= 4).length).toBeGreaterThanOrEqual(10);
     expect(lib.attacks.filter((a) => a.level >= 10).length).toBeGreaterThanOrEqual(10);

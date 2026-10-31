@@ -3,7 +3,8 @@
 ## Status
 
 Accepted. Supersedes the level-ladder value standard of ADR 0017 and revises the numbers of
-ADR 0018 (Counter).
+ADR 0018 (Counter). Its technique cost model and "not a ladder" rule are superseded by ADR 0024;
+the attack kinds, hit rules, stat parity and Counter still stand.
 
 ## Context
 
