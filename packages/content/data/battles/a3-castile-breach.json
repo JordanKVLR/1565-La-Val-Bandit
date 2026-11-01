@@ -183,7 +183,7 @@
       "weapon": "grenado",
       "at": [6, 2],
       "facing": "south",
-      "ai": "defensive",
+      "ai": "hold",
       "name": "Humbaracı",
       "stats": {
         "pow": 13,

@@ -182,7 +182,7 @@
       "weapon": "grenado",
       "at": [6, 1],
       "facing": "south",
-      "ai": "defensive",
+      "ai": "hold",
       "name": "Pasha's Bombardier",
       "stats": {
         "pow": 17,

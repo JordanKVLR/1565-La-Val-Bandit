@@ -81,7 +81,7 @@
       "agl": 9
     },
     "level": 11,
-    "description": "A long, precise lunge in the Italian manner, learned in the fencing hall of the Auberge of Italy. Hits a little harder than a plain strike and is very accurate."
+    "description": "A long, precise lunge in the Italian manner, learned in the fencing hall of the Auberge of Italy. Hits hard and is very accurate."
   },
   {
     "id": "order-last-rampart",
@@ -164,7 +164,7 @@
       "dex": 9
     },
     "level": 10,
-    "description": "A flanged mace brought down on the crest of a helmet with a woodsman's swing. Hits a little harder than a plain strike and pierces about half of the target's DEF."
+    "description": "A flanged mace brought down on the crest of a helmet with a woodsman's swing. Hits hard and pierces about half of the target's DEF."
   },
   {
     "id": "order-knell-of-saint-john",
@@ -218,7 +218,7 @@
       "agl": 8
     },
     "level": 5,
-    "description": "A short galloping rush with the polearm couched under the arm, in the manner of Aragonese jousters. Hits hard and reaches two tiles."
+    "description": "A short galloping rush with the polearm couched under the arm, in the manner of Aragonese jousters. Hits a little harder than a plain strike and reaches two tiles."
   },
   {
     "id": "order-halberd-hook",
@@ -344,7 +344,7 @@
       "agl": 10
     },
     "level": 10,
-    "description": "A full overhead chop with the strength used to split carob logs. Hits very hard."
+    "description": "A full overhead chop with the strength used to split carob logs. Hits hard."
   },
   {
     "id": "militia-last-stand",
@@ -363,7 +363,7 @@
       "def": 5
     },
     "level": 13,
-    "description": "No retreat is left, so no part of the body is spared in the swing. Hits a little harder than a plain strike, tires the target and knocks the target down unless it defends: no strike back, and it starts its next turn short of AP."
+    "description": "No retreat is left, so no part of the body is spared in the swing. Hits hard, tires the target and knocks the target down unless it defends: no strike back, and it starts its next turn short of AP."
   },
   {
     "id": "militia-pitchfork-jab",
@@ -526,7 +526,7 @@
       "bas": 7
     },
     "level": 10,
-    "description": "The arquebus is laid on the parapet wall and the shot taken on the breath. Hits hard."
+    "description": "The arquebus is laid on the parapet wall and the shot taken on the breath. Hits very hard."
   },
   {
     "id": "militia-sharpshooter",
@@ -543,7 +543,7 @@
       "agl": 10
     },
     "level": 13,
-    "description": "A patient shot aimed at the vision slit or a boiler joint. Hits hard, is accurate and pierces about half of the target's DEF."
+    "description": "A patient shot aimed at the vision slit or a boiler joint. Hits very hard and pierces about half of the target's DEF."
   },
   {
     "id": "ottoman-crescent-slash",
@@ -630,7 +630,7 @@
       "def": 4
     },
     "level": 13,
-    "description": "A perfect drawing slash reserved for veterans in medium frames, aimed at joints and seams. Hits a little harder than a plain strike and pierces about half of the target's DEF. Only medium frames carry its weight."
+    "description": "A perfect drawing slash reserved for veterans in medium frames, aimed at joints and seams. Hits hard and pierces about half of the target's DEF. Only medium frames carry its weight."
   },
   {
     "id": "ottoman-steady-volley",
@@ -696,7 +696,7 @@
       "dex": 15
     },
     "level": 10,
-    "description": "A long-barrelled tüfek shot laid carefully on a weak point. Hits a little harder than a plain strike and pierces about half of the target's DEF."
+    "description": "A long-barrelled tüfek shot laid carefully on a weak point. Hits hard and pierces about half of the target's DEF."
   },
   {
     "id": "ottoman-fire-line-of-the-orta",
@@ -752,7 +752,7 @@
       "agl": 10
     },
     "level": 5,
-    "description": "A light armatura sweeps in at speed with lance lowered, in the manner of the provincial cavalry. Hits hard and reaches two tiles. Only light frames carry its weight."
+    "description": "A light armatura sweeps in at speed with lance lowered, in the manner of the provincial cavalry. Hits a little harder than a plain strike and reaches two tiles. Only light frames carry its weight."
   },
   {
     "id": "ottoman-hooked-spear-pull",
@@ -1050,7 +1050,7 @@
       "dex": 11
     },
     "level": 10,
-    "description": "A whaler's thrust that bites deep behind the plates. Hits a little harder than a plain strike, pierces about half of the target's DEF and reaches two tiles."
+    "description": "A whaler's thrust that bites deep behind the plates. Hits hard, pierces about half of the target's DEF and reaches two tiles."
   },
   {
     "id": "corsair-drowning-hook",
@@ -1069,7 +1069,7 @@
       "bas": 6
     },
     "level": 13,
-    "description": "The hook sets in the armour and the target is dragged down like a catch hauled overboard. Hits a little harder than a plain strike, tires the target and knocks the target down unless it defends: no strike back, and it starts its next turn short of AP."
+    "description": "The hook sets in the armour and the target is dragged down like a catch hauled overboard. Hits hard, tires the target and knocks the target down unless it defends: no strike back, and it starts its next turn short of AP."
   },
   {
     "id": "scala-piston-strike",
@@ -1134,7 +1134,7 @@
       "bas": 6
     },
     "level": 10,
-    "description": "A governor wheel spun up to speed and released into the blow. Hits a little harder than a plain strike and pierces about half of the target's DEF."
+    "description": "A governor wheel spun up to speed and released into the blow. Hits hard and pierces about half of the target's DEF."
   },
   {
     "id": "scala-overpressure",
@@ -1201,7 +1201,7 @@
       "dex": 10
     },
     "level": 9,
-    "description": "A heavy iron bolt is driven from a steam launcher. Hits hard."
+    "description": "A heavy iron bolt is driven from a steam launcher. Hits very hard."
   },
   {
     "id": "scala-chain-shot",
@@ -1235,7 +1235,7 @@
       "pow": 10
     },
     "level": 14,
-    "description": "Every gun on a heavy machine fires at once in a single roar. Hits hard and crashes through any guard: no strike back, and the target loses much of its next turn. Only heavy frames carry its weight."
+    "description": "Every gun on a heavy machine fires at once in a single roar. Hits very hard and crashes through any guard: no strike back, and the target loses much of its next turn. Only heavy frames carry its weight."
   },
   {
     "id": "order-bastion-riposte",
@@ -1252,7 +1252,7 @@
       "agl": 11
     },
     "level": 17,
-    "description": "A parry on the bastion wall that becomes a thrust before the foe has finished his stroke. Hits a little harder than a plain strike and pierces about half of the target's DEF."
+    "description": "A parry on the bastion wall that becomes a thrust before the foe has finished his stroke. Hits hard and pierces about half of the target's DEF."
   },
   {
     "id": "order-sword-of-saint-michael",
@@ -1308,7 +1308,7 @@
       "bas": 9
     },
     "level": 17,
-    "description": "A mace stroke that rings through the whole frame like the great bell of the Conventual Church. Hits a little harder than a plain strike, tires the target and knocks the target down unless it defends: no strike back, and it starts its next turn short of AP."
+    "description": "A mace stroke that rings through the whole frame like the great bell of the Conventual Church. Hits hard, tires the target and knocks the target down unless it defends: no strike back, and it starts its next turn short of AP."
   },
   {
     "id": "order-gate-breaker",
@@ -1326,7 +1326,7 @@
       "def": 8
     },
     "level": 21,
-    "description": "A flanged blow aimed at the weakest hinge, as fit for a postern door as for a pilot's plating. Hits hard and ignores most of the target's DEF."
+    "description": "A flanged blow aimed at the weakest hinge, as fit for a postern door as for a pilot's plating. Hits very hard and ignores most of the target's DEF."
   },
   {
     "id": "order-judgement-of-the-langues",
@@ -1365,7 +1365,7 @@
       "dex": 14
     },
     "level": 17,
-    "description": "A hedge of Aragonese pike points that holds a whole street against a charge. Hits a little harder than a plain strike, tires the target, knocks the target down unless it defends: no strike back, and it starts its next turn short of AP and reaches two tiles."
+    "description": "A hedge of Aragonese pike points that holds a whole street against a charge. Hits hard, tires the target, knocks the target down unless it defends: no strike back, and it starts its next turn short of AP and reaches two tiles."
   },
   {
     "id": "order-lancers-reckoning",
@@ -1383,7 +1383,7 @@
       "bas": 10
     },
     "level": 21,
-    "description": "The charge of a heavy knight at full tilt, aimed at the gap between helm and gorget. Hits hard and ignores most of the target's DEF. Only medium frames carry its weight."
+    "description": "The charge of a heavy knight at full tilt, aimed at the gap between helm and gorget. Hits very hard and ignores most of the target's DEF. Only medium frames carry its weight."
   },
   {
     "id": "order-valettes-sortie",
@@ -1476,7 +1476,7 @@
       "agl": 14
     },
     "level": 17,
-    "description": "A long pole set against the top of a scaling ladder and heaved: the oldest defence in the world. Hits a little harder than a plain strike, tires the target, knocks the target down unless it defends: no strike back, and it starts its next turn short of AP and reaches two tiles."
+    "description": "A long pole set against the top of a scaling ladder and heaved: the oldest defence in the world. Hits hard, tires the target, knocks the target down unless it defends: no strike back, and it starts its next turn short of AP and reaches two tiles."
   },
   {
     "id": "militia-watchfire-thrust",
@@ -1496,7 +1496,7 @@
       "agl": 13
     },
     "level": 21,
-    "description": "A thrust delivered as the beacon on the tower is lit, with the whole village behind it. Hits hard, ignores most of the target's DEF and reaches two tiles."
+    "description": "A thrust delivered as the beacon on the tower is lit, with the whole village behind it. Hits very hard, ignores most of the target's DEF and reaches two tiles."
   },
   {
     "id": "militia-gate-of-birgu",
@@ -1534,7 +1534,7 @@
       "bas": 9
     },
     "level": 17,
-    "description": "The arquebus laid in a crenel and the shot taken on a held breath: steady, accurate and hard to counter. Hits a little harder than a plain strike and is very accurate."
+    "description": "The arquebus laid in a crenel and the shot taken on a held breath: steady, accurate and hard to counter. Hits very hard and is very accurate."
   },
   {
     "id": "militia-bastion-volley",
@@ -1570,7 +1570,7 @@
       "agl": 14
     },
     "level": 25,
-    "description": "The shot every Maltese gunner means to make once in his life: unhurried, exact and through the gap in the plate. Hits hard, is very accurate and ignores most of the target's DEF."
+    "description": "The shot every Maltese gunner means to make once in his life: unhurried, exact and through the gap in the plate. Hits very hard, is accurate and ignores most of the target's DEF."
   },
   {
     "id": "ottoman-sabre-of-the-divan",
@@ -1587,7 +1587,7 @@
       "agl": 12
     },
     "level": 17,
-    "description": "A pulling stroke taught in the Sultan's own school, so smooth it seems to take no effort. Hits a little harder than a plain strike and is very accurate."
+    "description": "A pulling stroke taught in the Sultan's own school, so smooth it seems to take no effort. Hits hard and is very accurate."
   },
   {
     "id": "ottoman-whirlwind-of-the-corps",
@@ -1660,7 +1660,7 @@
       "bas": 10
     },
     "level": 21,
-    "description": "A shot made by a man who has taken a fortress before, and means to again. Hits hard, is very accurate and ignores most of the target's DEF."
+    "description": "A shot made by a man who has taken a fortress before, and means to again. Hits very hard, is accurate and ignores most of the target's DEF."
   },
   {
     "id": "ottoman-thunder-of-the-corps",
@@ -1717,7 +1717,7 @@
       "agl": 16
     },
     "level": 21,
-    "description": "A barbed lance-head that drags a pilot off his feet and leaves him sprawling. Hits hard, pierces part of the target's DEF, tires the target, knocks the target down unless it defends: no strike back, and it starts its next turn short of AP and reaches two tiles."
+    "description": "A barbed lance-head that drags a pilot off his feet and leaves him sprawling. Hits very hard, pierces part of the target's DEF, tires the target, knocks the target down unless it defends: no strike back, and it starts its next turn short of AP and reaches two tiles."
   },
   {
     "id": "ottoman-wrath-of-the-sipahi",
@@ -1810,7 +1810,7 @@
       "dex": 14
     },
     "level": 17,
-    "description": "The first minutes on an enemy deck, when every cut lands at once. Strikes twice for lighter damage each, is accurate and pierces about half of the target's DEF."
+    "description": "The first minutes on an enemy deck, when every cut lands at once. Strikes twice for lighter damage each and pierces about half of the target's DEF."
   },
   {
     "id": "corsair-sea-wolfs-rush",
@@ -1883,7 +1883,7 @@
       "dex": 16
     },
     "level": 21,
-    "description": "A whaler's heave that drives the harpoon in to the shaft. Hits hard, ignores most of the target's DEF and reaches two tiles."
+    "description": "A whaler's heave that drives the harpoon in to the shaft. Hits very hard, ignores most of the target's DEF and reaches two tiles."
   },
   {
     "id": "corsair-leviathan-hook",
@@ -1974,7 +1974,7 @@
       "bas": 9
     },
     "level": 17,
-    "description": "A round fired on a spring of steam: accurate beyond the range of the eye. Hits hard, is accurate and pierces about half of the target's DEF."
+    "description": "A round fired on a spring of steam: accurate beyond the range of the eye. Hits very hard and pierces about half of the target's DEF."
   },
   {
     "id": "scala-hail-of-rivets",

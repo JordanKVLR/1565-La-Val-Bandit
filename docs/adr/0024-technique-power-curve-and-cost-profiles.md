@@ -86,13 +86,25 @@ at equal aim. `technique-curve.test.ts` covers the core formulas.
   AI-vs-AI suite (16 seeds per battle), average battle length fell by roughly a third (a3: 20.9 →
   11.9 rounds). Most win counts moved by 0-4. The big drops were c9 St Paul's Bay (12 → 1/16),
   c6 Boat Road (16 → 8), c4 Corradino (11 → 6) and a9 Marsa Lines (7 → 2). a8 St Michael rose
-  (5 → 10). In c9, the escort target Leyla now dies early to the mid-tier gunfire, and lowering
-  enemy levels did not help, because their stats are fixed in the battle file. The Pasha's Guard
-  gunner now holds its post (`ai: hold`), which brings c9 back to 3/16. a2, a3 and a9 sit at
-  2/16, the suite's floor. These need a human playtest, and probably a retune pass on the Act III
-  and Iberian battles.
+  (5 → 10).
+- Retune pass. Each fix targets the unit that killed the protected pilot, and aims for the
+  battle's old win count:
+  - c9: the Pasha's Bombardier and Pasha's Guard hold their posts. The bombs were what killed
+    Leyla; lowering enemy levels did nothing, because their stats are fixed in the battle file.
+  - a3: the bombardier holds its post.
+  - a9: the two ram-arm prototypes and the sipahi drop 2 POW.
+  - c4: the two hired arquebusiers drop 3 DEX, the pikeman 2 POW and the second prototype 2 POW.
+  - c6: the hired gunner drops 2 DEX and the captain 1 POW.
+
+  This brought c9 to 12/16, c4 to 11, a9 to 7, a3 to 4 and c6 to 14. a2 stays at 2/16, the same as
+  before this change. A global `damageScale` cut was tried instead and rejected: it helped some
+  battles and made a2 unwinnable.
+
 - Battle saves bump to version 12 (new balance keys). The campaign save is unaffected.
-- Some lore text still says "hits a little harder than a plain strike" where the numbers are now
-  much higher. The tests only check effects, not degrees. Reword it in a writing pass.
+- Descriptions say how hard a technique hits compared with a plain strike: "a little harder"
+  from ×1.15, "hard" from ×1.6, "very hard" from ×2.3, with gunfire and bombs included. They
+  call it "accurate" from +12 and "very accurate" from +20. Wording that the new numbers made
+  wrong was fixed. Techniques whose text never mentioned strength were left alone. The tests
+  check effects, not these degrees.
 - Reference: the audit with charts and the full classic attack list (from the RPGClassics
   Vanguard Bandits shrine) was shared as a separate page during design review.

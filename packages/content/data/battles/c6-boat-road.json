@@ -75,7 +75,7 @@
       "ai": "aggressive",
       "name": "Standard-Bearer",
       "stats": {
-        "pow": 14,
+        "pow": 13,
         "dex": 13,
         "agl": 8
       },
@@ -112,7 +112,7 @@
       "name": "Marksman",
       "stats": {
         "pow": 11,
-        "dex": 12,
+        "dex": 10,
         "agl": 6
       },
       "skills": ["marksman"]

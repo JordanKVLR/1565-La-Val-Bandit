@@ -105,7 +105,7 @@
       "ai": "defensive",
       "name": "Prototipo",
       "stats": {
-        "pow": 18,
+        "pow": 16,
         "dex": 16,
         "agl": 6
       }
@@ -123,7 +123,7 @@
       "name": "Marksman",
       "stats": {
         "pow": 16,
-        "dex": 16,
+        "dex": 13,
         "agl": 7
       },
       "skills": ["marksman"]
@@ -141,7 +141,7 @@
       "name": "Genoese Mercenary",
       "stats": {
         "pow": 16,
-        "dex": 16,
+        "dex": 13,
         "agl": 7
       }
     },
@@ -157,7 +157,7 @@
       "ai": "aggressive",
       "name": "Genoese Mercenary",
       "stats": {
-        "pow": 16,
+        "pow": 14,
         "dex": 16,
         "agl": 7
       }
