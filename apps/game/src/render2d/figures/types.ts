@@ -1,4 +1,5 @@
 import type { ArmaturaModel } from '@m1565/content';
+import type { WeaponType } from '@m1565/core';
 import type { FigureSpec, Pose } from '../contract';
 import type { Ctx, Swatch } from './kit';
 
@@ -76,6 +77,14 @@ export interface Look {
   boot(f: F, far: boolean): void;
   /** True if the off hand carries a round shield for this weapon. */
   shield?(f: F): boolean;
+  /** Which weapon types carry the shield (default: blunt only, plus sipahi always). */
+  shieldWith?(w: WeaponType): boolean;
+  /**
+   * Replaces the default limb tube. `seg` 0 upper arm, 1 forearm, 2 thigh, 3 shin; the origin is
+   * the joint and the limb hangs down -y for `len`, radius `r0` at the joint and `r1` at the end.
+   * When set, the rig also skips its default knee cap (draw it in `shin`).
+   */
+  segment?(f: F, seg: 0 | 1 | 2 | 3, far: boolean, len: number, r0: number, r1: number): void;
   /** Extra hook after everything in the spine frame (steam, glow). */
   over?(f: F): void;
   /** Weapon style hint: curved for sabres. */

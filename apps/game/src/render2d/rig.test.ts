@@ -12,7 +12,7 @@ const WEAPONS: WeaponType[] = ['blade', 'polearm', 'blunt', 'firearm', 'explosiv
 const CLASSES: FrameClass[] = ['light', 'medium', 'heavy'];
 
 /** A canvas context that records nothing and accepts everything. */
-function fakeCtx(): CanvasRenderingContext2D {
+function fakeCtx(scale = 200): CanvasRenderingContext2D {
   const state: Record<string, unknown> = {};
   let depth = 0;
   const target = {
@@ -21,6 +21,7 @@ function fakeCtx(): CanvasRenderingContext2D {
       depth--;
       if (depth < 0) throw new Error('unbalanced restore');
     },
+    getTransform: () => ({ a: scale, b: 0, c: 0, d: -scale }),
     createLinearGradient: () => ({ addColorStop: () => undefined }),
     createRadialGradient: () => ({ addColorStop: () => undefined }),
   } as Record<string, unknown>;
@@ -71,6 +72,42 @@ describe('2D rig', () => {
           }
           expect((ctx as unknown as { depth: () => number }).depth()).toBe(0);
         }
+  });
+
+  it('draws every knight variant at map, panel and duel scale (all LODs)', () => {
+    const accents = ['#2a6fd6', '#c0161f', '#2f7d3a'];
+    for (const w of WEAPONS)
+      for (const c of CLASSES)
+        for (const hero of [false, true])
+          for (const face of [1, -1] as const)
+            for (const scale of [60, 96, 160, 390]) {
+              const rig = createRig(
+                { ...spec('knight', w, c), accent: accents[scale % 3] as string, hero },
+                0,
+                face,
+              );
+              const ctx = fakeCtx(scale);
+              for (const [i, p] of EXTREME.entries()) {
+                rig.pose = { ...guardFor(w), ...p };
+                rig.time = i * 0.41;
+                rig.flash = i % 2 ? 0.7 : 0;
+                expect(() => rig.draw(ctx)).not.toThrow();
+              }
+              expect((ctx as unknown as { depth: () => number }).depth()).toBe(0);
+              const a = rig.anchors();
+              for (const v of Object.values(a)) expect(Number.isFinite(v.x + v.y)).toBe(true);
+            }
+  });
+
+  it('picks the level of detail from the on-screen scale', async () => {
+    const { K } = await import('./figures/kit');
+    const rig = createRig(spec('knight', 'blade', 'medium'), 0, 1);
+    const seen: number[] = [];
+    for (const scale of [60, 150, 400]) {
+      rig.draw(fakeCtx(scale));
+      seen.push(K.lod);
+    }
+    expect(seen).toEqual([0, 1, 2]);
   });
 
   it('keeps anchors finite for every pose key', () => {

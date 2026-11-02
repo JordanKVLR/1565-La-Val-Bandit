@@ -16,9 +16,17 @@ const BASE: Record<Part, string> = {
 
 /** Same liveries as the 3D rig (render/Armatura.ts), brightened a touch for flat shading. */
 const PALETTES: Record<ArmaturaModel | 'hero', Partial<Record<Part, string>>> = {
-  knight: { cloth: '#b02230', trim: '#f3efe4', dark: '#3a3e46', skin: '#dcaa80' },
+  knight: {
+    armour: '#a7b0c1',
+    metal: '#c9d0de',
+    cloth: '#b3202b',
+    trim: '#f3efe4',
+    dark: '#3a3e46',
+    skin: '#dcaa80',
+  },
   hero: {
-    armour: '#f2f1ec',
+    armour: '#dfe3ec',
+    metal: '#e6e9f0',
     cloth: '#c0161f',
     trim: '#e0b445',
     dark: '#7c1016',

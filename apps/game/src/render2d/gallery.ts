@@ -160,10 +160,66 @@ function peopleMain(root: HTMLElement): void {
   document.title = 'gallery ready';
 }
 
+/** Cell sizes of the roster view: [width, height, px per unit] for duel, panel and map. */
+const ROSTER_SIZES = {
+  duel: [420, 700, 330],
+  panel: [190, 330, 130],
+  map: [112, 150, 56],
+} as const;
+const SIDE = { player: '#1f6fb5', enemy: '#d0700a' } as const;
+
+/**
+ * Every model side by side for family checks: one row per model, four cells per row (player blue,
+ * enemy orange, then both again as hero, the second of each pair mirrored). `size` picks duel,
+ * panel or map scale; `weapon` and `class` pick the variant.
+ */
+function rosterMain(root: HTMLElement): void {
+  const size = (q.get('size') ?? 'map') as keyof typeof ROSTER_SIZES;
+  const [w, h, scale] = ROSTER_SIZES[size] ?? ROSTER_SIZES.map;
+  const weaponType = (WEAPONS.find((x) => x === q.get('weapon')) ?? 'blade') as WeaponType;
+  const frameClass = (CLASSES.find((x) => x === q.get('class')) ?? 'medium') as FrameClass;
+  const models = pick<ArmaturaModel>('model', ARMATURA_MODELS);
+  for (const model of models) {
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    root.append(grid);
+    for (const hero of [false, true])
+      for (const side of ['player', 'enemy'] as const) {
+        const rig = createRig(
+          {
+            model,
+            weaponType,
+            frameClass,
+            accent: SIDE[side],
+            ...(hero ? { hero } : {}),
+          },
+          0,
+          side === 'enemy' ? -1 : 1,
+        );
+        rig.pose = { ...guardFor(weaponType) };
+        addCell(
+          grid,
+          rig,
+          w,
+          h,
+          scale * (model === 'tower' || model === 'barge' ? 0.62 : 1),
+          `${model} ${side}${hero ? ' hero' : ''}`,
+          0.5,
+        );
+      }
+  }
+  for (const c of cells) render(c, 0.4);
+  document.title = 'gallery ready';
+}
+
 function main(): void {
   const root = document.getElementById('root') as HTMLElement;
   if (q.get('people') === '1') {
     peopleMain(root);
+    return;
+  }
+  if (q.get('view') === 'roster') {
+    rosterMain(root);
     return;
   }
   const accent = q.get('accent') ?? '#2a6fd6';

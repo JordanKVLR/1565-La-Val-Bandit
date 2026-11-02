@@ -8,7 +8,7 @@ duels and unit panels on next open). Decision record: `docs/adr/0013-2d-art-pipe
 | Area            | Files                                                                                   |
 | --------------- | --------------------------------------------------------------------------------------- |
 | Shared contract | `contract.ts` (Rig, Fx, FxContext, AttackScript)                                        |
-| Figures         | `rig.ts`, `figures/` (9 models x 3 classes x 5 weapons, hero livery, machines)          |
+| Figures         | `rig.ts`, `figures/` (9 models, one file each + `*Arms.ts`; roster in FIGURE_STYLE.md)  |
 | Story people    | `figures/people.ts` (renderer), `figures/peopleCast.ts` (one `PersonLook` per cast id)  |
 | Effects engine  | `fx.ts` (particles, arcs, bursts, words, hit-stop, slow-mo, shake, impact frames)       |
 | Duel            | `DuelStage2D.ts`, `backdrop.ts`, `attacks/styleDefaults.ts` (per-style baseline)        |
@@ -36,7 +36,11 @@ one it falls back to its style's default. Every attack id must have a script (te
 
 ## Dev harnesses (dev server only)
 
-- `/gallery2d.html`: every figure and pose strip; `?people=1` shows the story people.
+- `/gallery2d.html`: every figure and pose strip; `?people=1` shows the story people;
+  `?view=roster&size=duel|panel|map&weapon=blunt&class=heavy[&model=corsair]` shows every model side by side
+  (player blue, enemy orange, hero or not, mirrored) for family checks.
+- To see 2D in a real battle (`/?battle=<id>`), make sure `localStorage['armatura.settings.v1']` has
+  `{"renderMode":"2d"}` before the page loads (2D is the default; an old saved `3d` setting wins).
 - `/duel2d.html?atk=<id>&hit=1&t=0.45`: any attack frozen at any time (`&attacker=right`, `&reaction=defend`, `&defeated=1`).
 - `/portraits2d.html`: all portraits and expressions.
 
