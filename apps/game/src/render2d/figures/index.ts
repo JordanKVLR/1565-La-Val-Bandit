@@ -1,6 +1,6 @@
 import type { ArmaturaModel } from '@m1565/content';
 import { corsair } from './corsair';
-import {  } from './humans';
+import {} from './humans';
 import { gunner } from './gunner';
 import { janissary } from './janissary';
 import { knight } from './knight';
