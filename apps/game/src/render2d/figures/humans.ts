@@ -15,6 +15,8 @@ import {
 } from './kit';
 import type { Ctx } from './kit';
 import { knightShield } from './knight';
+import { ottomanShield } from './sipahi';
+import { militiaShield } from './militia';
 import type { F, Look } from './types';
 
 void _gear;
@@ -94,8 +96,16 @@ export function drawShield(f: F): void {
     knightShield(f);
     return;
   }
+  if (f.spec.model === 'janissary' || f.spec.model === 'sipahi') {
+    ottomanShield(f);
+    return;
+  }
+  if (f.spec.model === 'militia') {
+    militiaShield(f);
+    return;
+  }
   const c: Ctx = f.ctx;
-  const m = f.spec.model;
+  const m: string = f.spec.model;
   const r = 0.28 + f.cls * 0.02;
   const face = m === 'sipahi' ? f.p.cloth : f.hero ? f.p.cloth : f.p.leather;
   c.save();

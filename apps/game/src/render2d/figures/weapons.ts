@@ -16,8 +16,13 @@ import {
   trace,
 } from './kit';
 import type { Ctx } from './kit';
+import { corsairWeapon } from './corsairArms';
 import { knightMace, knightSpear, knightSword } from './knightArms';
+import { machineWeapon } from './machineArms';
+import { militiaWeapon } from './militiaArms';
 import type { ArmaturaModel, F } from './types';
+import { janissaryWeapon } from './janissaryArms';
+import { sipahiWeapon } from './sipahiArms';
 
 /**
  * Weapons are drawn in WEAPON SPACE: the origin is the gripping hand, +x runs along the weapon
@@ -569,6 +574,28 @@ export function drawWeapon(f: F, style: WeaponStyle): void {
   const c: Ctx = f.ctx;
   c.save();
   c.rotate(-Math.PI / 2);
+  if ((f.spec.model === 'militia' || f.spec.model === 'gunner') && militiaWeapon(f, style)) {
+    c.restore();
+    return;
+  }
+  if (
+    (f.spec.model === 'corsair' || f.spec.model === 'barge') &&
+    corsairWeapon(f, style, f.spec.model === 'barge')
+  ) {
+    c.restore();
+    return;
+  }
+  if (
+    (f.spec.model === 'janissary' && janissaryWeapon(f, style)) ||
+    (f.spec.model === 'sipahi' && sipahiWeapon(f, style))
+  ) {
+    c.restore();
+    return;
+  }
+  if (f.spec.model === 'machine' && machineWeapon(f, style)) {
+    c.restore();
+    return;
+  }
   switch (style) {
     case 'sword':
       sword(f, false);

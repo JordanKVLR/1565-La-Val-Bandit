@@ -1,7 +1,14 @@
 import type { ArmaturaModel } from '@m1565/content';
-import { corsair, gunner, janissary, militia, sipahi } from './humans';
+import { corsair } from './corsair';
+import {  } from './humans';
+import { gunner } from './gunner';
+import { janissary } from './janissary';
 import { knight } from './knight';
-import { barge, machine, tower } from './machines';
+import { sipahi } from './sipahi';
+import { machine } from './machine';
+import { barge } from './barge';
+import { tower } from './tower';
+import { militia } from './militia';
 import type { Look } from './types';
 
 export { paletteFor } from './palette';
