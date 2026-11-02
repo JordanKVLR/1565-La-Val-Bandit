@@ -142,7 +142,6 @@ const MIRROR_RIVETS = rivetPath(
   3.8,
 );
 const WINDOW = crescentPath(34, -246, 36, 29, 13);
-const WINDOW_SHAPE = new Shape(WINDOW, new Frame(-2, 0, 70, 0));
 const BUTTONS = (() => {
   const p = mkPath();
   for (let i = 0; i < 5; i++) {
@@ -252,7 +251,6 @@ const CUFF_FR = new Frame(0, -16, 0, -8);
 
 const POLEYN = Shape.d('M 18 -20 C 56 -26, 72 6, 54 30 C 40 40, 16 24, 18 -20 Z', true);
 const KNEE_BAND = Shape.d(rr(-46, -8, 92, 18, 7), true);
-const GREAVE_HI = mkPath('M -20 30 C -24 80, -24 160, -16 230');
 const BOOT = Shape.d(
   'M -38 -14 L 32 -18 C 74 -14, 108 0, 136 14 C 154 8, 168 -8, 178 -22 C 184 0, 178 28, 154 40 L -40 40 Z',
   true,

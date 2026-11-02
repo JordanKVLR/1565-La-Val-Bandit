@@ -327,11 +327,14 @@ function firepot(f: F, m: MilMats): void {
   }
 }
 
+const CARRIED = new Set<WeaponStyle>(['sword', 'spear', 'maul', 'arquebus', 'firepot', 'grenade']);
+
 /**
  * Draws a militia or gunner weapon in weapon space (the caller has rotated to the weapon axis).
  * Returns false for a style this pair does not carry (the caller then draws the default).
  */
 export function militiaWeapon(f: F, style: WeaponStyle): boolean {
+  if (!CARRIED.has(style)) return false;
   const m = milMats(f);
   const gunner = f.spec.model === 'gunner';
   switch (style) {
