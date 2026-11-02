@@ -248,7 +248,6 @@ const PAULD_EDGE_FR = new Frame(0, 28, 0, 52);
 const ARMBAND = Shape.d('M -40 84 Q 0 98 40 84 L 41 118 Q 0 132 -41 118 Z', true);
 const CAP_FAR = Shape.d('M -50 -2 C -52 -48, 40 -52, 52 -2 C 20 24, -20 24, -50 -2 Z', true);
 const SLASH = Shape.d(rr(-8, 36, 16, 96, 7), true);
-const SLASH_ELBOW = Shape.d(rr(-6, 24, 12, 70, 6), true);
 const SLEEVE_BTNS = rivetPath([0, 150, 0, 138, 0, 126], 4.5);
 const GLOVE = Shape.d('M -25 -26 C -30 -6, -26 20, -10 30 L 14 30 C 28 20, 30 -6, 25 -26 Z');
 const GLOVE_LINES = mkPath('M -24 -8 Q 0 -2 24 -8 M -22 6 Q 0 12 22 6');

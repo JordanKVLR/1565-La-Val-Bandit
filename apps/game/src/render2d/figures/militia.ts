@@ -14,7 +14,6 @@ import {
   inkU,
   mkPath,
   paint,
-  paintTube,
   refIn,
   refOut,
   rivetPath,
@@ -329,7 +328,6 @@ const KERCHIEF = Shape.d(
   'M -36 54 C -20 80, 42 84, 58 54 L 64 100 C 34 124, -22 120, -42 100 Z',
   true,
 );
-const KERCHIEF_FR = new Frame(0, 56, 0, 120);
 
 // ── Limb tubes ────────────────────────────────────────────────
 
@@ -382,7 +380,6 @@ function headgear(f: F): Headgear {
   }
 }
 
-const FLAG_NECK = new Frame(0, 0.1, 0, -0.1);
 const FLAG_TAIL = new Frame(0, 0.1, 0, -0.1);
 
 export const militia: Look = {
@@ -847,5 +844,3 @@ export function militiaShield(f: F): void {
   if (K.lod > 0) streak(c, SH_GLINT, inkR(7), 0.38);
   c.restore();
 }
-
-void FLAG_NECK;
