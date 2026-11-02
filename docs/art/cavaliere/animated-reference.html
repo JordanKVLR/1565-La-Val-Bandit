@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cavaliere Armatura: animation test</title>
+<style>
+  :root { color-scheme: dark; --ink:#0e1118; --gold:#d9a443; --paper:#f3ead2; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0b0d14; color: var(--paper); font-family: system-ui, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; }
+  #stage { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; padding: 8px 16px 0; }
+  svg#view { height: 100%; max-height: 100%; max-width: 100%; aspect-ratio: 1560 / 1500; border-radius: 10px; box-shadow: 0 8px 40px #000a; }
+  #bar { width: 100%; max-width: 760px; padding: 10px 16px 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; }
+  button { min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #5b4a2a; background: #1b1d27; color: var(--paper); font: 600 15px system-ui, sans-serif; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--gold); color: #1a1208; border-color: var(--gold); }
+  .sep { width: 1px; height: 28px; background: #3a3f50; margin: 0 4px; }
+  #label { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); padding: 6px 14px; border-radius: 99px; background: #000a; font-weight: 700; letter-spacing: .04em; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="label">LOOP</div>
+<div id="stage"><svg id="view" viewBox="-120 -150 1560 1500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Animated Cavaliere Armatura"></svg></div>
+<div id="bar">
+  <button data-mode="loop" aria-pressed="true">Loop all</button>
+  <button data-mode="idle">Idle</button>
+  <button data-mode="walk">Walk</button>
+  <button data-mode="slash">Slash</button>
+  <button data-mode="hit">Hit</button>
+  <span class="sep"></span>
+  <button data-speed="1" aria-pressed="true">×1</button>
+  <button data-speed="0.5">×0.5</button>
+  <button data-speed="0.25">×0.25</button>
+  <button id="pause">Pause</button>
+</div>
+<script>
+'use strict';
+const INK = '#0e1118', W = 1000, H = 1300, GROUND = 1190;
+const f = (n) => Math.round(n * 10) / 10;
+const rad = (d) => (d * Math.PI) / 180;
+
+/* ---------- static art: gradients and filters ---------- */
+let defs = '';
+const grad = (id, stops, x1 = 0, y1 = 0, x2 = 1, y2 = 0) => {
+  defs += `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join('')}</linearGradient>`;
+};
+grad('steel', [[0, '#2c313e'], [0.14, '#5d6678'], [0.34, '#e7edf6'], [0.52, '#a7b0c1'], [0.78, '#5a6173'], [1, '#262b37']]);
+grad('steelV', [[0, '#e9eef7'], [0.35, '#a9b2c3'], [0.75, '#596073'], [1, '#2a2f3b']], 0, 0, 0, 1);
+grad('steelDark', [[0, '#1d212b'], [0.3, '#4a5265'], [0.5, '#7b8499'], [0.75, '#3b4252'], [1, '#161a22']]);
+grad('brass', [[0, '#4d300c'], [0.22, '#c8913a'], [0.4, '#fff1b8'], [0.62, '#d9a443'], [1, '#43290a']]);
+grad('brassV', [[0, '#fff1b8'], [0.4, '#d9a443'], [1, '#43290a']], 0, 0, 0, 1);
+grad('cloth', [[0, '#5a0b13'], [0.3, '#b3202b'], [0.5, '#e43f47'], [0.75, '#a01a25'], [1, '#52090f']]);
+grad('clothV', [[0, '#d0343d'], [1, '#4d0910']], 0, 0, 0, 1);
+grad('white', [[0, '#bdb8ac'], [0.45, '#fffdf4'], [1, '#c9c4b6']]);
+grad('leather', [[0, '#2a1608'], [0.4, '#7a4a22'], [1, '#2a1608']]);
+grad('sky', [[0, '#141a38'], [0.45, '#3a2748'], [0.72, '#a2423a'], [1, '#f0a050']], 0, 0, 0, 1);
+grad('ground', [[0, '#2a2420'], [1, '#0d0b0a']], 0, 0, 0, 1);
+defs += `<radialGradient id="ember" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff3b0"/><stop offset="0.35" stop-color="#ffb347"/><stop offset="1" stop-color="#ff6a1a" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowRed" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffd27a" stop-opacity="0.9"/><stop offset="1" stop-color="#ff7a2a" stop-opacity="0"/></radialGradient>
+<radialGradient id="rivet" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#fff"/><stop offset="0.5" stop-color="#9aa3b4"/><stop offset="1" stop-color="#2b303c"/></radialGradient>
+<radialGradient id="vig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.65"/></radialGradient>
+<radialGradient id="flashG" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="0.3" stop-color="#ffe9a8" stop-opacity="0.9"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+<filter id="rim" x="-5%" y="-5%" width="110%" height="110%"><feOffset in="SourceAlpha" dx="-4" dy="2" result="off"/><feComposite in="SourceAlpha" in2="off" operator="out" result="edge"/><feFlood flood-color="#ffb866" flood-opacity="0.7"/><feComposite in2="edge" operator="in" result="rimc"/><feMerge result="m"><feMergeNode in="SourceGraphic"/><feMergeNode in="rimc"/></feMerge><feColorMatrix id="flashM" in="m" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/></filter>
+<filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter><filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter><filter id="blur18"><feGaussianBlur stdDeviation="18"/></filter>`;
+
+/* ---------- drawing helpers ---------- */
+const rivet = (x, y, r = 4.5) => `<circle cx="${f(x)}" cy="${f(y)}" r="${r}" fill="url(#rivet)" stroke="${INK}" stroke-width="1.5"/>`;
+const dist = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
+const ang = (a, b) => (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI - 90;
+function limb(a, b, w1, w2, fill = 'steel', o = {}) {
+  const L = dist(a, b), bulge = o.bulge ?? 0, lames = o.lames ?? 0;
+  let s = `<g transform="translate(${f(a[0])} ${f(a[1])}) rotate(${f(ang(a, b))})">`;
+  s += `<path d="M ${-w1 / 2} 0 C ${-w1 / 2 - bulge} ${L * 0.3}, ${-w2 / 2 - bulge} ${L * 0.7}, ${-w2 / 2} ${L} L ${w2 / 2} ${L} C ${w2 / 2 + bulge} ${L * 0.7}, ${w1 / 2 + bulge} ${L * 0.3}, ${w1 / 2} 0 Z" fill="url(#${fill})" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+  for (let i = 1; i <= lames; i++) {
+    const t = i / (lames + 1), w = w1 + (w2 - w1) * t + bulge * 1.2;
+    s += `<path d="M ${-w / 2} ${L * t} Q 0 ${L * t + 9} ${w / 2} ${L * t}" fill="none" stroke="${INK}" stroke-width="3.2" opacity="0.85"/><path d="M ${-w / 2 + 3} ${L * t + 3} Q 0 ${L * t + 11} ${w / 2 - 3} ${L * t + 3}" fill="none" stroke="#fff" stroke-width="1.6" opacity="0.35"/>`;
+  }
+  s += `<path d="M ${-w1 / 2 + 5} 6 L ${-w2 / 2 + 5} ${L - 6}" stroke="#fff" stroke-width="2.4" opacity="0.5" stroke-linecap="round"/>`;
+  if (o.ridge) s += `<path d="M 0 6 L 0 ${L - 6}" stroke="${INK}" stroke-width="2" opacity="0.45"/>`;
+  return s + '</g>';
+}
+function joint(p, r, fill = 'steelDark') {
+  return `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${r}" fill="url(#${fill})" stroke="${INK}" stroke-width="5"/><circle cx="${f(p[0])}" cy="${f(p[1])}" r="${r * 0.55}" fill="url(#brass)" stroke="${INK}" stroke-width="3"/>` + rivet(p[0] - r * 0.12, p[1] - r * 0.12, r * 0.16);
+}
+const maltese = (k = 1, fill = 'white') => [0, 90, 180, 270].map((a) => `<path d="M -11 -16 L -38 -92 L 0 -72 L 38 -92 L 11 -16 Z" transform="rotate(${a}) scale(${k})" fill="url(#${fill})" stroke="${INK}" stroke-width="${4 / k}" stroke-linejoin="round"/>`).join('');
+const puff = (x, y, r, o) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="#f5f0e8" opacity="${f(o * 100) / 100}" filter="url(#blur8)"/>`;
+const star = (x, y, s, o = 0.95) => `<path d="M ${f(x)} ${f(y - s)} L ${f(x + s * 0.18)} ${f(y - s * 0.18)} L ${f(x + s)} ${f(y)} L ${f(x + s * 0.18)} ${f(y + s * 0.18)} L ${f(x)} ${f(y + s)} L ${f(x - s * 0.18)} ${f(y + s * 0.18)} L ${f(x - s)} ${f(y)} L ${f(x - s * 0.18)} ${f(y - s * 0.18)} Z" fill="#fff" opacity="${o}"/>`;
+
+/* ---------- skeleton ---------- */
+const HIP0 = [500, 752];
+const SH_N = [464, 448], SH_F = [548, 416];
+const UA_N = 116.6, FA_N = 160.1, UA_F = 133.7, FA_F = 85.4;
+const THIGH = 170, SHIN = 242;
+const rot = (p, deg, c) => { const r = rad(deg), dx = p[0] - c[0], dy = p[1] - c[1]; return [c[0] + dx * Math.cos(r) - dy * Math.sin(r), c[1] + dx * Math.sin(r) + dy * Math.cos(r)]; };
+const polar = (o, deg, L) => [o[0] + Math.sin(rad(deg)) * L, o[1] + Math.cos(rad(deg)) * L];
+
+function ik(H, T, a, b) {
+  let dx = T[0] - H[0], dy = T[1] - H[1], d = Math.hypot(dx, dy);
+  d = Math.min(Math.max(d, Math.abs(a - b) + 1), a + b - 1);
+  const phi = Math.atan2(dy, dx), alpha = Math.acos((a * a + d * d - b * b) / (2 * a * d));
+  const ka = phi - alpha;
+  return [H[0] + Math.cos(ka) * a, H[1] + Math.sin(ka) * a];
+}
+
+const POSE0 = {
+  hipX: 0, hipY: 0, lean: 0, head: 0, breath: 0, sway: 0, flutter: 0,
+  uaN: -31, faN: 64, swordA: -130,
+  uaF: 39, faF: 57, shieldRot: -14,
+  ankFx: 592, ankFy: 1126, ankBx: 372, ankBy: 1122, footF: 0, footB: 0,
+  flash: 0,
+};
+
+function fk(P) {
+  const H = [HIP0[0] + P.hipX, HIP0[1] + P.hipY];
+  const toWorld = (p) => { const q = rot(p, P.lean, HIP0); return [q[0] + P.hipX, q[1] + P.hipY]; };
+  const elN = polar(SH_N, P.uaN, UA_N), wrN = polar(elN, P.faN, FA_N);
+  const elF = polar(SH_F, P.uaF, UA_F), wrF = polar(elF, P.faF, FA_F);
+  const grip = [wrN[0] + 10, wrN[1] + 6];
+  const tipLocal = [grip[0] - Math.sin(rad(P.swordA)) * 520, grip[1] + Math.cos(rad(P.swordA)) * 520];
+  const midLocal = [grip[0] - Math.sin(rad(P.swordA)) * 440, grip[1] + Math.cos(rad(P.swordA)) * 440];
+  const kF = ik(H, [P.ankFx, P.ankFy], THIGH, SHIN), kB = ik(H, [P.ankBx, P.ankBy], THIGH, SHIN);
+  return { H, elN, wrN, elF, wrF, grip, tip: toWorld(tipLocal), mid: toWorld(midLocal), kF, kB, toWorld };
+}
+
+/* ---------- the figure ---------- */
+function figure(P) {
+  const K = fk(P);
+  const upper = `translate(${f(P.hipX)} ${f(P.hipY)}) rotate(${f(P.lean)} ${HIP0[0]} ${HIP0[1]})`;
+  const br = 1 + P.breath * 0.012;
+  let s = '';
+  // far arm + shield (behind torso)
+  s += `<g transform="${upper}">`;
+  s += limb(SH_F, K.elF, 42, 36, 'steelDark', { lames: 1 }) + joint(K.elF, 26, 'steelDark') + limb(K.elF, K.wrF, 36, 30, 'steelDark', { lames: 1 });
+  s += `<g transform="translate(${f(K.wrF[0] + 68)} ${f(K.wrF[1] + 30)}) rotate(${f(P.shieldRot)})"><circle r="160" fill="url(#brass)" stroke="${INK}" stroke-width="6"/><circle r="150" fill="url(#cloth)" stroke="${INK}" stroke-width="5"/><circle r="130" fill="none" stroke="url(#brass)" stroke-width="6" opacity="0.9"/>${maltese(1.28)}<circle r="30" fill="url(#brass)" stroke="${INK}" stroke-width="5"/><circle r="12" fill="url(#steelV)" stroke="${INK}" stroke-width="3"/>`;
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; s += rivet(Math.cos(a) * 142, Math.sin(a) * 142, 4.2); }
+  s += `<path d="M -120 -40 A 150 150 0 0 1 -40 -120" fill="none" stroke="#fff" stroke-width="7" opacity="0.38" stroke-linecap="round"/></g></g>`;
+
+  // boiler pack
+  s += `<g transform="${upper}"><g transform="translate(404 ${f(392)}) rotate(8) scale(1 ${f(br)})">`;
+  s += `<rect x="-62" y="-6" width="124" height="268" rx="46" fill="url(#brass)" stroke="${INK}" stroke-width="6"/>`;
+  for (const y of [34, 96, 158, 220]) s += `<rect x="-66" y="${y}" width="132" height="14" rx="6" fill="url(#steelDark)" stroke="${INK}" stroke-width="4"/>` + rivet(-52, y + 7, 3.6) + rivet(52, y + 7, 3.6) + rivet(0, y + 7, 3.6);
+  s += `<rect x="-26" y="-34" width="52" height="40" rx="12" fill="url(#steel)" stroke="${INK}" stroke-width="5"/><rect x="-14" y="-56" width="28" height="28" rx="8" fill="url(#brass)" stroke="${INK}" stroke-width="5"/>`;
+  const pulse = 0.82 + 0.18 * Math.sin(P.t * 7);
+  s += `<circle cx="0" cy="124" r="30" fill="#1b1d25" stroke="${INK}" stroke-width="5"/><circle cx="0" cy="124" r="${f(24 * pulse)}" fill="url(#ember)"/><circle cx="0" cy="124" r="30" fill="none" stroke="url(#brass)" stroke-width="5"/>`;
+  const needle = -50 + 38 * Math.sin(P.t * 2.2) + P.hit * 30;
+  s += `<g transform="translate(-34 52)"><circle r="19" fill="#f4efe0" stroke="${INK}" stroke-width="4"/><circle r="19" fill="none" stroke="url(#brass)" stroke-width="5"/><path d="M 0 0 L ${f(Math.cos(rad(needle)) * 13)} ${f(Math.sin(rad(needle)) * 13)}" stroke="#b01c24" stroke-width="3.5" stroke-linecap="round"/><circle r="3" fill="${INK}"/></g></g>`;
+  s += `<path d="M 420 372 C 440 342, 452 350, 470 386" fill="none" stroke="${INK}" stroke-width="22" stroke-linecap="round"/><path d="M 420 372 C 440 342, 452 350, 470 386" fill="none" stroke="url(#brassV)" stroke-width="14" stroke-linecap="round"/>`;
+  s += `<path d="M 392 560 C 372 620, 400 668, 458 690" fill="none" stroke="${INK}" stroke-width="20" stroke-linecap="round"/><path d="M 392 560 C 372 620, 400 668, 458 690" fill="none" stroke="url(#steelV)" stroke-width="12" stroke-linecap="round"/></g>`;
+
+  // back leg
+  const H = K.H, kB = K.kB, aB = [P.ankBx, P.ankBy];
+  s += limb(H, kB, 98, 78, 'steelDark', { lames: 2, bulge: 9 }) + joint(kB, 39, 'steelDark') + limb(kB, aB, 78, 54, 'steelDark', { lames: 2, bulge: 7 });
+  s += `<g transform="translate(${f(aB[0])} ${f(aB[1])}) rotate(${f(P.footB)})"><path d="M -24 -6 L 114 20 L 158 52 L 146 60 L -30 60 Z" fill="url(#steelDark)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/></g>`;
+
+  // tabard + torso
+  s += `<g transform="${upper}"><g transform="rotate(${f(P.sway)} 497 650)">`;
+  s += `<path d="M 442 650 C 436 760, 430 860, 438 966 L 560 990 C 566 880, 566 780, 556 650 Z" fill="url(#cloth)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><path d="M 488 668 C 480 770, 480 880, 486 980 M 524 664 C 522 780, 526 890, 534 988" fill="none" stroke="#2a050a" stroke-width="3" opacity="0.5"/><g transform="translate(498 906) scale(0.5)">${maltese(1, 'white')}</g><path d="M 438 966 L 560 990 L 556 1004 L 436 980 Z" fill="url(#brass)" stroke="${INK}" stroke-width="4"/></g>`;
+  s += `<g transform="translate(0 ${f(-P.breath * 3)})"><path d="M 428 392 C 392 452, 412 584, 446 664 L 552 668 C 600 580, 610 460, 568 396 C 530 372, 470 372, 428 392 Z" fill="url(#steel)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><path d="M 506 384 C 520 470, 520 580, 514 664" fill="none" stroke="${INK}" stroke-width="3" opacity="0.5"/><path d="M 436 420 C 424 482, 436 588, 456 650" fill="none" stroke="#fff" stroke-width="4" opacity="0.55" stroke-linecap="round"/>`;
+  s += `<path d="M 430 462 C 500 504, 562 486, 598 446" fill="none" stroke="${INK}" stroke-width="5"/><path d="M 432 470 C 500 512, 560 494, 594 456" fill="none" stroke="url(#brassV)" stroke-width="7"/><path d="M 446 600 C 500 624, 548 616, 580 596" fill="none" stroke="${INK}" stroke-width="5"/><path d="M 448 608 C 500 632, 548 624, 578 604" fill="none" stroke="url(#brassV)" stroke-width="7"/>`;
+  for (const [x, y] of [[452, 474], [492, 492], [532, 492], [570, 466], [462, 616], [504, 630], [544, 624]]) s += rivet(x, y, 4.4);
+  s += `<g transform="translate(520 508) scale(0.36)">${maltese(1, 'white')}</g>`;
+  const vg = 0.7 + 0.3 * Math.sin(P.t * 7) + P.hit * 0.5;
+  s += `<rect x="470" y="548" width="78" height="40" rx="8" fill="#1a0e08" stroke="${INK}" stroke-width="4"/><rect x="474" y="552" width="70" height="32" rx="6" fill="url(#ember)" opacity="${f(Math.min(1, vg) * 100) / 100}"/>`;
+  for (const y of [556, 565, 574]) s += `<rect x="470" y="${y}" width="78" height="5" fill="url(#steelV)" stroke="${INK}" stroke-width="2.5"/>`;
+  s += `<path d="M 462 372 C 470 340, 546 338, 556 372 L 566 404 C 520 424, 466 420, 452 404 Z" fill="url(#steelV)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><path d="M 458 392 C 500 410, 530 410, 564 392" fill="none" stroke="${INK}" stroke-width="3"/><path d="M 456 380 C 500 396, 530 396, 562 380" fill="none" stroke="${INK}" stroke-width="3"/></g>`;
+  s += `<path d="M 440 650 C 500 672, 548 670, 560 650 L 562 690 C 520 710, 470 708, 442 692 Z" fill="url(#leather)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><rect x="494" y="654" width="30" height="40" rx="6" fill="url(#brass)" stroke="${INK}" stroke-width="4"/>`;
+  for (const [dx, dy, w, h] of [[-4, 692, 124, 70], [6, 728, 118, 66], [16, 762, 108, 60]]) {
+    s += `<path d="M ${442 + dx} ${dy} L ${442 + dx + w} ${dy} C ${442 + dx + w + 4} ${dy + h * 0.6}, ${442 + dx + w - 14} ${dy + h}, ${442 + dx + w * 0.5} ${dy + h + 6} C ${442 + dx + 14} ${dy + h}, ${442 + dx - 4} ${dy + h * 0.6}, ${442 + dx} ${dy} Z" fill="url(#steel)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>` + rivet(442 + dx + 16, dy + 14, 3.8) + rivet(442 + dx + w - 16, dy + 14, 3.8);
+  }
+  s += '</g>';
+
+  // front leg
+  const kF = K.kF, aF = [P.ankFx, P.ankFy];
+  const dir = ((v) => [v[0] / Math.hypot(...v), v[1] / Math.hypot(...v)])([kF[0] - H[0], kF[1] - H[1]]), perp = [dir[1], -dir[0]];
+  s += limb(H, kF, 110, 86, 'steel', { lames: 2, bulge: 10, ridge: true });
+  const p1 = [H[0] + dir[0] * 72 + perp[0] * 26, H[1] + dir[1] * 72 + perp[1] * 26], p2 = [kF[0] + perp[0] * 40 + dir[0] * 15, kF[1] + perp[1] * 40 + dir[1] * 15];
+  const pm = [p1[0] + (p2[0] - p1[0]) * 0.5, p1[1] + (p2[1] - p1[1]) * 0.5];
+  s += `<path d="M ${f(p1[0])} ${f(p1[1])} L ${f(p2[0])} ${f(p2[1])}" stroke="${INK}" stroke-width="26" stroke-linecap="round"/><path d="M ${f(p1[0])} ${f(p1[1])} L ${f(p2[0])} ${f(p2[1])}" stroke="url(#brassV)" stroke-width="18" stroke-linecap="round"/><path d="M ${f(pm[0])} ${f(pm[1])} L ${f(p2[0])} ${f(p2[1])}" stroke="${INK}" stroke-width="14" stroke-linecap="round"/><path d="M ${f(pm[0])} ${f(pm[1])} L ${f(p2[0])} ${f(p2[1])}" stroke="url(#steelV)" stroke-width="8" stroke-linecap="round"/>` + rivet(p1[0], p1[1], 5) + rivet(p2[0], p2[1], 5);
+  s += joint(kF, 45, 'steel');
+  const sa = ang(H, kF) + 90;
+  s += `<path d="M ${f(kF[0] + 22)} ${f(kF[1] - 16)} L ${f(kF[0] + 66)} ${f(kF[1] - 6)} L ${f(kF[0] + 24)} ${f(kF[1] + 14)} Z" fill="url(#steelV)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+  s += limb(kF, aF, 86, 58, 'steel', { lames: 2, bulge: 8, ridge: true });
+  s += `<g transform="translate(${f(aF[0])} ${f(aF[1])}) rotate(${f(P.footF)})"><path d="M -28 -10 L 30 -10 L 164 16 L 220 48 L 208 58 L -30 58 Z" fill="url(#steel)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><path d="M 6 30 Q -6 14 58 36" fill="none" stroke="${INK}" stroke-width="3" opacity="0.6"/><rect x="-30" y="-6" width="68" height="16" rx="6" fill="url(#brass)" stroke="${INK}" stroke-width="4"/></g>`;
+
+  // near arm + pauldron + sword + head (upper body)
+  s += `<g transform="${upper}">`;
+  const pcx = 462, pcy = 414;
+  for (const [r, off] of [[70, 36], [64, 18], [58, 0]]) s += `<path d="M ${pcx - r} ${pcy + off} A ${r} ${r * 0.86} 0 0 1 ${pcx + r * 0.9} ${pcy + off - 8} L ${pcx + r * 0.8} ${pcy + off + 22} Q ${pcx} ${pcy + off + 34} ${pcx - r} ${pcy + off + 12} Z" fill="url(#steel)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+  s += `<path d="M ${pcx - 54} ${pcy - 8} A 58 50 0 0 1 ${pcx + 44} ${pcy - 26}" fill="none" stroke="#fff" stroke-width="5" opacity="0.6" stroke-linecap="round"/><path d="M ${pcx - 4} ${pcy - 52} L ${pcx + 6} ${pcy - 86} L ${pcx + 22} ${pcy - 48} Z" fill="url(#brassV)" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>` + rivet(pcx - 28, pcy + 8, 4.6) + rivet(pcx + 14, pcy - 2, 4.6) + rivet(pcx + 46, pcy + 6, 4.6);
+  s += limb(SH_N, K.elN, 56, 46, 'steel', { lames: 2, bulge: 4 }) + joint(K.elN, 30, 'steel');
+  s += `<g transform="rotate(${f(P.faN - 64)} ${f(K.elN[0])} ${f(K.elN[1])})"><path d="M ${K.elN[0] - 30} ${K.elN[1] - 6} L ${K.elN[0] - 62} ${K.elN[1] + 22} L ${K.elN[0] - 28} ${K.elN[1] + 28} Z" fill="url(#steelV)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/></g>`;
+  s += limb(K.elN, K.wrN, 46, 36, 'steel', { lames: 2, bulge: 5 });
+  s += `<g transform="translate(${f(K.grip[0])} ${f(K.grip[1])}) rotate(${f(P.swordA)})">`;
+  s += `<rect x="-9" y="-70" width="18" height="96" rx="7" fill="url(#leather)" stroke="${INK}" stroke-width="5"/>`;
+  for (let i = 0; i < 5; i++) s += `<path d="M -9 ${-62 + i * 18} L 9 ${-52 + i * 18}" stroke="#d9a443" stroke-width="2.5"/>`;
+  s += `<circle cx="0" cy="-82" r="17" fill="url(#brass)" stroke="${INK}" stroke-width="5"/><circle cx="0" cy="-82" r="7" fill="url(#steelV)" stroke="${INK}" stroke-width="3"/>`;
+  s += `<path d="M -80 30 C -52 18, -22 34, 0 30 C 22 34, 52 18, 80 30 L 80 48 C 52 38, 22 54, 0 50 C -22 54, -52 38, -80 48 Z" fill="url(#brassV)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><circle cx="-80" cy="39" r="10" fill="url(#brass)" stroke="${INK}" stroke-width="4"/><circle cx="80" cy="39" r="10" fill="url(#brass)" stroke="${INK}" stroke-width="4"/>`;
+  s += `<path d="M -22 48 L -22 470 L 0 520 L 22 470 L 22 48 Z" fill="url(#steel)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><path d="M 0 54 L 0 500" stroke="${INK}" stroke-width="5" opacity="0.45"/><path d="M -13 58 L -13 470" stroke="#fff" stroke-width="3.5" opacity="0.75"/><path d="M 17 62 L 17 462" stroke="#fff" stroke-width="2" opacity="0.28"/>`;
+  s += `<g transform="translate(0 -26)"><path d="M -25 -26 C -30 -6, -26 20, -10 30 L 14 30 C 28 20, 30 -6, 25 -26 Z" fill="url(#steel)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+  for (const y of [-14, -2, 10, 22]) s += `<path d="M -26 ${y} Q 0 ${y + 7} 26 ${y}" stroke="${INK}" stroke-width="3" fill="none"/>`;
+  s += `<rect x="-30" y="-36" width="60" height="14" rx="6" fill="url(#brass)" stroke="${INK}" stroke-width="4"/></g></g>`;
+
+  // head with plume
+  const hx = 524, hy = 262, fl = P.flutter;
+  s += `<g transform="rotate(${f(P.head)} 508 338)">`;
+  s += `<path d="M ${hx - 8} ${hy - 78} C ${hx - 70} ${hy - 150 + fl * 0.4}, ${hx - 170} ${hy - 110 + fl * 0.8}, ${hx - 230} ${hy - 20 + fl * 1.4} C ${hx - 180} ${hy - 62 + fl}, ${hx - 120} ${hy - 58 + fl * 0.7}, ${hx - 56} ${hy - 30} C ${hx - 100} ${hy - 22 + fl * 0.5}, ${hx - 148} ${hy + 18 + fl * 1.1}, ${hx - 170} ${hy + 70 + fl * 1.8} C ${hx - 116} ${hy + 26 + fl * 0.6}, ${hx - 60} ${hy + 14}, ${hx - 30} ${hy + 12} Z" fill="url(#clothV)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+  s += `<path d="M ${hx - 50} ${hy - 90} C ${hx - 110} ${hy - 122 + fl * 0.6}, ${hx - 170} ${hy - 80 + fl}, ${hx - 214} ${hy - 22 + fl * 1.4}" fill="none" stroke="#ff8a8e" stroke-width="3.5" opacity="0.55" stroke-linecap="round"/>`;
+  s += `<path d="M ${hx - 52} ${hy + 10} C ${hx - 66} ${hy - 62}, ${hx - 24} ${hy - 98}, ${hx + 22} ${hy - 92} C ${hx + 64} ${hy - 86}, ${hx + 92} ${hy - 44}, ${hx + 90} ${hy + 6} L ${hx + 88} ${hy + 44} C ${hx + 80} ${hy + 76}, ${hx + 44} ${hy + 92}, ${hx + 4} ${hy + 88} C ${hx - 36} ${hy + 82}, ${hx - 56} ${hy + 50}, ${hx - 52} ${hy + 10} Z" fill="url(#steel)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>`;
+  s += `<path d="M ${hx + 6} ${hy - 62} C ${hx + 52} ${hy - 58}, ${hx + 90} ${hy - 22}, ${hx + 92} ${hy + 4} L ${hx + 90} ${hy + 30} C ${hx + 52} ${hy + 22}, ${hx + 26} ${hy + 18}, ${hx + 4} ${hy + 20} Z" fill="url(#steelV)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>`;
+  const eyeG = 0.6 + 0.4 * Math.sin(P.t * 3.1 + 1) + P.hit * 0.4;
+  s += `<path d="M ${hx + 16} ${hy - 22} L ${hx + 84} ${hy - 14} L ${hx + 84} ${hy - 2} L ${hx + 16} ${hy - 8} Z" fill="#150a06" stroke="${INK}" stroke-width="3"/><ellipse cx="${hx + 62}" cy="${hy - 10}" rx="26" ry="9" fill="url(#glowRed)" opacity="${f(Math.min(1, eyeG) * 100) / 100}"/><path d="M ${hx + 44} ${hy - 13} L ${hx + 80} ${hy - 9}" stroke="#ffe29a" stroke-width="4" stroke-linecap="round"/>`;
+  for (let i = 0; i < 5; i++) s += `<path d="M ${hx + 50 + i * 8} ${hy + 40 - i * 1.5} L ${hx + 52 + i * 8} ${hy + 60}" stroke="${INK}" stroke-width="4" stroke-linecap="round"/>`;
+  s += `<path d="M ${hx - 40} ${hy - 62} C ${hx - 4} ${hy - 104}, ${hx + 44} ${hy - 98}, ${hx + 84} ${hy - 46}" fill="none" stroke="url(#brassV)" stroke-width="10" stroke-linecap="round"/><path d="M ${hx - 46} ${hy + 18} L ${hx + 6} ${hy + 22}" stroke="url(#brassV)" stroke-width="9" stroke-linecap="round"/>`;
+  for (const [x, y] of [[-30, -28], [-14, -44], [-8, 30], [-34, 4], [18, -58]]) s += rivet(hx + x, hy + y, 4.4);
+  s += `<path d="M ${hx - 44} ${hy - 20} C ${hx - 38} ${hy - 62}, ${hx - 6} ${hy - 86}, ${hx + 22} ${hy - 82}" fill="none" stroke="#fff" stroke-width="5" opacity="0.6" stroke-linecap="round"/><circle cx="${hx - 20}" cy="${hy + 22}" r="14" fill="url(#brass)" stroke="${INK}" stroke-width="4"/></g>`;
+  return { svg: s, K };
+}
+
+/* ---------- animation: keyframed poses ---------- */
+const ease = (x) => x * x * (3 - 2 * x);
+const easeOut = (x) => 1 - (1 - x) * (1 - x);
+function sample(keys, t, base = POSE0) {
+  let prev = { t: 0, p: { ...base } };
+  for (const [kt, kp, fn] of keys) {
+    const cur = { ...prev.p, ...kp };
+    if (t <= kt) {
+      const u = Math.min(1, Math.max(0, (t - prev.t) / (kt - prev.t || 1))), e = (fn || ease)(u);
+      const out = {};
+      for (const k in cur) out[k] = typeof cur[k] === 'number' ? prev.p[k] + (cur[k] - prev.p[k]) * e : cur[k];
+      return out;
+    }
+    prev = { t: kt, p: cur };
+  }
+  return prev.p;
+}
+
+const IDLE_LEN = 2.4;
+function idlePose(t) {
+  const b = Math.sin((t / IDLE_LEN) * Math.PI * 2);
+  return { ...POSE0, breath: b, hipY: b * 2.2, lean: b * 0.5, head: Math.sin(t * 0.9) * 1.3, uaN: -31 + b * 1.2, faN: 64 - b * 1.5, swordA: -130 + b * 0.8, uaF: 39 - b, sway: Math.sin(t * 1.7) * 1.4, flutter: Math.sin(t * 2.6) * 7 };
+}
+
+const WALK_T = 1.0, STRIDE = 150;
+function walkPose(t) {
+  const ph = (t / WALK_T) % 1, side = (p) => {
+    // returns ankle offset x,y for a foot at phase p
+    if (p < 0.6) { const u = p / 0.6; return [STRIDE / 2 - STRIDE * u, 0, 0]; }
+    const u = (p - 0.6) / 0.4, e = ease(u);
+    return [-STRIDE / 2 + STRIDE * e, -Math.sin(u * Math.PI) * 78, -Math.sin(u * Math.PI) * 22];
+  };
+  const [fx, fy, fr] = side(ph), [bx, by, br] = side((ph + 0.5) % 1);
+  const bob = -Math.abs(Math.sin(ph * Math.PI * 2 + Math.PI / 2)) * 0 + (Math.cos(ph * Math.PI * 4) * -9);
+  const sw = Math.sin(ph * Math.PI * 2);
+  return { ...POSE0, ankFx: 592 + fx, ankFy: 1126 + fy, footF: fr, ankBx: 372 + bx + 40, ankBy: 1122 + by, footB: br, hipY: bob + 8, hipX: 10, lean: 5 + Math.cos(ph * Math.PI * 4) * 0.8, head: -sw * 1.2, uaN: -31 + sw * 7, faN: 64 - sw * 5, swordA: -130 + sw * 3, uaF: 39 + sw * 4, sway: -sw * 3.5, flutter: Math.sin(t * 5) * 11, breath: Math.cos(ph * Math.PI * 4) };
+}
+
+const SLASH_LEN = 1.75;
+const slashKeys = [
+  [0.5, { lean: -9, hipX: -26, head: 4, uaN: 112, faN: 150, swordA: -208, uaF: 20, faF: 40, shieldRot: -24, ankFx: 570, ankBx: 330 + 12, sway: 6 }, easeOut],
+  [0.62, { lean: -11, hipX: -32, uaN: 118, faN: 156, swordA: -212 }, ease],
+  [0.8, { lean: 16, hipX: 50, head: -6, uaN: 40, faN: 94, swordA: -86, uaF: 52, faF: 80, shieldRot: -6, ankFx: 676, ankFy: 1126, footF: 0, ankBx: 352, sway: -9 }, (x) => x * x],
+  [0.96, { lean: 13, hipX: 44, uaN: 24, faN: 80, swordA: -56, sway: -6 }, easeOut],
+  [1.26, { lean: 8, hipX: 28, uaN: 4, faN: 76, swordA: -76 }, ease],
+  [1.75, {}, ease],
+];
+const IMPACT_T = 0.8;
+function slashPose(t) {
+  const p = sample(slashKeys, t);
+  p.flutter = Math.sin(t * 9) * 9; p.breath = Math.sin(t * 3);
+  if (t > 0.8 && t < 1.24) { p.flutter = -22 * Math.exp(-(t - 0.8) * 4) + Math.sin(t * 14) * 6; }
+  return p;
+}
+
+const HIT_LEN = 1.2;
+const hitKeys = [
+  [0.1, { lean: -15, hipX: -34, head: -12, uaN: 4, faN: 56, swordA: -100, uaF: 58, faF: 80, shieldRot: -2, ankFx: 560, ankBx: 346, sway: 10, flash: 0.5 }, easeOut],
+  [0.28, { lean: -18, hipX: -46, head: -9, uaN: -10, faN: 50, swordA: -104, ankFx: 552, ankBx: 330, sway: 8, flash: 0.28 }, ease],
+  [0.62, { lean: -8, hipX: -22, head: -3, flash: 0 }, ease],
+  [1.2, {}, ease],
+];
+function hitPose(t) { const p = sample(hitKeys, t); p.flutter = 16 * Math.exp(-t * 3) * Math.sin(t * 22) + 4; p.breath = Math.sin(t * 6); p.hit = Math.max(0, 1 - t * 2); return p; }
+
+/* modes: pose(t, local) + metadata */
+const MODES = {
+  idle: { len: IDLE_LEN, pose: idlePose, label: 'IDLE', scroll: 0 },
+  walk: { len: WALK_T * 2, pose: walkPose, label: 'WALK', scroll: (STRIDE / (0.6 * WALK_T)) },
+  slash: { len: SLASH_LEN, pose: slashPose, label: 'SLASH' },
+  hit: { len: HIT_LEN, pose: hitPose, label: 'HIT' },
+};
+const LOOP = [['idle', 2.4], ['walk', 2.0], ['slash', 1.75], ['idle', 0.5], ['hit', 1.2], ['idle', 1.4]];
+const LOOP_LEN = LOOP.reduce((a, [, d]) => a + d, 0);
+
+function resolve(mode, T) {
+  if (mode === 'loop') {
+    let t = T % LOOP_LEN;
+    for (const [m, d] of LOOP) { if (t < d) return { m, t }; t -= d; }
+  }
+  const M = MODES[mode];
+  return { m: mode, t: mode === 'slash' || mode === 'hit' ? T % (M.len + 0.6) : T % M.len };
+}
+
+/* ---------- scene ---------- */
+const svg = document.getElementById('view');
+svg.innerHTML = `<defs>${defs}</defs>
+<g id="bgfar"></g><g id="bgnear"></g><g id="shake"><g id="target"></g><g id="body" filter="url(#rim)"></g><g id="fx"></g></g>
+<rect x="-120" y="-150" width="1560" height="1500" fill="url(#vig)" pointer-events="none"/>`;
+const $ = (id) => document.getElementById(id);
+const targetG = $('target'), bgfar = $('bgfar'), bgnear = $('bgnear'), bodyG = $('body'), fxG = $('fx'), shakeG = $('shake'), flashM = $('flashM');
+
+bgfar.innerHTML = `<rect x="-120" y="-150" width="1560" height="1500" fill="url(#sky)"/><circle cx="1020" cy="120" r="120" fill="#ffd9a0" opacity="0.35" filter="url(#blur18)"/><circle cx="1020" cy="120" r="46" fill="#ffe9c4" opacity="0.9"/>`
+  + Array.from({ length: 52 }, (_, i) => `<circle cx="${-100 + (i * 197) % 1450}" cy="${-100 + ((i * 331) % 760)}" r="${1 + (i % 3) * 0.7}" fill="#ffe3b0" opacity="${0.25 + (i % 5) * 0.08}"/>`).join('');
+const farLayer = (off) => `<g transform="translate(${f(off)} 0)"><path d="M-1000 860 L-1000 700 L-930 700 L-930 668 L-870 668 L-870 700 L-790 700 L-790 640 L-730 640 L-730 700 L-580 740 L-480 740 L-300 700 L-240 700 L-240 650 L-170 650 L-170 700 L0 720 L0 880 Z" fill="#2b2433" opacity="0.8" transform="translate(1000 0)"/><path d="M0 860 L0 700 L70 700 L70 668 L130 668 L130 700 L210 700 L210 640 L270 640 L270 700 L420 740 L520 740 L700 700 L760 700 L760 650 L830 650 L830 700 L1000 720 L1000 880 Z" fill="#2b2433" opacity="0.8"/><path d="M1000 860 L1000 700 L1070 700 L1070 668 L1130 668 L1130 700 L1210 700 L1210 640 L1270 640 L1270 700 L1420 740 L1520 740 L1700 700 L1760 700 L1760 650 L1830 650 L1830 700 L2000 720 L2000 880 Z" fill="#2b2433" opacity="0.8"/></g>`;
+const midLayer = (off) => `<g transform="translate(${f(off)} 0)"><path id="m" d="M0 900 L0 760 L110 760 L110 730 L170 730 L170 760 L330 790 L560 780 L650 740 L720 740 L720 710 L790 710 L790 740 L1000 770 L1000 920 Z" fill="#1d1824"/><path d="M1000 900 L1000 760 L1110 760 L1110 730 L1170 730 L1170 760 L1330 790 L1560 780 L1650 740 L1720 740 L1720 710 L1790 710 L1790 740 L2000 770 L2000 920 Z" fill="#1d1824"/><path d="M-1000 900 L-1000 760 L-890 760 L-890 730 L-830 730 L-830 760 L-670 790 L-440 780 L-350 740 L-280 740 L-280 710 L-210 710 L-210 740 L0 770 L0 920 Z" fill="#1d1824"/></g>`;
+const groundLayer = (off) => {
+  let s = `<rect x="-120" y="${GROUND - 30}" width="1560" height="${H - GROUND + 200}" fill="url(#ground)"/><path d="M-120 ${GROUND - 20} Q 500 ${GROUND - 44} 1440 ${GROUND - 20} L1380 ${GROUND - 5} L-120 ${GROUND - 5} Z" fill="#43372d" opacity="0.8"/>`;
+  for (let i = 0; i < 26; i++) {
+    const x = (((-100 + ((i * 163) % 1400) + off) % 1560) + 1560) % 1560 - 100, y = GROUND + 10 + ((i * 53) % 110);
+    s += `<ellipse cx="${f(x)}" cy="${y}" rx="${14 + (i % 4) * 8}" ry="${4 + (i % 3) * 2}" fill="#5b4c3e" opacity="0.55"/>`;
+  }
+  return s;
+};
+
+
+/* training dummy: the strike target */
+function dummy(d) {
+  const x0 = 1236, y0 = GROUND;
+  const wob = d > 0 ? 6.5 * Math.exp(-d * 4.2) * Math.sin(d * 24) : 0;
+  let s = `<ellipse cx="${x0}" cy="${y0 + 8}" rx="130" ry="24" fill="#000" opacity="0.5" filter="url(#blur8)"/>`;
+  s += `<g transform="rotate(${f(wob)} ${x0} ${y0})">`;
+  s += `<path d="M ${x0 - 86} ${y0} L ${x0 - 64} ${y0 - 50} L ${x0 + 64} ${y0 - 50} L ${x0 + 86} ${y0} Z" fill="url(#steelDark)" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/>` + rivet(x0 - 52, y0 - 24, 5) + rivet(x0 + 52, y0 - 24, 5);
+  s += `<rect x="${x0 - 32}" y="${y0 - 600}" width="64" height="560" rx="10" fill="url(#leather)" stroke="${INK}" stroke-width="5"/><path d="M ${x0 - 18} ${y0 - 590} L ${x0 - 18} ${y0 - 60}" stroke="#d6a56c" stroke-width="3" opacity="0.4"/>`;
+  s += `<rect x="${x0 - 170}" y="${y0 - 440}" width="340" height="48" rx="16" fill="url(#leather)" stroke="${INK}" stroke-width="5"/>`;
+  for (const sx of [-170, 170]) s += `<ellipse cx="${x0 + sx}" cy="${y0 - 416}" rx="34" ry="42" fill="#c9a35a" stroke="${INK}" stroke-width="5"/><path d="M ${x0 + sx - 20} ${y0 - 440} L ${x0 + sx + 20} ${y0 - 392} M ${x0 + sx + 20} ${y0 - 440} L ${x0 + sx - 20} ${y0 - 392}" stroke="${INK}" stroke-width="3" opacity="0.6"/>`;
+  // dented steel chest plate with straps
+  s += `<path d="M ${x0 - 86} ${y0 - 470} C ${x0 - 100} ${y0 - 400}, ${x0 - 94} ${y0 - 330}, ${x0 - 70} ${y0 - 300} L ${x0 + 70} ${y0 - 300} C ${x0 + 94} ${y0 - 330}, ${x0 + 100} ${y0 - 400}, ${x0 + 86} ${y0 - 470} Z" fill="url(#steel)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/>`;
+  s += `<path d="M ${x0 - 70} ${y0 - 440} L ${x0 + 70} ${y0 - 440} M ${x0 - 74} ${y0 - 340} L ${x0 + 74} ${y0 - 340}" stroke="url(#brassV)" stroke-width="10"/>` + rivet(x0 - 56, y0 - 440, 4.5) + rivet(x0 + 56, y0 - 440, 4.5) + rivet(x0 - 56, y0 - 340, 4.5) + rivet(x0 + 56, y0 - 340, 4.5);
+  s += `<circle cx="${x0}" cy="${y0 - 392}" r="40" fill="url(#cloth)" stroke="${INK}" stroke-width="5"/><circle cx="${x0}" cy="${y0 - 392}" r="24" fill="url(#white)" stroke="${INK}" stroke-width="4"/><circle cx="${x0}" cy="${y0 - 392}" r="10" fill="url(#cloth)" stroke="${INK}" stroke-width="3"/>`;
+  // head: stitched sack with an iron cap
+  s += `<circle cx="${x0}" cy="${y0 - 570}" r="54" fill="#d2b26a" stroke="${INK}" stroke-width="6"/><path d="M ${x0 - 30} ${y0 - 580} l 18 14 m 0 -14 l -18 14 M ${x0 + 12} ${y0 - 580} l 18 14 m 0 -14 l -18 14 M ${x0 - 22} ${y0 - 540} q 22 12 44 0" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M ${x0 - 58} ${y0 - 586} C ${x0 - 50} ${y0 - 650}, ${x0 + 50} ${y0 - 650}, ${x0 + 58} ${y0 - 586} L ${x0 + 62} ${y0 - 574} L ${x0 - 62} ${y0 - 574} Z" fill="url(#steelV)" stroke="${INK}" stroke-width="6" stroke-linejoin="round"/><path d="M ${x0 - 40} ${y0 - 600} C ${x0 - 30} ${y0 - 632}, ${x0 - 4} ${y0 - 640}, ${x0 + 16} ${y0 - 636}" stroke="#fff" stroke-width="4" fill="none" opacity="0.6" stroke-linecap="round"/>`;
+  if (d > 0) {
+    const a = Math.min(1, d * 6);
+    s += `<path d="M ${x0 - 40} ${y0 - 478} L ${x0 + 92} ${y0 - 372}" stroke="${INK}" stroke-width="9" stroke-linecap="round" opacity="${f(a * 100) / 100}"/><path d="M ${x0 - 40} ${y0 - 478} L ${x0 + 92} ${y0 - 372}" stroke="#fff6d6" stroke-width="4" stroke-linecap="round" opacity="${f(a * 100) / 100}"/>`;
+    s += `<path d="M ${x0 + 40} ${y0 - 392} l 22 -10 l -6 22 l 22 -4" stroke="${INK}" stroke-width="3" fill="none" opacity="0.7"/>`;
+  }
+  s += '</g>';
+  if (d > 0 && d < 0.6) for (let i = 0; i < 16; i++) {
+    const an = -0.5 + (i / 16) * 1.9, sp = 160 + (i % 5) * 60, g = d * d * 520;
+    s += `<path d="M ${f(x0 + 70 + Math.cos(an) * sp * d)} ${f(y0 - 414 + Math.sin(an) * sp * d + g)} l ${f(Math.cos(an) * 16)} ${f(Math.sin(an) * 16 + 4)}" stroke="#e3c46a" stroke-width="3.5" stroke-linecap="round" opacity="${f(Math.max(0, 1 - d / 0.6) * 100) / 100}"/>`;
+  }
+  return s;
+}
+
+let scroll = 0, lastClock = 0;
+function frame(T, mode, dt) {
+  const { m, t } = resolve(mode, T);
+  const M = MODES[m];
+  const P = { ...POSE0, ...M.pose(t), t: T, hit: 0, ...(m === 'hit' ? { hit: Math.max(0, 1 - t * 2) } : {}) };
+  P.t = T; if (m !== 'hit') P.hit = 0; else P.hit = Math.max(0, 1 - t * 2);
+  if (m === 'walk') scroll += (M.scroll || 0) * dt;
+  // camera shake on the slash impact
+  let shx = 0, shy = 0, hitShake = 0;
+  if (m === 'slash') { const d = t - IMPACT_T; if (d > 0 && d < 0.35) { const k = Math.exp(-d * 11) * 15; shx = Math.sin(d * 90) * k; shy = Math.cos(d * 73) * k * 0.7; } }
+  if (m === 'hit' && t < 0.4) { const k = Math.exp(-t * 9) * 11; shx = Math.sin(t * 80) * k; shy = Math.cos(t * 65) * k * 0.6; }
+  shakeG.setAttribute('transform', `translate(${f(shx)} ${f(shy)})`);
+  // background parallax
+  const wrapN = (v, s) => ((v % s) + s) % s;
+  bgnear.innerHTML = midLayer(-wrapN(scroll * 0.18, 1000) ).replace(/^/, '') + groundLayer(-scroll);
+  // flash
+  const fv = P.flash || 0;
+  flashM.setAttribute('values', `1 0 0 0 ${fv * 0.3}  0 1 0 0 ${fv * 0.26}  0 0 1 0 ${fv * 0.22}  0 0 0 1 0`);
+  // figure
+  const { svg: fig, K } = figure(P);
+  bodyG.innerHTML = fig;
+  // shadow follows the body
+  const hipShift = P.hipX * 0.5;
+  // fx layer: steam, embers, sword trail, impact
+  let fx = `<ellipse cx="${f(540 + hipShift)}" cy="${GROUND + 6}" rx="${f(300 - Math.abs(P.hipY) * 2)}" ry="34" fill="#000" opacity="0.5" filter="url(#blur8)"/>`;
+  const ventW = K.toWorld([396, 332]);
+  for (let i = 0; i < 14; i++) {
+    const life = 2.6, age = ((T + i * 0.1857) % life) / life, x = ventW[0] - 6 - age * 120 - Math.sin(age * 5 + i) * 18 + (m === 'walk' ? -age * 40 : 0), y = ventW[1] - 6 - age * 330;
+    fx += puff(x, y, 18 + age * 62, 0.46 * (1 - age) * (m === 'hit' ? 1.6 : 1));
+  }
+  for (let i = 0; i < 12; i++) {
+    const life = 1.4, age = ((T * 1.0 + i * 0.117) % life) / life, base = K.toWorld([404, 516]);
+    const x = base[0] - 20 - age * (50 + i * 9) + Math.sin(i * 7 + T * 3) * 6, y = base[1] - age * (80 + (i % 4) * 36) + age * age * 70;
+    fx += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(1.8 + (i % 3) * 0.7)}" fill="#ffb347" opacity="${f(Math.max(0, 0.85 - age) * 100) / 100}"/>`;
+  }
+  fx += `<circle cx="${f(base0x(K))}" cy="${f(base0y(K))}" r="46" fill="url(#ember)" opacity="${f(0.35 + 0.15 * Math.sin(T * 7))}" filter="url(#blur3)"/>`;
+  // sword trail during the swing (deterministic: re-sample earlier poses)
+  if (m === 'slash' && t > 0.7 && t < 1.08) {
+    const pts = [];
+    for (let k = 0; k <= 5; k++) { const tt = t - k * 0.012; if (tt < 0.64) break; const Pp = { ...POSE0, ...slashPose(tt), t: T }; const Kk = fk(Pp); pts.push([Kk.tip, Kk.mid]); }
+    if (pts.length > 2) {
+      let d = `M ${f(pts[0][0][0])} ${f(pts[0][0][1])}`;
+      for (let i = 1; i < pts.length; i++) d += ` L ${f(pts[i][0][0])} ${f(pts[i][0][1])}`;
+      for (let i = pts.length - 1; i >= 0; i--) d += ` L ${f(pts[i][1][0])} ${f(pts[i][1][1])}`;
+      const fade = t > 0.9 ? Math.max(0, 1 - (t - 0.9) / 0.18) : 1;
+      fx += `<path d="${d} Z" fill="#fff6d6" opacity="${f(0.5 * fade * 100) / 100}" filter="url(#blur3)"/><path d="${d} Z" fill="#ffd27a" opacity="${f(0.32 * fade * 100) / 100}"/>`;
+    }
+  }
+  if (m === 'slash') {
+    const d = t - IMPACT_T;
+    if (d >= -0.02 && d < 0.5) {
+      const ip = [K.tip[0] + 40, K.tip[1] + 10], k = Math.max(0, d + 0.02);
+      const a = Math.max(0, 1 - k * 2.6);
+      fx += `<circle cx="${f(ip[0])}" cy="${f(ip[1])}" r="${f(40 + k * 330)}" fill="none" stroke="#fff6d6" stroke-width="${f(12 * a + 1)}" opacity="${f(a * 100) / 100}"/>`;
+      fx += `<circle cx="${f(ip[0])}" cy="${f(ip[1])}" r="${f(150 * Math.max(0, 1 - k * 5))}" fill="url(#flashG)" opacity="${f(Math.max(0, 1 - k * 5) * 100) / 100}"/>`;
+      for (let i = 0; i < 14; i++) { const an = (i / 14) * Math.PI * 2 + i * 0.3, sp = 130 + (i % 5) * 70, r = sp * k, ll = 30 * a; fx += `<path d="M ${f(ip[0] + Math.cos(an) * r)} ${f(ip[1] + Math.sin(an) * r + k * k * 120)} L ${f(ip[0] + Math.cos(an) * (r + ll))} ${f(ip[1] + Math.sin(an) * (r + ll) + k * k * 120)}" stroke="#ffd27a" stroke-width="${f(3 + (i % 3))}" stroke-linecap="round" opacity="${f(a * 100) / 100}"/>`; }
+      if (k < 0.3) fx += star(ip[0], ip[1], 70 * (1 - k * 3), 1);
+      if (k > 0.06 && k < 0.42) fx += `<g transform="translate(${f(ip[0] + 10)} ${f(ip[1] - 130 - k * 60)}) rotate(-8)"><text text-anchor="middle" font-family="Impact, 'Arial Black', sans-serif" font-size="${f(86 * (k < 0.12 ? k / 0.12 * 1.15 : 1))}" fill="#fff3c8" stroke="#7a1a1a" stroke-width="10" paint-order="stroke" style="letter-spacing:2px" opacity="${f(Math.min(1, (0.42 - k) * 6) * 100) / 100}">CLANG!</text></g>`;
+    }
+  }
+  if (m === 'hit' && t < 0.5) {
+    const k = t, a = Math.max(0, 1 - k * 2.2), c = K.toWorld([520, 520]);
+    fx += `<circle cx="${f(c[0] + 40)}" cy="${f(c[1])}" r="${f(30 + k * 260)}" fill="none" stroke="#fff" stroke-width="${f(10 * a + 1)}" opacity="${f(a * 100) / 100}"/>`;
+    for (let i = 0; i < 10; i++) { const an = (i / 10) * Math.PI * 2, r = (120 + (i % 3) * 60) * k * 1.6; fx += `<path d="M ${f(c[0] + 40 + Math.cos(an) * r)} ${f(c[1] + Math.sin(an) * r)} L ${f(c[0] + 40 + Math.cos(an) * (r + 28))} ${f(c[1] + Math.sin(an) * (r + 28))}" stroke="#ffd27a" stroke-width="4" stroke-linecap="round" opacity="${f(a * 100) / 100}"/>`; }
+    fx += star(c[0] + 40, c[1], 56 * Math.max(0, 1 - k * 4), 1);
+    if (k < 0.34) fx += `<text x="${f(c[0] + 150)}" y="${f(c[1] - 150)}" text-anchor="middle" font-family="Impact, 'Arial Black', sans-serif" font-size="70" fill="#fff3c8" stroke="#1d2a6a" stroke-width="9" paint-order="stroke" transform="rotate(8 ${f(c[0] + 150)} ${f(c[1] - 150)})" opacity="${f(Math.min(1, (0.34 - k) * 7) * 100) / 100}">OOF!</text>`;
+  }
+  fx += star(464, 392 + P.hipY, 18 + 6 * Math.sin(T * 3), 0.55 + 0.4 * Math.max(0, Math.sin(T * 1.7)));
+  targetG.innerHTML = dummy(m === 'slash' ? t - IMPACT_T : -1);
+  fxG.innerHTML = fx;
+  $('label').textContent = m.toUpperCase() + (mode === 'loop' ? ' · LOOP' : '');
+}
+const base0x = (K) => K.toWorld([404, 516])[0], base0y = (K) => K.toWorld([404, 516])[1];
+// far background needs a one-time build (and a slow scroll)
+function farBuild() { bgfar.insertAdjacentHTML('beforeend', `<g id="farL"></g>`); }
+farBuild();
+const farL = $('farL');
+
+/* ---------- controls and loop ---------- */
+let mode = 'loop', speed = 1, paused = false, T = 0, last = performance.now();
+document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => { mode = b.dataset.mode; T = 0; document.querySelectorAll('[data-mode]').forEach((x) => x.setAttribute('aria-pressed', x === b)); }));
+document.querySelectorAll('[data-speed]').forEach((b) => b.addEventListener('click', () => { speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach((x) => x.setAttribute('aria-pressed', x === b)); }));
+$('pause').addEventListener('click', (e) => { paused = !paused; e.target.textContent = paused ? 'Play' : 'Pause'; e.target.setAttribute('aria-pressed', paused); });
+function tick(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (!paused) { T += dt * speed; }
+  farL.innerHTML = farLayer(-((scroll * 0.06) % 1000));
+  frame(T, mode, paused ? 0 : dt * speed);
+  requestAnimationFrame(tick);
+}
+// deterministic hook for recording
+window.__render = (time, m = 'loop') => { scroll = 0; const step = 1 / 30; let acc = 0; for (let x = 0; x < time; x += step) { const r = resolve(m, x); if (r.m === 'walk') scroll += (MODES.walk.scroll || 0) * step; } mode = m; farL.innerHTML = farLayer(-((scroll * 0.06) % 1000)); const savedScroll = scroll; frame(time, m, 0); };
+window.__loopLen = LOOP_LEN;
+if (!new URLSearchParams(location.search).has('record')) requestAnimationFrame(tick);
+else document.querySelector('#bar').style.display = 'none';
+</script>
+</body>
+</html>
