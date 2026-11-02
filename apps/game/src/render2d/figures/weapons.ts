@@ -16,6 +16,7 @@ import {
   trace,
 } from './kit';
 import type { Ctx } from './kit';
+import { knightMace, knightSpear, knightSword } from './knightArms';
 import type { ArmaturaModel, F } from './types';
 
 /**
@@ -240,6 +241,10 @@ function ember(f: F, x: number, y: number, r: number, phase: number): void {
 // ── Weapons ───────────────────────────────────────────────────
 
 function sword(f: F, sabre: boolean): void {
+  if (f.spec.model === 'knight' && !sabre) {
+    knightSword(f);
+    return;
+  }
   const c = f.ctx;
   const hero = f.hero;
   // Grip, pommel, guard, blade.
@@ -263,6 +268,10 @@ function sword(f: F, sabre: boolean): void {
 }
 
 function spear(f: F, style: 'spear' | 'pike' | 'lance' | 'boarding'): void {
+  if (f.spec.model === 'knight' && style === 'spear') {
+    knightSpear(f);
+    return;
+  }
   const c = f.ctx;
   const end = style === 'lance' ? 1.56 : 1.38;
   haft(f, -0.5, end, style === 'lance' ? 0.036 : 0.03);
@@ -376,6 +385,10 @@ function spear(f: F, style: 'spear' | 'pike' | 'lance' | 'boarding'): void {
 }
 
 function mace(f: F, style: 'mace' | 'maul' | 'club' | 'piston'): void {
+  if (f.spec.model === 'knight' && style === 'mace') {
+    knightMace(f);
+    return;
+  }
   const c = f.ctx;
   if (style === 'club') {
     haft(f, -0.1, 0.22, 0.034);

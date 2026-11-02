@@ -1,5 +1,6 @@
 import type { ArmaturaModel } from '@m1565/content';
-import { corsair, gunner, janissary, knight, militia, sipahi } from './humans';
+import { corsair, gunner, janissary, militia, sipahi } from './humans';
+import { knight } from './knight';
 import { barge, machine, tower } from './machines';
 import type { Look } from './types';
 

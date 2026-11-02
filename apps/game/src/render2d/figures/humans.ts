@@ -7,7 +7,6 @@ import {
   ell,
   fillBlob,
   fillEll,
-  fillPoly,
   gear as _gear,
   line,
   poly,
@@ -15,7 +14,8 @@ import {
   trace,
 } from './kit';
 import type { Ctx } from './kit';
-import type { F, Look, LimbStyle } from './types';
+import { knightShield } from './knight';
+import type { F, Look } from './types';
 
 void _gear;
 
@@ -83,37 +83,6 @@ function bootShape(f: F, s: 'armour' | 'leather' | 'cloth' | 'dark', soft = fals
   line(c, f.p.dark, BASE, 0.014, 0.0, -0.058, 0.2 * f.g * sc, -0.06);
 }
 
-function cross(f: F, x: number, y: number, k: number, key: 'trim' | 'cloth' = 'trim'): void {
-  const c = f.ctx;
-  const s = f.p[key];
-  fillPoly(c, s, BASE, [
-    x - 0.02 * k,
-    y + 0.09 * k,
-    x + 0.02 * k,
-    y + 0.09 * k,
-    x + 0.02 * k,
-    y + 0.03 * k,
-    x + 0.065 * k,
-    y + 0.03 * k,
-    x + 0.065 * k,
-    y - 0.01 * k,
-    x + 0.02 * k,
-    y - 0.01 * k,
-    x + 0.02 * k,
-    y - 0.09 * k,
-    x - 0.02 * k,
-    y - 0.09 * k,
-    x - 0.02 * k,
-    y - 0.01 * k,
-    x - 0.065 * k,
-    y - 0.01 * k,
-    x - 0.065 * k,
-    y + 0.03 * k,
-    x - 0.02 * k,
-    y + 0.03 * k,
-  ]);
-}
-
 const PLUME: { x: number; y: number } = { x: 0, y: 0 };
 void PLUME;
 
@@ -121,19 +90,21 @@ void PLUME;
 
 /** A round shield facing the camera, drawn at the off hand (forearm end). */
 export function drawShield(f: F): void {
+  if (f.spec.model === 'knight') {
+    knightShield(f);
+    return;
+  }
   const c: Ctx = f.ctx;
   const m = f.spec.model;
   const r = 0.28 + f.cls * 0.02;
-  const face =
-    m === 'sipahi' ? f.p.cloth : f.hero ? f.p.cloth : m === 'knight' ? f.p.cloth : f.p.leather;
+  const face = m === 'sipahi' ? f.p.cloth : f.hero ? f.p.cloth : f.p.leather;
   c.save();
   c.translate(0.1, 0.02);
   ell(c, f.p.wood, 0, 0, r + 0.03, r + 0.03, 0, 0.03, OW * 1.1);
   ell(c, face, 0, 0, r - 0.02, r - 0.02, 0, 0.05, OW);
   c.globalAlpha = 0.0;
   c.globalAlpha = 1;
-  if (m === 'knight') cross(f, 0, 0, 2.1, 'trim');
-  else if (m === 'sipahi') {
+  if (m === 'sipahi') {
     for (let i = 0; i < 8; i++) {
       const a = (i / 8) * Math.PI * 2;
       fillEll(c, f.p.trim, BASE, Math.cos(a) * r * 0.8, Math.sin(a) * r * 0.8, 0.018, 0.018);
@@ -154,242 +125,6 @@ export function drawShield(f: F): void {
   c.stroke();
   c.restore();
 }
-
-// ── Knight ────────────────────────────────────────────────────
-
-const CAPE = [0, 0];
-void CAPE;
-
-const knightLimbs = (): LimbStyle => ({
-  upper: 'armour',
-  fore: 'armour',
-  thigh: 'armour',
-  shin: 'armour',
-  arm: 1.0,
-  leg: 1.0,
-});
-
-export const knight: Look = {
-  model: 'knight',
-  limbs: knightLimbs,
-  back(f) {
-    const c = f.ctx;
-    // Short mantle streaming behind the shoulders.
-    ribbon(
-      c,
-      f.p.cloth,
-      -0.12,
-      0.58,
-      Math.PI * 1.32,
-      0.5 + f.cls * 0.05,
-      0.16,
-      0.24,
-      0.2,
-      f.t,
-      0.0,
-      f.drag,
-      0.035,
-    );
-    if (f.hero)
-      ribbon(
-        c,
-        f.p.trim,
-        -0.1,
-        0.5,
-        Math.PI * 1.32,
-        0.5,
-        0.03,
-        0.05,
-        0.14,
-        f.t,
-        0.2,
-        f.drag,
-        0.0,
-        OW * 0.6,
-      );
-  },
-  torso(f) {
-    const c = f.ctx;
-    torsoBase(f, 'armour');
-    withG(f, () => {
-      // Surcoat panel down the front with the Order's cross.
-      poly(
-        c,
-        f.p.cloth,
-        [-0.1, 0.5, 0.15, 0.5, 0.165, 0.3, 0.14, 0.0, 0.1, -0.14, -0.1, -0.14],
-        0.035,
-      );
-      if (f.hero) {
-        poly(
-          c,
-          f.p.trim,
-          [0.1, 0.5, 0.15, 0.5, 0.165, 0.3, 0.14, 0.0, 0.1, -0.14, 0.1, -0.1],
-          0.0,
-          0,
-        );
-        // half-sun medallion
-        c.beginPath();
-        c.arc(0.12, 0.43, 0.07, -Math.PI / 2, Math.PI / 2);
-        c.closePath();
-        c.fillStyle = f.p.trim.at(BASE);
-        c.fill();
-        c.lineWidth = OW * 0.7;
-        c.strokeStyle = f.p.dark.at(BASE);
-        c.stroke();
-        for (let i = 0; i < 5; i++) {
-          const a = -Math.PI / 2 + (i + 0.5) * (Math.PI / 5);
-          line(
-            c,
-            f.p.trim,
-            BASE,
-            0.016,
-            0.12 + Math.cos(a) * 0.09,
-            0.43 + Math.sin(a) * 0.09,
-            0.12 + Math.cos(a) * 0.12,
-            0.43 + Math.sin(a) * 0.12,
-          );
-        }
-      } else cross(f, 0.04, 0.3, 1.25);
-      // gorget
-      poly(c, f.p.armour, [-0.09, 0.6, 0.08, 0.6, 0.1, 0.7, -0.09, 0.7], 0.025, OW * 0.9);
-      if (f.cls === 2) {
-        // heavy: breastplate ridge and extra lames
-        line(c, f.p.armour, HI, 0.02, 0.15, 0.46, 0.15, 0.56);
-        for (const y of [0.54, 0.6]) line(c, f.p.metal, HI, 0.016, -0.08, y, 0.1, y);
-      }
-    });
-  },
-  front(f) {
-    if (!f.hero) return;
-    // Gold sash across the chest.
-    const c = f.ctx;
-    c.save();
-    c.scale(f.g, 1);
-    poly(c, f.p.trim, [-0.13, 0.55, -0.08, 0.6, 0.15, 0.2, 0.1, 0.16], 0.02, OW * 0.7);
-    c.restore();
-  },
-  skirt(f) {
-    const c = f.ctx;
-    c.save();
-    c.scale(f.g, 1);
-    // Tassets: armoured plates over the thighs, cloth below.
-    poly(c, f.p.cloth, [-0.13, 0.04, 0.15, 0.04, 0.18, -0.2, 0.0, -0.26, -0.16, -0.2], 0.035);
-    poly(c, f.p.armour, [-0.14, 0.06, 0.15, 0.06, 0.17, -0.04, 0.0, -0.08, -0.15, -0.04], 0.025);
-    if (f.cls > 0)
-      poly(
-        c,
-        f.p.armour,
-        [-0.13, -0.05, 0.16, -0.05, 0.14, -0.15, -0.01, -0.17, -0.14, -0.14],
-        0.025,
-      );
-    c.restore();
-  },
-  head(f) {
-    const c = f.ctx;
-    skin(f);
-    if (f.cls === 0) {
-      // Light: open sallet, the face shows.
-      eyes(f);
-      blob(
-        c,
-        f.p.armour,
-        [
-          -0.15, -0.04, -0.17, 0.08, -0.06, 0.18, 0.08, 0.17, 0.14, 0.09, 0.07, 0.07, -0.02, 0.0,
-          -0.07, -0.1,
-        ],
-        0.035,
-      );
-      poly(c, f.p.armour, [-0.15, -0.04, -0.07, -0.1, -0.06, -0.19, -0.17, -0.12], 0.02, OW * 0.8);
-    } else {
-      // Close helm with a visor slit.
-      blob(
-        c,
-        f.p.armour,
-        [
-          -0.17, -0.05, -0.18, 0.08, -0.08, 0.19, 0.06, 0.2, 0.16, 0.1, 0.19, -0.02, 0.17, -0.12,
-          0.08, -0.18, -0.04, -0.17, -0.14, -0.15,
-        ],
-        0.04,
-      );
-      poly(
-        c,
-        f.p.armour,
-        [0.05, 0.07, 0.18, 0.04, 0.215, -0.04, 0.19, -0.13, 0.08, -0.17, 0.04, -0.08],
-        0.03,
-      );
-      line(c, f.p.dark, BASE, 0.026, 0.07, 0.0, 0.2, 0.0);
-      fillEll(c, f.p.trim, BASE, 0.12, 0.0, 0.012, 0.008);
-      for (const y of [-0.06, -0.09, -0.12]) fillEll(c, f.p.dark, BASE, 0.15, y, 0.008, 0.008);
-      line(c, f.p.metal, HI, 0.014, -0.1, 0.17, 0.06, 0.2);
-    }
-    // Crest ridge and plume in the side colour.
-    line(c, f.p.trim, BASE, 0.026, -0.12, 0.17, 0.08, 0.2);
-    const big = f.hero ? 1.3 : 1 + f.cls * 0.15;
-    ribbon(
-      c,
-      f.hero ? f.p.cloth : f.acc,
-      -0.04,
-      0.2,
-      Math.PI * 0.8,
-      0.32 * big,
-      0.12 * big,
-      0.03,
-      0.22,
-      f.t,
-      0.6,
-      f.drag * 0.5,
-      0.03,
-    );
-    if (f.hero)
-      ribbon(
-        c,
-        f.p.trim,
-        -0.1,
-        0.2,
-        Math.PI * 1.02,
-        0.34,
-        0.05,
-        0.02,
-        0.3,
-        f.t,
-        1.5,
-        f.drag,
-        0.0,
-        OW * 0.6,
-      );
-  },
-  pad(f, far) {
-    const c = f.ctx;
-    const k = [0.8, 1, 1.3][f.cls] as number;
-    ell(c, f.p.armour, 0, 0.0, 0.11 * k, 0.1 * k, 0, 0.04);
-    if (!far) {
-      ell(c, f.p.armour, 0.01, -0.07 * k, 0.1 * k, 0.045 * k, 0, 0.025);
-      if (f.cls === 2) ell(c, f.p.armour, 0.01, -0.13 * k, 0.095 * k, 0.04 * k, 0, 0.02);
-      cross(f, 0, 0, 0.5);
-    }
-  },
-  fore(f, far) {
-    const c = f.ctx;
-    ell(c, f.p.metal, 0, 0, 0.062, 0.062, 0, 0.02, OW * 0.8);
-    line(c, f.p.trim, BASE, 0.022, -0.06, -0.18, 0.06, -0.18);
-    void far;
-  },
-  hand(f, far) {
-    fist(f, far, 'armour');
-  },
-  thigh(f) {
-    ell(f.ctx, f.p.dark, 0, 0, 0.075, 0.075, 0, 0.015, OW * 0.7);
-  },
-  shin(f) {
-    const c = f.ctx;
-    ell(c, f.p.armour, 0.015, 0, 0.1, 0.085, 0, 0.03);
-    fillEll(c, f.p.trim, BASE, 0.045, 0.0, 0.02, 0.02);
-  },
-  boot(f) {
-    bootShape(f, 'armour');
-  },
-  shield: () => true,
-};
 
 // ── Militia ───────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import type { FighterAnchors, Pose, PersonFigureSpec, Rig, RigSpec, V2 } from './contract';
 import { MELEE_GUARD, guardFor } from '../render/Armatura';
-import { K, OW, ell, limb, sw } from './figures/kit';
+import { K, OW, ell, limb, setView, sw } from './figures/kit';
 import { drawShield, drawWeapon, lookFor, paletteFor, styleFor, tipUV } from './figures/index';
 import type { F, LimbStyle, Look, PersonLook, WeaponStyle } from './figures/index';
 import {
@@ -120,9 +120,9 @@ class Rig2D implements Rig {
     const w = spec.weaponType;
     this.shielded =
       !person &&
-      (spec.model === 'sipahi' || w === 'blunt') &&
-      w !== 'firearm' &&
-      w !== 'polearm' &&
+      (this.look.shieldWith
+        ? this.look.shieldWith(w)
+        : (spec.model === 'sipahi' || w === 'blunt') && w !== 'firearm' && w !== 'polearm') &&
       !!this.look.shield?.({} as F);
     this.f = {
       ctx: null as unknown as CanvasRenderingContext2D,
@@ -268,6 +268,8 @@ class Rig2D implements Rig {
     f.drag = this.drag;
     f.pose = p;
     const j = this.j;
+    // Level of detail from the on-screen scale (before the figure's own transform).
+    setView(ctx, Math.abs(this.sy) * this.sc, this.sx < 0);
 
     ctx.save();
     ctx.translate(this.tx, this.ty);
@@ -359,12 +361,14 @@ class Rig2D implements Rig {
     ctx.translate(0, SHOULDER_Y);
     ctx.rotate(far ? num(p.sL) - sway : num(p.sR) + sway);
     const ru = 0.078 * g;
-    limb(ctx, f.p[L.upper], 0, 0, 0, -UPPER, ru, ru * 0.82, 0.026);
+    if (look.segment) look.segment(f, 0, far, UPPER, ru, ru * 0.82);
+    else limb(ctx, f.p[L.upper], 0, 0, 0, -UPPER, ru, ru * 0.82, 0.026);
     look.pad?.(f, far);
     ctx.translate(0, -UPPER);
     ctx.rotate(far ? num(p.eL) : num(p.eR));
     const rf = 0.066 * g;
-    limb(ctx, f.p[L.fore], 0, 0, 0, -FORE, rf, rf * 0.82, 0.024);
+    if (look.segment) look.segment(f, 1, far, FORE, rf, rf * 0.82);
+    else limb(ctx, f.p[L.fore], 0, 0, 0, -FORE, rf, rf * 0.82, 0.024);
     look.fore?.(f, far);
     ctx.translate(0, -FORE);
     if (!far) {
@@ -391,13 +395,17 @@ class Rig2D implements Rig {
     ctx.translate(0, j.hipY);
     ctx.rotate(h);
     const rt = 0.11 * g;
-    limb(ctx, f.p[L.thigh], 0, 0, 0, -THIGH * this.legK, rt, rt * 0.78, 0.03);
+    if (look.segment) look.segment(f, 2, far, THIGH * this.legK, rt, rt * 0.78);
+    else limb(ctx, f.p[L.thigh], 0, 0, 0, -THIGH * this.legK, rt, rt * 0.78, 0.03);
     look.thigh?.(f, far);
     ctx.translate(0, -THIGH * this.legK);
     ctx.rotate(k);
     const rs = 0.084 * g;
-    limb(ctx, f.p[L.shin], 0, 0, 0, -SHIN * this.legK, rs, rs * 0.78, 0.028);
-    ell(ctx, f.p[L.shin], 0, 0, rs * 0.9, rs * 0.9, 0, 0.02, 0);
+    if (look.segment) look.segment(f, 3, far, SHIN * this.legK, rs, rs * 0.78);
+    else {
+      limb(ctx, f.p[L.shin], 0, 0, 0, -SHIN * this.legK, rs, rs * 0.78, 0.028);
+      ell(ctx, f.p[L.shin], 0, 0, rs * 0.9, rs * 0.9, 0, 0.02, 0);
+    }
     look.shin?.(f, far);
     ctx.translate(0, -SHIN * this.legK);
     // The foot stays mostly flat while the shin swings.
