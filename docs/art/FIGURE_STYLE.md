@@ -36,7 +36,7 @@ model built to it; the other models should be built the same way from `figures/k
 `Shape`/`paint(ctx, shape, mat, lw, top)` plate with gradient and ink; `Tube`/`paintTube` tapered
 limb with lames, specular and rim; `joint` riveted brass joint; `disc`; `band` (brass strip over
 ink); `rivetPath`/`rivets`; `streak` (specular), `seam` (ink line), `flat`; `glow('ember'|'eye'|
-'steam')`; `flag` (plume feather, sash tail, pennon, with `flagTip`); `glint` (4-point star).
+'steam')`; `flag` (plume feather, sash tail, pennon); `glint` (4-point star).
 Create `Shape`/`Tube`/`Path2D` once at module load or lazily per class, never per frame; gradients
 are cached per canvas, flash level and mirror state inside `Swatch.grad`.
 
@@ -63,9 +63,40 @@ The rig calls `setView` once per draw and sets `K.px` (canvas px per unit), `K.l
 - Hero (`f.hero`): white enamel plates, gold trim, red plume with a gold feather, sun medallion and
   gold sash.
 
+## Roster
+
+One file per model in `render2d/figures/` (`<model>.ts` the Look, `<model>Arms.ts` its weapon painters).
+`weapons.ts` only maps (model, weapon type) to a style and dispatches to the model's painters;
+`shield.ts` dispatches the off-hand shield. Palettes are in `palette.ts` (hero livery: white enamel,
+gold, red; models with their own `mats(f)` override it where they check `f.hero`).
+
+| Model     | Faction (palette)                      | Shield / off hand          | Weapon art                             | Quirks                                                                  |
+| --------- | -------------------------------------- | -------------------------- | -------------------------------------- | ----------------------------------------------------------------------- |
+| knight    | Order: silver, red tabard, brass       | round cross shield         | knightArms (+ Ottoman gun and grenade) | the reference; steam pack, plume in side colour                         |
+| militia   | Maltese: earthy cloth, limestone, felt | banded plank shield        | militiaArms                            | straw-brim hat, rough kit                                               |
+| gunner    | Maltese: brown coat, steel morion      | none                       | militiaArms/gunnerArms                 | shares the militia weapons; dark by nature, brightened                  |
+| janissary | Ottoman: blue kaftan, white börk       | small buckler (blunt)      | janissaryArms                          | steam from the crescent horns, tail of the börk                         |
+| sipahi    | Ottoman: crimson, steel, mail          | kalkan (blade/blunt/expl.) | sipahiArms                             | side-colour cape                                                        |
+| corsair   | Barbary: teal vest, crimson, brass     | buckler (blunt only)       | corsairArms                            | grapple and rope, whistle pack                                          |
+| machine   | Scala: dark iron, copper, brass        | none                       | machineArms                            | glowing eye slit, boiler pack, gear knees                               |
+| tower     | Scala: timber, iron bands, tracks      | none                       | machineArms                            | arms come out of a bay; shares `Boiler`/`MACH` with the barge           |
+| barge     | Maltese boat: planks, brass            | none                       | corsairArms (crew)                     | the whole boat is the hull plate; water pinches to a point at both ends |
+
+Hero: `machMats(f)` swaps tower and barge machinery to white enamel and gold.
+
+### Adding a model
+
+1. Add the id to `ARMATURA_MODELS` (content schemas) and write `figures/<id>.ts` (a `Look`, built from
+   `kit.ts`) and `figures/<id>Arms.ts` (weapon painters returning nothing; one case per `WeaponStyle`).
+2. Register it in `figures/index.ts` (`LOOKS`), in `weapons.ts` (`styleFor`, `drawWeapon`) and, if it
+   carries a shield, in `shield.ts`; add a palette in `palette.ts`.
+3. Check it with `gallery2d.html?view=roster&size=map` next to the other models: ink weight, brightness,
+   side colour and silhouette must read as part of the family at duel, panel and map size.
+4. Extend `corsair.test.ts` style tests (every weapon, class, scale, hero, mirrored).
+
 ## Testing visually
 
-Dev server `pnpm --filter @m1565/game dev --port 5340`, then `/gallery2d.html?model=knight&class=heavy&weapon=blunt`
+Dev server `pnpm --filter @m1565/game dev --port 5340`, then `/gallery2d.html?view=roster&size=map` (all models), `/gallery2d.html?model=knight&class=heavy&weapon=blunt`
 (`&hero=1&face=-1&accent=%232a6fd6`), `/duel2d.html?atk=order-cross-cut&t=0.4`, a battle map
 (`/?battle=a1-piccolo-soccorso`) and the unit panel. Compare to `cavaliere.jpg` at 700 px (duel), 250 px
 (panel) and 100 px (map). `rig.test.ts` draws every knight variant at all three LODs.

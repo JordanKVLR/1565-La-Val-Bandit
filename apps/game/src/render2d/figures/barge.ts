@@ -23,7 +23,7 @@ import {
   sw,
 } from './kit';
 import type { LimbStyle, Look } from './types';
-import { Boiler, MACH, rr } from './tower';
+import { Boiler, MACH, machMats, rr } from './tower';
 
 /**
  * The supply/gun barge (frame barge): a flat-bottomed wooden landing barge with iron bands and
@@ -215,7 +215,7 @@ export const barge: Look = {
     const c = f.ctx;
     const t = f.t;
     const lod = K.lod;
-    const m = MACH;
+    const m = machMats(f);
     const swell = Math.sin(t * 2.6);
     refIn(c, 0, 0);
     // Lantern post with a glowing lantern, and the stern boiler behind the hull.
@@ -228,7 +228,7 @@ export const barge: Look = {
     c.stroke(LANTERN.p);
     c.save();
     c.translate(-300, -340);
-    BOILER.draw(c, t, 1.3);
+    BOILER.draw(c, t, 1.3, true, f.hero);
     c.restore();
     // Barrel and rope coil on the deck.
     c.save();
@@ -298,18 +298,31 @@ export const barge: Look = {
     refOut(c);
     // Water ripples over the lower hull: one cached gradient, a few lines per frame.
     refIn(c, 0, 0);
+    // The surface pinches down to a point at both ends, so the water never ends in a hard edge.
+    const crest = (i: number, ph: number): number => {
+      const u = Math.abs((2 * i) / WAVE_N - 1);
+      const e = Math.max(0, (u - 0.62) / 0.38);
+      return -66 + Math.sin(t * 2.6 + i * 1.1 + ph) * 12 * (1 - e) + e * e * 150;
+    };
     c.beginPath();
-    c.moveTo(-640, 90);
     for (let i = 0; i <= WAVE_N; i++) {
       const x = -640 + (i / WAVE_N) * 1360;
-      c.lineTo(x, -66 + Math.sin(t * 2.6 + i * 1.1) * 12);
+      if (i === 0) c.moveTo(x, crest(i, 0));
+      else c.lineTo(x, crest(i, 0));
     }
     c.lineTo(720, 90);
+    c.lineTo(-640, 90);
     c.closePath();
     c.globalAlpha = 0.86;
     c.fillStyle = WATER.grad(c, WAVE_FR, true);
     c.fill();
     c.globalAlpha = 1;
+    c.beginPath();
+    for (let i = 0; i <= WAVE_N; i++) {
+      const x = -640 + (i / WAVE_N) * 1360;
+      if (i === 0) c.moveTo(x, crest(i, 0));
+      else c.lineTo(x, crest(i, 0));
+    }
     c.lineWidth = inkR(5);
     c.strokeStyle = '#0e1118';
     c.stroke();
@@ -317,7 +330,7 @@ export const barge: Look = {
       c.beginPath();
       for (let i = 0; i <= WAVE_N; i++) {
         const x = -640 + (i / WAVE_N) * 1360;
-        const y = -50 + Math.sin(t * 2.6 + i * 1.1 + 0.6) * 12;
+        const y = crest(i, 0.6) + 16;
         if (i === 0) c.moveTo(x, y);
         else c.lineTo(x, y);
       }
@@ -432,7 +445,7 @@ export const barge: Look = {
 
   fore(f, far) {
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     refIn(c, 0, 0);
     // A brass steam gauntlet on the forearm.
     paint(c, BRACER, far ? m.steelFar : m.steel, inkR(5));

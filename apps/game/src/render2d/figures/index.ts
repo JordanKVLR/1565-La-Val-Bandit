@@ -1,6 +1,5 @@
 import type { ArmaturaModel } from '@m1565/content';
 import { corsair } from './corsair';
-import {} from './humans';
 import { gunner } from './gunner';
 import { janissary } from './janissary';
 import { knight } from './knight';
@@ -14,7 +13,7 @@ import type { Look } from './types';
 export { paletteFor } from './palette';
 export { styleFor, tipUV, drawWeapon } from './weapons';
 export type { WeaponStyle } from './weapons';
-export { drawShield } from './humans';
+export { drawShield } from './shield';
 export type { F, Look, LimbStyle, Palette, Part, PersonLook } from './types';
 
 const LOOKS: Record<ArmaturaModel, Look> = {

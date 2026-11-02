@@ -37,7 +37,7 @@ import type { F, LimbStyle, Look } from './types';
 
 // ── Shared steam machinery ────────────────────────────────────
 
-export interface MachMats {
+interface MachMats {
   brass: Swatch;
   brassFar: Swatch;
   steel: Swatch;
@@ -63,6 +63,17 @@ export const MACH: MachMats = {
   white: sw('#f3ecd6', 'soft'),
   skin: sw('#cf9a6c', 'matte'),
 };
+
+/** The hero's machinery: white enamel plates, bright gold fittings (wood and leather stay). */
+export const MACH_HERO: MachMats = {
+  ...MACH,
+  brass: sw('#f0c54e', 'metal'),
+  brassFar: sw('#b8912f', 'metal'),
+  steel: sw('#eef0f5', 'enamel'),
+  steelFar: sw('#b7bdca', 'enamel'),
+  iron: sw('#dfe3ec', 'enamel'),
+};
+export const machMats = (f: F): MachMats => (f.hero ? MACH_HERO : MACH);
 
 export function rr(x: number, y: number, w: number, h: number, r: number): string {
   return (
@@ -112,8 +123,8 @@ export class Boiler {
       `M ${-hw * 0.62} ${-h * 0.9} C ${-hw * 0.7} ${-h * 0.6}, ${-hw * 0.7} ${-h * 0.3}, ${-hw * 0.6} ${-h * 0.06}`,
     );
   }
-  draw(c: Ctx, t: number, phase = 0, puffs = true): void {
-    const m = MACH;
+  draw(c: Ctx, t: number, phase = 0, puffs = true, hero = false): void {
+    const m = hero ? MACH_HERO : MACH;
     const lod = K.lod;
     const hw = this.w / 2;
     paint(c, this.stack, m.iron, inkR(5), true);
@@ -359,14 +370,20 @@ export const tower: Look = {
     paintTube(
       f.ctx,
       tube(seg, f.cls, len, r0, r1),
-      seg === 0 ? (far ? MACH.brassFar : MACH.brass) : far ? MACH.steelFar : MACH.steel,
+      seg === 0
+        ? far
+          ? machMats(f).brassFar
+          : machMats(f).brass
+        : far
+          ? machMats(f).steelFar
+          : machMats(f).steel,
       !far,
     );
   },
 
   hull(f) {
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     const t = f.t;
     const lod = K.lod;
     const ph = rollPhase(f);
@@ -374,7 +391,7 @@ export const tower: Look = {
     // Rear boiler, chimney and pipes.
     c.save();
     c.translate(-450, -230);
-    BOILER.draw(c, t, 0);
+    BOILER.draw(c, t, 0, true, f.hero);
     c.restore();
     band(c, CHIMNEY_ARM, PIPE_FR, m.steel, inkR(20), 12);
     // Tower body: timber with iron bands.
@@ -538,7 +555,7 @@ export const tower: Look = {
   torso(f) {
     // The gun carriage: a brass rail across the bay on which the shoulders slide.
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     c.save();
     c.rotate(-f.pose.lean);
     refIn(c, 0, 0);
@@ -551,7 +568,7 @@ export const tower: Look = {
   front(f) {
     // The crewman on the platform and the near merlons, held steady while the spine leans.
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     const lod = K.lod;
     const t = f.t;
     const bob = Math.sin(t * 3.1) * BOB;
@@ -620,7 +637,7 @@ export const tower: Look = {
   pad(f, far) {
     // Round brass socket where the gun arm joins the carriage.
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     const kk = [0.95, 1.1, 1.25][f.cls] as number;
     const swing = far ? f.pose.sL : f.pose.sR;
     c.save();
@@ -639,7 +656,7 @@ export const tower: Look = {
 
   fore(f, far) {
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     const r = 0.06;
     refIn(c, 0, 0);
     if (!far) {
@@ -655,7 +672,7 @@ export const tower: Look = {
   hand(f, far) {
     // A clamp claw around the grip.
     const c = f.ctx;
-    const m = MACH;
+    const m = machMats(f);
     c.save();
     refIn(c, 0, 2);
     paint(c, CLAW, far ? m.steelFar : m.steel, inkR(5));

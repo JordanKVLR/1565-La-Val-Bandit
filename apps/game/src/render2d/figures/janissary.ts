@@ -803,11 +803,11 @@ export const janissary: Look = {
         const ph = (f.t * 0.6 + i / n + h * 0.37) % 1;
         const x =
           x0 -
-          ph * 0.34 +
+          ph * 0.1 +
           (h === 0 ? -1 : 1) * ph * 0.03 -
-          f.drag * 0.16 * ph +
+          f.drag * 0.1 * ph +
           Math.sin(f.t * 2 + i + h * 3) * 0.012;
-        const y = HORN_Y + ph * 0.46;
+        const y = HORN_Y + 0.08 + ph * 0.62;
         const r = 0.035 + ph * 0.11;
         glow(c, 'steam', x, y, r, r, Math.min(1, (1 - ph) * 1.4) * 0.85);
       }

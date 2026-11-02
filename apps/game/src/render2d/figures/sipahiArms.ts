@@ -36,7 +36,7 @@ const LN_WRAP = (() => {
 const FR_PENNON = new Frame(0, 90, 0, -90);
 
 /** The sipahi lance: a long haft, a hand plate, a diamond head and a swallow pennon in the side colour. */
-export function sipahiLance(f: F): void {
+function sipahiLance(f: F): void {
   const c = f.ctx;
   const m = armMats(f);
   pxIn(c);

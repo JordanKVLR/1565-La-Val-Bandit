@@ -281,9 +281,9 @@ export const NECK = Shape.d('M -34 56 L 40 56 L 44 130 L -30 130 Z', true);
 export const EAR = Shape.d('M -14 -2 C -2 -14, 16 -8, 14 12 C 12 28, -4 30, -14 20 Z');
 export const EYE = mkPath('M 44 -12 C 54 -20, 70 -18, 74 -8 C 64 -4, 52 -4, 44 -12 Z');
 export const BROW = mkPath('M 36 -24 C 52 -34, 72 -30, 80 -22');
-export const MOUTH = mkPath('M 66 50 C 74 52, 80 50, 84 46');
+const MOUTH = mkPath('M 66 50 C 74 52, 80 50, 84 46');
 export const MOUSTACHE = Shape.d('M 66 32 C 80 28, 98 34, 104 44 C 90 52, 74 50, 62 44 Z', true);
-export const STUBBLE = Shape.d(
+const STUBBLE = Shape.d(
   'M 10 52 C 30 60, 60 58, 76 50 C 84 60, 76 76, 60 80 C 40 90, 6 90, -10 80 C -30 66, -22 54, 10 52 Z',
 );
 const HAIR = Shape.d(

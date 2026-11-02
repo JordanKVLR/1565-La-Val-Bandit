@@ -63,9 +63,9 @@ function mats(f: F): GunMats {
   if (!m) {
     const hero = f.hero;
     const steel = hero ? '#eef0f5' : '#9ba5b6';
-    const coat = hero ? '#c0161f' : '#a85b38';
-    const breeches = hero ? '#f0ebdd' : '#54443a';
-    const boot = '#6a4526';
+    const coat = hero ? '#c0161f' : '#b9663c';
+    const breeches = hero ? '#f0ebdd' : '#86704f';
+    const boot = '#85562f';
     const skin = f.p.skin.c[0] as string;
     m = {
       steel: sw(steel, hero ? 'enamel' : 'metal'),
@@ -82,7 +82,7 @@ function mats(f: F): GunMats {
       bootFar: sw(darker(boot, 0.72), 'matte'),
       flask: sw('#d3b27a', 'matte'),
       linen: sw('#f2ecdc', 'soft'),
-      felt: sw(hero ? '#f2f1ec' : '#3d3b41', 'cloth'),
+      felt: sw(hero ? '#f2f1ec' : '#5a5862', 'cloth'),
       skin: sw(skin, 'soft'),
       skinFar: sw(darker(skin, 0.8), 'soft'),
       hair: sw('#2b211a', 'matte'),

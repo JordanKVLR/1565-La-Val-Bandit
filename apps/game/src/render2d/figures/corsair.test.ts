@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { guardFor } from '../../render/Armatura';
 import type { Pose } from '../../render/Armatura';
 import { createRig } from '../rig';
+import { lookFor } from './index';
 
 type M = 'corsair' | 'barge' | 'tower';
 const WEAPONS: WeaponType[] = ['blade', 'polearm', 'blunt', 'firearm', 'explosive'];
@@ -77,5 +78,60 @@ describe.each(['corsair', 'barge', 'tower'] as M[])('%s figures', (model) => {
       1,
     );
     expect(rig.anchors().feet.y).toBeCloseTo(0, 5);
+  });
+});
+
+describe('corsair buckler', () => {
+  it('is carried with blunt weapons only, by the corsair and not the barge', () => {
+    const c = lookFor('corsair');
+    expect(c.shield?.({} as never)).toBe(true);
+    expect(c.shieldWith?.('blunt')).toBe(true);
+    for (const w of ['blade', 'polearm', 'firearm', 'explosive'] as const)
+      expect(c.shieldWith?.(w)).toBe(false);
+    expect(lookFor('barge').shieldWith?.('blunt')).toBe(false);
+  });
+
+  it('draws balanced and in both liveries', () => {
+    for (const hero of [false, true])
+      for (const scale of [60, 160, 390]) {
+        const rig = createRig(
+          { model: 'corsair', weaponType: 'blunt', frameClass: 'medium', accent: '#d0700a', hero },
+          0,
+          -1,
+        );
+        const ctx = fakeCtx(scale);
+        rig.pose = { ...guardFor('blunt') };
+        expect(() => rig.draw(ctx)).not.toThrow();
+        expect((ctx as unknown as { depth: () => number }).depth()).toBe(0);
+      }
+  });
+});
+
+describe('weapons of every model', () => {
+  it('draw for each model and each weapon type, hero or not', () => {
+    const models = [
+      'knight',
+      'militia',
+      'gunner',
+      'janissary',
+      'sipahi',
+      'corsair',
+      'machine',
+      'barge',
+      'tower',
+    ] as const;
+    for (const model of models)
+      for (const w of WEAPONS)
+        for (const hero of [false, true]) {
+          const rig = createRig(
+            { model, weaponType: w, frameClass: 'heavy', accent: '#1f6fb5', hero },
+            0,
+            1,
+          );
+          const ctx = fakeCtx(130);
+          rig.pose = { ...guardFor(w) };
+          expect(() => rig.draw(ctx)).not.toThrow();
+          expect((ctx as unknown as { depth: () => number }).depth()).toBe(0);
+        }
   });
 });

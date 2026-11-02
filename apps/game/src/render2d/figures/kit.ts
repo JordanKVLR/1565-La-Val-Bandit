@@ -595,32 +595,6 @@ const SPX: number[] = new Array<number>(12).fill(0);
 const SPY: number[] = new Array<number>(12).fill(0);
 const SPW: number[] = new Array<number>(12).fill(0);
 
-/** End point of the most recent ribbon call is not tracked: use `ribbonTip` for attachments. */
-export function ribbonTip(
-  x0: number,
-  y0: number,
-  ang: number,
-  len: number,
-  amp: number,
-  t: number,
-  phase: number,
-  drag: number,
-  out: { x: number; y: number },
-  segs = 6,
-): void {
-  let x = x0;
-  let y = y0;
-  const step = len / segs;
-  for (let i = 0; i <= segs; i++) {
-    const k = i / segs;
-    const a = ang + Math.sin(t * 5 - i * 0.9 + phase) * amp * k + drag * k * 0.9;
-    x += Math.cos(a) * step;
-    y += Math.sin(a) * step;
-  }
-  out.x = x;
-  out.y = y;
-}
-
 /** A soft round puff (steam, smoke) with alpha. */
 export function puff(ctx: Ctx, s: Swatch, x: number, y: number, r: number, alpha: number): void {
   ctx.globalAlpha = alpha;
@@ -1087,33 +1061,6 @@ export function flag(
     ctx.stroke();
     ctx.globalAlpha = 1;
   }
-}
-
-/** Where a `flag` ends (for hanging something off it). */
-export function flagTip(
-  x0: number,
-  y0: number,
-  ang: number,
-  bend: number,
-  len: number,
-  amp: number,
-  t: number,
-  phase: number,
-  drag: number,
-  out: { x: number; y: number },
-  segs = 8,
-): void {
-  let x = x0;
-  let y = y0;
-  const step = len / segs;
-  for (let i = 0; i <= segs; i++) {
-    const k = i / segs;
-    const a = ang + bend * k + Math.sin(t * 5 - i * 0.9 + phase) * amp * k + drag * k * 0.9;
-    x += Math.cos(a) * step;
-    y += Math.sin(a) * step;
-  }
-  out.x = x;
-  out.y = y;
 }
 
 const STAR = mkPath(

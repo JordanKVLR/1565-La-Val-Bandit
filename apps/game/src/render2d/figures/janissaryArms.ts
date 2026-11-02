@@ -72,7 +72,7 @@ function upDir(f: F): void {
 }
 
 /** A flickering ember with a little smoke, in weapon pixels. */
-export function emberPx(f: F, x: number, y: number, r: number, phase: number): void {
+function emberPx(f: F, x: number, y: number, r: number, phase: number): void {
   const c = f.ctx;
   const k = 0.78 + 0.22 * Math.sin(f.t * 17 + phase);
   glow(c, 'ember', x, y, r * 2.4 * k, r * 2.4 * k, 0.9);
@@ -93,7 +93,7 @@ export function emberPx(f: F, x: number, y: number, r: number, phase: number): v
 }
 
 /** Cel-shaded curved blade: flat steel, a dark edge strip, a ridge and a specular streak. */
-export function curvedBlade(
+function curvedBlade(
   c: Ctx,
   steel: Swatch,
   body: Path2D,
@@ -186,7 +186,7 @@ const PK_BUTT = wShape('M -300 -12 L -278 -12 L -278 12 L -300 12 Z', 12);
 const PK_FR = new Frame(0, 50, 0, -50);
 
 /** The janissary pike: a long haft, steel langets, a leaf head and a tassel in the side colour. */
-export function ottomanPike(f: F): void {
+function ottomanPike(f: F): void {
   const c = f.ctx;
   const m = armMats(f);
   pxIn(c);

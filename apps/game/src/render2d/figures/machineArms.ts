@@ -180,7 +180,7 @@ const SH_RIVETS = rivetPath([-96, 362, 96, 362, -96, 432, 96, 432, -34, 460, 34,
 const SH_STACK = Shape.d(rr(44, 54, 26, 70, 6), true);
 const SH_STACK2 = Shape.d(rr(-70, 54, 26, 50, 6), true);
 
-export function machinePiston(f: F): void {
+function machinePiston(f: F): void {
   const c = f.ctx;
   const m = mats(f);
   const heavy = f.cls === 2;
@@ -275,7 +275,7 @@ const CN_RECV = Shape.d(rr(-60, -66, 190, 120, 18));
 const CN_BOLT = Shape.d('M 500 -10 L 580 -10 L 612 4 L 580 18 L 500 18 Z', true);
 const CN_RIVETS = rivetPath([-36, -46, 30, -46, 96, -46, -36, 34, 30, 34, 96, 34], 4.6);
 
-export function machineGun(f: F): void {
+function machineGun(f: F): void {
   const c = f.ctx;
   const m = mats(f);
   const heavy = f.cls === 2;
@@ -369,7 +369,7 @@ const BM_RIVETS = rivetPath(
 );
 const BM_HI = mkPath('M 58 -38 C 68 -56, 94 -62, 118 -54');
 
-export function machineBomb(f: F): void {
+function machineBomb(f: F): void {
   const c = f.ctx;
   const m = mats(f);
   const heavy = f.cls === 2;
@@ -434,7 +434,7 @@ const CL_SLOTS = Shape.d(
 );
 const CL_RIVETS = rivetPath([-38, 80, 14, 80, 14, 320, -38, 320], 4.2);
 
-export function machineSword(f: F): void {
+function machineSword(f: F): void {
   const c = f.ctx;
   const m = mats(f);
   weaponIn(c);
@@ -489,7 +489,7 @@ const SP_RINGS = new Shape(
 const SP_HI = mkPath('M 1.4 0.012 L 1.68 0.004');
 const SP_PENNON = new Frame(0, 0.12, 0, -0.12);
 
-export function machineSpear(f: F): void {
+function machineSpear(f: F): void {
   const c = f.ctx;
   const m = mats(f);
   paint(c, SP_SHAFT, m.iron, inkU(5));

@@ -1,6 +1,7 @@
 import {
   Frame,
   K,
+  RS,
   Shape,
   Tube,
   band,
@@ -319,7 +320,7 @@ function corsairLimbs(): LimbStyle {
 // ── The look ──────────────────────────────────────────────────
 
 /** Drawing helpers shared with the barge crew (same anatomy, other clothes). */
-export function bareHead(
+function bareHead(
   c: Ctx,
   m: Pick<Mats, 'skin' | 'skinFar' | 'beard' | 'white'>,
   lod: number,
@@ -347,9 +348,54 @@ export function bareHead(
   void t;
 }
 
+// ── Buckler (small round leather shield with a spiked steel boss) ──
+
+const BK_RIM = Shape.circle(0, 0, 156);
+const BK_FIELD = Shape.circle(0, 0, 144);
+const BK_RING = Shape.circle(0, 0, 118);
+const BK_BOSS = Shape.circle(0, 0, 44);
+const BK_SPIKE = Shape.d('M -11 -38 L 0 -86 L 11 -38 Z', true);
+const BK_STUDS = rivetPath(
+  Array.from({ length: 6 }, (_, i) => [
+    Math.cos((i / 6) * Math.PI * 2 + 0.3) * 88,
+    Math.sin((i / 6) * Math.PI * 2 + 0.3) * 88,
+  ]).flat(),
+  9,
+);
+const BK_GLINT = mkPath('M -104 -40 A 112 112 0 0 1 -40 -104');
+
+/** The corsair's buckler, drawn at the off hand: leather, a crimson ring, side-colour band, steel boss. */
+export function corsairBuckler(f: F): void {
+  const c = f.ctx;
+  const m = mats(f);
+  const k = RS * (1 + (f.cls - 1) * 0.08) * 0.8;
+  c.save();
+  c.translate(0.12, 0.08);
+  c.scale(k, -k);
+  c.rotate(-0.2);
+  paint(c, BK_RIM, f.hero ? m.brass : m.steel, inkR(7));
+  paint(c, BK_FIELD, m.leather, inkR(5));
+  c.lineWidth = inkR(18);
+  c.strokeStyle = '#0e1118';
+  c.stroke(BK_RING.p);
+  c.lineWidth = inkR(12);
+  c.strokeStyle = f.acc.as('cloth').grad(c, BK_RING.fr, false);
+  c.stroke(BK_RING.p);
+  c.lineWidth = inkR(4);
+  c.strokeStyle = m.crimson.at(0);
+  c.stroke(BK_FIELD.p);
+  paint(c, BK_BOSS, m.steel, inkR(6));
+  if (K.lod > 0) paint(c, BK_SPIKE, m.steel, inkR(4));
+  rivets(c, BK_STUDS, inkR(1.5));
+  if (K.lod > 0) streak(c, BK_GLINT, inkR(7), 0.4);
+  c.restore();
+}
+
 export const corsair: Look = {
   model: 'corsair',
   sabre: true,
+  shield: () => true,
+  shieldWith: (w) => w === 'blunt',
   headScale: 1.24,
   limbs: corsairLimbs,
 
